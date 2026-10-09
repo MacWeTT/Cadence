@@ -21,6 +21,16 @@
   --heat-3: #8a9c58;
   --heat-4: #5f7036;
 
+  /* habit colors (see src/lib/palette.ts) */
+  --habit-moss: #6c7d45;
+  --habit-clay: #b8643c;
+  --habit-ochre: #ad7f1f;
+  --habit-rose: #b5576a;
+  --habit-plum: #7d5a8c;
+  --habit-teal: #3f8079;
+  --habit-sky: #4f7fa6;
+  --habit-slate: #6f6a63;
+
   /* shadcn/ui semantic names, mapped onto the project tokens */
   --background: var(--bg);
   --foreground: var(--ink);
@@ -58,6 +68,15 @@
   --heat-2: #5d6e3a;
   --heat-3: #80954a;
   --heat-4: #a6be66;
+
+  --habit-moss: #9bb06a;
+  --habit-clay: #e0905f;
+  --habit-ochre: #d9b25a;
+  --habit-rose: #d98aa0;
+  --habit-plum: #b99ad0;
+  --habit-teal: #6fb5ac;
+  --habit-sky: #86b0d6;
+  --habit-slate: #a8a39b;
 }
 
 @theme inline {
