@@ -12,6 +12,15 @@ const toUtcMs = (d: CalendarDate): number => {
 
 const fromUtcMs = (ms: number): CalendarDate => new Date(ms).toISOString().slice(0, 10);
 
+/** True for a real calendar date written as `YYYY-MM-DD` (rejects `2026-13-40` and `2026-02-30`). */
+export function isCalendarDate(value: unknown): value is CalendarDate {
+  return (
+    typeof value === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    fromUtcMs(toUtcMs(value)) === value
+  );
+}
+
 /** Today's date in the given IANA timezone. Throws RangeError for an invalid timezone. */
 export function todayIn(timeZone: string, now: Date = new Date()): CalendarDate {
   return new Intl.DateTimeFormat('en-CA', {
