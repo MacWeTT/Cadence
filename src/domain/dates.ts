@@ -31,6 +31,11 @@ export function todayIn(timeZone: string, now: Date = new Date()): CalendarDate 
   }).format(now);
 }
 
+/** The calendar date of an instant (an ISO timestamp or a Date) in the given IANA timezone. */
+export function toCalendarDate(ts: string | Date, timeZone: string): CalendarDate {
+  return todayIn(timeZone, new Date(ts));
+}
+
 export function addDays(d: CalendarDate, n: number): CalendarDate {
   return fromUtcMs(toUtcMs(d) + n * DAY_MS);
 }

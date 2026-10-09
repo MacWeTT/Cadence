@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, diffDays, todayIn, weekEnd, weekStart } from './dates';
+import { addDays, diffDays, toCalendarDate, todayIn, weekEnd, weekStart } from './dates';
 
 describe('todayIn', () => {
   it('rolls over at local midnight in Kolkata', () => {
@@ -49,5 +49,13 @@ describe('weekStart / weekEnd', () => {
 
   it('puts a Sunday in the previous Monday-based week', () => {
     expect(weekStart('2026-10-04', 1)).toBe('2026-09-28');
+  });
+});
+
+describe('toCalendarDate', () => {
+  it('gives the calendar date of an instant in a timezone', () => {
+    expect(toCalendarDate('2026-10-09T20:00:00Z', 'Asia/Kolkata')).toBe('2026-10-10');
+    expect(toCalendarDate('2026-10-09T20:00:00Z', 'America/New_York')).toBe('2026-10-09');
+    expect(toCalendarDate(new Date('2026-10-09T20:00:00Z'), 'UTC')).toBe('2026-10-09');
   });
 });
