@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "db:start": "supabase start -x imgproxy,vector,logflare,edge-runtime,supavisor,mailpit",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
