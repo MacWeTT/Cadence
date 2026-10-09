@@ -13,19 +13,30 @@ import { habitColor } from "@/lib/palette";
 import { scheduleLabel } from "@/lib/schedule-label";
 import type { HabitListItem } from "@/server/habit-view";
 
+export interface HabitRowActions {
+  /** Called with the menu button, so focus can return to it when the dialog closes. */
+  onEdit: (habit: HabitListItem, opener: HTMLElement | null) => void;
+  onArchive: (habit: HabitListItem) => void;
+  onRestore: (habit: HabitListItem) => void;
+  onDelete: (habit: HabitListItem) => void;
+}
+
 export function HabitRow({
   habit,
-  onEdit,
+  archivedOn,
+  actions,
 }: {
   habit: HabitListItem;
-  /** Called with the menu button, so focus can return to it when the dialog closes. */
-  onEdit: (opener: HTMLElement | null) => void;
+  /** A readable archive date. Present only for archived habits. */
+  archivedOn?: string;
+  actions: HabitRowActions;
 }) {
   const menuButton = useRef<HTMLButtonElement>(null);
   const pending = habit.pendingSchedule;
+  const archived = archivedOn !== undefined;
 
   return (
-    <li className="flex items-center gap-4 border-b border-line px-3 py-4">
+    <li className={`flex items-center gap-4 border-b border-line px-3 py-4 ${archived ? "opacity-75" : ""}`}>
       <span
         aria-hidden
         className="flex size-11 shrink-0 items-center justify-center rounded-xl text-2xl"
@@ -35,13 +46,17 @@ export function HabitRow({
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold">{habit.name}</p>
-        {habit.description && <p className="truncate text-sm text-ink-muted">{habit.description}</p>}
+        {archived ? (
+          <p className="truncate text-sm text-ink-muted">{`Archived ${archivedOn}`}</p>
+        ) : (
+          habit.description && <p className="truncate text-sm text-ink-muted">{habit.description}</p>
+        )}
       </div>
       <div className="text-right">
         <span className="rounded-full border border-line px-3 py-0.5 text-sm text-ink-muted">
           {scheduleLabel(habit.schedule)}
         </span>
-        {pending && (
+        {pending && !archived && (
           <p className="mt-1 text-xs text-ink-muted">
             {`Changes to ${scheduleLabel(pending)} on ${formatCalendarDate(pending.effectiveFrom, { day: "numeric", month: "short" })}`}
           </p>
@@ -59,7 +74,19 @@ export function HabitRow({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => onEdit(menuButton.current)}>Edit</DropdownMenuItem>
+          {archived ? (
+            <>
+              <DropdownMenuItem onSelect={() => actions.onRestore(habit)}>Restore</DropdownMenuItem>
+              <DropdownMenuItem className="text-clay" onSelect={() => actions.onDelete(habit)}>
+                Delete
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem onSelect={() => actions.onEdit(habit, menuButton.current)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => actions.onArchive(habit)}>Archive</DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </li>
