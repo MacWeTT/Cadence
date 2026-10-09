@@ -22,7 +22,7 @@ Source brief: the original project brief (stack, MVP scope, definition of done).
 | Streak on schedule edit | Within the same type the streak carries on. Switching type restarts the current streak. Longest streak and all history are kept. |
 | Icons | An emoji, chosen with a Notion-style picker, stored as text. |
 | Color | One key from a fixed palette (about 8), stored as text. |
-| Home screen | Today's checklist first, then a weekly summary. Streaks, heatmap and long-range analytics live on a Progress page. |
+| Home screen | Today's checklist, plus one slim margin card. Streaks, heatmap and long-range analytics live on the Progress page (see section 9). |
 | Local DB | Supabase CLI with Docker Desktop (WSL2). A hosted dev project works until Docker is installed. |
 
 ## 3. Business rules
@@ -44,7 +44,9 @@ Definitions: a **period** is a day (daily habit) or a week (weekly habit). A wee
 9. **Schedule edits.** Every period is judged by the schedule in effect when the period started. A weekly target change or a type switch takes effect at the start of the next week. Past ticks are never touched.
 10. **Archive** sets `archived_at`. The habit leaves Today and the habit list. Its history stays in the heatmap and totals, and periods after `archived_at` are not counted. Archived habits can be restored. Permanent delete is allowed only on archived habits and requires confirmation.
 11. **UI must distinguish** missed from not-yet-due. For daily habits a past day is `done` or `missed`. For weekly habits there is no per-day "missed", only week status.
-12. **Heatmap intensity** for a day = the share of active habits ticked that day, in discrete levels (a first proposal, to review at milestone 6).
+12. **Heatmap intensity** (proposal, to review at milestone 6):
+    - *All habits:* for each day, expected = 1 per active daily habit plus N/7 per active weekly habit, and done = habits ticked (at most 1 each). Intensity = done ÷ expected, capped at 1, in 5 levels (none, then 4 steps).
+    - *Single habit:* two shades, ticked or not. Days before `start_date` or after `archived_at` are blank. Future days are blank.
 
 ## 4. Data model
 
@@ -92,8 +94,8 @@ Tauri note: Server Actions don't fit a static export. The likely desktop route i
 2. **Domain core (test-first):** dates, schedule resolution, streaks, rates, and `docs/rules.md` derived from section 3.
 3. **Habit CRUD:** create, edit (with effective-dated schedule), archive, restore, delete. Emoji and color pickers.
 4. **Today and check-ins:** checklist, optimistic toggle, backfill of past dates, weekly-habit progress.
-5. **Home summary:** weekly summary under the checklist, streaks, empty state.
-6. **Progress page:** heatmap, weekly and monthly summaries, per-habit history, rates over configurable periods.
+5. **Today margin card and empty state:** today's progress, the week-at-a-glance strip, first-run empty state.
+6. **Progress page:** year heatmap with habit filter, streaks, weekly and monthly summaries, per-habit history, rates over configurable periods.
 7. **Polish and ship:** dark and light themes, accessibility pass, Playwright flows, Vercel deploy, setup docs.
 
 ## 7. Testing
@@ -108,4 +110,38 @@ Tauri note: Server Actions don't fit a static export. The likely desktop route i
 
 - Heatmap intensity definition (rule 12).
 - Whether permanent delete is needed at all in the MVP (rule 10).
-- Exact empty-state and error copy, and visual style, to be proposed at the UI milestones.
+- Exact empty-state and error copy, to be proposed at the UI milestones.
+- Dark-theme contrast ratios and keyboard focus styling are verified in milestone 7, not yet checked.
+
+## 9. UI design
+
+Desktop-first (PC is the primary device), and fully responsive. The look was chosen from mockups and is described here so it can be rebuilt without them.
+
+**Visual style: "quiet paper".** A calm, warm, journal-like interface. One serif display face for page titles and big numbers (Georgia as the starting point), a system sans for everything else. Thin 1px dividers, no heavy shadows, no gradients. One accent per theme.
+
+**Themes.** Light (cream) and dark (coffee), following the system setting with a manual toggle. Define all colors as design tokens so both themes share the same components.
+
+| Token | Light | Dark (coffee) |
+|---|---|---|
+| background | `#f3e8d3` | `#1f1812` |
+| surface (cards) | `#faf2e1` | `#2a2118` |
+| top bar | `#efe2c8` | `#18120d` |
+| text | `#3b2f24` | `#f0e4d0` |
+| muted text | `#8a7761` | `#a38f76` |
+| divider | `#e2d3b6` | `#3b2e21` |
+| done / primary (moss) | `#6c7d45` | `#9bb06a` |
+| accent (clay) | `#b8643c` | `#e0905f` |
+| missed (muted peach, never red) | `#d9b39a` | `#7a5340` |
+| heatmap levels 0–4 | `#eadfc6 #d9dcae #b4c07f #8a9c58 #5f7036` | `#2f251a #414a2b #5d6e3a #80954a #a6be66` |
+
+These are starting values taken from the mockups. They may be adjusted during the milestone 7 contrast check.
+
+**Layout.**
+- Top bar: Cadence, then Today, Habits, Progress, and the avatar menu (settings, theme, sign out) at the right. Content is capped at about 1180px and centered, so wide monitors get calm margins and nothing stretches.
+- **Today:** a left column with the date, the title, the "To do" list and then the "Done today" list. Each row has a round check, the habit's emoji, the name, and a quiet tag on the right (streak for daily habits, "1 of 3 this week" for weekly ones). Done rows are dimmed with a strikethrough. A right margin card holds "3 of 5" with a progress bar and the week as a 7-day strip, and nothing else. Below about 1024px the margin card moves above the list.
+- **Progress:** the year heatmap (fixed-size squares, so a wider screen shows more weeks and never stretches the cells) with habit filter chips (All habits, then one chip per habit), streaks, weekly and monthly summaries, and rates over a chosen period. Hover on a square shows "Thu 2 Oct: 4 of 5 done".
+- **Habits:** list of active habits with archived ones under a collapsed section. Create and edit use a short dialog or page: name, optional description, emoji, color, schedule (daily or N per week), start date.
+
+**Accessibility and states.** Every interactive element is reachable and operable with the keyboard, with a visible focus ring. Status is never carried by color alone: done has a check mark, missed and not-due have different shapes or labels. Loading, empty, success and error states exist for each page, and destructive actions require confirmation.
+
+The mockups themselves live outside git (`.superpowers/`), and this section is the durable record.
