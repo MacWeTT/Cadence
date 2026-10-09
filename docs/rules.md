@@ -19,7 +19,6 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - A **daily** streak counts consecutive done days. A **weekly** streak counts consecutive met weeks.
 - Today, or the current week still in progress, **never breaks** a streak. A streak breaks only when a day or week ends unmet.
 - Changing a schedule within the same kind keeps the streak. Switching between daily and N per week **restarts the current streak**. The longest streak and all history are kept.
-- Archived habits have no current streak.
 
 ## Completion rate
 - Rate = done ÷ expected over a time window, counting **closed** days and weeks only. Missed ones stay in the denominator, so an ignored habit doesn't vanish from your stats.
@@ -28,4 +27,5 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 
 ## Editing and archiving
 - A schedule edit never rewrites history. Each day or week is judged by the schedule that was in effect when it started. A weekly target change or a switch of kind takes effect at the start of **next week**.
-- Archiving hides a habit but keeps its history. Days and weeks after the archive date are not counted.
+- Archiving hides a habit but keeps its history. The days it spends archived form a **pause**: they are never counted as missed, and a week that overlaps a pause is left out of rates. Paused days and weeks neither extend nor break a streak, so archiving and restoring a habit keeps the streak it had. A habit that is archived right now has no current streak.
+- A tick is always honoured, even on a paused day (for example the day you archive a habit you already did).

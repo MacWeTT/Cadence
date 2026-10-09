@@ -3,4 +3,4 @@ export * from './schedule';
 export * from './status';
 export * from './streaks';
 export * from './rates';
-export type { Schedule, HabitData, Ctx } from './types';
+export type { Schedule, Pause, HabitData, Ctx } from './types';

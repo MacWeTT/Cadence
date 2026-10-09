@@ -25,9 +25,9 @@ describe('completionRate, daily', () => {
     expect(completionRate(h, '2026-09-20', '2026-10-09', ctx())).toEqual({ done: 5, expected: 8 });
   });
 
-  it('stops counting at the archive date', () => {
-    const archived = makeHabit({ archivedOn: '2026-10-05' });
-    expect(completionRate(archived, '2026-10-01', '2026-10-09', ctx())).toEqual({ done: 0, expected: 5 });
+  it('stops counting once the habit is paused (archive day included)', () => {
+    const archived = makeHabit({ pauses: [{ from: '2026-10-05', to: null }] });
+    expect(completionRate(archived, '2026-10-01', '2026-10-09', ctx())).toEqual({ done: 0, expected: 4 });
   });
 
   it('is empty, with a null ratio, for a habit that starts in the future', () => {
@@ -97,5 +97,25 @@ describe('addRates / ratio', () => {
   it('is a fraction, or null when nothing was expected', () => {
     expect(ratio({ done: 4, expected: 5 })).toBe(0.8);
     expect(ratio({ done: 0, expected: 0 })).toBeNull();
+  });
+});
+
+describe('completionRate and pauses', () => {
+  it('leaves paused days out of the rate', () => {
+    const h = makeHabit({
+      done: ['2026-10-01', '2026-10-02', '2026-10-06', '2026-10-07'],
+      pauses: [{ from: '2026-10-03', to: '2026-10-06' }],
+    });
+    expect(completionRate(h, '2026-10-01', '2026-10-09', ctx())).toEqual({ done: 4, expected: 5 });
+  });
+
+  it('leaves a paused week out of a weekly rate', () => {
+    const h = makeHabit({
+      startDate: '2026-09-21',
+      schedules: [weekly(3, '2026-09-21')],
+      done: ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-28', '2026-09-29', '2026-10-01'],
+      pauses: [{ from: '2026-09-30', to: '2026-10-02' }],
+    });
+    expect(completionRate(h, '2026-09-21', '2026-10-09', ctx())).toEqual({ done: 3, expected: 3 });
   });
 });

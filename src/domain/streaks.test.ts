@@ -41,7 +41,7 @@ describe('currentStreak, daily', () => {
   });
 
   it('is 0 for an archived habit', () => {
-    const h = makeHabit({ done: days('2026-10-01', '2026-10-04'), archivedOn: '2026-10-05' });
+    const h = makeHabit({ done: days('2026-10-01', '2026-10-04'), pauses: [{ from: '2026-10-05', to: null }] });
     expect(currentStreak(h, ctx()).count).toBe(0);
   });
 });
@@ -98,7 +98,7 @@ describe('longestStreak', () => {
   });
 
   it('is unchanged by archiving', () => {
-    const h = makeHabit({ done: days('2026-10-01', '2026-10-04'), archivedOn: '2026-10-05' });
+    const h = makeHabit({ done: days('2026-10-01', '2026-10-04'), pauses: [{ from: '2026-10-05', to: null }] });
     expect(longestStreak(h, ctx())).toEqual({ unit: 'day', count: 4 });
   });
 
@@ -106,5 +106,30 @@ describe('longestStreak', () => {
     expect(longestStreak(makeHabit({ startDate: '2026-10-12' }), ctx()).count).toBe(0);
     const w = makeHabit({ startDate: '2026-09-28', schedules: [weekly(3, '2026-09-28')] });
     expect(longestStreak(w, ctx())).toEqual({ unit: 'week', count: 0 });
+  });
+});
+
+describe('streaks and pauses', () => {
+  it('skips paused days instead of breaking the streak', () => {
+    const h = makeHabit({
+      done: [...days('2026-10-01', '2026-10-04'), '2026-10-07', '2026-10-08'],
+      pauses: [{ from: '2026-10-05', to: '2026-10-07' }],
+    });
+    expect(currentStreak(h, ctx())).toEqual({ unit: 'day', count: 6 });
+  });
+
+  it('is unaffected by an archive and restore on the same day', () => {
+    const h = makeHabit({ done: days('2026-10-01', '2026-10-08'), pauses: [{ from: '2026-10-09', to: '2026-10-09' }] });
+    expect(currentStreak(h, ctx()).count).toBe(8);
+  });
+
+  it('skips a paused week in a weekly streak', () => {
+    const h = makeHabit({
+      startDate: '2026-09-21',
+      schedules: [weekly(3, '2026-09-21')],
+      done: ['2026-09-21', '2026-09-22', '2026-09-23', '2026-10-05', '2026-10-06', '2026-10-07'],
+      pauses: [{ from: '2026-09-30', to: '2026-10-02' }],
+    });
+    expect(currentStreak(h, ctx())).toEqual({ unit: 'week', count: 2 });
   });
 });

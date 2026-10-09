@@ -6,7 +6,7 @@ export function makeHabit(over: Partial<HabitData> & { done?: CalendarDate[] } =
   const startDate = over.startDate ?? '2026-10-01';
   return {
     startDate,
-    archivedOn: over.archivedOn ?? null,
+    pauses: over.pauses ?? [],
     schedules: over.schedules ?? [{ kind: 'daily', effectiveFrom: startDate }],
     completions: over.completions ?? new Set(over.done ?? []),
   };
