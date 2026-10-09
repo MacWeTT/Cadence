@@ -97,6 +97,9 @@ Tauri note: Server Actions don't fit a static export. The likely desktop route i
 5. **Today margin card and empty state:** today's progress, the week-at-a-glance strip, first-run empty state.
 6. **Progress page:** year heatmap with habit filter, streaks, weekly and monthly summaries, per-habit history, rates over configurable periods.
 7. **Polish and ship:** dark and light themes, accessibility pass, Playwright flows, Vercel deploy, setup docs.
+8. **Localisation (after the beta is feature-complete):** `next-intl` (built on `use-intl`), `en` first, extracting all user-facing strings. See the milestone 3 design, section 9.
+
+Milestone 3 (habit management) has its own design: `2026-10-10-habit-crud-design.md`. It changes rule 10 below: archived periods are stored as date ranges ("pauses") and restoring is supported.
 
 ## 7. Testing
 
