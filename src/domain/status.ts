@@ -30,9 +30,13 @@ export function weekStatus(h: HabitData, weekStartDate: CalendarDate, ctx: Ctx):
   if (end < h.startDate || weekStartDate > ctx.today) return inactive;
 
   const from = weekStartDate < h.startDate ? h.startDate : weekStartDate;
-  const schedule = scheduleFor(h, from);
+  const first = scheduleFor(h, from);
+  const last = scheduleFor(h, end);
+  const schedule = first?.kind === 'weekly_count' ? first : last?.kind === 'weekly_count' ? last : undefined;
   if (schedule?.kind !== 'weekly_count') return inactive;
   if (h.archivedOn !== null && end > h.archivedOn) return inactive;
+  // A schedule kind that changes mid-week (possible once the week start is changed) leaves a partial week.
+  const straddlesTypeChange = first?.kind !== last?.kind;
 
   let done = 0;
   for (let d = from; d <= end && d <= ctx.today; d = addDays(d, 1)) {
@@ -40,7 +44,7 @@ export function weekStatus(h: HabitData, weekStartDate: CalendarDate, ctx: Ctx):
   }
   const target = schedule.timesPerWeek;
 
-  if (weekStartDate < h.startDate) return { status: 'excluded', done, target };
+  if (weekStartDate < h.startDate || straddlesTypeChange) return { status: 'excluded', done, target };
   if (done >= target) return { status: 'met', done, target };
   return { status: end >= ctx.today ? 'in_progress' : 'missed', done, target };
 }

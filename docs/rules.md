@@ -13,6 +13,7 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - **Daily:** every day is expected. Each day is *done*, *missed* (past, not ticked) or *pending* (today, not ticked yet).
 - **N per week** (1 to 6, any days): each week is *met* (N or more ticks), *missed* (the week ended with fewer), or *in progress* (this week, not met yet). Ticks beyond N are shown as bonus but never push a rate past 100%.
 - A habit's first week is **left out** of streaks and rates when you start partway through it. It is still shown as progress.
+- A week in which the schedule kind changes partway (possible if you change your week start later) is left out the same way, so no tick is counted twice.
 
 ## Streaks
 - A **daily** streak counts consecutive done days. A **weekly** streak counts consecutive met weeks.

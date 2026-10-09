@@ -66,6 +66,28 @@ describe('completionRate, weekly', () => {
   });
 });
 
+describe('completionRate, week straddling a type change', () => {
+  const c = ctx('2026-10-09', 7); // Sunday weeks, so the Monday switch lands mid-week
+
+  it('does not count the same ticks as days and as a met week', () => {
+    const toDaily = makeHabit({
+      startDate: '2026-09-06',
+      schedules: [weekly(3, '2026-09-06'), { kind: 'daily', effectiveFrom: '2026-09-28' }],
+      done: ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03'],
+    });
+    expect(completionRate(toDaily, '2026-09-27', '2026-10-03', c)).toEqual({ done: 6, expected: 6 });
+  });
+
+  it('does not drop the days under the old daily schedule', () => {
+    const toWeekly = makeHabit({
+      startDate: '2026-09-06',
+      schedules: [{ kind: 'daily', effectiveFrom: '2026-09-06' }, weekly(3, '2026-09-28')],
+      done: ['2026-09-27', '2026-09-29', '2026-09-30', '2026-10-01'],
+    });
+    expect(completionRate(toWeekly, '2026-09-27', '2026-10-03', c)).toEqual({ done: 1, expected: 1 });
+  });
+});
+
 describe('addRates / ratio', () => {
   it('adds numerators and denominators', () => {
     expect(addRates([{ done: 1, expected: 2 }, { done: 3, expected: 3 }])).toEqual({ done: 4, expected: 5 });

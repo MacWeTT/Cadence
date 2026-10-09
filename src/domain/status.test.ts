@@ -98,6 +98,23 @@ describe('weekStatus (weekly habits)', () => {
     expect(weekStatus(h, '2026-10-12', ctx()).status).toBe('inactive');
   });
 
+  it('excludes a week that straddles a type change, in both directions', () => {
+    // Weeks start on Sunday, so the Monday switch lands mid-week.
+    const toDaily = makeHabit({
+      startDate: '2026-09-06',
+      schedules: [weekly(3, '2026-09-06'), { kind: 'daily', effectiveFrom: '2026-09-28' }],
+      done: ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03'],
+    });
+    expect(weekStatus(toDaily, '2026-09-27', ctx('2026-10-09', 7)).status).toBe('excluded');
+
+    const toWeekly = makeHabit({
+      startDate: '2026-09-06',
+      schedules: [{ kind: 'daily', effectiveFrom: '2026-09-06' }, weekly(3, '2026-09-28')],
+      done: ['2026-09-27', '2026-09-29', '2026-09-30', '2026-10-01'],
+    });
+    expect(weekStatus(toWeekly, '2026-09-27', ctx('2026-10-09', 7)).status).toBe('excluded');
+  });
+
   it('is inactive for a daily habit, a habit with no schedule and a future start', () => {
     expect(weekStatus(makeHabit(), '2026-10-05', ctx()).status).toBe('inactive');
     expect(weekStatus(makeHabit({ schedules: [] }), '2026-10-05', ctx()).status).toBe('inactive');
