@@ -1,0 +1,172 @@
+import 'server-only';
+import { connection } from 'next/server';
+import { todayIn, type CalendarDate, type WeekStart } from '@/domain/dates';
+import { planScheduleChange } from '@/domain/schedule-change';
+import { formatCalendarDate } from '@/lib/format';
+import { isValidTimeZone, type HabitInput } from '@/lib/habit-schema';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { toListItem, toSchedule, type HabitListItem } from './habit-view';
+
+/** An expected failure with a message that is safe to show the user. */
+export class HabitError extends Error {
+  constructor(
+    message: string,
+    readonly fieldErrors?: Record<string, string>,
+  ) {
+    super(message);
+  }
+}
+
+export interface Profile {
+  timezone: string;
+  weekStartsOn: WeekStart;
+  today: CalendarDate;
+}
+
+export interface HabitsView {
+  active: HabitListItem[];
+  archived: HabitListItem[];
+  profile: Profile;
+}
+
+export async function getProfile(): Promise<Profile> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from('profiles').select('timezone, week_starts_on').maybeSingle();
+  if (error) throw error;
+  const timezone = data && isValidTimeZone(data.timezone) ? data.timezone : 'UTC';
+  return { timezone, weekStartsOn: data?.week_starts_on === 7 ? 7 : 1, today: todayIn(timezone) };
+}
+
+export async function listHabits(): Promise<HabitsView> {
+  await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
+  const profile = await getProfile();
+  const supabase = await createSupabaseServerClient();
+  const { data: habits, error } = await supabase.from('habits').select('*').order('created_at');
+  if (error) throw error;
+  if (habits.length === 0) return { active: [], archived: [], profile };
+
+  const ids = habits.map((h) => h.id);
+  const [schedules, completions] = await Promise.all([
+    supabase.from('habit_schedules').select('*').in('habit_id', ids),
+    // shortcut: fetches one row per tick just to know which habits have any; use a count or an RPC once ticking lands (milestone 4).
+    supabase.from('habit_completions').select('habit_id').in('habit_id', ids),
+  ]);
+  if (schedules.error) throw schedules.error;
+  if (completions.error) throw completions.error;
+  const withTicks = new Set(completions.data.map((c) => c.habit_id));
+
+  const items = habits.map((h) =>
+    toListItem(
+      h,
+      schedules.data.filter((s) => s.habit_id === h.id),
+      withTicks.has(h.id),
+      profile.today,
+    ),
+  );
+  return { active: items.filter((i) => !i.archivedAt), archived: items.filter((i) => i.archivedAt), profile };
+}
+
+// A Postgres exception raised by our functions (P0001) means the habit is missing, not yours, or in the wrong state.
+function failRpc(error: { code?: string; message: string }): never {
+  if (error.code === 'P0001') throw new HabitError('That habit could not be found, or it has already changed.');
+  throw new Error(error.message);
+}
+
+export async function createHabit(input: HabitInput): Promise<void> {
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc('create_habit', {
+    p_name: input.name,
+    p_description: input.description ?? '',
+    p_icon: input.icon,
+    p_color: input.color,
+    p_start_date: input.startDate,
+    p_kind: input.kind,
+    // The generated argument types are non-null, but the function accepts null for a daily habit.
+    p_times_per_week: (input.timesPerWeek ?? null) as number,
+  });
+  if (error) failRpc(error);
+}
+
+export async function updateHabit(id: string, input: HabitInput): Promise<void> {
+  const supabase = await createSupabaseServerClient();
+  const { weekStartsOn, today } = await getProfile();
+
+  const { data: habit, error } = await supabase.from('habits').select('*').eq('id', id).maybeSingle();
+  if (error) throw error;
+  if (!habit) throw new HabitError('That habit could not be found.');
+  if (habit.archived_at) throw new HabitError('Restore this habit before editing it.');
+
+  const first = await supabase
+    .from('habit_completions')
+    .select('completion_date')
+    .eq('habit_id', id)
+    .order('completion_date')
+    .limit(1);
+  if (first.error) throw first.error;
+  const firstTick = first.data[0]?.completion_date;
+  if (firstTick && input.startDate > firstTick) {
+    throw new HabitError('Check the start date.', {
+      startDate: `The start date can't be after your first check-in on ${formatCalendarDate(firstTick)}.`,
+    });
+  }
+
+  const { error: updateError } = await supabase
+    .from('habits')
+    .update({
+      name: input.name,
+      description: input.description || null,
+      icon: input.icon,
+      color: input.color,
+      start_date: input.startDate,
+    })
+    .eq('id', id);
+  if (updateError) throw updateError;
+
+  const rows = await supabase.from('habit_schedules').select('*').eq('habit_id', id);
+  if (rows.error) throw rows.error;
+  const plan = planScheduleChange({
+    schedules: rows.data.map(toSchedule),
+    desired: input.kind === 'daily' ? { kind: 'daily' } : { kind: 'weekly_count', timesPerWeek: input.timesPerWeek ?? 1 },
+    startDate: input.startDate,
+    today,
+    weekStartsOn,
+    hasCompletions: firstTick !== undefined,
+  });
+  if (plan.action === 'none') return;
+
+  const schedule = plan.action === 'delete_pending' ? null : plan.schedule;
+  const { error: rpcError } = await supabase.rpc('apply_schedule_change', {
+    p_habit_id: id,
+    p_action: plan.action,
+    p_kind: (schedule?.kind ?? null) as string,
+    p_times_per_week: (schedule?.kind === 'weekly_count' ? schedule.timesPerWeek : null) as number,
+    p_effective_from: (schedule?.effectiveFrom ?? null) as string,
+    p_today: today,
+  });
+  if (rpcError) failRpc(rpcError);
+}
+
+export async function archiveHabit(id: string): Promise<void> {
+  const { today } = await getProfile();
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc('archive_habit', { p_habit_id: id, p_on: today });
+  if (error) failRpc(error);
+}
+
+export async function restoreHabit(id: string): Promise<void> {
+  const { today } = await getProfile();
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc('restore_habit', { p_habit_id: id, p_on: today });
+  if (error) failRpc(error);
+}
+
+/** Only archived habits can be deleted. */
+export async function deleteHabit(id: string): Promise<void> {
+  const supabase = await createSupabaseServerClient();
+  const { data: habit, error } = await supabase.from('habits').select('archived_at').eq('id', id).maybeSingle();
+  if (error) throw error;
+  if (!habit) throw new HabitError('That habit could not be found.');
+  if (!habit.archived_at) throw new HabitError('Archive a habit before deleting it.');
+  const { error: deleteError } = await supabase.from('habits').delete().eq('id', id);
+  if (deleteError) throw deleteError;
+}

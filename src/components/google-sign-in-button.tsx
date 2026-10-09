@@ -31,7 +31,7 @@ export function GoogleSignInButton() {
         {busy ? "Redirecting to Google…" : "Continue with Google"}
       </button>
       {error && (
-        <p role="alert" className="mt-3 text-sm text-clay">
+        <p role="alert" className="mt-3 text-sm text-danger">
           {error}
         </p>
       )}

@@ -22,7 +22,7 @@ export function ThemeToggle() {
       aria-label={label}
       disabled={!mounted}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="rounded-md px-2 py-1 text-lg text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay"
+      className="rounded-md px-2 py-1 text-lg text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay"
     >
       <span aria-hidden>{isDark ? "☀" : "☾"}</span>
     </button>

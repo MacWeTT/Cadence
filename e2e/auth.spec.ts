@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test.use({ colorScheme: 'light' });
+test.use({ colorScheme: 'light', storageState: { cookies: [], origins: [] } });
 
 for (const path of ['/today', '/habits', '/progress']) {
   test(`unauthenticated visit to ${path} lands on the login page`, async ({ page }) => {

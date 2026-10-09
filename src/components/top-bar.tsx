@@ -27,7 +27,7 @@ export function TopBar({ menu }: { menu?: React.ReactNode }) {
                 className={
                   active
                     ? "font-semibold text-ink"
-                    : "text-muted hover:text-ink"
+                    : "text-ink-muted hover:text-ink"
                 }
               >
                 {label}

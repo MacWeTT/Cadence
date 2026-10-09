@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { TopBar } from "@/components/top-bar";
 import { UserMenu } from "@/components/user-menu";
+import { TimezoneSync } from "./timezone-sync";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Suspense>
         }
       />
+      <TimezoneSync />
       <main className="mx-auto w-full max-w-[1180px] px-8 py-10">{children}</main>
     </>
   );
