@@ -119,7 +119,7 @@ Desktop-first (PC is the primary device), and fully responsive. The look was cho
 
 **Visual style: "quiet paper".** A calm, warm, journal-like interface. One serif display face for page titles and big numbers (Georgia as the starting point), a system sans for everything else. Thin 1px dividers, no heavy shadows, no gradients. One accent per theme.
 
-**Themes.** Light (cream) and dark (coffee), following the system setting with a manual toggle. Define all colors as design tokens so both themes share the same components.
+**Themes.** Light (cream) and dark (coffee), following the system setting by default, with a manual toggle in the top bar. Define all colors as design tokens so both themes share the same components.
 
 | Token | Light | Dark (coffee) |
 |---|---|---|
@@ -137,7 +137,7 @@ Desktop-first (PC is the primary device), and fully responsive. The look was cho
 These are starting values taken from the mockups. They may be adjusted during the milestone 7 contrast check.
 
 **Layout.**
-- Top bar: Cadence, then Today, Habits, Progress, and the avatar menu (settings, theme, sign out) at the right. Content is capped at about 1180px and centered, so wide monitors get calm margins and nothing stretches.
+- Top bar: Cadence, then Today, Habits, Progress, then a light/dark toggle button and the avatar menu (settings, sign out) at the right. Content is capped at about 1180px and centered, so wide monitors get calm margins and nothing stretches.
 - **Today:** a left column with the date, the title, the "To do" list and then the "Done today" list. Each row has a round check, the habit's emoji, the name, and a quiet tag on the right (streak for daily habits, "1 of 3 this week" for weekly ones). Done rows are dimmed with a strikethrough. A right margin card holds "3 of 5" with a progress bar and the week as a 7-day strip, and nothing else. Below about 1024px the margin card moves above the list.
 - **Progress:** the year heatmap (fixed-size squares, so a wider screen shows more weeks and never stretches the cells) with habit filter chips (All habits, then one chip per habit), streaks, weekly and monthly summaries, and rates over a chosen period. Hover on a square shows "Thu 2 Oct: 4 of 5 done".
 - **Habits:** list of active habits with archived ones under a collapsed section. Create and edit use a short dialog or page: name, optional description, emoji, color, schedule (daily or N per week), start date.
