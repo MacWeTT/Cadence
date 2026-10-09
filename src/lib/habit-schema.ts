@@ -5,7 +5,8 @@ import { COLOR_KEYS } from './palette';
 /** True for exactly one emoji (one grapheme, including skin-tone, ZWJ and flag sequences). */
 export function isSingleEmoji(value: string): boolean {
   if ([...new Intl.Segmenter().segment(value)].length !== 1) return false;
-  return /\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(value);
+  // U+20E3 is the combining keycap, which makes 1️⃣ #️⃣ *️⃣ single emoji even though their base is a plain character.
+  return /\p{Extended_Pictographic}|\p{Regional_Indicator}|⃣/u.test(value);
 }
 
 export function isValidTimeZone(timeZone: string): boolean {

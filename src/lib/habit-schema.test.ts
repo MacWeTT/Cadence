@@ -6,7 +6,7 @@ const valid = { name: 'Read', icon: '📖', color: 'moss', kind: 'daily', startD
 const parse = (over: Record<string, unknown>) => habitInputSchema(today).safeParse({ ...valid, ...over });
 
 describe('isSingleEmoji', () => {
-  it.each(['📖', '👍🏽', '👨‍👩‍👧', '🇮🇳', '❤️'])('accepts %s', (e) => expect(isSingleEmoji(e)).toBe(true));
+  it.each(['📖', '👍🏽', '👨‍👩‍👧', '🇮🇳', '❤️', '1️⃣', '#️⃣', '*️⃣'])('accepts %s', (e) => expect(isSingleEmoji(e)).toBe(true));
   it.each(['a', '1', '', '📖📖', 'ab', ' '])('rejects %j', (e) => expect(isSingleEmoji(e)).toBe(false));
 });
 

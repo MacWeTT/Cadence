@@ -80,11 +80,13 @@ test('deleting asks for confirmation, can be cancelled, and removes the habit', 
   let dialog = await open();
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).toBeHidden();
+  await expect(actions(page, 'Read')).toBeFocused(); // focus returns to the row's menu button
   expect(await getHabits()).toHaveLength(1);
 
   dialog = await open();
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
+  await expect(actions(page, 'Read')).toBeFocused();
   expect(await getHabits()).toHaveLength(1);
 
   dialog = await open();

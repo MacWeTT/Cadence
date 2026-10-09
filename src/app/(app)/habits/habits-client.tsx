@@ -38,7 +38,10 @@ export function HabitsClient({ view }: { view: HabitsView }) {
     onEdit: (habit, from) => openDialog(habit, from),
     onArchive: (habit) => run(() => archiveHabitAction(habit.id), "Habit archived"),
     onRestore: (habit) => run(() => restoreHabitAction(habit.id), "Habit restored"),
-    onDelete: setDeleting,
+    onDelete: (habit, from) => {
+      opener.current = from;
+      setDeleting(habit);
+    },
   };
 
   return (
@@ -104,7 +107,16 @@ export function HabitsClient({ view }: { view: HabitsView }) {
           }}
         />
       )}
-      {deleting && <DeleteHabitDialog habit={deleting} onClose={() => setDeleting(null)} />}
+      {deleting && (
+        <DeleteHabitDialog
+          habit={deleting}
+          onClose={() => setDeleting(null)}
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+            opener.current?.focus();
+          }}
+        />
+      )}
     </>
   );
 }

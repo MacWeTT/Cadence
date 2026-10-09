@@ -18,7 +18,7 @@ export interface HabitRowActions {
   onEdit: (habit: HabitListItem, opener: HTMLElement | null) => void;
   onArchive: (habit: HabitListItem) => void;
   onRestore: (habit: HabitListItem) => void;
-  onDelete: (habit: HabitListItem) => void;
+  onDelete: (habit: HabitListItem, opener: HTMLElement | null) => void;
 }
 
 export function HabitRow({
@@ -77,7 +77,7 @@ export function HabitRow({
           {archived ? (
             <>
               <DropdownMenuItem onSelect={() => actions.onRestore(habit)}>Restore</DropdownMenuItem>
-              <DropdownMenuItem className="text-danger" onSelect={() => actions.onDelete(habit)}>
+              <DropdownMenuItem className="text-danger" onSelect={() => actions.onDelete(habit, menuButton.current)}>
                 Delete
               </DropdownMenuItem>
             </>
