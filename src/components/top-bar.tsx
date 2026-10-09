@@ -10,7 +10,7 @@ const links = [
   { href: "/progress", label: "Progress" },
 ];
 
-export function TopBar() {
+export function TopBar({ menu }: { menu?: React.ReactNode }) {
   const pathname = usePathname();
   return (
     <header className="border-b border-line bg-topbar">
@@ -35,8 +35,9 @@ export function TopBar() {
             );
           })}
         </nav>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
           <ThemeToggle />
+          {menu}
         </div>
       </div>
     </header>

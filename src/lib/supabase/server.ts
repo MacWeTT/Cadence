@@ -1,0 +1,29 @@
+import 'server-only';
+import { createServerClient } from '@supabase/ssr';
+import type { User } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
+import { supabaseConfig } from './config';
+
+export async function createSupabaseServerClient() {
+  const { url, key } = supabaseConfig();
+  const cookieStore = await cookies();
+  return createServerClient(url, key, {
+    cookies: {
+      getAll: () => cookieStore.getAll(),
+      setAll(toSet) {
+        try {
+          toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch {
+          // Called from a Server Component, where cookies are read-only. The proxy refreshes the session instead.
+        }
+      },
+    },
+  });
+}
+
+/** The signed-in user, verified with the Supabase Auth server, or null. Reads cookies, so call it behind <Suspense>. */
+export async function getUser(): Promise<User | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getUser();
+  return data.user;
+}
