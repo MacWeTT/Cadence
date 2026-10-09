@@ -1,5 +1,5 @@
 begin;
-select plan(51);
+select plan(53);
 
 -- Alice (A) and Bob (B). Bob's data is inserted directly, as the table owner.
 insert into auth.users (id, email) values
@@ -8,8 +8,11 @@ insert into auth.users (id, email) values
 
 insert into public.habits (id, user_id, name, icon, color, start_date, archived_at) values
   ('10000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-0000000000b1', 'Run', '🏃', 'clay', '2026-10-01', now());
+insert into public.habits (id, user_id, name, icon, color, start_date) values
+  ('10000000-0000-0000-0000-0000000000b2', '00000000-0000-0000-0000-0000000000b1', 'Swim', '🏊', 'sky', '2026-10-01');
 insert into public.habit_schedules (habit_id, kind, effective_from) values
-  ('10000000-0000-0000-0000-0000000000b1', 'daily', '2026-10-01');
+  ('10000000-0000-0000-0000-0000000000b1', 'daily', '2026-10-01'),
+  ('10000000-0000-0000-0000-0000000000b2', 'daily', '2026-10-01');
 insert into public.habit_completions (habit_id, completion_date) values
   ('10000000-0000-0000-0000-0000000000b1', '2026-10-01');
 insert into public.habit_archive_periods (habit_id, archived_on) values
@@ -58,7 +61,7 @@ select lives_ok($$select public.apply_schedule_change((select id from public.hab
 select is((select count(*) from public.habit_schedules s join public.habits h on h.id = s.habit_id where h.name = 'Read' and s.kind = 'weekly_count' and s.effective_from = '2026-10-01')::int, 1, 'leaving exactly one row');
 
 -- Alice cannot touch Bob's habit through the functions or the tables.
-select throws_ok($$select public.archive_habit('10000000-0000-0000-0000-0000000000b1', '2026-10-09')$$, 'P0001', null, 'cannot archive Bob''s habit');
+select throws_ok($$select public.archive_habit('10000000-0000-0000-0000-0000000000b2', '2026-10-09')$$, 'P0001', null, 'cannot archive Bob''s (not yet archived) habit');
 select throws_ok($$select public.restore_habit('10000000-0000-0000-0000-0000000000b1', '2026-10-09')$$, 'P0001', null, 'cannot restore Bob''s habit');
 select throws_ok($$select public.apply_schedule_change('10000000-0000-0000-0000-0000000000b1', 'replace_all', 'daily', null, '2026-10-01', '2026-10-09')$$, 'P0001', null, 'cannot change Bob''s schedule');
 select is((select count(*) from public.habit_archive_periods where habit_id = '10000000-0000-0000-0000-0000000000b1')::int, 0, 'cannot see Bob''s archive periods');
@@ -90,6 +93,8 @@ select throws_ok($$select public.create_habit('Anon', null, '📖', 'moss', '202
 reset role;
 delete from public.habits where id = '10000000-0000-0000-0000-0000000000b1';
 select is((select count(*) from public.habit_archive_periods where habit_id = '10000000-0000-0000-0000-0000000000b1')::int, 0, 'deleting a habit removes its archive periods');
+select is((select archived_at from public.habits where id = '10000000-0000-0000-0000-0000000000b2'), null, 'Bob''s habit was not archived by Alice');
+select is((select count(*) from public.habit_archive_periods where habit_id = '10000000-0000-0000-0000-0000000000b2')::int, 0, 'and has no archive period');
 
 select * from finish();
 rollback;
