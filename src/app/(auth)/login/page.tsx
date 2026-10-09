@@ -11,7 +11,7 @@ export default function LoginPage() {
       </div>
       <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8">
         <h1 className="font-display text-4xl">Cadence</h1>
-        <p className="mb-8 mt-2 text-muted">Build habits that stick, one day at a time.</p>
+        <p className="mb-8 mt-2 text-ink-muted">Build habits that stick, one day at a time.</p>
         <Suspense>
           <LoginError />
         </Suspense>

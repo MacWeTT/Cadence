@@ -1,13 +1,16 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Project tokens (light). The .dark block below overrides them; the shadcn names further down alias to these. */
 :root {
   --bg: #f3e8d3;
   --surface: #faf2e1;
   --topbar: #efe2c8;
   --ink: #3b2f24;
-  --muted: #8a7761;
+  --ink-muted: #8a7761;
   --line: #e2d3b6;
   --moss: #6c7d45;
   --clay: #b8643c;
@@ -17,6 +20,27 @@
   --heat-2: #b4c07f;
   --heat-3: #8a9c58;
   --heat-4: #5f7036;
+
+  /* shadcn/ui semantic names, mapped onto the project tokens */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--moss);
+  --primary-foreground: var(--bg);
+  --secondary: var(--line);
+  --secondary-foreground: var(--ink);
+  --muted: var(--line);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--line);
+  --accent-foreground: var(--ink);
+  --destructive: var(--clay);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--clay);
+  --radius: 0.625rem;
 }
 
 .dark {
@@ -24,7 +48,7 @@
   --surface: #2a2118;
   --topbar: #18120d;
   --ink: #f0e4d0;
-  --muted: #a38f76;
+  --ink-muted: #a38f76;
   --line: #3b2e21;
   --moss: #9bb06a;
   --clay: #e0905f;
@@ -41,7 +65,7 @@
   --color-surface: var(--surface);
   --color-topbar: var(--topbar);
   --color-ink: var(--ink);
-  --color-muted: var(--muted);
+  --color-ink-muted: var(--ink-muted);
   --color-line: var(--line);
   --color-moss: var(--moss);
   --color-clay: var(--clay);
@@ -51,12 +75,44 @@
   --color-heat-2: var(--heat-2);
   --color-heat-3: var(--heat-3);
   --color-heat-4: var(--heat-4);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: Georgia, "Times New Roman", serif;
+  --font-heading: var(--font-sans);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
 }
