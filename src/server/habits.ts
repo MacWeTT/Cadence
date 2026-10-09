@@ -1,4 +1,5 @@
 import 'server-only';
+import { connection } from 'next/server';
 import { todayIn, type CalendarDate, type WeekStart } from '@/domain/dates';
 import { planScheduleChange } from '@/domain/schedule-change';
 import { formatCalendarDate } from '@/lib/format';
@@ -37,6 +38,7 @@ export async function getProfile(): Promise<Profile> {
 }
 
 export async function listHabits(): Promise<HabitsView> {
+  await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
   const profile = await getProfile();
   const supabase = await createSupabaseServerClient();
   const { data: habits, error } = await supabase.from('habits').select('*').order('created_at');
