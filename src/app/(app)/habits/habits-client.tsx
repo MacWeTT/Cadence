@@ -2,16 +2,18 @@
 
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { HabitListItem } from "@/server/habit-view";
 import type { HabitsView } from "@/server/habits";
 import { HabitDialog } from "./habit-dialog";
 import { HabitRow } from "./habit-row";
 
 export function HabitsClient({ view }: { view: HabitsView }) {
-  const [creating, setCreating] = useState(false);
+  // `dialog` is null when closed, `{}` to create, `{ habit }` to edit.
+  const [dialog, setDialog] = useState<{ habit?: HabitListItem } | null>(null);
   const opener = useRef<HTMLElement | null>(null);
-  const openCreate = () => {
-    opener.current = document.activeElement as HTMLElement | null;
-    setCreating(true);
+  const openDialog = (habit?: HabitListItem, from?: HTMLElement | null) => {
+    opener.current = from ?? (document.activeElement as HTMLElement | null);
+    setDialog({ habit });
   };
   const { active, profile } = view;
 
@@ -19,7 +21,7 @@ export function HabitsClient({ view }: { view: HabitsView }) {
     <>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-4xl">Habits</h1>
-        <Button onClick={openCreate}>New habit</Button>
+        <Button onClick={() => openDialog()}>New habit</Button>
       </div>
 
       {active.length === 0 ? (
@@ -28,20 +30,24 @@ export function HabitsClient({ view }: { view: HabitsView }) {
           <p className="mx-auto mb-6 mt-2 max-w-sm text-ink-muted">
             Start with one small habit you can do every day. You can add more whenever you like.
           </p>
-          <Button onClick={openCreate}>New habit</Button>
+          <Button onClick={() => openDialog()}>New habit</Button>
         </div>
       ) : (
         <ul aria-label="Habits">
           {active.map((habit) => (
-            <HabitRow key={habit.id} habit={habit} />
+            <HabitRow key={habit.id} habit={habit} onEdit={(from) => openDialog(habit, from)} />
           ))}
         </ul>
       )}
 
-      {creating && (
+      {dialog && (
         <HabitDialog
+          // A fresh form for each habit (or for create).
+          key={dialog.habit?.id ?? "new"}
+          habit={dialog.habit}
           today={profile.today}
-          onClose={() => setCreating(false)}
+          weekStartsOn={profile.weekStartsOn}
+          onClose={() => setDialog(null)}
           onCloseAutoFocus={(e) => {
             e.preventDefault();
             opener.current?.focus();

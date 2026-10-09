@@ -62,3 +62,36 @@ export async function seedCompletion(habitId: string, date: string): Promise<voi
   const { error } = await adminClient().from('habit_completions').insert({ habit_id: habitId, completion_date: date });
   if (error) throw error;
 }
+
+/** The date n days before today, in UTC (the e2e user's profile timezone is UTC). */
+export function daysAgo(n: number): string {
+  return new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
+}
+
+/** Creates a habit and its first schedule directly in the database for the e2e user. */
+export async function seedHabit(o: {
+  name: string;
+  startDate: string;
+  icon?: string;
+  color?: string;
+  kind?: 'daily' | 'weekly_count';
+  timesPerWeek?: number;
+}): Promise<string> {
+  const admin = adminClient();
+  const userId = await ensureE2EUser();
+  const { data, error } = await admin
+    .from('habits')
+    .insert({ user_id: userId, name: o.name, icon: o.icon ?? '📖', color: o.color ?? 'moss', start_date: o.startDate })
+    .select('id')
+    .single();
+  if (error) throw error;
+  const kind = o.kind ?? 'daily';
+  const { error: scheduleError } = await admin.from('habit_schedules').insert({
+    habit_id: data.id,
+    kind,
+    times_per_week: kind === 'weekly_count' ? (o.timesPerWeek ?? 3) : null,
+    effective_from: o.startDate,
+  });
+  if (scheduleError) throw scheduleError;
+  return data.id;
+}
