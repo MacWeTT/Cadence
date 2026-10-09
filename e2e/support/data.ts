@@ -95,3 +95,16 @@ export async function seedHabit(o: {
   if (scheduleError) throw scheduleError;
   return data.id;
 }
+
+export async function getProfileTimezone(): Promise<string> {
+  const userId = await ensureE2EUser();
+  const { data, error } = await adminClient().from('profiles').select('timezone').eq('user_id', userId).single();
+  if (error) throw error;
+  return data.timezone;
+}
+
+export async function setProfileTimezone(timezone: string): Promise<void> {
+  const userId = await ensureE2EUser();
+  const { error } = await adminClient().from('profiles').update({ timezone }).eq('user_id', userId);
+  if (error) throw error;
+}
