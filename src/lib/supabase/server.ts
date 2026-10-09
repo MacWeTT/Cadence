@@ -2,6 +2,7 @@ import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { connection } from 'next/server';
 import { supabaseConfig } from './config';
 
 export async function createSupabaseServerClient() {
@@ -23,6 +24,7 @@ export async function createSupabaseServerClient() {
 
 /** The signed-in user, verified with the Supabase Auth server, or null. Reads cookies, so call it behind <Suspense>. */
 export async function getUser(): Promise<User | null> {
+  await connection(); // the Supabase session check calls Date.now(), which must only run at request time
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
   return data.user;
