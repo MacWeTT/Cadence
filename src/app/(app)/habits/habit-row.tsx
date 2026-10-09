@@ -77,7 +77,7 @@ export function HabitRow({
           {archived ? (
             <>
               <DropdownMenuItem onSelect={() => actions.onRestore(habit)}>Restore</DropdownMenuItem>
-              <DropdownMenuItem className="text-clay" onSelect={() => actions.onDelete(habit)}>
+              <DropdownMenuItem className="text-danger" onSelect={() => actions.onDelete(habit)}>
                 Delete
               </DropdownMenuItem>
             </>

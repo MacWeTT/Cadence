@@ -92,7 +92,7 @@ export function HabitDialog({
 
   const error = (field: string) =>
     fieldErrors[field] && (
-      <p id={`error-${field}`} role="alert" className="mt-1 text-sm text-clay">
+      <p id={`error-${field}`} role="alert" className="mt-1 text-sm text-danger">
         {fieldErrors[field]}
       </p>
     );
@@ -244,7 +244,7 @@ export function HabitDialog({
           </div>
 
           {formError && (
-            <p role="alert" className="text-sm text-clay">
+            <p role="alert" className="text-sm text-danger">
               {formError}
             </p>
           )}

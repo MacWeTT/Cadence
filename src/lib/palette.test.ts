@@ -33,3 +33,19 @@ describe('palette', () => {
     expect(habitColor('teal')).toBe('var(--habit-teal)');
   });
 });
+
+describe('text contrast (WCAG AA, 4.5:1)', () => {
+  const css = readFileSync('src/app/globals.css', 'utf8');
+  const block = (selector: string) => css.slice(css.indexOf(selector), css.indexOf('}', css.indexOf(selector)));
+  const token = (blockText: string, name: string) => blockText.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6});`))?.[1] ?? 'missing';
+
+  it.each([
+    ['light', ':root {'],
+    ['dark', '.dark {'],
+  ] as const)('%s: button text, and error text on the surface and the page', (_theme, selector) => {
+    const b = block(selector);
+    expect(contrast(token(b, 'btn-text'), token(b, 'btn')), 'button text on button').toBeGreaterThanOrEqual(4.5);
+    expect(contrast(token(b, 'danger'), token(b, 'surface')), 'error text on surface').toBeGreaterThanOrEqual(4.5);
+    expect(contrast(token(b, 'danger'), token(b, 'bg')), 'error text on page').toBeGreaterThanOrEqual(4.5);
+  });
+});
