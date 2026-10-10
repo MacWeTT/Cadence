@@ -1,0 +1,21 @@
+@reference '../../globals.css';
+
+.login {
+  @apply relative flex min-h-screen items-center justify-center px-6;
+}
+
+.login__theme {
+  @apply absolute top-6 right-6;
+}
+
+.login__card {
+  @apply w-full max-w-sm rounded-2xl border border-line bg-surface p-8;
+}
+
+.login__title {
+  @apply font-display text-4xl;
+}
+
+.login__tagline {
+  @apply mt-2 mb-8 text-ink-muted;
+}

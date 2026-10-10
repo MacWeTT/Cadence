@@ -13,12 +13,14 @@ test('with no habits it invites you to create one', async ({ page }) => {
 
 test('shows streaks, the rate and the heatmap, and narrows to one habit', async ({ page }) => {
   const read = await seedHabit({ name: 'Read', startDate: daysAgo(10) });
+
   await seedHabit({ name: 'Run', startDate: daysAgo(10) });
   await seedCompletion(read, daysAgo(1));
   await seedCompletion(read, daysAgo(2));
   await page.goto('/progress');
 
   const rates = page.getByRole('region', { name: /Completion, last 30 days/ });
+
   await expect(rates).toContainText('2 of 20 done'); // 10 closed days x 2 habits
   await expect(rates.getByRole('listitem').filter({ hasText: 'Read' })).toContainText('🔥 2 days');
   await expect(rates.getByRole('listitem').filter({ hasText: 'Read' })).toContainText('Best 2 days');
@@ -45,6 +47,7 @@ test('the period buttons change the rate window', async ({ page }) => {
 test('an unknown habit or period in the address falls back to the defaults', async ({ page }) => {
   await seedHabit({ name: 'Read', startDate: daysAgo(3) });
   const response = await page.goto('/progress?habit=nope&range=5');
+
   expect(response?.status()).toBeLessThan(400);
   await expect(page.getByRole('region', { name: /Completion, last 30 days/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'All habits' })).toHaveAttribute('aria-current', 'page');
@@ -52,12 +55,22 @@ test('an unknown habit or period in the address falls back to the defaults', asy
 
 test('the year heatmap fits its card without a scrollbar', async ({ page }) => {
   await seedHabit({ name: 'Read', startDate: daysAgo(300) });
+
   for (const width of [1127, 1400]) {
     await page.setViewportSize({ width, height: 800 });
     await page.goto('/progress');
     const heatmap = page.getByRole('img', { name: 'Activity over the past year' });
+
     await expect(heatmap).toBeVisible();
-    expect(await heatmap.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    expect(
+      await heatmap.evaluate(el => {
+        return el.scrollWidth <= el.clientWidth;
+      }),
+    ).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return document.documentElement.scrollWidth <= window.innerWidth;
+      }),
+    ).toBe(true);
   }
 });

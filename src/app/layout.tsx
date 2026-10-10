@@ -8,7 +8,9 @@ export const metadata: Metadata = {
   description: 'A personal habit tracker',
 };
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+const RootLayout = (props: LayoutProps<'/'>) => {
+  const { children } = props;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen">
@@ -19,4 +21,6 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

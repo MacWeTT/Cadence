@@ -25,4 +25,6 @@ export const PALETTE: Record<'light' | 'dark', Record<ColorKey, string>> = {
   },
 };
 
-export const habitColor = (key: ColorKey): string => `var(--habit-${key})`;
+export const habitColor = (key: ColorKey): string => {
+  return `var(--habit-${key})`;
+};

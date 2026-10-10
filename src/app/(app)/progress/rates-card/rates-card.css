@@ -1,0 +1,25 @@
+@reference '../../../globals.css';
+
+.rates-card__top {
+  @apply flex flex-wrap items-end justify-between gap-4;
+}
+
+.rates-card__title {
+  @apply mb-3 text-xs font-medium tracking-wider text-ink-muted uppercase;
+}
+
+.rates-card__percent {
+  @apply font-display text-4xl;
+}
+
+.rates-card__detail {
+  @apply text-sm text-ink-muted;
+}
+
+.rates-card__periods {
+  @apply flex gap-2;
+}
+
+.rates-card__list {
+  @apply mt-5 divide-y divide-line;
+}

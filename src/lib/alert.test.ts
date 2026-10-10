@@ -5,15 +5,17 @@ const read = { id: 'read', name: 'Read' };
 const run = { id: 'run', name: 'Run' };
 const atRiskRead = { id: 'read', name: 'Read', count: 12, unit: 'day' as const };
 
-const input = (over: Partial<AlertInput> = {}): AlertInput => ({
-  hour: 9,
-  minutesToMidnight: 900,
-  total: 5,
-  open: [read, run],
-  atRisk: [],
-  continuing: [],
-  ...over,
-});
+const input = (over: Partial<AlertInput> = {}): AlertInput => {
+  return {
+    hour: 9,
+    minutesToMidnight: 900,
+    total: 5,
+    open: [read, run],
+    atRisk: [],
+    continuing: [],
+    ...over,
+  };
+};
 
 describe('formatLeft', () => {
   it('writes hours and minutes, dropping empty parts', () => {
@@ -47,6 +49,7 @@ describe('alertFor tiers', () => {
         ],
       }),
     );
+
     expect(done).toEqual({
       tier: 'done',
       message: "All 3 done. Nice. Tomorrow's streaks: Journal 32, Read 13.",
@@ -68,6 +71,7 @@ describe('alertFor tiers', () => {
         atRisk: [atRiskRead, { id: 'run', name: 'Run', count: 3, unit: 'week' }],
       }),
     );
+
     expect(two.message).toBe("Last call: 1h 40m. Don't lose your 12-day Read streak! And 1 more at risk.");
   });
 
@@ -108,8 +112,10 @@ describe('alertFor tiers', () => {
 });
 
 describe('alertFor boundaries', () => {
-  const at = (minutes: number, hour: number, atRisk = [atRiskRead]) =>
-    alertFor(input({ hour, minutesToMidnight: minutes, atRisk })).tier;
+  const at = (minutes: number, hour: number, atRisk = [atRiskRead]) => {
+    return alertFor(input({ hour, minutesToMidnight: minutes, atRisk })).tier;
+  };
+
   it('late needs 180 minutes or less AND a streak at risk', () => {
     expect(at(180, 21)).toBe('late');
     expect(at(181, 21)).toBe('evening');

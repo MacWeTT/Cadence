@@ -3,8 +3,9 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import policies from './eslint-rules/index.mjs';
 
-// Rules that the existing code does not meet yet are warnings; the refactor (milestone 6.2b) turns them into errors.
-const STYLE = 'warn';
+// The code policies are errors. Localisation is still a warning: the code gets its message files in milestone 6.2c.
+const STYLE = 'error';
+const LOCALISATION = 'warn';
 
 const vendorFiles = ['src/components/ui/**', 'src/lib/supabase/database.types.ts'];
 
@@ -23,6 +24,8 @@ const eslintConfig = defineConfig([
       'arrow-body-style': [STYLE, 'always'],
       'func-style': [STYLE, 'expression'],
       'prefer-arrow-callback': STYLE,
+      // Every if/else/for/while has braces, even for one statement.
+      curly: [STYLE, 'all'],
 
       // 4: blank lines separate blocks of logic.
       'padding-line-between-statements': [
@@ -52,6 +55,12 @@ const eslintConfig = defineConfig([
           message: 'Take `props` as the parameter and destructure it in the body.',
         },
         {
+          // 2b: the props type has a name (`EmojiProps`), declared above the component.
+          selector:
+            'VariableDeclarator[id.name=/^[A-Z]/] > ArrowFunctionExpression > Identifier.params > TSTypeAnnotation > TSTypeLiteral',
+          message: 'Give the props type a name (interface XProps) instead of an inline type.',
+        },
+        {
           // 7: styles live in CSS files (with @apply); a className holds names, not a pile of utilities.
           selector: 'JSXAttribute[name.name="className"] Literal[value=/^\\s*\\S+(\\s+\\S+){3,}\\s*$/]',
           message: 'Move these utility classes into a CSS file with @apply and use a class name here.',
@@ -60,13 +69,9 @@ const eslintConfig = defineConfig([
           selector: 'JSXAttribute[name.name="className"] TemplateElement[value.raw=/\\S+\\s+\\S+\\s+\\S+\\s+\\S+/]',
           message: 'Move these utility classes into a CSS file with @apply and use a class name here.',
         },
-        {
-          // 8: user-facing text comes from the message files.
-          selector: 'JSXAttribute[name.name=/^(aria-label|placeholder|title|alt)$/] > Literal',
-          message: 'User-facing text must come from the message files (t(...)).',
-        },
       ],
-      'react/jsx-no-literals': [STYLE, { noStrings: false, ignoreProps: true }],
+      // 8: user-facing text comes from the message files (turned into an error in 6.2c).
+      'react/jsx-no-literals': [LOCALISATION, { noStrings: false, ignoreProps: true }],
     },
   },
 

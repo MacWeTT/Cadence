@@ -1,0 +1,29 @@
+@reference '../../../globals.css';
+
+.schedule-field__label {
+  @apply mb-1.5 text-sm font-medium;
+}
+
+.schedule-field__row {
+  @apply flex flex-wrap items-center gap-3;
+}
+
+.schedule-field__option {
+  @apply data-[state=on]:bg-primary data-[state=on]:text-primary-foreground;
+}
+
+.schedule-field__times {
+  @apply flex items-center gap-2;
+}
+
+.schedule-field__times-input {
+  @apply w-20;
+}
+
+.schedule-field__suffix {
+  @apply text-sm text-ink-muted;
+}
+
+.schedule-field__note {
+  @apply mt-2 text-sm text-ink-muted;
+}

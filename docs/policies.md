@@ -8,20 +8,28 @@ Run everything with `npm run verify` before opening a PR.
 
 | # | Rule | Enforced by |
 |---|------|-------------|
-| 1 | **No inline returns.** An arrow function has a block body with an explicit `return`. | ESLint `arrow-body-style: always` |
+| 1 | **No inline returns, everything scoped.** An arrow function has a block body with an explicit `return`, and every `if`/`else`/`for`/`while` has braces, even for one statement. | ESLint `arrow-body-style: always`, `curly: all` |
 | 2 | **Components take `props` and destructure inside the body**, never in the parameter list. | ESLint `no-restricted-syntax` |
+| 2b | **Props have a named type** declared above the component: `(props: EmojiProps)`, not an inline `{ ... }`. | ESLint `no-restricted-syntax` |
 | 3 | **One `useState` holding an object** instead of many. One handler updates one field of it. | ESLint `cadence/max-use-state` (max 2) + review |
 | 4 | **Blank lines separate blocks of logic**: after declarations, around `if`/`for`/`try`/blocks, before `return`. | ESLint `padding-line-between-statements` |
 | 5 | **Order inside a component or hook:** state first, then queries (data hooks), then everything else (derived values, effects, handlers). | Review |
 | 6 | **Functions are `const fn = params => { ... }`.** No `function` declarations. | ESLint `func-style: expression` |
 | 7 | **Regular class names in JSX, styles in CSS files with `@apply`.** A `className` holds names, not a pile of utilities. Dynamic values (a habit's colour, a ring angle) stay in `style`. | ESLint `no-restricted-syntax` (more than 3 utility classes) |
+| 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
 | 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `messages/en.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
 
 ```tsx
-// A component the way these rules want it.
+// check-row/check-row.tsx: a component the way these rules want it.
 import './check-row.css';
 
-const CheckRow = props => {
+interface CheckRowProps {
+  row: TodayRow;
+  disabled: boolean;
+  onToggle: () => void;
+}
+
+const CheckRow = (props: CheckRowProps) => {
   const { row, disabled, onToggle } = props;
 
   const [state, setState] = useState({ pending: false, error: null });
@@ -43,8 +51,8 @@ const CheckRow = props => {
 ```
 
 ```css
-/* check-row.css */
-@reference '../../globals.css';
+/* check-row/check-row.css */
+@reference '../../../globals.css';
 
 .check-row {
   @apply flex items-center gap-4 border-b border-line px-3 py-3.5;
@@ -60,7 +68,7 @@ const CheckRow = props => {
 ```
 
 ### CSS naming
-- One CSS file per component, next to it, imported by the component. Class names are BEM: `block`, `block__element`, `block--modifier`, prefixed by the component name so they cannot collide (`check-row`, `day-card__cell`).
+- One CSS file per component, in the component's own folder, imported by the component. Class names are BEM: `block`, `block__element`, `block--modifier`, prefixed by the component name so they cannot collide (`check-row`, `day-card__cell`).
 - Start every CSS file with `@reference` to `globals.css` so `@apply` can use the theme tokens.
 
 ## Formatting

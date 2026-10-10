@@ -1,0 +1,9 @@
+@reference '../../../globals.css';
+
+.progress-ring {
+  @apply flex size-22 shrink-0 items-center justify-center rounded-full;
+}
+
+.progress-ring__label {
+  @apply flex size-17 items-center justify-center rounded-full bg-bg font-display text-xl;
+}

@@ -6,27 +6,29 @@ import { connection } from 'next/server';
 import { supabaseConfig } from './config';
 import type { Database } from './database.types';
 
-export async function createSupabaseServerClient() {
+export const createSupabaseServerClient = async () => {
   const { url, key } = supabaseConfig();
   const cookieStore = await cookies();
+
   return createServerClient<Database>(url, key, {
     cookies: {
-      getAll: () => cookieStore.getAll(),
+      getAll: () => {return cookieStore.getAll()},
       setAll(toSet) {
         try {
-          toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          toSet.forEach(({ name, value, options }) => {return cookieStore.set(name, value, options)});
         } catch {
           // Called from a Server Component, where cookies are read-only. The proxy refreshes the session instead.
         }
       },
     },
   });
-}
+};
 
 /** The signed-in user, verified with the Supabase Auth server, or null. Reads cookies, so call it behind <Suspense>. */
-export async function getUser(): Promise<User | null> {
+export const getUser = async (): Promise<User | null> => {
   await connection(); // the Supabase session check calls Date.now(), which must only run at request time
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
+
   return data.user;
-}
+};

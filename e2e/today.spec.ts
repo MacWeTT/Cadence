@@ -15,33 +15,56 @@ test.beforeEach(async () => {
   await setWeekStartForTests();
 });
 
-const todo = (page: Page) => page.getByRole('list', { name: 'To do' });
-const done = (page: Page) => page.getByRole('list', { name: 'Done today' });
-const row = (list: ReturnType<typeof todo>, name: string) => list.getByRole('listitem').filter({ hasText: name });
-const check = (page: Page, name: string, ticked = false) =>
-  page.getByRole('checkbox', { name: ticked ? `Mark ${name} not done` : `Mark ${name} done` });
+const todo = (page: Page) => {
+  return page.getByRole('list', { name: 'To do' });
+};
+
+const done = (page: Page) => {
+  return page.getByRole('list', { name: 'Done today' });
+};
+
+const row = (list: ReturnType<typeof todo>, name: string) => {
+  return list.getByRole('listitem').filter({ hasText: name });
+};
+
+const check = (page: Page, name: string, ticked = false) => {
+  return page.getByRole('checkbox', { name: ticked ? `Mark ${name} not done` : `Mark ${name} done` });
+};
 
 test('ticking moves a habit to Done, bumps the streak and persists; unticking moves it back', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
-  for (const n of [1, 2, 3]) await seedCompletion(id, daysAgo(n));
+
+  for (const n of [1, 2, 3]) {
+    await seedCompletion(id, daysAgo(n));
+  }
+
   await page.goto('/today');
   await expect(row(todo(page), 'Read')).toContainText('🔥 3 days');
 
   await check(page, 'Read').click();
   await expect(row(done(page), 'Read')).toBeVisible();
   await expect(row(done(page), 'Read')).toContainText('🔥 4 days'); // after the server refresh
-  await expect.poll(async () => (await getCompletions(id)).length).toBe(4);
+  await expect
+    .poll(async () => {
+      return (await getCompletions(id)).length;
+    })
+    .toBe(4);
 
   await page.reload();
   await expect(row(done(page), 'Read')).toBeVisible();
 
   await check(page, 'Read', true).click();
   await expect(row(todo(page), 'Read')).toBeVisible();
-  await expect.poll(async () => (await getCompletions(id)).length).toBe(3);
+  await expect
+    .poll(async () => {
+      return (await getCompletions(id)).length;
+    })
+    .toBe(3);
 });
 
 test('a weekly habit shows its progress and "Goal met", and unticking brings the progress back', async ({ page }) => {
   const id = await seedHabit({ name: 'Run', startDate: daysAgo(20), kind: 'weekly_count', timesPerWeek: 2 });
+
   await seedCompletion(id, daysAgo(1)); // always in the same week as today (see setWeekStartForTests)
   await page.goto('/today');
   await expect(row(todo(page), 'Run')).toContainText('1 of 2 this week');
@@ -55,6 +78,7 @@ test('a weekly habit shows its progress and "Goal met", and unticking brings the
 
 test('an archived habit is hidden and comes back with its earlier ticks after a restore', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
   await seedCompletion(id, daysAgo(1));
   await archiveHabitDirect(id, daysAgo(0));
   await page.goto('/today');
@@ -67,17 +91,25 @@ test('an archived habit is hidden and comes back with its earlier ticks after a 
 
 test('a double tap sends one request and creates one completion', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
   await page.goto('/today');
   await check(page, 'Read').dblclick();
-  await expect.poll(async () => (await getCompletions(id)).length).toBe(1);
+  await expect
+    .poll(async () => {
+      return (await getCompletions(id)).length;
+    })
+    .toBe(1);
   await page.waitForTimeout(700);
   expect(await getCompletions(id)).toHaveLength(1);
 });
 
 test('a failed save rolls the row back and shows a message', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
   await page.goto('/today');
-  await page.route('**/*', route => (route.request().headers()['next-action'] ? route.abort() : route.continue()));
+  await page.route('**/*', route => {
+    return route.request().headers()['next-action'] ? route.abort() : route.continue();
+  });
   await check(page, 'Read').click();
   await expect(page.getByText("Couldn't save that")).toBeVisible();
   await expect(row(todo(page), 'Read')).toBeVisible(); // back in To do
