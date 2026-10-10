@@ -43,3 +43,9 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - The completion rate uses the last 7, 30, 90 or 365 closed days. Today is progress, not part of the rate. If nothing was expected there is no rate, never 0%.
 - "Ticks per week" and "ticks per month" count ticks, not rates: they show how active you were, not how much was expected.
 - The habit filter and the period live in the address (`/progress?habit=...&range=90`). An unknown habit or period falls back to all habits and 30 days.
+
+## Home (the page at `/`)
+- The banner shows one message about the day, first match wins: nothing listed today → no banner; everything ticked → "All N done" (with tomorrow's daily streaks); 3 hours or less to local midnight with a streak at risk → "Last call"; 6 hours or less to midnight with something open → the evening warning; from noon → the afternoon nudge; otherwise the morning line. Time is read in your profile's timezone.
+- A streak is **at risk** when the habit is listed today, not ticked, and either it is daily with a streak above 0, or it is weekly with a streak above 0 and every remaining day of the week (today included) is needed to reach the target. A streak at risk never turns the banner amber before 6pm: only the clock does.
+- The banner's button takes you to the habit's tick button. It never ticks for you.
+- The greeting changes between visits but not while you use the page: it is kept for the tab session as long as it still suits the moment (time of day, weekday, everything done), and a new one never repeats the previous line. It uses the first word of your Google name, or "friend".

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.use({ colorScheme: 'light', storageState: { cookies: [], origins: [] } });
 
-for (const path of ['/today', '/habits', '/progress']) {
+for (const path of ['/', '/today', '/habits', '/progress']) {
   test(`unauthenticated visit to ${path} lands on the login page`, async ({ page }) => {
     await page.goto(path);
     await expect(page).toHaveURL(/\/login$/);

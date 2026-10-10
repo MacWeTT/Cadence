@@ -29,3 +29,20 @@ export function ProgressSkeleton() {
     </div>
   );
 }
+
+/** The Home page's shape: header row, banner, then the two columns. */
+export function HomeSkeleton() {
+  return (
+    <div role="status" aria-busy="true" aria-label="Loading home">
+      <div className="flex items-center gap-5">
+        <Skeleton className="size-22 rounded-full" />
+        <Skeleton className="h-12 w-80" />
+      </div>
+      <Skeleton className="mt-6 h-13 rounded-2xl" />
+      <div className="mt-6 grid gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
+        <Skeleton className="h-72 rounded-2xl" />
+        <Skeleton className="h-72 rounded-2xl" />
+      </div>
+    </div>
+  );
+}

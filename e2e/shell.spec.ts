@@ -9,3 +9,8 @@ test('signed-in /today shows the heading, the navigation and the account menu', 
   }
   await expect(page.getByLabel('Account menu')).toBeVisible();
 });
+
+test('a signed-in visit to /login goes home', async ({ page }) => {
+  await page.goto('/login');
+  await expect(page).toHaveURL(/\/$/);
+});

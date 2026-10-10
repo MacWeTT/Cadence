@@ -30,7 +30,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (!signedIn && !isPublic) return redirectTo(request, '/login');
-  if (signedIn && pathname === '/login') return redirectTo(request, '/today');
+  if (signedIn && pathname === '/login') return redirectTo(request, '/');
   return response;
 }
 

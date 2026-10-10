@@ -15,7 +15,15 @@ export function TopBar({ menu }: { menu?: React.ReactNode }) {
   return (
     <header className="border-b border-line bg-topbar">
       <div className="mx-auto flex h-16 w-full max-w-295 items-center gap-8 px-8">
-        <span className="font-display text-xl">Cadence</span>
+        <Link
+          href="/"
+          aria-current={pathname === "/" ? "page" : undefined}
+          className={`rounded-sm font-display text-xl focus-visible:outline-2 focus-visible:outline-clay ${
+            pathname === "/" ? "underline decoration-2 underline-offset-8" : ""
+          }`}
+        >
+          Cadence
+        </Link>
         <nav className="flex gap-6">
           {links.map(({ href, label }) => {
             const active = pathname === href;

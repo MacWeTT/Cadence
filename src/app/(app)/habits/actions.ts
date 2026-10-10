@@ -23,6 +23,7 @@ async function run(work: () => Promise<void>): Promise<ActionResult> {
   try {
     await work();
     revalidatePath("/habits");
+    revalidatePath("/");
     return { ok: true };
   } catch (e) {
     if (e instanceof HabitError) return { ok: false, error: e.message, fieldErrors: e.fieldErrors };
