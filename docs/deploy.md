@@ -41,6 +41,13 @@ You do these once. Nothing here can be done from the repository.
 - To go back after a bad deploy, use Vercel's "Instant Rollback" (Deployments → the previous one → Promote). The database is not rolled back; fix it with a new migration.
 - To redeploy without a code change, run the **Deploy** workflow by hand (Actions → Deploy → Run workflow).
 
+## Releases and going back
+
+Until 1.0 Cadence is in beta:  deploys on every merge, and a version is a **tag** on a  commit, with a GitHub pre-release. After 1.0 the plan is to decide again (a separate  branch for what is live).
+
+- To cut a release: bump  in , move the entry from *Planned* to its own heading in , merge that PR, then tag the merge commit and publish a release: , then .
+- To go back to a release in a hurry, use Instant Rollback (above). To go back in the code, open a PR into  that reverts the bad merge: . Compare with the last tag to see what changed: .
+
 ## What is not verified
 
 This pipeline has never run, because it needs the accounts above. The first run may need a small adjustment (for example a Supabase CLI flag). Check the **Migrate** step's dry-run output on the first deploy before trusting it.
