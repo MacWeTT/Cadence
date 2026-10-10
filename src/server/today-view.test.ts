@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ctx, makeHabit } from '@/domain/test-helpers';
 import type { HabitData, Schedule } from '@/domain/types';
 import type { HabitRow, ScheduleRow } from './habit-view';
-import { applyToggle, buildTodayView, earliestDate, parseDateParam, toHabitData, type TodayRow, type TodayView } from './today-view';
+import { applyToggle, buildTodayView, earliestDate, parseDateParam, toHabitData, weekStrip, type TodayRow, type TodayView } from './today-view';
 
 const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => ({
   id,
@@ -123,7 +123,7 @@ describe('earliestDate', () => {
 describe('applyToggle', () => {
   const daily: TodayRow = { id: 'a', name: 'a', icon: '📖', color: 'moss', ticked: false, streak: null, week: null };
   const weeklyRow: TodayRow = { id: 'w', name: 'w', icon: '🏃', color: 'clay', ticked: false, streak: null, week: { done: 2, target: 3, goalMet: false } };
-  const view: TodayView = { todo: [daily, weeklyRow], done: [], hasHabits: true };
+  const view: TodayView = { todo: [daily, weeklyRow], done: [], strip: [], hasHabits: true };
 
   it('moves a ticked row to done and back to todo', () => {
     const ticked = applyToggle(view, 'a', true);
@@ -145,5 +145,42 @@ describe('applyToggle', () => {
     const zero: TodayView = { ...view, done: [{ ...weeklyRow, ticked: true, week: { done: 0, target: 3, goalMet: false } }], todo: [] };
     expect(applyToggle(zero, 'w', false).todo[0].week?.done).toBe(0);
     expect(applyToggle(view, 'nope', true)).toEqual(view);
+  });
+});
+
+describe('weekStrip', () => {
+  const days = (strip: ReturnType<typeof weekStrip>) => strip.map((d) => [d.date, d.done, d.total, d.future]);
+
+  it('covers the viewed week from its first day, counting daily habits done against expected', () => {
+    const strip = weekStrip([makeHabit({ done: ['2026-10-05', '2026-10-06'] })], '2026-10-07', ctx('2026-10-09'));
+    expect(days(strip)).toEqual([
+      ['2026-10-05', 1, 1, false],
+      ['2026-10-06', 1, 1, false],
+      ['2026-10-07', 0, 1, false],
+      ['2026-10-08', 0, 1, false],
+      ['2026-10-09', 0, 1, false],
+      ['2026-10-10', 0, 0, true],
+      ['2026-10-11', 0, 0, true],
+    ]);
+  });
+
+  it('counts a weekly habit only on the days it was ticked, so an untouched day is not a miss', () => {
+    const strip = weekStrip([makeHabit({ schedules: [weekly(3, '2026-10-01')], done: ['2026-10-06'] })], '2026-10-09', ctx('2026-10-09'));
+    expect(days(strip).slice(0, 3)).toEqual([
+      ['2026-10-05', 0, 0, false],
+      ['2026-10-06', 1, 1, false],
+      ['2026-10-07', 0, 0, false],
+    ]);
+  });
+
+  it('expects nothing before a habit started or while it was paused, and follows the week start setting', () => {
+    const started = weekStrip([makeHabit({ startDate: '2026-10-08' })], '2026-10-09', ctx('2026-10-09'));
+    expect(started[2].total).toBe(0); // 2026-10-07
+    expect(started[3].total).toBe(1); // 2026-10-08
+    const paused = weekStrip([makeHabit({ pauses: [{ from: '2026-10-06', to: '2026-10-08' }] })], '2026-10-09', ctx('2026-10-09'));
+    expect(paused[1].total).toBe(0);
+    expect(paused[2].total).toBe(0);
+    expect(paused[3].total).toBe(1);
+    expect(weekStrip([], '2026-10-09', ctx('2026-10-09', 7))[0].date).toBe('2026-10-04');
   });
 });

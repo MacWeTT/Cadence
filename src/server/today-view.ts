@@ -1,6 +1,8 @@
 // Pure mapping from database rows to what the Today page shows. Kept free of `server-only` so it can be unit-tested.
-import { isCalendarDate, type CalendarDate } from '@/domain/dates';
+import { addDays, isCalendarDate, weekStart, type CalendarDate } from '@/domain/dates';
 import { isListedOn, weekProgress, type WeekProgress } from '@/domain/listing';
+import { scheduleFor } from '@/domain/schedule';
+import { dayStatus } from '@/domain/status';
 import { currentStreak, type Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
@@ -33,9 +35,19 @@ export interface TodayRow {
   week: WeekProgress | null;
 }
 
+/** One day of the week strip: habits done out of habits expected, and whether the day has not happened yet. */
+export interface DaySummary {
+  date: CalendarDate;
+  done: number;
+  total: number;
+  future: boolean;
+}
+
 export interface TodayView {
   todo: TodayRow[];
   done: TodayRow[];
+  /** The seven days of the viewed week, for the side card. */
+  strip: DaySummary[];
   /** True when at least one habit is not archived, whatever the viewed day. */
   hasHabits: boolean;
 }
@@ -44,7 +56,7 @@ const isArchivedNow = (data: HabitData) => data.pauses.some((p) => p.to === null
 
 /** `habits` must already be in the order to show (creation order). */
 export function buildTodayView(habits: { habit: HabitRow; data: HabitData }[], date: CalendarDate, ctx: Ctx): TodayView {
-  const view: TodayView = { todo: [], done: [], hasHabits: habits.some((h) => !isArchivedNow(h.data)) };
+  const view: TodayView = { todo: [], done: [], strip: weekStrip(habits.map((h) => h.data), date, ctx), hasHabits: habits.some((h) => !isArchivedNow(h.data)) };
   for (const { habit, data } of habits) {
     if (!isListedOn(data, date, ctx)) continue;
     const ticked = data.completions.has(date);
@@ -60,6 +72,26 @@ export function buildTodayView(habits: { habit: HabitRow; data: HabitData }[], d
     });
   }
   return view;
+}
+
+/**
+ * The week containing `date`, one summary per day. A daily habit is expected on every day it is active; a weekly habit
+ * only counts on the days it was ticked, because no particular day is expected of it.
+ */
+export function weekStrip(habits: HabitData[], date: CalendarDate, ctx: Ctx): DaySummary[] {
+  const first = weekStart(date, ctx.weekStartsOn);
+  return Array.from({ length: 7 }, (_, i) => {
+    const day = addDays(first, i);
+    let done = 0;
+    let total = 0;
+    for (const h of habits) {
+      const ticked = h.completions.has(day);
+      const expected = scheduleFor(h, day)?.kind === 'weekly_count' ? ticked : dayStatus(h, day, ctx) !== 'inactive';
+      if (expected) total++;
+      if (expected && ticked) done++;
+    }
+    return { date: day, done, total, future: day > ctx.today };
+  });
 }
 
 /** The viewed day from the URL: a real date up to today, otherwise today. */
