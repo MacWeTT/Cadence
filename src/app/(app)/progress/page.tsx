@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { ProgressSkeleton } from "@/components/skeleton";
 import { Button } from "@/components/ui/button";
 import { ratio, type Rate } from "@/domain/rates";
 import { formatCalendarDate } from "@/lib/format";
@@ -13,7 +14,7 @@ export default function ProgressPage({ searchParams }: PageProps<"/progress">) {
   return (
     <>
       <h1 className="font-display text-4xl">Progress</h1>
-      <Suspense>
+      <Suspense fallback={<ProgressSkeleton />}>
         <ProgressContent searchParams={searchParams} />
       </Suspense>
     </>

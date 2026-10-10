@@ -1,10 +1,11 @@
 import { Suspense } from "react";
+import { ListSkeleton } from "@/components/skeleton";
 import { getTodayView } from "@/server/today";
 import { TodayClient } from "./today-client";
 
 export default function TodayPage({ searchParams }: PageProps<"/today">) {
   return (
-    <Suspense fallback={<h1 className="font-display text-4xl">Today</h1>}>
+    <Suspense fallback={<ListSkeleton title="Today" />}>
       <TodayContent searchParams={searchParams} />
     </Suspense>
   );
