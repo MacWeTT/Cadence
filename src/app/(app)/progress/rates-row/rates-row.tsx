@@ -1,7 +1,9 @@
+import { useTranslations } from 'next-intl';
 import { habitColor } from '@/lib/palette';
-import { streakLabel, streakLength } from '@/lib/today-labels';
+import { streakLengthMsg, streakMsg } from '@/lib/today-labels';
+import { useMsg } from '@/lib/use-msg';
 import type { ProgressHabit } from '@/server/progress-view';
-import { percent } from '../progress-links';
+import { percentMsg } from '../progress-links';
 import './rates-row.css';
 
 interface RatesRowProps {
@@ -11,6 +13,9 @@ interface RatesRowProps {
 /** One habit's current streak, best streak and completion rate. */
 export const RatesRow = (props: RatesRowProps) => {
   const { habit } = props;
+
+  const t = useTranslations('progress.rates');
+  const tm = useMsg();
 
   return (
     <li className="rates-row">
@@ -23,11 +28,13 @@ export const RatesRow = (props: RatesRowProps) => {
       </span>
       <p className="rates-row__name">
         {habit.name}
-        {habit.archived && <span className="rates-row__archived">archived</span>}
+        {habit.archived && <span className="rates-row__archived">{t('archived')}</span>}
       </p>
-      <p className="rates-row__streak">{habit.current ? streakLabel(habit.current) : 'No streak'}</p>
-      <p className="rates-row__best">Best {habit.longest.count > 0 ? streakLength(habit.longest) : '—'}</p>
-      <p className="rates-row__rate">{percent(habit.rate)}</p>
+      <p className="rates-row__streak">{habit.current ? tm(streakMsg(habit.current)) : t('noStreak')}</p>
+      <p className="rates-row__best">
+        {habit.longest.count > 0 ? t('best', { length: tm(streakLengthMsg(habit.longest)) }) : t('bestNone')}
+      </p>
+      <p className="rates-row__rate">{tm(percentMsg(habit.rate))}</p>
     </li>
   );
 };

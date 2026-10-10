@@ -1,3 +1,5 @@
+import { msg, type Msg } from './message';
+
 export interface AtRiskHabit {
   id: string;
   name: string;
@@ -21,88 +23,99 @@ export interface AlertInput {
 }
 
 export type AlertTier = 'none' | 'done' | 'late' | 'evening' | 'afternoon' | 'morning';
-export type AlertAction =
-  { kind: 'focus'; id: string; label: string } | { kind: 'link'; href: string; label: string } | null;
+export type AlertAction = { kind: 'focus'; id: string; label: Msg } | { kind: 'link'; href: string; label: Msg } | null;
+
 export interface Alert {
   tier: AlertTier;
-  message: string;
+  /** `null` when there is nothing to say. */
+  message: Msg | null;
   action: AlertAction;
 }
 
 /** 340 -> "5h 40m", 180 -> "3h", 45 -> "45m". */
-export const formatLeft = (minutes: number): string => {
+export const timeLeft = (minutes: number): Msg => {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
 
   if (h === 0) {
-    return `${m}m`;
+    return msg('common.time.minutes', { m });
   }
 
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
-};
-
-const plural = (n: number, one: string, many: string) => {
-  return `${n} ${n === 1 ? one : many}`;
+  return m === 0 ? msg('common.time.hours', { h }) : msg('common.time.hoursMinutes', { h, m });
 };
 
 const doNow = (name: string, id: string): AlertAction => {
-  return { kind: 'focus', id, label: `Do ${name} now` };
+  return { kind: 'focus', id, label: msg('alert.doNow', { name }) };
 };
 
 /** The one message the banner shows. Thresholds: late 180 minutes, evening 360, afternoon from noon. */
 export const alertFor = (input: AlertInput): Alert => {
   const { hour, minutesToMidnight, total, open, atRisk, continuing } = input;
-  const left = formatLeft(minutesToMidnight);
+
+  const left = timeLeft(minutesToMidnight);
   const top = atRisk[0];
 
   if (total === 0) {
-    return { tier: 'none', message: '', action: null };
+    return { tier: 'none', message: null, action: null };
   }
 
   if (open.length === 0) {
     const next = continuing.slice(0, 2).map(c => {
       return `${c.name} ${c.count + 1}`;
     });
-    const streaks = next.length > 0 ? ` Tomorrow's streaks: ${next.join(', ')}.` : '';
 
-    return { tier: 'done', message: `All ${total} done. Nice.${streaks}`, action: null };
+    // shortcut: the streak list is joined with commas, not through Intl.ListFormat; use it when a second language arrives.
+    const streaks = next.length > 0 ? msg('alert.tomorrow', { list: next.join(', ') }) : '';
+
+    return { tier: 'done', message: msg('alert.done', { total, streaks }), action: null };
   }
 
   if (minutesToMidnight <= 180 && top) {
-    const more = atRisk.length > 1 ? ` And ${atRisk.length - 1} more at risk.` : '';
+    const more = atRisk.length > 1 ? msg('alert.moreAtRisk', { count: atRisk.length - 1 }) : '';
 
     return {
       tier: 'late',
-      message: `Last call: ${left}. Don't lose your ${top.count}-${top.unit} ${top.name} streak!${more}`,
+      message: msg(top.unit === 'week' ? 'alert.lateWeek' : 'alert.lateDay', {
+        left,
+        count: top.count,
+        name: top.name,
+        more,
+      }),
       action: doNow(top.name, top.id),
     };
   }
 
   if (minutesToMidnight <= 360) {
-    return top
-      ? {
-          tier: 'evening',
-          message: `${left} left. ${top.name}'s ${top.count}-${top.unit} streak ends at midnight.`,
-          action: doNow(top.name, top.id),
-        }
-      : {
-          tier: 'evening',
-          message: `${left} left. ${plural(open.length, 'habit', 'habits')} to go.`,
-          action: doNow(open[0].name, open[0].id),
-        };
+    if (top) {
+      return {
+        tier: 'evening',
+        message: msg(top.unit === 'week' ? 'alert.eveningWeek' : 'alert.eveningDay', {
+          left,
+          name: top.name,
+          count: top.count,
+        }),
+        action: doNow(top.name, top.id),
+      };
+    }
+
+    return {
+      tier: 'evening',
+      message: msg('alert.eveningOpen', { left, count: open.length }),
+      action: doNow(open[0].name, open[0].id),
+    };
   }
 
   if (hour >= 12) {
     return {
       tier: 'afternoon',
-      message: `${open.length} left, ${left} to go.`,
-      action: { kind: 'link', href: '/today', label: 'Open Today' },
+      message: msg('alert.afternoon', { count: open.length, left }),
+      action: { kind: 'link', href: '/today', label: msg('alert.openToday') },
     };
   }
 
   return {
     tier: 'morning',
-    message: `${plural(total, 'habit', 'habits')} today. A good day to start with ${open[0].name}.`,
+    message: msg('alert.morning', { count: total, first: open[0].name }),
     action: null,
   };
 };

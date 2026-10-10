@@ -1,25 +1,31 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 import { isCalendarDate } from '@/domain/dates';
 import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
-import { completionErrorMessage, GENERIC_SAVE_ERROR } from '@/server/completion-errors';
+import { msg, translateMsg, type Msg } from '@/lib/message';
+import { completionErrorMsg } from '@/server/completion-errors';
 import { getProfile } from '@/server/habits';
 import type { ActionResult } from '../habits/actions';
 
 const input = z.object({ habitId: z.uuid(), date: z.string().refine(isCalendarDate), done: z.boolean() });
 
+const fail = async (m: Msg): Promise<ActionResult> => {
+  return { ok: false, error: translateMsg(await getTranslations(), m) };
+};
+
 /** Ticks or unticks a habit for a day. The database function enforces the rules; this only translates its errors. */
 export const setCompletionAction = async (habitId: string, date: string, done: boolean): Promise<ActionResult> => {
   if (!(await getUser())) {
-    return { ok: false, error: 'Please sign in again.' };
+    return fail(msg('errors.signIn'));
   }
 
   const parsed = input.safeParse({ habitId, date, done });
 
   if (!parsed.success) {
-    return { ok: false, error: GENERIC_SAVE_ERROR };
+    return fail(msg('errors.saveFailed'));
   }
 
   try {
@@ -34,7 +40,7 @@ export const setCompletionAction = async (habitId: string, date: string, done: b
 
     if (error) {
       if (error.code === 'P0001') {
-        return { ok: false, error: completionErrorMessage(error.message) };
+        return fail(completionErrorMsg(error.message));
       }
 
       throw new Error(error.message);
@@ -44,7 +50,7 @@ export const setCompletionAction = async (habitId: string, date: string, done: b
   } catch (e) {
     console.error(e);
 
-    return { ok: false, error: GENERIC_SAVE_ERROR };
+    return fail(msg('errors.saveFailed'));
   } finally {
     // also after a failure, so the pages show what the server really has
     revalidatePath('/today');

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
 import type { DaySummary } from '@/server/today-view';
@@ -14,9 +15,11 @@ interface WeekStripProps {
 export const WeekStrip = (props: WeekStripProps) => {
   const { strip, date, today } = props;
 
+  const t = useTranslations('today.card');
+
   return (
     <>
-      <h2 className="week-strip__title">This week</h2>
+      <h2 className="week-strip__title">{t('thisWeek')}</h2>
       <ul className="week-strip__days">
         {strip.map(d => {
           return (

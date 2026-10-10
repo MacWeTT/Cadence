@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -25,6 +26,9 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
   const { habit, onClose, onCloseAutoFocus } = props;
 
   const [busy, setBusy] = useState(false);
+
+  const t = useTranslations('habits');
+  const ta = useTranslations('common.actions');
   const deleting = useRef(false);
 
   const confirm = async () => {
@@ -37,7 +41,7 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
     const result = await deleteHabitAction(habit.id);
 
     if (result.ok) {
-      toast.success('Habit deleted');
+      toast.success(t('toasts.deleted'));
       onClose();
 
       return;
@@ -57,13 +61,11 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
     >
       <AlertDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{`Delete ${habit.name}?`}</AlertDialogTitle>
-          <AlertDialogDescription>
-            This permanently removes the habit and all of its history. This cannot be undone.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t('delete.title', { name: habit.name })}</AlertDialogTitle>
+          <AlertDialogDescription>{t('delete.description')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{ta('cancel')}</AlertDialogCancel>
           <AlertDialogAction
             disabled={busy}
             onClick={e => {
@@ -71,7 +73,7 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
               void confirm();
             }}
           >
-            Delete
+            {ta('delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

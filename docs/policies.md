@@ -17,7 +17,7 @@ Run everything with `npm run verify` before opening a PR.
 | 6 | **Functions are `const fn = params => { ... }`.** No `function` declarations. | ESLint `func-style: expression` |
 | 7 | **Regular class names in JSX, styles in CSS files with `@apply`.** A `className` holds names, not a pile of utilities. Dynamic values (a habit's colour, a ring angle) stay in `style`. | ESLint `no-restricted-syntax` (more than 3 utility classes) |
 | 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
-| 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `messages/en.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
+| 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `locales/<language>/<area>.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
 
 ```tsx
 // check-row/check-row.tsx: a component the way these rules want it.
@@ -70,6 +70,14 @@ const CheckRow = (props: CheckRowProps) => {
 ### CSS naming
 - One CSS file per component, in the component's own folder, imported by the component. Class names are BEM: `block`, `block__element`, `block--modifier`, prefixed by the component name so they cannot collide (`check-row`, `day-card__cell`).
 - Start every CSS file with `@reference` to `globals.css` so `@apply` can use the theme tokens.
+
+## Localisation
+- Messages live in `locales/en/*.json`, one file per area (`today.json`, `habits.json`, ...), merged in `locales/en/index.ts`. Keys are typed from those files: a missing key fails the typecheck.
+- Components read text with `useTranslations('area')` (client components and non-async server components) or `await getTranslations('area')` (async server components and actions).
+- Pure code (rules, helpers) never returns English. It returns a `Msg`: `msg('alert.doNow', { name })`, with another `Msg` allowed as a value (a time inside a sentence). The UI turns it into text with `useMsg()` or `getMsg()`. Tests read the words with `tr()` from `src/lib/test-translate.ts`.
+- Server errors are codes (`new HabitError('habitNotFound')`), and validation messages are codes too; the server action translates them.
+- Plurals use ICU (`{count, plural, one {# habit} other {# habits}}`), never `count === 1 ? ... : ...`.
+- A new language is a new folder `locales/<lang>/` with the same files and index, plus a way to pick it in `src/i18n/request.ts`. Dates are formatted through `formatCalendarDate`, which is fixed to `en-GB` for now (a marked shortcut in `src/lib/format.ts`).
 
 ## Formatting
 - Prettier formats everything (single quotes, 120 columns, trailing commas, LF line endings). `npm run format` fixes; `npm run format:check` is part of the gate.

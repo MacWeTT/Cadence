@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { completionErrorMessage } from './completion-errors';
+import { tr } from '@/lib/test-translate';
+import { completionErrorMsg } from './completion-errors';
 
-describe('completionErrorMessage', () => {
+describe('completionErrorMsg', () => {
   const known = ['habit_not_found', 'habit_archived', 'date_in_future', 'before_start'];
 
   it('gives each database rule its own readable message', () => {
-    const messages = known.map(completionErrorMessage);
+    const messages = known.map(code => {
+      return tr(completionErrorMsg(code));
+    });
 
     expect(new Set(messages).size).toBe(known.length);
 
@@ -15,6 +18,6 @@ describe('completionErrorMessage', () => {
   });
 
   it('falls back to a generic message for anything else', () => {
-    expect(completionErrorMessage('something odd')).toBe("Couldn't save that. Try again.");
+    expect(tr(completionErrorMsg('something odd'))).toBe("Couldn't save that. Try again.");
   });
 });

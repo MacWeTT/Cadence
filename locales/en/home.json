@@ -1,0 +1,12 @@
+{
+  "ringLabel": "{done} of {total} done today",
+  "noneToday": "No habits today.",
+  "nextUp": "Next up · {count} left",
+  "doneToday": "Done today · {count}",
+  "streaks": {
+    "title": "Streaks to protect",
+    "none": "No streaks at risk right now.",
+    "endsAtMidnight": "{length} · ends at midnight",
+    "moreBy": "{length} · {needed} more by {day}"
+  }
+}

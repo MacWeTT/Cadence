@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import en from '../../locales/en';
 import { habitInputSchema, isSingleEmoji, isValidTimeZone, toFieldErrors } from './habit-schema';
 
 const today = '2026-10-09';
@@ -74,5 +75,29 @@ describe('isValidTimeZone', () => {
     expect(isValidTimeZone('UTC')).toBe(true);
     expect(isValidTimeZone('Not/AZone')).toBe(false);
     expect(isValidTimeZone('')).toBe(false);
+  });
+});
+
+describe('validation messages', () => {
+  it('are all keys of locales/en/validation.json, so every problem has words', () => {
+    const r = parse({
+      name: '   ',
+      description: 'x'.repeat(300),
+      icon: 'ab',
+      color: 'red',
+      kind: 'weekly_count',
+      startDate: 'nope',
+    });
+    const codes = r.success
+      ? []
+      : Object.values(toFieldErrors(r.error)).map(issue => {
+          return issue.code;
+        });
+
+    expect(codes.length).toBeGreaterThanOrEqual(5);
+
+    for (const code of codes) {
+      expect(Object.keys(en.validation)).toContain(code);
+    }
   });
 });

@@ -1,10 +1,11 @@
 import { ratio, type Rate } from '@/domain/rates';
+import { msg, type Msg } from '@/lib/message';
 
 /** "78%", or "No rate yet" when nothing was expected. */
-export const percent = (rate: Rate) => {
+export const percentMsg = (rate: Rate): Msg => {
   const r = ratio(rate);
 
-  return r === null ? 'No rate yet' : `${Math.round(r * 100)}%`;
+  return r === null ? msg('progress.rates.noRate') : msg('progress.rates.percent', { value: r });
 };
 
 /** The address of the Progress page for a habit filter and a rate window; the defaults stay out of the address. */

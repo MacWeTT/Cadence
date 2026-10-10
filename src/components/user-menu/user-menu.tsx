@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { signOut } from '@/app/auth/actions';
 import {
   DropdownMenu,
@@ -17,13 +18,15 @@ export const UserMenu = async () => {
     return null;
   }
 
-  const name: string = user.user_metadata.full_name ?? user.email ?? 'Account';
+  const t = await getTranslations('common.account');
+
+  const name: string = user.user_metadata.full_name ?? user.email ?? t('fallbackName');
   const avatarUrl: string | undefined = user.user_metadata.avatar_url;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" aria-label="Account menu" className="user-menu__trigger">
+        <button type="button" aria-label={t('menu')} className="user-menu__trigger">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- small external Google avatar; next/image needs host config
             <img src={avatarUrl} alt="" referrerPolicy="no-referrer" className="user-menu__avatar" />
@@ -38,7 +41,7 @@ export const UserMenu = async () => {
         <form action={signOut}>
           <DropdownMenuItem asChild>
             <button type="submit" className="user-menu__sign-out">
-              Sign out
+              {t('signOut')}
             </button>
           </DropdownMenuItem>
         </form>

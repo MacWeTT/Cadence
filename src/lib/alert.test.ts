@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { alertFor, clockIn, formatLeft, type AlertInput } from './alert';
+import { alertFor, clockIn, timeLeft, type Alert, type AlertInput } from './alert';
+import { tr } from './test-translate';
 
 const read = { id: 'read', name: 'Read' };
 const run = { id: 'run', name: 'Run' };
@@ -17,18 +18,25 @@ const input = (over: Partial<AlertInput> = {}): AlertInput => {
   };
 };
 
-describe('formatLeft', () => {
+/** The alert as the user would read it. */
+const shown = (alert: Alert) => {
+  const action = alert.action && { ...alert.action, label: tr(alert.action.label) };
+
+  return { tier: alert.tier, message: tr(alert.message), action };
+};
+
+describe('timeLeft', () => {
   it('writes hours and minutes, dropping empty parts', () => {
-    expect(formatLeft(340)).toBe('5h 40m');
-    expect(formatLeft(180)).toBe('3h');
-    expect(formatLeft(100)).toBe('1h 40m');
-    expect(formatLeft(45)).toBe('45m');
+    expect(tr(timeLeft(340))).toBe('5h 40m');
+    expect(tr(timeLeft(180))).toBe('3h');
+    expect(tr(timeLeft(100))).toBe('1h 40m');
+    expect(tr(timeLeft(45))).toBe('45m');
   });
 });
 
 describe('alertFor tiers', () => {
   it('says nothing when no habit is listed today, even late', () => {
-    expect(alertFor(input({ total: 0, open: [], hour: 23, minutesToMidnight: 30 }))).toEqual({
+    expect(shown(alertFor(input({ total: 0, open: [], hour: 23, minutesToMidnight: 30 })))).toEqual({
       tier: 'none',
       message: '',
       action: null,
@@ -50,20 +58,21 @@ describe('alertFor tiers', () => {
       }),
     );
 
-    expect(done).toEqual({
+    expect(shown(done)).toEqual({
       tier: 'done',
       message: "All 3 done. Nice. Tomorrow's streaks: Journal 32, Read 13.",
       action: null,
     });
-    expect(alertFor(input({ total: 2, open: [] })).message).toBe('All 2 done. Nice.');
+    expect(shown(alertFor(input({ total: 2, open: [] }))).message).toBe('All 2 done. Nice.');
   });
 
   it('gives a last call in the final three hours when a streak is at risk, with a button to that habit', () => {
-    expect(alertFor(input({ hour: 22, minutesToMidnight: 100, atRisk: [atRiskRead] }))).toEqual({
+    expect(shown(alertFor(input({ hour: 22, minutesToMidnight: 100, atRisk: [atRiskRead] })))).toEqual({
       tier: 'late',
       message: "Last call: 1h 40m. Don't lose your 12-day Read streak!",
       action: { kind: 'focus', id: 'read', label: 'Do Read now' },
     });
+
     const two = alertFor(
       input({
         hour: 22,
@@ -72,11 +81,19 @@ describe('alertFor tiers', () => {
       }),
     );
 
-    expect(two.message).toBe("Last call: 1h 40m. Don't lose your 12-day Read streak! And 1 more at risk.");
+    expect(shown(two).message).toBe("Last call: 1h 40m. Don't lose your 12-day Read streak! And 1 more at risk.");
+  });
+
+  it('names a weekly streak in weeks', () => {
+    const week = alertFor(
+      input({ hour: 22, minutesToMidnight: 100, atRisk: [{ id: 'run', name: 'Run', count: 3, unit: 'week' }] }),
+    );
+
+    expect(shown(week).message).toBe("Last call: 1h 40m. Don't lose your 3-week Run streak!");
   });
 
   it('warns in the evening, naming the streak that ends at midnight', () => {
-    expect(alertFor(input({ hour: 18, minutesToMidnight: 340, atRisk: [atRiskRead] }))).toEqual({
+    expect(shown(alertFor(input({ hour: 18, minutesToMidnight: 340, atRisk: [atRiskRead] })))).toEqual({
       tier: 'evening',
       message: "5h 40m left. Read's 12-day streak ends at midnight.",
       action: { kind: 'focus', id: 'read', label: 'Do Read now' },
@@ -84,9 +101,11 @@ describe('alertFor tiers', () => {
   });
 
   it('warns in the evening without a streak, counting habits to go', () => {
-    expect(alertFor(input({ hour: 19, minutesToMidnight: 300 })).message).toBe('5h left. 2 habits to go.');
-    expect(alertFor(input({ hour: 19, minutesToMidnight: 300, open: [run] })).message).toBe('5h left. 1 habit to go.');
-    expect(alertFor(input({ hour: 19, minutesToMidnight: 300 })).action).toEqual({
+    expect(shown(alertFor(input({ hour: 19, minutesToMidnight: 300 }))).message).toBe('5h left. 2 habits to go.');
+    expect(shown(alertFor(input({ hour: 19, minutesToMidnight: 300, open: [run] }))).message).toBe(
+      '5h left. 1 habit to go.',
+    );
+    expect(shown(alertFor(input({ hour: 19, minutesToMidnight: 300 }))).action).toEqual({
       kind: 'focus',
       id: 'read',
       label: 'Do Read now',
@@ -94,7 +113,7 @@ describe('alertFor tiers', () => {
   });
 
   it('nudges gently in the afternoon, linking to Today', () => {
-    expect(alertFor(input({ hour: 14, minutesToMidnight: 600 }))).toEqual({
+    expect(shown(alertFor(input({ hour: 14, minutesToMidnight: 600 })))).toEqual({
       tier: 'afternoon',
       message: '2 left, 10h to go.',
       action: { kind: 'link', href: '/today', label: 'Open Today' },
@@ -102,12 +121,14 @@ describe('alertFor tiers', () => {
   });
 
   it('starts the day calmly, naming the first open habit', () => {
-    expect(alertFor(input())).toEqual({
+    expect(shown(alertFor(input()))).toEqual({
       tier: 'morning',
       message: '5 habits today. A good day to start with Read.',
       action: null,
     });
-    expect(alertFor(input({ total: 1, open: [read] })).message).toBe('1 habit today. A good day to start with Read.');
+    expect(shown(alertFor(input({ total: 1, open: [read] }))).message).toBe(
+      '1 habit today. A good day to start with Read.',
+    );
   });
 });
 
@@ -121,12 +142,14 @@ describe('alertFor boundaries', () => {
     expect(at(181, 21)).toBe('evening');
     expect(at(120, 22, [])).toBe('evening');
   });
+
   it('evening starts at 360 minutes to midnight, afternoon at noon', () => {
     expect(at(360, 18, [])).toBe('evening');
     expect(at(361, 17, [])).toBe('afternoon');
     expect(at(720, 12, [])).toBe('afternoon');
     expect(at(780, 11, [])).toBe('morning');
   });
+
   it('a streak at risk never turns the banner amber before six in the evening', () => {
     expect(at(600, 14)).toBe('afternoon');
     expect(at(900, 9)).toBe('morning');
@@ -148,6 +171,7 @@ describe('clockIn', () => {
       minutesToMidnight: 1440,
     });
   });
+
   it('follows the profile timezone, including half-hour zones, not the browser', () => {
     expect(clockIn('Asia/Kolkata', new Date('2026-10-09T20:00:00Z'))).toEqual({
       date: '2026-10-10',

@@ -1,0 +1,47 @@
+{
+  "title": "Habits",
+  "emptyTitle": "No habits yet",
+  "emptyText": "Start with one small habit you can do every day. You can add more whenever you like.",
+  "listLabel": "Habits",
+  "archivedLabel": "Archived habits",
+  "archivedToggle": "Archived ({count})",
+  "toasts": {
+    "archived": "Habit archived",
+    "restored": "Habit restored",
+    "deleted": "Habit deleted",
+    "saved": "Habit saved",
+    "created": "Habit created"
+  },
+  "row": {
+    "archivedOn": "Archived {date}",
+    "pendingChange": "Changes to {schedule} on {date}",
+    "actionsFor": "Actions for {name}"
+  },
+  "delete": {
+    "title": "Delete {name}?",
+    "description": "This permanently removes the habit and all of its history. This cannot be undone."
+  },
+  "dialog": {
+    "editTitle": "Edit habit",
+    "newTitle": "New habit",
+    "description": "Choose an emoji, a name, a color and a schedule.",
+    "name": "Name",
+    "namePlaceholder": "Name your habit",
+    "descriptionLabel": "Description (optional)",
+    "starts": "Starts",
+    "saveHabit": "Save habit",
+    "effectiveNote": "Changes apply from {date}, so your history stays as it was.",
+    "color": "Color",
+    "schedule": "Schedule",
+    "everyDay": "Every day",
+    "timesAWeek": "Times a week",
+    "timesPerWeek": "Times per week",
+    "perWeek": "per week"
+  },
+  "emoji": {
+    "choose": "Choose emoji",
+    "search": "Search emoji",
+    "loading": "Loading…",
+    "none": "No emoji found."
+  }
+}

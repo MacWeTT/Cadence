@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import type { CalendarDate } from '@/domain/dates';
 import type { DaySummary } from '@/server/today-view';
 import { WeekStrip } from '../week-strip/week-strip';
@@ -15,14 +16,16 @@ interface DayCardProps {
 export const DayCard = (props: DayCardProps) => {
   const { done, total, strip, date, today } = props;
 
+  const t = useTranslations('today.card');
+
   return (
-    <aside aria-label="Progress" className="day-card">
+    <aside aria-label={t('label')} className="day-card">
       <p className="day-card__count">
-        {done} <span className="day-card__total">of {total}</span>
+        {done} <span className="day-card__total">{t('ofTotal', { total })}</span>
       </p>
       <div
         role="progressbar"
-        aria-label="Habits done"
+        aria-label={t('habitsDone')}
         aria-valuemin={0}
         aria-valuemax={total}
         aria-valuenow={done}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
@@ -17,6 +18,8 @@ interface HomeHeaderProps {
 export const HomeHeader = (props: HomeHeaderProps) => {
   const { done, total, today, greeting, onNewHabit } = props;
 
+  const t = useTranslations('common.actions');
+
   return (
     <div className="home-header">
       <ProgressRing done={done} total={total} />
@@ -27,7 +30,7 @@ export const HomeHeader = (props: HomeHeaderProps) => {
         <h1 className="home-header__greeting">{greeting ?? ' '}</h1>
       </div>
       <Button className="home-header__button" onClick={onNewHabit}>
-        New habit
+        {t('newHabit')}
       </Button>
     </div>
   );

@@ -1,0 +1,30 @@
+{
+  "title": "Today",
+  "todo": "To do",
+  "doneToday": "Done today",
+  "done": "Done",
+  "noneThisDay": "No habits on this day.",
+  "nothingLeftToday": "Nothing left for today.",
+  "nothingLeftThisDay": "Nothing left for this day.",
+  "nav": {
+    "label": "Choose day",
+    "previous": "Previous day",
+    "next": "Next day",
+    "today": "Today"
+  },
+  "card": {
+    "label": "Progress",
+    "ofTotal": "of {total}",
+    "habitsDone": "Habits done",
+    "thisWeek": "This week"
+  },
+  "cell": {
+    "notYet": "{day}: not yet",
+    "nothingPlanned": "{day}: nothing planned",
+    "done": "{day}: {done} of {total} done"
+  },
+  "row": {
+    "markDone": "Mark {name} done",
+    "markNotDone": "Mark {name} not done"
+  }
+}

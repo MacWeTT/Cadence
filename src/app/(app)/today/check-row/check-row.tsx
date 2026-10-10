@@ -1,9 +1,11 @@
 'use client';
 
 import { Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
-import { streakLabel, weekLabel } from '@/lib/today-labels';
+import { streakMsg, weekMsg } from '@/lib/today-labels';
+import { cn } from '@/lib/utils';
 import type { TodayRow } from '@/server/today-view';
 import './check-row.css';
 
@@ -17,6 +19,9 @@ interface CheckRowProps {
 export const CheckRow = (props: CheckRowProps) => {
   const { row, disabled, onToggle } = props;
 
+  const t = useTranslations('today.row');
+  const tm = useMsg();
+
   return (
     <li className="check-row">
       <button
@@ -24,7 +29,7 @@ export const CheckRow = (props: CheckRowProps) => {
         role="checkbox"
         id={`check-${row.id}`}
         aria-checked={row.ticked}
-        aria-label={row.ticked ? `Mark ${row.name} not done` : `Mark ${row.name} done`}
+        aria-label={row.ticked ? t('markNotDone', { name: row.name }) : t('markDone', { name: row.name })}
         // aria-disabled, not disabled: a disabled button drops keyboard focus; the toggle ignores taps while saving.
         aria-disabled={disabled}
         onClick={onToggle}
@@ -41,9 +46,9 @@ export const CheckRow = (props: CheckRowProps) => {
       </span>
       <p className={cn('check-row__name', row.ticked && 'check-row__name--done')}>{row.name}</p>
       <div className="check-row__tags">
-        {row.week && <span>{weekLabel(row.week)}</span>}
-        {row.week && row.streak && <span aria-hidden>·</span>}
-        {row.streak && <span>{streakLabel(row.streak)}</span>}
+        {row.week && <span>{tm(weekMsg(row.week))}</span>}
+        {row.week && row.streak && <span aria-hidden>{'·'}</span>}
+        {row.streak && <span>{tm(streakMsg(row.streak))}</span>}
       </div>
     </li>
   );

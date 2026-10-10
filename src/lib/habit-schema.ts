@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { isCalendarDate, type CalendarDate } from '@/domain/dates';
+import type en from '../../locales/en';
 import { COLOR_KEYS } from './palette';
+
+/** The name of a message in `locales/en/validation.json`. */
+export type ValidationCode = keyof typeof en.validation;
+
+/** What is wrong with one field: a validation message, and what fills its gaps. */
+export interface FieldIssue {
+  code: ValidationCode;
+  values?: Record<string, string | number>;
+}
 
 /** True for exactly one emoji (one grapheme, including skin-tone, ZWJ and flag sequences). */
 export const isSingleEmoji = (value: string): boolean => {
@@ -26,45 +36,40 @@ export const isValidTimeZone = (timeZone: string): boolean => {
 export const habitInputSchema = (today: CalendarDate) => {
   return z
     .object({
-      name: z.string().trim().min(1, 'Give your habit a name').max(80, 'Keep the name to 80 characters or fewer'),
-      description: z.string().trim().max(280, 'Keep the description to 280 characters or fewer').optional(),
-      icon: z.string().refine(isSingleEmoji, 'Choose a single emoji'),
-      color: z.enum(COLOR_KEYS, 'Choose a color'),
+      name: z.string().trim().min(1, 'nameRequired').max(80, 'nameTooLong'),
+      description: z.string().trim().max(280, 'descriptionTooLong').optional(),
+      icon: z.string().refine(isSingleEmoji, 'iconInvalid'),
+      color: z.enum(COLOR_KEYS, 'colorInvalid'),
       kind: z.enum(['daily', 'weekly_count']),
-      timesPerWeek: z
-        .number()
-        .int()
-        .min(1, 'Choose 1 to 6 times a week')
-        .max(6, 'Choose 1 to 6 times a week')
-        .optional(),
+      timesPerWeek: z.number().int().min(1, 'timesRange').max(6, 'timesRange').optional(),
       startDate: z
         .string()
-        .refine(isCalendarDate, 'Enter a valid date')
+        .refine(isCalendarDate, 'dateInvalid')
         .refine(d => {
           return d >= '2000-01-01' && d <= today;
-        }, 'The start date can be any day up to today'),
+        }, 'startRange'),
     })
     .superRefine((v, ctx) => {
       if (v.kind === 'weekly_count' && v.timesPerWeek === undefined) {
-        ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'Choose 1 to 6 times a week' });
+        ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'timesRange' });
       }
 
       if (v.kind === 'daily' && v.timesPerWeek !== undefined) {
-        ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'A daily habit has no weekly count' });
+        ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'timesOnDaily' });
       }
     });
 };
 
 export type HabitInput = z.infer<ReturnType<typeof habitInputSchema>>;
 
-/** The first message for each field, keyed by field name. */
-export const toFieldErrors = (error: z.ZodError): Record<string, string> => {
-  const out: Record<string, string> = {};
+/** The first problem for each field, keyed by field name. The schema's messages are validation codes. */
+export const toFieldErrors = (error: z.ZodError): Record<string, FieldIssue> => {
+  const out: Record<string, FieldIssue> = {};
 
   for (const issue of error.issues) {
     const key = String(issue.path[0] ?? 'form');
 
-    out[key] ??= issue.message;
+    out[key] ??= { code: issue.message as ValidationCode };
   }
 
   return out;

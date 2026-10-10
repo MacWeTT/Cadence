@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
@@ -17,12 +18,6 @@ const cellState = (d: DaySummary) => {
   return d.done > 0 ? 'partial' : 'empty';
 };
 
-const cellLabel = (d: DaySummary) => {
-  return `${formatCalendarDate(d.date, { weekday: 'long', day: 'numeric', month: 'short' })}: ${
-    d.future ? 'not yet' : d.total === 0 ? 'nothing planned' : `${d.done} of ${d.total} done`
-  }`;
-};
-
 interface DayCellProps {
   d: DaySummary;
   viewed: boolean;
@@ -33,16 +28,24 @@ interface DayCellProps {
 export const DayCell = (props: DayCellProps) => {
   const { d, viewed, today } = props;
 
+  const t = useTranslations('today.cell');
+
   const className = cn('day-cell', `day-cell--${cellState(d)}`, viewed && 'day-cell--viewed');
+  const day = formatCalendarDate(d.date, { weekday: 'long', day: 'numeric', month: 'short' });
+  const label = d.future
+    ? t('notYet', { day })
+    : d.total === 0
+      ? t('nothingPlanned', { day })
+      : t('done', { day, done: d.done, total: d.total });
 
   if (d.future) {
-    return <span role="img" aria-label={cellLabel(d)} className={className} />;
+    return <span role="img" aria-label={label} className={className} />;
   }
 
   return (
     <Link
       href={d.date === today ? '/today' : `/today?date=${d.date}`}
-      aria-label={cellLabel(d)}
+      aria-label={label}
       aria-current={viewed ? 'date' : undefined}
       className={className}
     >

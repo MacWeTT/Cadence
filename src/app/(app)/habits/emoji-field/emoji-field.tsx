@@ -6,6 +6,7 @@ import {
   type EmojiPickerListEmojiProps,
   type EmojiPickerListRowProps,
 } from 'frimousse';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import './emoji-field.css';
@@ -51,10 +52,12 @@ export const EmojiField = (props: EmojiFieldProps) => {
 
   const [open, setOpen] = useState(false);
 
+  const t = useTranslations('habits.emoji');
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" aria-label="Choose emoji" className="emoji-field__trigger">
+        <button type="button" aria-label={t('choose')} className="emoji-field__trigger">
           {value}
         </button>
       </PopoverTrigger>
@@ -67,14 +70,14 @@ export const EmojiField = (props: EmojiFieldProps) => {
           }}
         >
           <EmojiPicker.Search
-            placeholder="Search emoji"
-            aria-label="Search emoji"
+            placeholder={t('search')}
+            aria-label={t('search')}
             autoFocus
             className="emoji-field__search"
           />
           <EmojiPicker.Viewport className="emoji-field__viewport">
-            <EmojiPicker.Loading className="emoji-field__message">Loading…</EmojiPicker.Loading>
-            <EmojiPicker.Empty className="emoji-field__message">No emoji found.</EmojiPicker.Empty>
+            <EmojiPicker.Loading className="emoji-field__message">{t('loading')}</EmojiPicker.Loading>
+            <EmojiPicker.Empty className="emoji-field__message">{t('none')}</EmojiPicker.Empty>
             <EmojiPicker.List
               className="emoji-field__list"
               components={{ CategoryHeader, Row: GridRow, Emoji: EmojiButton }}

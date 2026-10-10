@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import type { HabitRow } from '@/server/habit-view';
 import { ChipLink } from '../chip-link/chip-link';
 import { progressHref } from '../progress-links';
@@ -13,10 +14,12 @@ interface HabitFilterProps {
 export const HabitFilter = (props: HabitFilterProps) => {
   const { habits, selectedId, range } = props;
 
+  const t = useTranslations('progress.filter');
+
   return (
-    <nav aria-label="Filter by habit" className="habit-filter">
+    <nav aria-label={t('label')} className="habit-filter">
       <ChipLink href={progressHref(null, range)} active={selectedId === null}>
-        All habits
+        {t('all')}
       </ChipLink>
       {habits.map(h => {
         return (

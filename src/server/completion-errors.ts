@@ -1,13 +1,17 @@
-/** What the user sees when `set_completion` refuses a tick. The keys are the messages raised by the database function. */
-export const GENERIC_SAVE_ERROR = "Couldn't save that. Try again.";
+import { msg, type Msg } from '@/lib/message';
 
-const MESSAGES: Record<string, string> = {
-  habit_not_found: 'That habit could not be found.',
-  habit_archived: 'Restore this habit before ticking it.',
-  date_in_future: "You can't tick a day that hasn't happened yet.",
-  before_start: 'That day is before the habit started.',
-};
-
-export const completionErrorMessage = (message: string): string => {
-  return MESSAGES[message] ?? GENERIC_SAVE_ERROR;
+/** What `set_completion` refuses a tick with, mapped to the message the user sees. Keys are the database's messages. */
+export const completionErrorMsg = (message: string): Msg => {
+  switch (message) {
+    case 'habit_not_found':
+      return msg('errors.habitNotFound');
+    case 'habit_archived':
+      return msg('errors.completionArchived');
+    case 'date_in_future':
+      return msg('errors.dateInFuture');
+    case 'before_start':
+      return msg('errors.beforeStart');
+    default:
+      return msg('errors.saveFailed');
+  }
 };

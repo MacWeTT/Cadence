@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,8 @@ interface TodayClientProps {
 export const TodayClient = (props: TodayClientProps) => {
   const { view, date, today, earliest } = props;
 
+  const t = useTranslations('today');
+  const tc = useTranslations('common.emptyHabits');
   const { shown, saving, toggle } = useToggleCompletion(view, date);
 
   const isToday = date === today;
@@ -37,7 +40,7 @@ export const TodayClient = (props: TodayClientProps) => {
             </p>
           )}
           <h1 className="today__title">
-            {isToday ? 'Today' : formatCalendarDate(date, { weekday: 'long', day: 'numeric', month: 'short' })}
+            {isToday ? t('title') : formatCalendarDate(date, { weekday: 'long', day: 'numeric', month: 'short' })}
           </h1>
         </div>
         <DateNav date={date} today={today} earliest={earliest} />
@@ -45,11 +48,11 @@ export const TodayClient = (props: TodayClientProps) => {
 
       {!view.hasHabits ? (
         <EmptyState
-          title="No habits yet"
-          text="Create a habit and it will show up here, ready to tick off."
+          title={tc('title')}
+          text={tc('text')}
           action={
             <Button asChild>
-              <Link href="/habits">Create your first habit</Link>
+              <Link href="/habits">{tc('action')}</Link>
             </Button>
           }
         />
@@ -57,16 +60,16 @@ export const TodayClient = (props: TodayClientProps) => {
         <div className="today__columns">
           <div className="today__main">
             {nothingListed ? (
-              <p className="today__note">No habits on this day.</p>
+              <p className="today__note">{t('noneThisDay')}</p>
             ) : (
               <>
                 {shown.todo.length === 0 && (
-                  <p className="today__note">{isToday ? 'Nothing left for today.' : 'Nothing left for this day.'}</p>
+                  <p className="today__note">{isToday ? t('nothingLeftToday') : t('nothingLeftThisDay')}</p>
                 )}
-                <CheckSection id="todo-heading" title="To do" rows={shown.todo} saving={saving} onToggle={toggle} />
+                <CheckSection id="todo-heading" title={t('todo')} rows={shown.todo} saving={saving} onToggle={toggle} />
                 <CheckSection
                   id="done-heading"
-                  title={isToday ? 'Done today' : 'Done'}
+                  title={isToday ? t('doneToday') : t('done')}
                   rows={shown.done}
                   saving={saving}
                   onToggle={toggle}

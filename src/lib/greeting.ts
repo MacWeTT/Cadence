@@ -1,3 +1,5 @@
+import { msg, type MessageKey, type Msg } from './message';
+
 export type DayPart = 'morning' | 'afternoon' | 'evening' | 'night';
 
 export interface GreetingContext {
@@ -14,43 +16,24 @@ export interface GreetingContext {
 }
 
 export interface Greeting {
+  /** Which line, so it can be remembered and not repeated. */
   id: string;
-  text: string;
+  message: Msg;
 }
 
-// Whole sentences with a {name} placeholder, never assembled from pieces, so they can be translated as they are.
-const BY_DAY_PART: Record<DayPart, Greeting[]> = {
-  morning: [
-    { id: 'm1', text: 'Good morning, {name}' },
-    { id: 'm2', text: 'Morning, {name}. Ready when you are.' },
-    { id: 'm3', text: 'Rise and tick, {name}.' },
-  ],
-  afternoon: [
-    { id: 'a1', text: 'Good afternoon, {name}' },
-    { id: 'a2', text: "Afternoon, {name}. How's the day going?" },
-  ],
-  evening: [
-    { id: 'e1', text: 'Good evening, {name}' },
-    { id: 'e2', text: "Evening, {name}. Let's wrap up well." },
-  ],
-  night: [
-    { id: 'n1', text: 'Still up, {name}?' },
-    { id: 'n2', text: 'Late one, {name}. One more tick?' },
-  ],
+// The lines themselves live in locales/en/greeting.json (`greeting.lines.<id>`); these tables only say when each applies.
+const BY_DAY_PART: Record<DayPart, string[]> = {
+  morning: ['m1', 'm2', 'm3'],
+  afternoon: ['a1', 'a2'],
+  evening: ['e1', 'e2'],
+  night: ['n1', 'n2'],
 };
 
-const BY_WEEKDAY: Record<number, Greeting> = {
-  1: { id: 'w1', text: 'Fresh week, {name}' },
-  5: { id: 'w5', text: 'Happy Friday, {name}' },
-  0: { id: 'w0', text: 'Slow Sunday, {name}' },
-};
+const BY_WEEKDAY: Record<number, string> = { 1: 'w1', 5: 'w5', 0: 'w0' };
 
-const ALL_DONE: Greeting[] = [
-  { id: 'd1', text: 'All done, {name}. Go enjoy it.' },
-  { id: 'd2', text: 'Clean sweep, {name}.' },
-];
+const ALL_DONE = ['d1', 'd2'];
 
-const FRESH_PAGE: Greeting = { id: 'z1', text: 'Fresh page, {name}. One tick gets you moving.' };
+const FRESH_PAGE = 'z1';
 
 export const dayPart = (hour: number): DayPart => {
   if (hour >= 5 && hour < 12) {
@@ -68,20 +51,29 @@ export const dayPart = (hour: number): DayPart => {
   return 'night';
 };
 
-/** The first word of the display name, or "friend" when there is none. */
-export const firstName = (name: string | null): string => {
-  return name?.trim().split(/\s+/)[0] || 'friend';
+/** The first word of the display name, or `null` when there is none. */
+export const firstName = (name: string | null): string | null => {
+  return name?.trim().split(/\s+/)[0] || null;
+};
+
+const toGreeting = (id: string, name: string | null): Greeting => {
+  return {
+    id,
+    message: msg(`greeting.lines.${id}` as MessageKey, { name: firstName(name) ?? msg('greeting.friend') }),
+  };
 };
 
 /** The lines that suit this moment. */
-const poolFor = (ctx: GreetingContext): Greeting[] => {
-  return ctx.allDone
-    ? ALL_DONE
-    : [
-        ...BY_DAY_PART[dayPart(ctx.hour)],
-        ...(BY_WEEKDAY[ctx.weekday] ? [BY_WEEKDAY[ctx.weekday]] : []),
-        ...(ctx.noneDone && ctx.hour >= 12 ? [FRESH_PAGE] : []),
-      ];
+const poolFor = (ctx: GreetingContext): string[] => {
+  if (ctx.allDone) {
+    return ALL_DONE;
+  }
+
+  return [
+    ...BY_DAY_PART[dayPart(ctx.hour)],
+    ...(BY_WEEKDAY[ctx.weekday] ? [BY_WEEKDAY[ctx.weekday]] : []),
+    ...(ctx.noneDone && ctx.hour >= 12 ? [FRESH_PAGE] : []),
+  ];
 };
 
 /** `random` returns a number in [0, 1); it is injected so the choice can be tested. `lastId` is never repeated. */
@@ -89,27 +81,20 @@ export const pickGreeting = (ctx: GreetingContext, random: () => number, lastId?
   let pool = poolFor(ctx);
 
   if (pool.length > 1) {
-    pool = pool.filter(g => {
-      return g.id !== lastId;
+    pool = pool.filter(id => {
+      return id !== lastId;
     });
   }
 
-  const picked = pool[Math.floor(random() * pool.length)];
-
-  return {
-    id: picked.id,
-    text: picked.text.replace('{name}', () => {
-      return firstName(ctx.name);
-    }),
-  };
+  return toGreeting(pool[Math.floor(random() * pool.length)], ctx.name);
 };
 
 const STORAGE_KEY = 'cadence:greeting';
 
 /**
  * The greeting for this visit: the stored line is kept for as long as it still suits the moment (so ticking or coming
- * back to Home does not reshuffle it), and a new one is never the same line as the previous one. `storage` is sessionStorage in the
- * browser; any failure to use it (private mode, blocked, junk) just means a fresh pick.
+ * back to Home does not reshuffle it), and a new one is never the same line as the previous one. `storage` is
+ * sessionStorage in the browser; any failure to use it (private mode, blocked, junk) just means a fresh pick.
  */
 export const chooseGreeting = (
   ctx: GreetingContext,
@@ -125,17 +110,10 @@ export const chooseGreeting = (
   }
 
   // "Fresh page" is kept after the first tick: ticking must not reshuffle the greeting.
-  const kept = poolFor({ ...ctx, noneDone: true }).find(g => {
-    return g.id === stored.id;
+  const keep = poolFor({ ...ctx, noneDone: true }).find(id => {
+    return id === stored.id;
   });
-  const greeting = kept
-    ? {
-        id: kept.id,
-        text: kept.text.replace('{name}', () => {
-          return firstName(ctx.name);
-        }),
-      }
-    : pickGreeting(ctx, random, stored.id);
+  const greeting = keep ? toGreeting(keep, ctx.name) : pickGreeting(ctx, random, stored.id);
 
   try {
     storage?.setItem(STORAGE_KEY, JSON.stringify({ id: greeting.id }));

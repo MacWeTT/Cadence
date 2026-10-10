@@ -1,7 +1,7 @@
+import { useTranslations } from 'next-intl';
 import { useEffect, useOptimistic, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import type { CalendarDate } from '@/domain/dates';
-import { GENERIC_SAVE_ERROR } from '@/server/completion-errors';
 import { applyToggle, type TodayRow, type TodayView } from '@/server/today-view';
 import { setCompletionAction } from './actions';
 
@@ -10,14 +10,18 @@ import { setCompletionAction } from './actions';
  * time, a toast and a rollback when the save fails, and keyboard focus that follows the row to its new list.
  */
 export const useToggleCompletion = (view: TodayView, date: CalendarDate) => {
+  const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
+
+  const t = useTranslations('errors');
+  const [, startTransition] = useTransition();
+
   // The optimistic view reverts by itself when the transition ends: to the server's new view after a refresh, or to
   // the old one if the save failed.
   const [shown, showToggle] = useOptimistic(view, (current, change: { id: string; ticked: boolean }) => {
     return applyToggle(current, change.id, change.ticked);
   });
-  const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
+
   const inFlight = useRef(new Set<string>()); // a ref as well, so two taps in one render still send one request
-  const [, startTransition] = useTransition();
   const focusId = useRef<string | null>(null);
 
   // A ticked row moves to the other list, which remounts its button and drops keyboard focus; put it back. Only when the
@@ -63,7 +67,7 @@ export const useToggleCompletion = (view: TodayView, date: CalendarDate) => {
           toast.error(result.error);
         }
       } catch {
-        toast.error(GENERIC_SAVE_ERROR);
+        toast.error(t('saveFailed'));
       } finally {
         inFlight.current.delete(row.id);
         setSaving(new Set(inFlight.current));

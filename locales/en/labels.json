@@ -1,0 +1,16 @@
+{
+  "streak": {
+    "days": "🔥 {count, plural, one {# day} other {# days}}",
+    "weeks": "{count} week streak",
+    "lengthDays": "{count, plural, one {# day} other {# days}}",
+    "lengthWeeks": "{count, plural, one {# week} other {# weeks}}"
+  },
+  "week": {
+    "progress": "{done} of {target} this week",
+    "goalMet": "Goal met"
+  },
+  "schedule": {
+    "daily": "Every day",
+    "weekly": "{times}× a week"
+  }
+}
