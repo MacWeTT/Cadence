@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import { HomeSkeleton } from '@/components/home-skeleton';
+import { HomeSkeleton } from '@/components/home-skeleton/home-skeleton';
 import { loadHabitData } from '@/server/habit-data';
 import { buildHomeView } from '@/server/home-view';
-import { HomeClient } from './home/home-client';
+import { HomeClient } from './home/home-client/home-client';
 
 const HomePage = () => {
   return (

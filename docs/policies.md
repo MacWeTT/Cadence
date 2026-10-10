@@ -16,10 +16,11 @@ Run everything with `npm run verify` before opening a PR.
 | 5 | **Order inside a component or hook:** state first, then queries (data hooks), then everything else (derived values, effects, handlers). | Review |
 | 6 | **Functions are `const fn = params => { ... }`.** No `function` declarations. | ESLint `func-style: expression` |
 | 7 | **Regular class names in JSX, styles in CSS files with `@apply`.** A `className` holds names, not a pile of utilities. Dynamic values (a habit's colour, a ring angle) stay in `style`. | ESLint `no-restricted-syntax` (more than 3 utility classes) |
+| 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
 | 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `messages/en.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
 
 ```tsx
-// A component the way these rules want it.
+// check-row/check-row.tsx: a component the way these rules want it.
 import './check-row.css';
 
 interface CheckRowProps {
@@ -50,8 +51,8 @@ const CheckRow = (props: CheckRowProps) => {
 ```
 
 ```css
-/* check-row.css */
-@reference '../../globals.css';
+/* check-row/check-row.css */
+@reference '../../../globals.css';
 
 .check-row {
   @apply flex items-center gap-4 border-b border-line px-3 py-3.5;
@@ -67,7 +68,7 @@ const CheckRow = (props: CheckRowProps) => {
 ```
 
 ### CSS naming
-- One CSS file per component, next to it, imported by the component. Class names are BEM: `block`, `block__element`, `block--modifier`, prefixed by the component name so they cannot collide (`check-row`, `day-card__cell`).
+- One CSS file per component, in the component's own folder, imported by the component. Class names are BEM: `block`, `block__element`, `block--modifier`, prefixed by the component name so they cannot collide (`check-row`, `day-card__cell`).
 - Start every CSS file with `@reference` to `globals.css` so `@apply` can use the theme tokens.
 
 ## Formatting

@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
-import { TopBar } from '@/components/top-bar';
-import { UserMenu } from '@/components/user-menu';
-import { TimezoneSync } from './timezone-sync';
+import { TopBar } from '@/components/top-bar/top-bar';
+import { UserMenu } from '@/components/user-menu/user-menu';
+import { TimezoneSync } from './timezone-sync/timezone-sync';
 import './layout.css';
 
 interface AppLayoutProps {

@@ -1,0 +1,5 @@
+@reference '../../../globals.css';
+
+.field-error {
+  @apply mt-1 text-sm text-danger;
+}

@@ -1,5 +1,0 @@
-@reference '../../globals.css';
-
-.progress-card {
-  @apply rounded-2xl border border-line bg-surface p-5;
-}

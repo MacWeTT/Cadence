@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { ProgressSkeleton } from '@/components/progress-skeleton';
-import { ProgressContent } from './progress-content';
+import { ProgressSkeleton } from '@/components/progress-skeleton/progress-skeleton';
+import { ProgressContent } from './progress-content/progress-content';
 import './page.css';
 
 const ProgressPage = (props: PageProps<'/progress'>) => {

@@ -1,0 +1,9 @@
+@reference '../../app/globals.css';
+
+.home-skeleton__header {
+  @apply flex items-center gap-5;
+}
+
+.home-skeleton__columns {
+  @apply mt-6 grid gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8;
+}

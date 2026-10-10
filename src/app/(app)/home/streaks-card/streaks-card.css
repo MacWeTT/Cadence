@@ -1,0 +1,37 @@
+@reference '../../../globals.css';
+
+.streaks-card {
+  @apply rounded-2xl border border-line bg-surface p-5;
+}
+
+.streaks-card__title {
+  @apply mb-3 text-xs font-medium tracking-wider text-ink-muted uppercase;
+}
+
+.streaks-card__empty {
+  @apply text-sm text-ink-muted;
+}
+
+.streaks-card__list {
+  @apply space-y-2;
+}
+
+.streaks-card__item {
+  @apply flex items-center gap-3 rounded-xl border border-clay/50 bg-clay/10 px-3 py-2.5;
+}
+
+.streaks-card__icon {
+  @apply flex size-8 shrink-0 items-center justify-center rounded-lg text-lg;
+}
+
+.streaks-card__body {
+  @apply min-w-0;
+}
+
+.streaks-card__name {
+  @apply truncate font-semibold;
+}
+
+.streaks-card__tag {
+  @apply text-sm text-ink-muted;
+}

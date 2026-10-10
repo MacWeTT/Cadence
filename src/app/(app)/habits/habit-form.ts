@@ -1,6 +1,6 @@
 import type { ColorKey } from '@/lib/palette';
 import type { HabitListItem } from '@/server/habit-view';
-import type { ScheduleKind } from './schedule-field';
+import type { ScheduleKind } from './schedule-field/schedule-field';
 
 const DEFAULT_ICON = '🎯';
 

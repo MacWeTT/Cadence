@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
-import { ListSkeleton } from '@/components/list-skeleton';
+import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { getTodayView } from '@/server/today';
-import { TodayClient } from './today-client';
+import { TodayClient } from './today-client/today-client';
 
 const TodayPage = (props: PageProps<'/today'>) => {
   const { searchParams } = props;

@@ -1,0 +1,29 @@
+@reference '../../../globals.css';
+
+.rates-row {
+  @apply flex flex-wrap items-center gap-x-4 gap-y-1 py-3;
+}
+
+.rates-row__icon {
+  @apply flex size-9 shrink-0 items-center justify-center rounded-xl text-xl;
+}
+
+.rates-row__name {
+  @apply min-w-0 flex-1 truncate font-semibold;
+}
+
+.rates-row__archived {
+  @apply ml-2 text-sm font-normal text-ink-muted;
+}
+
+.rates-row__streak {
+  @apply w-28 text-sm text-ink-muted;
+}
+
+.rates-row__best {
+  @apply w-24 text-sm text-ink-muted;
+}
+
+.rates-row__rate {
+  @apply w-24 text-right font-semibold;
+}

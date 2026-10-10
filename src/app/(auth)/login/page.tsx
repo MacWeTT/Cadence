@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
-import { GoogleSignInButton } from '@/components/google-sign-in-button';
-import { LoginError } from '@/components/login-error';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { GoogleSignInButton } from '@/components/google-sign-in-button/google-sign-in-button';
+import { LoginError } from '@/components/login-error/login-error';
+import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
 import './login-page.css';
 
 const LoginPage = () => {

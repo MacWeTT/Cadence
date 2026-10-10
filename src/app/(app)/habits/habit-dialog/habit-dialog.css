@@ -1,0 +1,37 @@
+@reference '../../../globals.css';
+
+.habit-dialog {
+  @apply max-w-lg;
+}
+
+.habit-dialog__title {
+  @apply font-display text-2xl font-normal;
+}
+
+.habit-dialog__form {
+  @apply space-y-5;
+}
+
+.habit-dialog__top {
+  @apply flex items-start gap-3;
+}
+
+.habit-dialog__name {
+  @apply flex-1;
+}
+
+.habit-dialog__name-input {
+  @apply h-14 text-base;
+}
+
+.habit-dialog__label {
+  @apply mb-1.5;
+}
+
+.habit-dialog__date {
+  @apply w-44;
+}
+
+.habit-dialog__error {
+  @apply text-sm text-danger;
+}
