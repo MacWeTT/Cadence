@@ -1,7 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { habitInputSchema, toFieldErrors } from '@/lib/habit-schema';
+import { getTranslations } from 'next-intl/server';
+import { habitInputSchema, toFieldErrors, type FieldIssue } from '@/lib/habit-schema';
 import { getUser } from '@/lib/supabase/server';
 import {
   archiveHabit,
@@ -9,16 +10,35 @@ import {
   deleteHabit,
   getProfile,
   HabitError,
+  type ErrorCode,
   restoreHabit,
   updateHabit,
 } from '@/server/habits';
 
 export type ActionResult = { ok: true } | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
+/** Turns a failure's codes into the sentences the user reads. */
+const describe = async (code: ErrorCode, fieldIssues?: Record<string, FieldIssue>): Promise<ActionResult> => {
+  const t = await getTranslations('errors');
+  const tv = await getTranslations('validation');
+
+  return {
+    ok: false,
+    error: t(code),
+    fieldErrors: fieldIssues
+      ? Object.fromEntries(
+          Object.entries(fieldIssues).map(([field, issue]) => {
+            return [field, tv(issue.code, issue.values)];
+          }),
+        )
+      : undefined,
+  };
+};
+
 // Every action verifies the user itself, then relies on row-level security as the second layer.
 const run = async (work: () => Promise<void>): Promise<ActionResult> => {
   if (!(await getUser())) {
-    return { ok: false, error: 'Please sign in again.' };
+    return describe('signIn');
   }
 
   try {
@@ -29,12 +49,12 @@ const run = async (work: () => Promise<void>): Promise<ActionResult> => {
     return { ok: true };
   } catch (e) {
     if (e instanceof HabitError) {
-      return { ok: false, error: e.message, fieldErrors: e.fieldErrors };
+      return describe(e.code, e.fieldIssues);
     }
 
     console.error(e);
 
-    return { ok: false, error: 'Something went wrong. Please try again.' };
+    return describe('generic');
   }
 };
 
@@ -43,7 +63,7 @@ const parseInput = async (input: unknown) => {
   const parsed = habitInputSchema(today).safeParse(input);
 
   if (!parsed.success) {
-    throw new HabitError('Please fix the highlighted fields.', toFieldErrors(parsed.error));
+    throw new HabitError('fixFields', toFieldErrors(parsed.error));
   }
 
   return parsed.data;

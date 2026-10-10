@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import type { ProgressView } from '@/server/progress-view';
 import { Heatmap } from '../heatmap/heatmap';
 import { ProgressCard } from '../progress-card/progress-card';
@@ -11,14 +12,24 @@ interface YearCardProps {
 export const YearCard = (props: YearCardProps) => {
   const { view } = props;
 
+  const t = useTranslations('progress.year');
+
   return (
     <ProgressCard labelledBy="year-heading">
       <h2 id="year-heading" className="year-card__title">
-        <span className="year-card__ticks">{view.totals.ticks}</span> {view.totals.ticks === 1 ? 'tick' : 'ticks'} in
-        the past year
+        {t.rich('ticks', {
+          count: view.totals.ticks,
+          ticks: chunks => {
+            return <span className="year-card__ticks">{chunks}</span>;
+          },
+        })}
         <span className="year-card__days">
-          <span className="year-card__days-count">{view.totals.activeDays}</span> active{' '}
-          {view.totals.activeDays === 1 ? 'day' : 'days'}
+          {t.rich('activeDays', {
+            count: view.totals.activeDays,
+            days: chunks => {
+              return <span className="year-card__days-count">{chunks}</span>;
+            },
+          })}
         </span>
       </h2>
       <Heatmap months={view.months} single={view.selectedId !== null} />

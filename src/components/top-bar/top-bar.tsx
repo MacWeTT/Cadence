@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -7,10 +8,10 @@ import { ThemeToggle } from '../theme-toggle/theme-toggle';
 import './top-bar.css';
 
 const links = [
-  { href: '/today', label: 'Today' },
-  { href: '/habits', label: 'Habits' },
-  { href: '/progress', label: 'Progress' },
-];
+  { href: '/today', name: 'today' },
+  { href: '/habits', name: 'habits' },
+  { href: '/progress', name: 'progress' },
+] as const;
 
 interface TopBarProps {
   menu?: React.ReactNode;
@@ -20,6 +21,7 @@ export const TopBar = (props: TopBarProps) => {
   const { menu } = props;
 
   const pathname = usePathname();
+  const t = useTranslations('common');
 
   return (
     <header className="top-bar">
@@ -29,10 +31,10 @@ export const TopBar = (props: TopBarProps) => {
           aria-current={pathname === '/' ? 'page' : undefined}
           className={cn('top-bar__logo', pathname === '/' && 'top-bar__logo--current')}
         >
-          Cadence
+          {t('brand')}
         </Link>
         <nav className="top-bar__nav">
-          {links.map(({ href, label }) => {
+          {links.map(({ href, name }) => {
             const active = pathname === href;
 
             return (
@@ -42,7 +44,7 @@ export const TopBar = (props: TopBarProps) => {
                 aria-current={active ? 'page' : undefined}
                 className={cn('top-bar__link', active && 'top-bar__link--active')}
               >
-                {label}
+                {t(`nav.${name}`)}
               </Link>
             );
           })}

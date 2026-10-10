@@ -1,23 +1,30 @@
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'Cadence',
-  description: 'A personal habit tracker',
+export const generateMetadata = async (): Promise<Metadata> => {
+  const t = await getTranslations('metadata');
+
+  return { title: t('title'), description: t('description') };
 };
 
-const RootLayout = (props: LayoutProps<'/'>) => {
+const RootLayout = async (props: LayoutProps<'/'>) => {
   const { children } = props;
 
+  const locale = await getLocale();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <NextIntlClientProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

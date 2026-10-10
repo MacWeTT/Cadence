@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
@@ -18,17 +19,18 @@ interface ProgressContentProps {
 export const ProgressContent = async (props: ProgressContentProps) => {
   const { searchParams } = props;
 
+  const t = await getTranslations('progress');
   const { habit, range: rangeParam } = await searchParams;
   const { entries, ctx } = await loadHabitData();
 
   if (entries.length === 0) {
     return (
       <EmptyState
-        title="Nothing to show yet"
-        text="Your history will build up here once you start ticking habits."
+        title={t('emptyTitle')}
+        text={t('emptyText')}
         action={
           <Button asChild>
-            <Link href="/habits">Create a habit</Link>
+            <Link href="/habits">{t('emptyAction')}</Link>
           </Button>
         }
       />
@@ -50,7 +52,7 @@ export const ProgressContent = async (props: ProgressContentProps) => {
       <RatesCard view={view} />
       <div className="progress-content__bars">
         <BarsCard
-          title="Ticks per week"
+          title={t('bars.perWeek')}
           rows={view.weekly.map(w => {
             return {
               key: w.start,
@@ -60,7 +62,7 @@ export const ProgressContent = async (props: ProgressContentProps) => {
           })}
         />
         <BarsCard
-          title="Ticks per month"
+          title={t('bars.perMonth')}
           rows={view.monthly.map(m => {
             return {
               key: m.month,

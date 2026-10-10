@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import './google-sign-in-button.css';
@@ -11,6 +12,8 @@ interface SignInState {
 
 export const GoogleSignInButton = () => {
   const [state, setState] = useState<SignInState>({ busy: false, error: null });
+
+  const t = useTranslations('auth');
 
   const signIn = async () => {
     setState({ busy: true, error: null });
@@ -28,7 +31,7 @@ export const GoogleSignInButton = () => {
   return (
     <div>
       <button type="button" onClick={signIn} disabled={state.busy} className="google-sign-in">
-        {state.busy ? 'Redirecting to Google…' : 'Continue with Google'}
+        {state.busy ? t('redirecting') : t('continueWithGoogle')}
       </button>
       {state.error && (
         <p role="alert" className="google-sign-in__error">

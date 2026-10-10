@@ -1,19 +1,22 @@
 import type { WeekProgress } from '@/domain/listing';
 import type { Streak } from '@/domain/streaks';
+import { msg, type Msg } from './message';
 
-export const streakLabel = (streak: Streak): string => {
-  if (streak.unit === 'week') {
-    return `${streak.count} week streak`;
-  }
-
-  return `🔥 ${streak.count} ${streak.count === 1 ? 'day' : 'days'}`;
+/** "🔥 3 days" for a daily habit, "4 week streak" for a weekly one. */
+export const streakMsg = (streak: Streak): Msg => {
+  return msg(streak.unit === 'week' ? 'labels.streak.weeks' : 'labels.streak.days', { count: streak.count });
 };
 
-export const weekLabel = (week: WeekProgress): string => {
-  return week.goalMet ? 'Goal met' : `${week.done} of ${week.target} this week`;
+/** "1 of 3 this week", or "Goal met". */
+export const weekMsg = (week: WeekProgress): Msg => {
+  return week.goalMet
+    ? msg('labels.week.goalMet')
+    : msg('labels.week.progress', { done: week.done, target: week.target });
 };
 
 /** A streak length on its own: "3 days", "1 week". */
-export const streakLength = (streak: Streak): string => {
-  return `${streak.count} ${streak.unit}${streak.count === 1 ? '' : 's'}`;
+export const streakLengthMsg = (streak: Streak): Msg => {
+  return msg(streak.unit === 'week' ? 'labels.streak.lengthWeeks' : 'labels.streak.lengthDays', {
+    count: streak.count,
+  });
 };

@@ -1,0 +1,20 @@
+{
+  "friend": "friend",
+  "lines": {
+    "m1": "Good morning, {name}",
+    "m2": "Morning, {name}. Ready when you are.",
+    "m3": "Rise and tick, {name}.",
+    "a1": "Good afternoon, {name}",
+    "a2": "Afternoon, {name}. How's the day going?",
+    "e1": "Good evening, {name}",
+    "e2": "Evening, {name}. Let's wrap up well.",
+    "n1": "Still up, {name}?",
+    "n2": "Late one, {name}. One more tick?",
+    "w1": "Fresh week, {name}",
+    "w5": "Happy Friday, {name}",
+    "w0": "Slow Sunday, {name}",
+    "d1": "All done, {name}. Go enjoy it.",
+    "d2": "Clean sweep, {name}.",
+    "z1": "Fresh page, {name}. One tick gets you moving."
+  }
+}

@@ -1,7 +1,9 @@
+import { useTranslations } from 'next-intl';
+import { useMsg } from '@/lib/use-msg';
 import { RANGES, type ProgressView } from '@/server/progress-view';
 import { ChipLink } from '../chip-link/chip-link';
 import { ProgressCard } from '../progress-card/progress-card';
-import { percent, progressHref } from '../progress-links';
+import { percentMsg, progressHref } from '../progress-links';
 import { RatesRow } from '../rates-row/rates-row';
 import './rates-card.css';
 
@@ -13,25 +15,26 @@ interface RatesCardProps {
 export const RatesCard = (props: RatesCardProps) => {
   const { view } = props;
 
+  const t = useTranslations('progress.rates');
+  const tm = useMsg();
+
   return (
     <ProgressCard labelledBy="rate-heading">
       <div className="rates-card__top">
         <div>
           <h2 id="rate-heading" className="rates-card__title">
-            Completion, last {view.range} days
+            {t('title', { range: view.range })}
           </h2>
-          <p className="rates-card__percent">{percent(view.rate)}</p>
+          <p className="rates-card__percent">{tm(percentMsg(view.rate))}</p>
           {view.rate.expected > 0 && (
-            <p className="rates-card__detail">
-              {view.rate.done} of {view.rate.expected} done
-            </p>
+            <p className="rates-card__detail">{t('detail', { done: view.rate.done, expected: view.rate.expected })}</p>
           )}
         </div>
-        <nav aria-label="Period" className="rates-card__periods">
+        <nav aria-label={t('period')} className="rates-card__periods">
           {RANGES.map(r => {
             return (
               <ChipLink key={r} href={progressHref(view.selectedId, r)} active={view.range === r}>
-                {r === 365 ? 'Year' : `${r}d`}
+                {r === 365 ? t('year') : t('days', { range: r })}
               </ChipLink>
             );
           })}

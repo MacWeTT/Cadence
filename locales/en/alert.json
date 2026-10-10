@@ -1,0 +1,14 @@
+{
+  "morning": "{count, plural, one {# habit} other {# habits}} today. A good day to start with {first}.",
+  "afternoon": "{count} left, {left} to go.",
+  "eveningDay": "{left} left. {name}'s {count}-day streak ends at midnight.",
+  "eveningWeek": "{left} left. {name}'s {count}-week streak ends at midnight.",
+  "eveningOpen": "{left} left. {count, plural, one {# habit} other {# habits}} to go.",
+  "lateDay": "Last call: {left}. Don't lose your {count}-day {name} streak!{more}",
+  "lateWeek": "Last call: {left}. Don't lose your {count}-week {name} streak!{more}",
+  "moreAtRisk": " And {count} more at risk.",
+  "done": "All {total} done. Nice.{streaks}",
+  "tomorrow": " Tomorrow's streaks: {list}.",
+  "doNow": "Do {name} now",
+  "openToday": "Open Today"
+}

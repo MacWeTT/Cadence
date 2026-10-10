@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
 import './theme-toggle.css';
@@ -13,6 +14,8 @@ const noopSubscribe = () => {
 export const ThemeToggle = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const reduceMotion = useReducedMotion();
+  const t = useTranslations('common.theme');
+
   // The theme is only known in the browser; render a neutral button until then to avoid a hydration mismatch.
   const mounted = useSyncExternalStore(
     noopSubscribe,
@@ -23,8 +26,9 @@ export const ThemeToggle = () => {
       return false;
     },
   );
+
   const isDark = mounted && resolvedTheme === 'dark';
-  const label = !mounted ? 'Toggle theme' : isDark ? 'Switch to light theme' : 'Switch to dark theme';
+  const label = !mounted ? t('toggle') : isDark ? t('toLight') : t('toDark');
 
   const toggle = () => {
     // Colours glide between the two themes instead of snapping: the class turns on a short transition (see globals.css)

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo } from 'react';
 import type { Alert, AlertTier } from '@/lib/alert';
+import { useMsg } from '@/lib/use-msg';
 import { cn } from '@/lib/utils';
 import './alert-banner.css';
 
@@ -33,11 +34,14 @@ interface AlertBannerProps {
 export const AlertBanner = (props: AlertBannerProps) => {
   const { alert } = props;
 
+  const tm = useMsg();
+
   const action = alert?.action ?? null;
+  const message = alert?.message ? tm(alert.message) : '';
   const spokenKey = `${alert?.tier}:${action?.kind === 'focus' ? action.id : ''}`;
 
   const spoken = useMemo(() => {
-    return alert?.message ?? '';
+    return message;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately keyed to `spokenKey`, not to the message
   }, [spokenKey]);
 
@@ -52,7 +56,7 @@ export const AlertBanner = (props: AlertBannerProps) => {
           <span aria-hidden className={cn('alert-banner__icon', alert.tier === 'late' && 'alert-banner__icon--pulse')}>
             {ICONS[alert.tier]}
           </span>
-          <p className="alert-banner__message">{alert.message}</p>
+          <p className="alert-banner__message">{message}</p>
           {action?.kind === 'focus' && (
             <button
               type="button"
@@ -61,12 +65,12 @@ export const AlertBanner = (props: AlertBannerProps) => {
               }}
               className="alert-banner__action"
             >
-              {action.label}
+              {tm(action.label)}
             </button>
           )}
           {action?.kind === 'link' && (
             <Link href={action.href} className="alert-banner__action">
-              {action.label}
+              {tm(action.label)}
             </Link>
           )}
         </div>

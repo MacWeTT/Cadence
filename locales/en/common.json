@@ -1,0 +1,53 @@
+{
+  "brand": "Cadence",
+  "nav": {
+    "today": "Today",
+    "habits": "Habits",
+    "progress": "Progress"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "toLight": "Switch to light theme",
+    "toDark": "Switch to dark theme"
+  },
+  "account": {
+    "fallbackName": "Account",
+    "menu": "Account menu",
+    "signOut": "Sign out"
+  },
+  "loading": {
+    "list": "Loading {title}",
+    "progress": "Loading progress",
+    "home": "Loading home"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "archive": "Archive",
+    "restore": "Restore",
+    "save": "Save",
+    "newHabit": "New habit"
+  },
+  "emptyHabits": {
+    "title": "No habits yet",
+    "text": "Create a habit and it will show up here, ready to tick off.",
+    "action": "Create your first habit"
+  },
+  "time": {
+    "hours": "{h}h",
+    "hoursMinutes": "{h}h {m}m",
+    "minutes": "{m}m"
+  },
+  "colors": {
+    "moss": "moss",
+    "clay": "clay",
+    "ochre": "ochre",
+    "rose": "rose",
+    "plum": "plum",
+    "teal": "teal",
+    "sky": "sky",
+    "slate": "slate"
+  }
+}

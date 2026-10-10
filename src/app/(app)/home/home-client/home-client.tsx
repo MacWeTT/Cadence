@@ -1,11 +1,13 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
 import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { alertFor, clockIn } from '@/lib/alert';
+import { useMsg } from '@/lib/use-msg';
 import { continuingStreaks, type HomeView } from '@/server/home-view';
 import { HabitDialog } from '../../habits/habit-dialog/habit-dialog';
 import { CheckSection } from '../../today/check-section/check-section';
@@ -32,6 +34,9 @@ export const HomeClient = (props: HomeClientProps) => {
   const [creating, setCreating] = useState(false);
 
   const router = useRouter();
+  const t = useTranslations('home');
+  const tc = useTranslations('common.emptyHabits');
+  const tm = useMsg();
   const now = useNow();
   const { shown, saving, toggle } = useToggleCompletion(home.view, today);
 
@@ -98,23 +103,29 @@ export const HomeClient = (props: HomeClientProps) => {
 
   return (
     <>
-      <HomeHeader done={done} total={total} today={today} greeting={greeting?.text ?? null} onNewHabit={openDialog} />
+      <HomeHeader
+        done={done}
+        total={total}
+        today={today}
+        greeting={greeting ? tm(greeting.message) : null}
+        onNewHabit={openDialog}
+      />
 
       {!home.view.hasHabits ? (
         <EmptyState
-          title="No habits yet"
-          text="Create a habit and it will show up here, ready to tick off."
-          action={<Button onClick={openDialog}>Create your first habit</Button>}
+          title={tc('title')}
+          text={tc('text')}
+          action={<Button onClick={openDialog}>{tc('action')}</Button>}
         />
       ) : (
         <>
           <AlertBanner alert={alert} />
           <div className="home__columns">
             <div className="home__main">
-              {total === 0 && <p className="home__note">No habits today.</p>}
+              {total === 0 && <p className="home__note">{t('noneToday')}</p>}
               <CheckSection
                 id="next-heading"
-                title={`Next up · ${shown.todo.length} left`}
+                title={t('nextUp', { count: shown.todo.length })}
                 rows={shown.todo}
                 saving={saving}
                 onToggle={toggle}
@@ -122,7 +133,7 @@ export const HomeClient = (props: HomeClientProps) => {
               />
               <CheckSection
                 id="done-heading"
-                title={`Done today · ${done}`}
+                title={t('doneToday', { count: done })}
                 rows={shown.done}
                 saving={saving}
                 onToggle={toggle}
@@ -131,7 +142,7 @@ export const HomeClient = (props: HomeClientProps) => {
             </div>
             <div className="home__side">
               <StreaksCard rows={atRisk} today={today} weekStartsOn={weekStartsOn} />
-              <section className="home__week" aria-label="This week">
+              <section className="home__week">
                 <WeekStrip strip={shown.strip} date={today} today={today} />
               </section>
             </div>

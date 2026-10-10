@@ -1,0 +1,35 @@
+{
+  "title": "Progress",
+  "emptyTitle": "Nothing to show yet",
+  "emptyText": "Your history will build up here once you start ticking habits.",
+  "emptyAction": "Create a habit",
+  "filter": {
+    "label": "Filter by habit",
+    "all": "All habits"
+  },
+  "year": {
+    "ticks": "{count, plural, one {<ticks>#</ticks> tick} other {<ticks>#</ticks> ticks}} in the past year",
+    "activeDays": "{count, plural, one {<days>#</days> active day} other {<days>#</days> active days}}",
+    "heatmap": "Activity over the past year",
+    "cell": "{day}: {done} of {total} done",
+    "singleDone": "{day}: done",
+    "singleNotDone": "{day}: not done"
+  },
+  "rates": {
+    "title": "Completion, last {range} days",
+    "percent": "{value, number, percent}",
+    "noRate": "No rate yet",
+    "detail": "{done} of {expected} done",
+    "period": "Period",
+    "year": "Year",
+    "days": "{range}d",
+    "archived": "archived",
+    "noStreak": "No streak",
+    "best": "Best {length}",
+    "bestNone": "Best —"
+  },
+  "bars": {
+    "perWeek": "Ticks per week",
+    "perMonth": "Ticks per month"
+  }
+}

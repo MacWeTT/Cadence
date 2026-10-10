@@ -3,9 +3,8 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import policies from './eslint-rules/index.mjs';
 
-// The code policies are errors. Localisation is still a warning: the code gets its message files in milestone 6.2c.
+// The code policies are errors.
 const STYLE = 'error';
-const LOCALISATION = 'warn';
 
 const vendorFiles = ['src/components/ui/**', 'src/lib/supabase/database.types.ts'];
 
@@ -61,6 +60,11 @@ const eslintConfig = defineConfig([
           message: 'Give the props type a name (interface XProps) instead of an inline type.',
         },
         {
+          // 8: user-facing text comes from the message files (locales/en/*.json).
+          selector: 'JSXAttribute[name.name=/^(aria-label|placeholder|title|alt)$/] > Literal[value!=""]',
+          message: 'User-facing text must come from the message files (t(...)).',
+        },
+        {
           // 7: styles live in CSS files (with @apply); a className holds names, not a pile of utilities.
           selector: 'JSXAttribute[name.name="className"] Literal[value=/^\\s*\\S+(\\s+\\S+){3,}\\s*$/]',
           message: 'Move these utility classes into a CSS file with @apply and use a class name here.',
@@ -70,8 +74,8 @@ const eslintConfig = defineConfig([
           message: 'Move these utility classes into a CSS file with @apply and use a class name here.',
         },
       ],
-      // 8: user-facing text comes from the message files (turned into an error in 6.2c).
-      'react/jsx-no-literals': [LOCALISATION, { noStrings: false, ignoreProps: true }],
+      // 8: no text typed straight into JSX.
+      'react/jsx-no-literals': [STYLE, { noStrings: false, ignoreProps: true }],
     },
   },
 

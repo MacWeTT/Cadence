@@ -2,10 +2,16 @@
 
 import * as React from 'react';
 import { cn } from 'cn';
+import { useTranslations } from 'next-intl';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 
 import { Button } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
+
+/** The word "Close" in the active language (the one text this generated file shows). */
+function CloseLabel() {
+  return useTranslations('common.actions')('close');
+}
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -60,7 +66,9 @@ function DialogContent({
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
             <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
               <XIcon />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">
+                <CloseLabel />
+              </span>
             </Button>
           </DialogPrimitive.Close>
         )}
@@ -93,7 +101,9 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="outline">
+            <CloseLabel />
+          </Button>
         </DialogPrimitive.Close>
       )}
     </div>

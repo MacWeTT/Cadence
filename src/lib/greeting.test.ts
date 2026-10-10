@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chooseGreeting, dayPart, firstName, pickGreeting, type GreetingContext } from './greeting';
+import { tr } from './test-translate';
 
 const WEDNESDAY = 3;
 
@@ -11,6 +12,19 @@ const ctx = (over: Partial<GreetingContext> = {}): GreetingContext => {
     noneDone: false,
     name: 'Manas Bajpai',
     ...over,
+  };
+};
+
+const fakeStorage = () => {
+  const data = new Map<string, string>();
+
+  return {
+    getItem: (k: string) => {
+      return data.get(k) ?? null;
+    },
+    setItem: (k: string, v: string) => {
+      data.set(k, v);
+    },
   };
 };
 
@@ -33,11 +47,12 @@ describe('dayPart', () => {
 });
 
 describe('firstName', () => {
-  it('is the first word, or "friend" when there is none', () => {
-    expect(firstName(null)).toBe('friend');
-    expect(firstName('')).toBe('friend');
-    expect(firstName('   ')).toBe('friend');
+  it('is the first word, or null when there is none', () => {
+    expect(firstName(null)).toBeNull();
+    expect(firstName('')).toBeNull();
+    expect(firstName('   ')).toBeNull();
     expect(firstName('  Manas Bajpai ')).toBe('Manas');
+
     const long = 'A'.repeat(60);
 
     expect(firstName(long)).toBe(long);
@@ -46,29 +61,34 @@ describe('firstName', () => {
 
 describe('pickGreeting', () => {
   it('takes the first line of the pool when random is 0', () => {
-    expect(
-      pickGreeting(ctx(), () => {
-        return 0;
-      }),
-    ).toEqual({ id: 'm1', text: 'Good morning, Manas' });
-  });
-  it('never leaves a placeholder behind, with or without a name', () => {
-    for (const name of ['Manas', null]) {
-      for (const r of [0, 0.5, 0.99]) {
-        expect(
-          pickGreeting(ctx({ name }), () => {
-            return r;
-          }).text,
-        ).not.toContain('{name}');
-      }
-    }
+    const g = pickGreeting(ctx(), () => {
+      return 0;
+    });
 
-    expect(
-      pickGreeting(ctx({ name: null }), () => {
-        return 0;
-      }).text,
-    ).toBe('Good morning, friend');
+    expect(g.id).toBe('m1');
+    expect(tr(g.message)).toBe('Good morning, Manas');
   });
+
+  it('says "friend" when there is no name, and never leaves a placeholder behind', () => {
+    expect(
+      tr(
+        pickGreeting(ctx({ name: null }), () => {
+          return 0;
+        }).message,
+      ),
+    ).toBe('Good morning, friend');
+
+    for (const r of [0, 0.5, 0.99]) {
+      expect(
+        tr(
+          pickGreeting(ctx(), () => {
+            return r;
+          }).message,
+        ),
+      ).not.toContain('{');
+    }
+  });
+
   it('uses only the done lines when everything is ticked', () => {
     for (const r of [0, 0.4, 0.99]) {
       expect(['d1', 'd2']).toContain(
@@ -78,6 +98,7 @@ describe('pickGreeting', () => {
       );
     }
   });
+
   it('does not repeat the last line', () => {
     for (const r of [0, 0.3, 0.6, 0.99]) {
       expect(
@@ -91,6 +112,7 @@ describe('pickGreeting', () => {
       ).not.toBe('m1');
     }
   });
+
   it('still answers when the pool has a single line and it was the last one', () => {
     expect(
       pickGreeting(
@@ -102,6 +124,7 @@ describe('pickGreeting', () => {
       ).id,
     ).toBe('d2');
   });
+
   it('adds the weekday line to the pool', () => {
     const friday = ctx({ hour: 19, weekday: 5 });
     const ids = [0, 0.2, 0.4, 0.6, 0.8, 0.99].map(r => {
@@ -112,6 +135,7 @@ describe('pickGreeting', () => {
 
     expect(ids).toContain('w5');
   });
+
   it('offers the fresh-page line only from noon with nothing ticked', () => {
     const seen = (c: GreetingContext) => {
       return [0, 0.2, 0.4, 0.6, 0.8, 0.99].map(r => {
@@ -124,6 +148,7 @@ describe('pickGreeting', () => {
     expect(seen(ctx({ hour: 14, noneDone: true }))).toContain('z1');
     expect(seen(ctx({ hour: 9, noneDone: true }))).not.toContain('z1');
   });
+
   it('uses the night lines late at night', () => {
     expect(
       pickGreeting(ctx({ hour: 23 }), () => {
@@ -131,22 +156,26 @@ describe('pickGreeting', () => {
       }).id,
     ).toBe('n1');
   });
+
+  it('passes a name with special characters through exactly as typed', () => {
+    expect(
+      tr(
+        pickGreeting(ctx({ name: '$&' }), () => {
+          return 0;
+        }).message,
+      ),
+    ).toBe('Good morning, $&');
+    expect(
+      tr(
+        pickGreeting(ctx({ name: "$'x" }), () => {
+          return 0;
+        }).message,
+      ),
+    ).toBe("Good morning, $'x");
+  });
 });
 
 describe('chooseGreeting (stable within a session)', () => {
-  const fakeStorage = () => {
-    const data = new Map<string, string>();
-
-    return {
-      getItem: (k: string) => {
-        return data.get(k) ?? null;
-      },
-      setItem: (k: string, v: string) => {
-        return void data.set(k, v);
-      },
-    };
-  };
-
   it('keeps the same line while the day part and state stay the same', () => {
     const storage = fakeStorage();
     const first = chooseGreeting(
@@ -169,6 +198,7 @@ describe('chooseGreeting (stable within a session)', () => {
       ).toEqual(first);
     }
   });
+
   it('picks a different line when the state changes', () => {
     const storage = fakeStorage();
     const before = chooseGreeting(
@@ -189,6 +219,7 @@ describe('chooseGreeting (stable within a session)', () => {
     expect(after.id).not.toBe(before.id);
     expect(['d1', 'd2']).toContain(after.id);
   });
+
   it('does not repeat the previous line when the day part changes', () => {
     const storage = fakeStorage();
     const morning = chooseGreeting(
@@ -208,6 +239,7 @@ describe('chooseGreeting (stable within a session)', () => {
 
     expect(noon.id).not.toBe(morning.id);
   });
+
   it('still answers when storage is missing, throws, or holds junk', () => {
     expect(
       chooseGreeting(
@@ -218,6 +250,7 @@ describe('chooseGreeting (stable within a session)', () => {
         null,
       ).id,
     ).toBe('m1');
+
     const broken = {
       getItem: () => {
         throw new Error('blocked');
@@ -236,6 +269,7 @@ describe('chooseGreeting (stable within a session)', () => {
         broken,
       ).id,
     ).toBe('m1');
+
     const junk = {
       getItem: () => {
         return '{not json';
@@ -252,6 +286,7 @@ describe('chooseGreeting (stable within a session)', () => {
         junk,
       ).id,
     ).toBe('m1');
+
     const unknownId = {
       getItem: () => {
         return JSON.stringify({ key: 'morning:some', id: 'zzz' });
@@ -269,19 +304,9 @@ describe('chooseGreeting (stable within a session)', () => {
       ).id,
     ).toBe('m1');
   });
-});
 
-describe('chooseGreeting keeps a line while it still fits', () => {
-  it('does not reshuffle when the first tick moves "none done" to "some done"', () => {
-    const data = new Map<string, string>();
-    const storage = {
-      getItem: (k: string) => {
-        return data.get(k) ?? null;
-      },
-      setItem: (k: string, v: string) => {
-        return void data.set(k, v);
-      },
-    };
+  it('keeps a line instead of reshuffling when the first tick moves "none done" to "some done"', () => {
+    const storage = fakeStorage();
     const first = chooseGreeting(
       ctx({ hour: 14, noneDone: true }),
       () => {
@@ -301,60 +326,9 @@ describe('chooseGreeting keeps a line while it still fits', () => {
       ).id,
     ).toBe('a1');
   });
-});
 
-describe('names with special characters', () => {
-  it('are inserted as typed, never read as replacement patterns', () => {
-    expect(
-      pickGreeting(ctx({ name: '$&' }), () => {
-        return 0;
-      }).text,
-    ).toBe('Good morning, $&');
-    expect(
-      pickGreeting(ctx({ name: "$'x" }), () => {
-        return 0;
-      }).text,
-    ).toBe("Good morning, $'x");
-    const data = new Map<string, string>();
-    const storage = {
-      getItem: (k: string) => {
-        return data.get(k) ?? null;
-      },
-      setItem: (k: string, v: string) => {
-        return void data.set(k, v);
-      },
-    };
-
-    chooseGreeting(
-      ctx({ name: 'Bob' }),
-      () => {
-        return 0;
-      },
-      storage,
-    );
-    expect(
-      chooseGreeting(
-        ctx({ name: '$&' }),
-        () => {
-          return 0.5;
-        },
-        storage,
-      ).text,
-    ).toBe('Good morning, $&'); // the kept line, too
-  });
-});
-
-describe('chooseGreeting and the fresh-page line', () => {
-  it('keeps "Fresh page" after the first tick instead of reshuffling', () => {
-    const data = new Map<string, string>();
-    const storage = {
-      getItem: (k: string) => {
-        return data.get(k) ?? null;
-      },
-      setItem: (k: string, v: string) => {
-        return void data.set(k, v);
-      },
-    };
+  it('keeps "Fresh page" after the first tick', () => {
+    const storage = fakeStorage();
     const first = chooseGreeting(
       ctx({ hour: 14, noneDone: true }),
       () => {
@@ -373,5 +347,29 @@ describe('chooseGreeting and the fresh-page line', () => {
         storage,
       ).id,
     ).toBe('z1');
+  });
+
+  it('inserts a name with special characters as typed, for a kept line too', () => {
+    const storage = fakeStorage();
+
+    chooseGreeting(
+      ctx({ name: 'Bob' }),
+      () => {
+        return 0;
+      },
+      storage,
+    );
+
+    expect(
+      tr(
+        chooseGreeting(
+          ctx({ name: '$&' }),
+          () => {
+            return 0.5;
+          },
+          storage,
+        ).message,
+      ),
+    ).toBe('Good morning, $&');
   });
 });

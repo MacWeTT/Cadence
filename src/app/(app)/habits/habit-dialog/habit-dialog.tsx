@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,8 @@ export const HabitDialog = (props: HabitDialogProps) => {
     return initialHabitForm(habit, today);
   });
 
+  const t = useTranslations('habits');
+  const ta = useTranslations('common.actions');
   const [pending, startTransition] = useTransition();
   const nameRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false); // guards against a double-click before React re-renders the disabled button
@@ -60,9 +63,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
       (current.kind === 'weekly_count' && Number(form.timesPerWeek) !== current.timesPerWeek));
   const effectiveDate = formatCalendarDate(nextEditDate(today, weekStartsOn), { dateStyle: 'full' });
   const effectiveNote =
-    habit?.hasCompletions && scheduleChanged
-      ? `Changes apply from ${effectiveDate}, so your history stays as it was.`
-      : null;
+    habit?.hasCompletions && scheduleChanged ? t('dialog.effectiveNote', { date: effectiveDate }) : null;
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -89,7 +90,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
       const result = habit ? await updateHabitAction(habit.id, input) : await createHabitAction(input);
 
       if (result.ok) {
-        toast.success(habit ? 'Habit saved' : 'Habit created');
+        toast.success(habit ? t('toasts.saved') : t('toasts.created'));
         onClose();
 
         return;
@@ -123,8 +124,10 @@ export const HabitDialog = (props: HabitDialogProps) => {
         }}
       >
         <DialogHeader>
-          <DialogTitle className="habit-dialog__title">{habit ? 'Edit habit' : 'New habit'}</DialogTitle>
-          <DialogDescription className="sr-only">Choose an emoji, a name, a color and a schedule.</DialogDescription>
+          <DialogTitle className="habit-dialog__title">
+            {habit ? t('dialog.editTitle') : t('dialog.newTitle')}
+          </DialogTitle>
+          <DialogDescription className="sr-only">{t('dialog.description')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="habit-dialog__form" noValidate>
           <div className="habit-dialog__top">
@@ -136,12 +139,12 @@ export const HabitDialog = (props: HabitDialogProps) => {
             />
             <div className="habit-dialog__name">
               <Label htmlFor="habit-name" className="sr-only">
-                Name
+                {t('dialog.name')}
               </Label>
               <Input
                 id="habit-name"
-                aria-label="Name"
-                placeholder="Name your habit"
+                aria-label={t('dialog.name')}
+                placeholder={t('dialog.namePlaceholder')}
                 value={form.name}
                 onChange={e => {
                   return setField('name', e.target.value);
@@ -158,7 +161,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
           <div>
             <Label htmlFor="habit-description" className="habit-dialog__label">
-              Description (optional)
+              {t('dialog.descriptionLabel')}
             </Label>
             <Textarea
               id="habit-description"
@@ -197,7 +200,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
           <div>
             <Label htmlFor="habit-start" className="habit-dialog__label">
-              Starts
+              {t('dialog.starts')}
             </Label>
             <Input
               id="habit-start"
@@ -222,10 +225,10 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              {ta('cancel')}
             </Button>
             <Button type="submit" disabled={pending}>
-              {habit ? 'Save' : 'Save habit'}
+              {habit ? ta('save') : t('dialog.saveHabit')}
             </Button>
           </DialogFooter>
         </form>

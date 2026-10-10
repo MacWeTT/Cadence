@@ -1,19 +1,24 @@
+import { useTranslations } from 'next-intl';
 import type { WeekStart } from '@/domain/dates';
 import { weekEnd, type CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
+import { msg, type Msg } from '@/lib/message';
 import { habitColor } from '@/lib/palette';
-import { streakLength } from '@/lib/today-labels';
+import { streakLengthMsg } from '@/lib/today-labels';
+import { useMsg } from '@/lib/use-msg';
 import type { AtRiskRow } from '@/server/home-view';
 import './streaks-card.css';
 
-const tag = (row: AtRiskRow, today: CalendarDate, weekStartsOn: WeekStart) => {
+const tagMsg = (row: AtRiskRow, today: CalendarDate, weekStartsOn: WeekStart): Msg => {
+  const length = streakLengthMsg(row.streak);
+
   if (row.needed === null) {
-    return `${streakLength(row.streak)} · ends at midnight`;
+    return msg('home.streaks.endsAtMidnight', { length });
   }
 
-  const last = formatCalendarDate(weekEnd(today, weekStartsOn), { weekday: 'long' });
+  const day = formatCalendarDate(weekEnd(today, weekStartsOn), { weekday: 'long' });
 
-  return `${streakLength(row.streak)} · ${row.needed} more by ${last}`;
+  return msg('home.streaks.moreBy', { length, needed: row.needed, day });
 };
 
 interface StreaksCardProps {
@@ -26,13 +31,16 @@ interface StreaksCardProps {
 export const StreaksCard = (props: StreaksCardProps) => {
   const { rows, today, weekStartsOn } = props;
 
+  const t = useTranslations('home.streaks');
+  const tm = useMsg();
+
   return (
     <section aria-labelledby="streaks-heading" className="streaks-card">
       <h2 id="streaks-heading" className="streaks-card__title">
-        Streaks to protect
+        {t('title')}
       </h2>
       {rows.length === 0 ? (
-        <p className="streaks-card__empty">No streaks at risk right now.</p>
+        <p className="streaks-card__empty">{t('none')}</p>
       ) : (
         <ul className="streaks-card__list">
           {rows.map(row => {
@@ -47,7 +55,7 @@ export const StreaksCard = (props: StreaksCardProps) => {
                 </span>
                 <div className="streaks-card__body">
                   <p className="streaks-card__name">{row.name}</p>
-                  <p className="streaks-card__tag">{tag(row, today, weekStartsOn)}</p>
+                  <p className="streaks-card__tag">{tm(tagMsg(row, today, weekStartsOn))}</p>
                 </div>
               </li>
             );

@@ -1,6 +1,7 @@
 'use client';
 
 import { Ellipsis } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
 import {
   DropdownMenu,
@@ -10,7 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatCalendarDate } from '@/lib/format';
 import { habitColor } from '@/lib/palette';
-import { scheduleLabel } from '@/lib/schedule-label';
+import { scheduleMsg } from '@/lib/schedule-label';
+import { useMsg } from '@/lib/use-msg';
 import { cn } from '@/lib/utils';
 import type { HabitListItem } from '@/server/habit-view';
 import './habit-row.css';
@@ -33,6 +35,9 @@ interface HabitRowProps {
 export const HabitRow = (props: HabitRowProps) => {
   const { habit, archivedOn, actions } = props;
 
+  const t = useTranslations('habits.row');
+  const ta = useTranslations('common.actions');
+  const tm = useMsg();
   const menuButton = useRef<HTMLButtonElement>(null);
 
   const pending = habit.pendingSchedule;
@@ -50,22 +55,30 @@ export const HabitRow = (props: HabitRowProps) => {
       <div className="habit-row__body">
         <p className="habit-row__name">{habit.name}</p>
         {archived ? (
-          <p className="habit-row__note">{`Archived ${archivedOn}`}</p>
+          <p className="habit-row__note">{t('archivedOn', { date: archivedOn })}</p>
         ) : (
           habit.description && <p className="habit-row__note">{habit.description}</p>
         )}
       </div>
       <div className="habit-row__schedule">
-        <span className="habit-row__badge">{scheduleLabel(habit.schedule)}</span>
+        <span className="habit-row__badge">{tm(scheduleMsg(habit.schedule))}</span>
         {pending && !archived && (
           <p className="habit-row__pending">
-            {`Changes to ${scheduleLabel(pending)} on ${formatCalendarDate(pending.effectiveFrom, { day: 'numeric', month: 'short' })}`}
+            {t('pendingChange', {
+              schedule: tm(scheduleMsg(pending)),
+              date: formatCalendarDate(pending.effectiveFrom, { day: 'numeric', month: 'short' }),
+            })}
           </p>
         )}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button ref={menuButton} type="button" aria-label={`Actions for ${habit.name}`} className="habit-row__menu">
+          <button
+            ref={menuButton}
+            type="button"
+            aria-label={t('actionsFor', { name: habit.name })}
+            className="habit-row__menu"
+          >
             <Ellipsis className="habit-row__menu-icon" aria-hidden />
           </button>
         </DropdownMenuTrigger>
@@ -77,7 +90,7 @@ export const HabitRow = (props: HabitRowProps) => {
                   return actions.onRestore(habit);
                 }}
               >
-                Restore
+                {ta('restore')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="habit-row__delete"
@@ -85,7 +98,7 @@ export const HabitRow = (props: HabitRowProps) => {
                   return actions.onDelete(habit, menuButton.current);
                 }}
               >
-                Delete
+                {ta('delete')}
               </DropdownMenuItem>
             </>
           ) : (
@@ -95,14 +108,14 @@ export const HabitRow = (props: HabitRowProps) => {
                   return actions.onEdit(habit, menuButton.current);
                 }}
               >
-                Edit
+                {ta('edit')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   return actions.onArchive(habit);
                 }}
               >
-                Archive
+                {ta('archive')}
               </DropdownMenuItem>
             </>
           )}

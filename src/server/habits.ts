@@ -3,18 +3,22 @@ import { connection } from 'next/server';
 import { todayIn, type CalendarDate, type WeekStart } from '@/domain/dates';
 import { planScheduleChange } from '@/domain/schedule-change';
 import { formatCalendarDate } from '@/lib/format';
-import { isValidTimeZone, type HabitInput } from '@/lib/habit-schema';
+import { isValidTimeZone, type FieldIssue, type HabitInput } from '@/lib/habit-schema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import type en from '../../locales/en';
 import { fetchAll } from './fetch-all';
 import { toListItem, toSchedule, type HabitListItem } from './habit-view';
 
-/** An expected failure with a message that is safe to show the user. */
+/** The name of a message in `locales/en/errors.json`. */
+export type ErrorCode = keyof typeof en.errors;
+
+/** An expected failure. The code (and any field problems) are translated into text by the action that catches it. */
 export class HabitError extends Error {
   constructor(
-    message: string,
-    readonly fieldErrors?: Record<string, string>,
+    readonly code: ErrorCode,
+    readonly fieldIssues?: Record<string, FieldIssue>,
   ) {
-    super(message);
+    super(code);
   }
 }
 
@@ -120,7 +124,7 @@ export const listHabits = async (): Promise<HabitsView> => {
 // A Postgres exception raised by our functions (P0001) means the habit is missing, not yours, or in the wrong state.
 const failRpc = (error: { code?: string; message: string }): never => {
   if (error.code === 'P0001') {
-    throw new HabitError('That habit could not be found, or it has already changed.');
+    throw new HabitError('habitChanged');
   }
 
   throw new Error(error.message);
@@ -155,11 +159,11 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
   }
 
   if (!habit) {
-    throw new HabitError('That habit could not be found.');
+    throw new HabitError('habitNotFound');
   }
 
   if (habit.archived_at) {
-    throw new HabitError('Restore this habit before editing it.');
+    throw new HabitError('editArchived');
   }
 
   const first = await supabase
@@ -176,8 +180,8 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
   const firstTick = first.data[0]?.completion_date;
 
   if (firstTick && input.startDate > firstTick) {
-    throw new HabitError('Check the start date.', {
-      startDate: `The start date can't be after your first check-in on ${formatCalendarDate(firstTick)}.`,
+    throw new HabitError('checkStartDate', {
+      startDate: { code: 'startAfterFirstTick', values: { date: formatCalendarDate(firstTick) } },
     });
   }
 
@@ -261,11 +265,11 @@ export const deleteHabit = async (id: string): Promise<void> => {
   }
 
   if (!habit) {
-    throw new HabitError('That habit could not be found.');
+    throw new HabitError('habitNotFound');
   }
 
   if (!habit.archived_at) {
-    throw new HabitError('Archive a habit before deleting it.');
+    throw new HabitError('deleteNeedsArchive');
   }
 
   const { error: deleteError } = await supabase.from('habits').delete().eq('id', id);

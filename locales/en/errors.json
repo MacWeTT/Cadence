@@ -1,0 +1,14 @@
+{
+  "saveFailed": "Couldn't save that. Try again.",
+  "habitNotFound": "That habit could not be found.",
+  "completionArchived": "Restore this habit before ticking it.",
+  "editArchived": "Restore this habit before editing it.",
+  "dateInFuture": "You can't tick a day that hasn't happened yet.",
+  "beforeStart": "That day is before the habit started.",
+  "signIn": "Please sign in again.",
+  "generic": "Something went wrong. Please try again.",
+  "fixFields": "Please fix the highlighted fields.",
+  "habitChanged": "That habit could not be found, or it has already changed.",
+  "deleteNeedsArchive": "Archive a habit before deleting it.",
+  "checkStartDate": "Check the start date."
+}

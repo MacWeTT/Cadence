@@ -1,0 +1,12 @@
+{
+  "nameRequired": "Give your habit a name",
+  "nameTooLong": "Keep the name to 80 characters or fewer",
+  "descriptionTooLong": "Keep the description to 280 characters or fewer",
+  "iconInvalid": "Choose a single emoji",
+  "colorInvalid": "Choose a color",
+  "timesRange": "Choose 1 to 6 times a week",
+  "timesOnDaily": "A daily habit has no weekly count",
+  "dateInvalid": "Enter a valid date",
+  "startRange": "The start date can be any day up to today",
+  "startAfterFirstTick": "The start date can't be after your first check-in on {date}."
+}

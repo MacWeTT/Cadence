@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import './progress-ring.css';
 
 interface ProgressRingProps {
@@ -9,15 +10,19 @@ interface ProgressRingProps {
 export const ProgressRing = (props: ProgressRingProps) => {
   const { done, total } = props;
 
+  const t = useTranslations('home');
+
   return (
     <div
       role="img"
-      aria-label={`${done} of ${total} done today`}
+      aria-label={t('ringLabel', { done, total })}
       className="progress-ring"
       style={{ background: `conic-gradient(var(--primary) ${total ? (done / total) * 360 : 0}deg, var(--line) 0)` }}
     >
       <span aria-hidden className="progress-ring__label">
-        {done}/{total}
+        {done}
+        {'/'}
+        {total}
       </span>
     </div>
   );

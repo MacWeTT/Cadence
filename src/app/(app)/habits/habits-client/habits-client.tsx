@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/empty-state/empty-state';
@@ -30,6 +31,8 @@ export const HabitsClient = (props: HabitsClientProps) => {
 
   const [state, setState] = useState<HabitsState>({ dialog: null, deleting: null, showArchived: false });
 
+  const t = useTranslations('habits');
+  const ta = useTranslations('common.actions');
   const [, startTransition] = useTransition();
   const opener = useRef<HTMLElement | null>(null);
 
@@ -70,12 +73,12 @@ export const HabitsClient = (props: HabitsClientProps) => {
     onArchive: habit => {
       return run(() => {
         return archiveHabitAction(habit.id);
-      }, 'Habit archived');
+      }, t('toasts.archived'));
     },
     onRestore: habit => {
       return run(() => {
         return restoreHabitAction(habit.id);
-      }, 'Habit restored');
+      }, t('toasts.restored'));
     },
     onDelete: (habit, from) => {
       opener.current = from;
@@ -86,33 +89,33 @@ export const HabitsClient = (props: HabitsClientProps) => {
   return (
     <>
       <div className="habits__header">
-        <h1 className="habits__title">Habits</h1>
+        <h1 className="habits__title">{t('title')}</h1>
         <Button
           onClick={() => {
             return openDialog();
           }}
         >
-          New habit
+          {ta('newHabit')}
         </Button>
       </div>
 
       {active.length === 0 ? (
         <EmptyState
           flush
-          title="No habits yet"
-          text="Start with one small habit you can do every day. You can add more whenever you like."
+          title={t('emptyTitle')}
+          text={t('emptyText')}
           action={
             <Button
               onClick={() => {
                 return openDialog();
               }}
             >
-              New habit
+              {ta('newHabit')}
             </Button>
           }
         />
       ) : (
-        <ul aria-label="Habits">
+        <ul aria-label={t('listLabel')}>
           {active.map(habit => {
             return <HabitRow key={habit.id} habit={habit} actions={actions} />;
           })}
@@ -130,10 +133,10 @@ export const HabitsClient = (props: HabitsClientProps) => {
             className="habits__toggle"
           >
             <span aria-hidden>{state.showArchived ? '▾' : '▸'}</span>
-            {`Archived (${archived.length})`}
+            {t('archivedToggle', { count: archived.length })}
           </button>
           {state.showArchived && (
-            <ul aria-label="Archived habits" className="habits__archived-list">
+            <ul aria-label={t('archivedLabel')} className="habits__archived-list">
               {archived.map(habit => {
                 return (
                   <HabitRow

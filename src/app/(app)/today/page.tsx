@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { getTodayView } from '@/server/today';
@@ -6,8 +7,10 @@ import { TodayClient } from './today-client/today-client';
 const TodayPage = (props: PageProps<'/today'>) => {
   const { searchParams } = props;
 
+  const t = useTranslations('today');
+
   return (
-    <Suspense fallback={<ListSkeleton title="Today" />}>
+    <Suspense fallback={<ListSkeleton title={t('title')} />}>
       <TodayContent searchParams={searchParams} />
     </Suspense>
   );

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -20,10 +21,12 @@ interface ScheduleFieldProps {
 export const ScheduleField = (props: ScheduleFieldProps) => {
   const { kind, timesPerWeek, onKindChange, onTimesPerWeekChange, error, note } = props;
 
+  const t = useTranslations('habits.dialog');
+
   return (
     <div>
       <p className="schedule-field__label" id="schedule-label">
-        Schedule
+        {t('schedule')}
       </p>
       <div className="schedule-field__row">
         <ToggleGroup
@@ -36,16 +39,16 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
           aria-labelledby="schedule-label"
         >
           <ToggleGroupItem value="daily" className="schedule-field__option">
-            Every day
+            {t('everyDay')}
           </ToggleGroupItem>
           <ToggleGroupItem value="weekly_count" className="schedule-field__option">
-            Times a week
+            {t('timesAWeek')}
           </ToggleGroupItem>
         </ToggleGroup>
         {kind === 'weekly_count' && (
           <div className="schedule-field__times">
             <Label htmlFor="habit-times" className="sr-only">
-              Times per week
+              {t('timesPerWeek')}
             </Label>
             <Input
               id="habit-times"
@@ -59,7 +62,7 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
               aria-invalid={Boolean(error)}
               className="schedule-field__times-input"
             />
-            <span className="schedule-field__suffix">per week</span>
+            <span className="schedule-field__suffix">{t('perWeek')}</span>
           </div>
         )}
       </div>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { addDays, type CalendarDate } from '@/domain/dates';
 import './date-nav.css';
@@ -12,47 +13,49 @@ interface DateNavProps {
 export const DateNav = (props: DateNavProps) => {
   const { date, today, earliest } = props;
 
+  const t = useTranslations('today.nav');
+
   const href = (d: CalendarDate) => {
     return d === today ? '/today' : `/today?date=${d}`;
   };
 
   return (
-    <nav aria-label="Choose day" className="date-nav">
+    <nav aria-label={t('label')} className="date-nav">
       {date > earliest ? (
         <Link
           href={href(addDays(date, -1))}
-          aria-label="Previous day"
+          aria-label={t('previous')}
           className="date-nav__arrow date-nav__arrow--enabled"
         >
-          <span aria-hidden>‹</span>
+          <span aria-hidden>{'‹'}</span>
         </Link>
       ) : (
         <span
           role="link"
           aria-disabled="true"
-          aria-label="Previous day"
+          aria-label={t('previous')}
           className="date-nav__arrow date-nav__arrow--disabled"
         >
-          <span aria-hidden>‹</span>
+          <span aria-hidden>{'‹'}</span>
         </span>
       )}
       {date < today ? (
-        <Link href={href(addDays(date, 1))} aria-label="Next day" className="date-nav__arrow date-nav__arrow--enabled">
-          <span aria-hidden>›</span>
+        <Link href={href(addDays(date, 1))} aria-label={t('next')} className="date-nav__arrow date-nav__arrow--enabled">
+          <span aria-hidden>{'›'}</span>
         </Link>
       ) : (
         <span
           role="link"
           aria-disabled="true"
-          aria-label="Next day"
+          aria-label={t('next')}
           className="date-nav__arrow date-nav__arrow--disabled"
         >
-          <span aria-hidden>›</span>
+          <span aria-hidden>{'›'}</span>
         </span>
       )}
       {date !== today && (
         <Link href="/today" className="date-nav__today">
-          Today
+          {t('today')}
         </Link>
       )}
     </nav>

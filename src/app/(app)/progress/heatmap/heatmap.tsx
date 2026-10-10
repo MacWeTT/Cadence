@@ -1,17 +1,8 @@
+import { useTranslations } from 'next-intl';
 import { formatCalendarDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import type { HeatCell, MonthBlock } from '@/server/progress-view';
+import type { MonthBlock } from '@/server/progress-view';
 import './heatmap.css';
-
-const tooltip = (cell: HeatCell, single: boolean) => {
-  const day = formatCalendarDate(cell.date, { weekday: 'short', day: 'numeric', month: 'short' });
-
-  if (single) {
-    return `${day}: ${cell.done ? 'done' : 'not done'}`;
-  }
-
-  return `${day}: ${cell.done} of ${Math.max(cell.done, Math.round(cell.expected))} done`;
-};
 
 interface HeatmapProps {
   months: MonthBlock[];
@@ -27,6 +18,8 @@ interface HeatmapProps {
 export const Heatmap = (props: HeatmapProps) => {
   const { months, single } = props;
 
+  const t = useTranslations('progress.year');
+
   const tracks = months
     .map(m => {
       return `repeat(${m.columns.length}, minmax(0, 1fr))`;
@@ -40,22 +33,28 @@ export const Heatmap = (props: HeatmapProps) => {
   });
 
   return (
-    <div
-      role="img"
-      aria-label="Activity over the past year"
-      className="heatmap"
-      style={{ gridTemplateColumns: tracks }}
-    >
+    <div role="img" aria-label={t('heatmap')} className="heatmap" style={{ gridTemplateColumns: tracks }}>
       {months.flatMap((block, k) => {
         const first = starts[k];
 
         return [
           ...block.columns.flatMap((column, i) => {
             return column.map((cell, d) => {
-              return cell === null ? null : (
+              if (cell === null) {
+                return null;
+              }
+
+              const day = formatCalendarDate(cell.date, { weekday: 'short', day: 'numeric', month: 'short' });
+              const title = single
+                ? cell.done
+                  ? t('singleDone', { day })
+                  : t('singleNotDone', { day })
+                : t('cell', { day, done: cell.done, total: Math.max(cell.done, Math.round(cell.expected)) });
+
+              return (
                 <div
                   key={cell.date}
-                  title={cell.level === null ? undefined : tooltip(cell, single)}
+                  title={cell.level === null ? undefined : title}
                   className={cn('heatmap__cell', cell.level === null && 'heatmap__cell--blank')}
                   style={{
                     gridColumn: first + i,
