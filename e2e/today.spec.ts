@@ -90,4 +90,9 @@ test('a row can be ticked from the keyboard', async ({ page }) => {
   await check(page, 'Read').focus();
   await page.keyboard.press('Space');
   await expect(row(done(page), 'Read')).toBeVisible();
+  await expect(check(page, 'Read', true)).toBeFocused(); // focus follows the row to the other list
+  await expect(check(page, 'Read', true)).toHaveAttribute('aria-disabled', 'false'); // the save has finished
+  await page.keyboard.press('Space'); // and it can be undone without reaching for the mouse
+  await expect(row(todo(page), 'Read')).toBeVisible();
+  await expect(check(page, 'Read')).toBeFocused();
 });

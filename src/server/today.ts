@@ -2,6 +2,7 @@ import 'server-only';
 import { connection } from 'next/server';
 import type { CalendarDate } from '@/domain/dates';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { fetchAll } from './fetch-all';
 import { getProfile } from './habits';
 import { buildTodayView, earliestDate, parseDateParam, toHabitData, type TodayView } from './today-view';
 
@@ -35,17 +36,24 @@ export async function getTodayView(dateParam: string | string[] | undefined): Pr
   const [schedules, periods, completions] = await Promise.all([
     supabase.from('habit_schedules').select('*').in('habit_id', ids),
     supabase.from('habit_archive_periods').select('*').in('habit_id', ids),
-    // shortcut: loads every completion date ever, which is fine for one person's data; limit it to a window or
-    // aggregate in SQL when the volume grows.
-    supabase.from('habit_completions').select('habit_id, completion_date').in('habit_id', ids),
+    // shortcut: loads every completion date ever (paged past the API's row cap); limit it to a window or aggregate
+    // in SQL when the volume grows.
+    fetchAll((from, to) =>
+      supabase
+        .from('habit_completions')
+        .select('habit_id, completion_date')
+        .in('habit_id', ids)
+        .order('habit_id')
+        .order('completion_date')
+        .range(from, to),
+    ),
   ]);
   if (schedules.error) throw schedules.error;
   if (periods.error) throw periods.error;
-  if (completions.error) throw completions.error;
 
   const schedulesBy = groupBy(schedules.data, (s) => s.habit_id);
   const periodsBy = groupBy(periods.data, (p) => p.habit_id);
-  const completionsBy = groupBy(completions.data, (c) => c.habit_id);
+  const completionsBy = groupBy(completions, (c) => c.habit_id);
   const entries = habits.map((habit) => ({
     habit,
     data: toHabitData(

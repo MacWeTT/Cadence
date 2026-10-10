@@ -31,7 +31,7 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - A tick is always honoured, even on a paused day (for example the day you archive a habit you already did).
 
 ## Check-ins (the Today page)
-- You can tick a habit for today or any earlier day, but not a day that has not happened yet, not a day before the habit started, and not while the habit is archived. These rules are enforced in the database. Ticking an already ticked day, or unticking an unticked one, changes nothing.
+- You can tick a habit for today or any earlier day, but not a day that has not happened yet, not a day before the habit started, and not while the habit is archived. These rules are enforced in the database, for every write and not only the Today page. Ticking an already ticked day, or unticking an unticked one, changes nothing.
 - A day lists the habits that had started, had a schedule in effect, and were not archived. A habit paused on that day appears only if you ticked it then.
 - A weekly habit shows how many ticks you have this week ("1 of 3 this week") and "Goal met" once you reach the target. Extra ticks are bonus: they never push a rate above 100%.
 - Streak tags appear only when you view today. Looking at an earlier day shows what you did then, without a "current streak" that would be confusing.

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useOptimistic, useRef, useState, useTransition } from "react";
+import { useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { CalendarDate } from "@/domain/dates";
@@ -32,10 +32,19 @@ export function TodayClient({
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
   const inFlight = useRef(new Set<string>()); // a ref as well, so two taps in one render still send one request
   const [, startTransition] = useTransition();
+  const focusId = useRef<string | null>(null);
+
+  // A ticked row moves to the other list, which remounts its button and drops keyboard focus; put it back.
+  useEffect(() => {
+    if (focusId.current && document.activeElement === document.body) {
+      document.getElementById(`check-${focusId.current}`)?.focus();
+    }
+  });
 
   function toggle(row: TodayRow) {
     if (inFlight.current.has(row.id)) return;
     inFlight.current.add(row.id);
+    focusId.current = row.id;
     setSaving(new Set(inFlight.current));
     const ticked = !row.ticked;
     startTransition(async () => {

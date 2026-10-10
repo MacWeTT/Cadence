@@ -6,8 +6,8 @@ insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-0000000000a1', 'a@test.dev'),
   ('00000000-0000-0000-0000-0000000000b1', 'b@test.dev');
 
-insert into public.habits (id, user_id, name, icon, color, start_date, archived_at) values
-  ('10000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-0000000000b1', 'Run', '🏃', 'clay', '2026-10-01', now());
+insert into public.habits (id, user_id, name, icon, color, start_date) values
+  ('10000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-0000000000b1', 'Run', '🏃', 'clay', '2026-10-01');
 insert into public.habits (id, user_id, name, icon, color, start_date) values
   ('10000000-0000-0000-0000-0000000000b2', '00000000-0000-0000-0000-0000000000b1', 'Swim', '🏊', 'sky', '2026-10-01');
 insert into public.habit_schedules (habit_id, kind, effective_from) values
@@ -15,6 +15,7 @@ insert into public.habit_schedules (habit_id, kind, effective_from) values
   ('10000000-0000-0000-0000-0000000000b2', 'daily', '2026-10-01');
 insert into public.habit_completions (habit_id, completion_date) values
   ('10000000-0000-0000-0000-0000000000b1', '2026-10-01');
+update public.habits set archived_at = now() where id = '10000000-0000-0000-0000-0000000000b1'; -- after its tick
 insert into public.habit_archive_periods (habit_id, archived_on) values
   ('10000000-0000-0000-0000-0000000000b1', '2026-10-05');
 

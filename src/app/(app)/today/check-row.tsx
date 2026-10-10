@@ -20,11 +20,13 @@ export function CheckRow({
       <button
         type="button"
         role="checkbox"
+        id={`check-${row.id}`}
         aria-checked={row.ticked}
         aria-label={row.ticked ? `Mark ${row.name} not done` : `Mark ${row.name} done`}
-        disabled={disabled}
+        // aria-disabled, not disabled: a disabled button drops keyboard focus; the toggle ignores taps while saving.
+        aria-disabled={disabled}
         onClick={onToggle}
-        className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay disabled:opacity-60 ${
+        className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay aria-disabled:opacity-60 ${
           row.ticked ? "border-primary bg-primary text-primary-foreground" : "border-ink-muted hover:border-ink"
         }`}
       >
