@@ -34,6 +34,8 @@ export async function setCompletionAction(habitId: string, date: string, done: b
     console.error(e);
     return { ok: false, error: GENERIC_SAVE_ERROR };
   } finally {
-    revalidatePath("/today"); // also after a failure, so the page shows what the server really has
+    // also after a failure, so the pages show what the server really has
+    revalidatePath("/today");
+    revalidatePath("/");
   }
 }
