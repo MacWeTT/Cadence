@@ -10,5 +10,5 @@
 }
 
 .app-layout__main {
-  @apply mx-auto w-full flex-1 max-w-295 px-8 py-10;
+  @apply mx-auto flex w-full flex-1 flex-col max-w-295 px-8 py-10;
 }

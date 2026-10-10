@@ -1,7 +1,11 @@
 @reference '../../globals.css';
 
 .about {
-  @apply max-w-prose;
+  @apply my-auto grid items-center gap-12 md:grid-cols-[1fr_20rem];
+}
+
+.about__body {
+  @apply max-w-2xl;
 }
 
 .about__title {
@@ -18,4 +22,20 @@
 
 .about__link {
   @apply text-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.about__features {
+  @apply mt-3 grid gap-x-8 gap-y-5 sm:grid-cols-2;
+}
+
+.about__feature {
+  @apply border-t border-line pt-3;
+}
+
+.about__feature-title {
+  @apply font-semibold;
+}
+
+.about__feature-text {
+  @apply mt-1 text-sm text-ink-muted;
 }

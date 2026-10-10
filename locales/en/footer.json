@@ -1,5 +1,6 @@
 {
   "about": "About",
   "contact": "Contact",
-  "developedBy": "Developed by"
+  "developedBy": "Developed by",
+  "version": "Version {version}"
 }
