@@ -41,7 +41,7 @@ jobs:
       - run: npm ci
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.120.0
       - name: Start local Supabase and apply the migrations
         run: supabase start -x imgproxy,vector,logflare,edge-runtime,supavisor,mailpit
       - name: Database tests (pgTAP)
