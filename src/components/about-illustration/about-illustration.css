@@ -1,0 +1,35 @@
+@reference '../../app/globals.css';
+
+.about-illustration {
+  @apply block h-auto w-full max-w-xs overflow-visible;
+}
+
+.about-illustration__halo {
+  @apply fill-line/50;
+}
+
+.about-illustration__ground {
+  @apply fill-ink/85;
+}
+
+.about-illustration__bar--early {
+  @apply fill-moss/60;
+}
+
+.about-illustration__bar--steady {
+  @apply fill-moss;
+}
+
+.about-illustration__bar--today {
+  @apply fill-clay;
+}
+
+.about-illustration__trend {
+  @apply fill-none stroke-ink-muted stroke-3;
+  stroke-dasharray: 2 9;
+  stroke-linecap: round;
+}
+
+.about-illustration__sun {
+  @apply fill-clay;
+}

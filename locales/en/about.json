@@ -1,0 +1,35 @@
+{
+  "pageTitle": "About",
+  "title": "About Cadence",
+  "intro": "Cadence is a calm personal habit tracker. Build daily and weekly habits, keep your streaks, and see your progress over time.",
+  "howTitle": "How it works",
+  "how": "Tick a habit off each day. A streak counts the days (or weeks) in a row you kept it, and a missed day breaks it, so the day's list always shows what is still open.",
+  "builtBy": "Built and maintained by",
+  "featuresTitle": "What is inside",
+  "features": {
+    "daily": {
+      "title": "Daily and weekly habits",
+      "text": "Do it every day, or a set number of days each week. Each habit follows its own rhythm."
+    },
+    "streaks": {
+      "title": "Streaks that stay fair",
+      "text": "A streak counts the days, or the weeks, in a row you kept a habit. Miss one and it starts over, no hiding it."
+    },
+    "home": {
+      "title": "A home for your day",
+      "text": "Home shows what is left today, a greeting, and a nudge that gets louder as the day runs out."
+    },
+    "progress": {
+      "title": "Progress at a glance",
+      "text": "A year heatmap, weekly bars and completion rates show how the last weeks really went."
+    },
+    "private": {
+      "title": "Private by default",
+      "text": "You sign in with Google and only you can see your habits."
+    },
+    "theme": {
+      "title": "Light and dark",
+      "text": "A warm paper-like light theme and a coffee-dark one. The moon icon in the top bar switches between them."
+    }
+  }
+}
