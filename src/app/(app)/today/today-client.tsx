@@ -4,8 +4,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { CalendarDate } from "@/domain/dates";
 import { formatCalendarDate } from "@/lib/format";
-import type { TodayRow, TodayView } from "@/server/today-view";
-import { CheckRow } from "./check-row";
+import type { TodayView } from "@/server/today-view";
+import { CheckSection } from "./check-row";
 import { DateNav } from "./date-nav";
 import { DayCard } from "./day-card";
 import { useToggleCompletion } from "./use-toggle-completion";
@@ -23,20 +23,6 @@ export function TodayClient({
 }) {
   const isToday = date === today;
   const { shown, saving, toggle } = useToggleCompletion(view, date);
-
-  const section = (id: string, title: string, rows: TodayRow[]) =>
-    rows.length > 0 && (
-      <section className="mt-8">
-        <h2 id={id} className="mb-1 text-xs font-medium uppercase tracking-wider text-ink-muted">
-          {title}
-        </h2>
-        <ul aria-labelledby={id}>
-          {rows.map((row) => (
-            <CheckRow key={row.id} row={row} disabled={saving.has(row.id)} onToggle={() => toggle(row)} />
-          ))}
-        </ul>
-      </section>
-    );
 
   const nothingListed = shown.todo.length === 0 && shown.done.length === 0;
 
@@ -70,8 +56,8 @@ export function TodayClient({
                 {shown.todo.length === 0 && (
                   <p className="mt-8 text-ink-muted">{isToday ? "Nothing left for today." : "Nothing left for this day."}</p>
                 )}
-                {section("todo-heading", "To do", shown.todo)}
-                {section("done-heading", isToday ? "Done today" : "Done", shown.done)}
+                <CheckSection id="todo-heading" title="To do" rows={shown.todo} saving={saving} onToggle={toggle} />
+                <CheckSection id="done-heading" title={isToday ? "Done today" : "Done"} rows={shown.done} saving={saving} onToggle={toggle} />
               </>
             )}
           </div>

@@ -5,6 +5,37 @@ import { habitColor } from "@/lib/palette";
 import { streakLabel, weekLabel } from "@/lib/today-labels";
 import type { TodayRow } from "@/server/today-view";
 
+/** A titled list of rows (To do, Done, Next up...), shared by Today and Home. */
+export function CheckSection({
+  id,
+  title,
+  rows,
+  saving,
+  onToggle,
+  className = "mt-8",
+}: {
+  id: string;
+  title: string;
+  rows: TodayRow[];
+  saving: ReadonlySet<string>;
+  onToggle: (row: TodayRow) => void;
+  className?: string;
+}) {
+  if (rows.length === 0) return null;
+  return (
+    <section className={className}>
+      <h2 id={id} className="mb-1 text-xs font-medium uppercase tracking-wider text-ink-muted">
+        {title}
+      </h2>
+      <ul aria-labelledby={id}>
+        {rows.map((row) => (
+          <CheckRow key={row.id} row={row} disabled={saving.has(row.id)} onToggle={() => onToggle(row)} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function CheckRow({
   row,
   disabled,

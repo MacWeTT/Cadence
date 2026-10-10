@@ -32,6 +32,25 @@ function DayCell({ d, viewed, today }: { d: DaySummary; viewed: boolean; today: 
   );
 }
 
+/** The seven days of a week as small cells; each links to that day on Today. */
+export function WeekStrip({ strip, date, today }: { strip: DaySummary[]; date: CalendarDate; today: CalendarDate }) {
+  return (
+    <>
+      <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-ink-muted">This week</h2>
+      <ul className="grid grid-cols-7 gap-1.5">
+        {strip.map((d) => (
+          <li key={d.date} className="text-center">
+            <span aria-hidden className="text-xs text-ink-muted">
+              {formatCalendarDate(d.date, { weekday: "narrow" })}
+            </span>
+            <DayCell d={d} viewed={d.date === date} today={today} />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 /** The margin card: how far through the viewed day you are, and the week at a glance. */
 export function DayCard({
   done,
@@ -61,17 +80,9 @@ export function DayCard({
       >
         <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: total ? `${(done / total) * 100}%` : "0%" }} />
       </div>
-      <h2 className="mb-2 mt-6 text-xs font-medium uppercase tracking-wider text-ink-muted">This week</h2>
-      <ul className="grid grid-cols-7 gap-1.5">
-        {strip.map((d) => (
-          <li key={d.date} className="text-center">
-            <span aria-hidden className="text-xs text-ink-muted">
-              {formatCalendarDate(d.date, { weekday: "narrow" })}
-            </span>
-            <DayCell d={d} viewed={d.date === date} today={today} />
-          </li>
-        ))}
-      </ul>
+      <div className="mt-6">
+        <WeekStrip strip={strip} date={date} today={today} />
+      </div>
     </aside>
   );
 }

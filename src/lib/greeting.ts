@@ -64,26 +64,29 @@ export function firstName(name: string | null): string {
   return name?.trim().split(/\s+/)[0] || 'friend';
 }
 
-/** `random` returns a number in [0, 1); it is injected so the choice can be tested. `lastId` is never repeated. */
-export function pickGreeting(ctx: GreetingContext, random: () => number, lastId?: string | null): Greeting {
-  let pool = ctx.allDone
+/** The lines that suit this moment. */
+const poolFor = (ctx: GreetingContext): Greeting[] =>
+  ctx.allDone
     ? ALL_DONE
     : [
         ...BY_DAY_PART[dayPart(ctx.hour)],
         ...(BY_WEEKDAY[ctx.weekday] ? [BY_WEEKDAY[ctx.weekday]] : []),
         ...(ctx.noneDone && ctx.hour >= 12 ? [FRESH_PAGE] : []),
       ];
+
+/** `random` returns a number in [0, 1); it is injected so the choice can be tested. `lastId` is never repeated. */
+export function pickGreeting(ctx: GreetingContext, random: () => number, lastId?: string | null): Greeting {
+  let pool = poolFor(ctx);
   if (pool.length > 1) pool = pool.filter((g) => g.id !== lastId);
   const picked = pool[Math.floor(random() * pool.length)];
   return { id: picked.id, text: picked.text.replace('{name}', firstName(ctx.name)) };
 }
 
 const STORAGE_KEY = 'cadence:greeting';
-const ALL_LINES = [...Object.values(BY_DAY_PART).flat(), ...Object.values(BY_WEEKDAY), ...ALL_DONE, FRESH_PAGE];
 
 /**
- * The greeting for this visit: kept while the day part and state stay the same (so ticking or coming back to Home does
- * not reshuffle it), and never the same line as the previous one when they change. `storage` is sessionStorage in the
+ * The greeting for this visit: the stored line is kept for as long as it still suits the moment (so ticking or coming
+ * back to Home does not reshuffle it), and a new one is never the same line as the previous one. `storage` is sessionStorage in the
  * browser; any failure to use it (private mode, blocked, junk) just means a fresh pick.
  */
 export function chooseGreeting(
@@ -91,19 +94,18 @@ export function chooseGreeting(
   random: () => number,
   storage: Pick<Storage, 'getItem' | 'setItem'> | null,
 ): Greeting {
-  const key = `${dayPart(ctx.hour)}:${ctx.allDone ? 'done' : ctx.noneDone ? 'none' : 'some'}`;
-  let stored: { key?: string; id?: string } = {};
+  let stored: { id?: string } = {};
   try {
     stored = JSON.parse(storage?.getItem(STORAGE_KEY) ?? '{}') ?? {};
   } catch {
     // unreadable storage: pick fresh
   }
-  const kept = stored.key === key ? ALL_LINES.find((g) => g.id === stored.id) : undefined;
+  const kept = poolFor(ctx).find((g) => g.id === stored.id);
   const greeting = kept
     ? { id: kept.id, text: kept.text.replace('{name}', firstName(ctx.name)) }
     : pickGreeting(ctx, random, stored.id);
   try {
-    storage?.setItem(STORAGE_KEY, JSON.stringify({ key, id: greeting.id }));
+    storage?.setItem(STORAGE_KEY, JSON.stringify({ id: greeting.id }));
   } catch {
     // unwritable storage: the greeting just won't stick
   }

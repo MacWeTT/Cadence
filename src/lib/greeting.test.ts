@@ -104,3 +104,13 @@ describe('chooseGreeting (stable within a session)', () => {
     expect(chooseGreeting(ctx(), () => 0, unknownId).id).toBe('m1');
   });
 });
+
+describe('chooseGreeting keeps a line while it still fits', () => {
+  it('does not reshuffle when the first tick moves "none done" to "some done"', () => {
+    const data = new Map<string, string>();
+    const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v) };
+    const first = chooseGreeting(ctx({ hour: 14, noneDone: true }), () => 0, storage);
+    expect(first.id).toBe('a1');
+    expect(chooseGreeting(ctx({ hour: 14, noneDone: false }), () => 0.99, storage).id).toBe('a1');
+  });
+});
