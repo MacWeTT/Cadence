@@ -70,6 +70,7 @@ const CheckRow = (props: CheckRowProps) => {
 ### CSS naming
 - One CSS file per component, in the component's own folder, imported by the component. Class names are BEM: `block`, `block__element`, `block--modifier`, prefixed by the component name so they cannot collide (`check-row`, `day-card__cell`).
 - Start every CSS file with `@reference` to `globals.css` so `@apply` can use the theme tokens.
+- Tailwind classes are written in their canonical (shortest) form, e.g. `size-(--logo-height)` not `size-[var(--logo-height)]`. `npm run lint` checks every `@apply` and class string with Tailwind itself (`scripts/check-tailwind-classes.mjs`).
 
 ## Localisation
 - Messages live in `locales/en/*.json`, one file per area (`today.json`, `habits.json`, ...), merged in `locales/en/index.ts`. Keys are typed from those files: a missing key fails the typecheck.

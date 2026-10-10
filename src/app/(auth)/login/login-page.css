@@ -13,7 +13,7 @@
 }
 
 .login__title {
-  @apply font-display text-4xl;
+  --logo-height: 3.5rem;
 }
 
 .login__tagline {

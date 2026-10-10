@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Logo } from '../logo/logo';
 import { ThemeToggle } from '../theme-toggle/theme-toggle';
 import './top-bar.css';
 
@@ -31,7 +32,7 @@ export const TopBar = (props: TopBarProps) => {
           aria-current={pathname === '/' ? 'page' : undefined}
           className={cn('top-bar__logo', pathname === '/' && 'top-bar__logo--current')}
         >
-          {t('brand')}
+          <Logo />
         </Link>
         <nav className="top-bar__nav">
           {links.map(({ href, name }) => {

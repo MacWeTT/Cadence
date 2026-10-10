@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint && node scripts/check-tailwind-classes.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "db:start": "supabase start -x imgproxy,vector,logflare,edge-runtime,supavisor,mailpit",
