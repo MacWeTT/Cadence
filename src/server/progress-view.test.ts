@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ctx, makeHabit } from '@/domain/test-helpers';
 import type { Schedule } from '@/domain/types';
 import type { HabitRow } from './habit-view';
-import { buildProgress, heatmap, monthlyTicks, parseRange, rangeRate, weeklyTicks } from './progress-view';
+import { buildProgress, heatmap, heatTotals, monthBlocks, monthlyTicks, parseRange, rangeRate, weeklyTicks } from './progress-view';
 
 const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({ kind: 'weekly_count', timesPerWeek, effectiveFrom });
 const TODAY = '2026-10-09'; // a Friday
@@ -110,5 +110,31 @@ describe('buildProgress', () => {
   });
   it('treats an unknown habit as all habits', () => {
     expect(buildProgress(entries, 'nope', 7, ctx(TODAY)).selectedId).toBeNull();
+  });
+});
+
+describe('monthBlocks and heatTotals', () => {
+  const weeks = heatmap([makeHabit({ done: ['2026-10-06', '2026-10-07', '2026-09-01'] })], false, ctx(TODAY));
+  const blocks = monthBlocks(weeks, ctx(TODAY));
+
+  it('splits the year into calendar months, oldest first, up to the current one', () => {
+    expect(blocks).toHaveLength(13);
+    expect(blocks[0].month).toBe('2025-10');
+    expect(blocks[12].month).toBe('2026-10');
+  });
+  it('puts every day of the window in exactly one month, as week columns with spacers outside the month', () => {
+    const cells = blocks.flatMap((b) => b.columns.flat()).filter((c) => c !== null);
+    expect(cells).toHaveLength(53 * 7);
+    expect(new Set(cells.map((c) => c.date)).size).toBe(53 * 7);
+    for (const b of blocks) {
+      for (const col of b.columns) {
+        expect(col).toHaveLength(7);
+        expect(col.some((c) => c !== null)).toBe(true); // no empty columns
+        for (const c of col) if (c) expect(c.date.startsWith(b.month)).toBe(true);
+      }
+    }
+  });
+  it('counts ticks and active days over the year', () => {
+    expect(heatTotals(weeks)).toEqual({ ticks: 3, activeDays: 3 });
   });
 });

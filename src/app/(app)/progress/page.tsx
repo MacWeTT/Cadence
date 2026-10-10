@@ -73,10 +73,13 @@ async function ProgressContent({ searchParams }: { searchParams: PageProps<"/pro
       </nav>
 
       <section className={card} aria-labelledby="year-heading">
-        <h2 id="year-heading" className={heading}>
-          The past year
+        <h2 id="year-heading" className="mb-4 text-sm">
+          <span className="font-display text-2xl">{view.totals.ticks}</span> {view.totals.ticks === 1 ? "tick" : "ticks"} in the past year
+          <span className="ml-4 text-ink-muted">
+            <span className="font-semibold text-ink">{view.totals.activeDays}</span> active {view.totals.activeDays === 1 ? "day" : "days"}
+          </span>
         </h2>
-        <Heatmap weeks={view.weeks} single={view.selectedId !== null} />
+        <Heatmap months={view.months} single={view.selectedId !== null} />
       </section>
 
       <Rates view={view} />

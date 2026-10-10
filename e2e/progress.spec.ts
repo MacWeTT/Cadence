@@ -49,3 +49,15 @@ test('an unknown habit or period in the address falls back to the defaults', asy
   await expect(page.getByRole('region', { name: /Completion, last 30 days/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'All habits' })).toHaveAttribute('aria-current', 'page');
 });
+
+test('the year heatmap fits its card without a scrollbar', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(300) });
+  for (const width of [1127, 1400]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/progress');
+    const heatmap = page.getByRole('img', { name: 'Activity over the past year' });
+    await expect(heatmap).toBeVisible();
+    expect(await heatmap.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  }
+});

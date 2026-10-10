@@ -53,6 +53,39 @@ export function heatmap(habits: HabitData[], single: boolean, ctx: Ctx): HeatCel
   );
 }
 
+export interface MonthBlock {
+  /** `YYYY-MM` */
+  month: string;
+  /** Week columns of seven days from the week start; a day outside this month (or outside the year) is `null`, a spacer. */
+  columns: (HeatCell | null)[][];
+}
+
+/** The heatmap regrouped by calendar month, like LeetCode's: each month is its own block of week columns. */
+export function monthBlocks(weeks: HeatCell[][], ctx: Ctx): MonthBlock[] {
+  const byDate = new Map(weeks.flat().map((c) => [c.date, c]));
+  const blocks: MonthBlock[] = [];
+  let year = Number(weeks[0][0].date.slice(0, 4));
+  let month = Number(weeks[0][0].date.slice(5, 7));
+  for (;;) {
+    const key = `${year}-${String(month).padStart(2, '0')}`;
+    const monthLast = addDays(`${month === 12 ? year + 1 : year}-${String(month === 12 ? 1 : month + 1).padStart(2, '0')}-01`, -1);
+    const columns: (HeatCell | null)[][] = [];
+    for (let col = weekStart(`${key}-01`, ctx.weekStartsOn); col <= monthLast; col = addDays(col, 7)) {
+      const days = Array.from({ length: 7 }, (_, d) => addDays(col, d)).map((day) => (day.startsWith(key) ? (byDate.get(day) ?? null) : null));
+      if (days.some((c) => c !== null)) columns.push(days);
+    }
+    blocks.push({ month: key, columns });
+    if (key === ctx.today.slice(0, 7)) return blocks;
+    [year, month] = month === 12 ? [year + 1, 1] : [year, month + 1];
+  }
+}
+
+/** Ticks and days with at least one tick across the heatmap. */
+export function heatTotals(weeks: HeatCell[][]): { ticks: number; activeDays: number } {
+  const cells = weeks.flat();
+  return { ticks: cells.reduce((n, c) => n + c.done, 0), activeDays: cells.filter((c) => c.done > 0).length };
+}
+
 /** Done vs expected over the last `days` closed days (today is progress, not part of the rate). */
 export function rangeRate(habits: HabitData[], days: number, ctx: Ctx): Rate {
   return addRates(habits.map((h) => completionRate(h, addDays(ctx.today, -days), addDays(ctx.today, -1), ctx)));
@@ -107,7 +140,8 @@ export interface ProgressView {
   /** The habit filter in effect (`null` is all habits). */
   selectedId: string | null;
   range: Range;
-  weeks: HeatCell[][];
+  months: MonthBlock[];
+  totals: { ticks: number; activeDays: number };
   habits: ProgressHabit[];
   rate: Rate;
   weekly: { start: CalendarDate; count: number }[];
@@ -124,10 +158,12 @@ export function buildProgress(
   const selected = entries.find((e) => e.habit.id === habitParam);
   const shown = selected ? [selected] : entries;
   const data = shown.map((e) => e.data);
+  const weeks = heatmap(data, Boolean(selected), ctx);
   return {
     selectedId: selected?.habit.id ?? null,
     range,
-    weeks: heatmap(data, Boolean(selected), ctx),
+    months: monthBlocks(weeks, ctx),
+    totals: heatTotals(weeks),
     habits: shown.map(({ habit, data: h }) => {
       const current = currentStreak(h, ctx);
       return {
