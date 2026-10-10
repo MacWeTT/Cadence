@@ -6,10 +6,13 @@ test.beforeEach(async () => {
   await setWeekStartForTests();
 });
 
-const card = (page: Page) => page.getByRole('complementary', { name: 'Progress' });
+const card = (page: Page) => {
+  return page.getByRole('complementary', { name: 'Progress' });
+};
 
 test('the card counts done against listed habits and follows ticking', async ({ page }) => {
   const read = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
   await seedHabit({ name: 'Run', startDate: daysAgo(5) });
   await seedCompletion(read, daysAgo(0));
   await page.goto('/today');
@@ -24,9 +27,11 @@ test('the card counts done against listed habits and follows ticking', async ({ 
 test('the week strip shows yesterday as done and opens that day', async ({ page }) => {
   // yesterday is always in the same week as today (see setWeekStartForTests)
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
   await seedCompletion(id, daysAgo(1));
   await page.goto('/today');
   const yesterday = card(page).getByRole('link', { name: /1 of 1 done$/ });
+
   await expect(yesterday).toHaveCount(1);
   await yesterday.click();
   await expect(page).toHaveURL(new RegExp(`date=${daysAgo(1)}$`));

@@ -1,0 +1,49 @@
+@reference '../../../globals.css';
+
+.habit-row {
+  @apply flex items-center gap-4 border-b border-line px-3 py-4;
+}
+
+.habit-row--archived {
+  @apply opacity-75;
+}
+
+.habit-row__icon {
+  @apply flex size-11 shrink-0 items-center justify-center rounded-xl text-2xl;
+}
+
+.habit-row__body {
+  @apply min-w-0 flex-1;
+}
+
+.habit-row__name {
+  @apply truncate font-semibold;
+}
+
+.habit-row__note {
+  @apply truncate text-sm text-ink-muted;
+}
+
+.habit-row__schedule {
+  @apply text-right;
+}
+
+.habit-row__badge {
+  @apply rounded-full border border-line px-3 py-0.5 text-sm text-ink-muted;
+}
+
+.habit-row__pending {
+  @apply mt-1 text-xs text-ink-muted;
+}
+
+.habit-row__menu {
+  @apply flex size-8 items-center justify-center rounded-md text-ink-muted hover:bg-line hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.habit-row__menu-icon {
+  @apply size-5;
+}
+
+.habit-row__delete {
+  @apply text-danger;
+}

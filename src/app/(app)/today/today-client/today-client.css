@@ -1,0 +1,29 @@
+@reference '../../../globals.css';
+
+.today__header {
+  @apply flex items-end justify-between gap-4;
+}
+
+.today__date {
+  @apply text-sm text-ink-muted;
+}
+
+.today__title {
+  @apply font-display text-4xl;
+}
+
+.today__columns {
+  @apply grid items-start gap-x-10 lg:grid-cols-[1fr_18rem];
+}
+
+.today__main {
+  @apply min-w-0;
+}
+
+.today__note {
+  @apply mt-8 text-ink-muted;
+}
+
+.today__side {
+  @apply order-first mt-8 lg:order-last;
+}

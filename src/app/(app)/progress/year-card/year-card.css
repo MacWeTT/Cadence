@@ -1,0 +1,17 @@
+@reference '../../../globals.css';
+
+.year-card__title {
+  @apply mb-4 text-sm;
+}
+
+.year-card__ticks {
+  @apply font-display text-2xl;
+}
+
+.year-card__days {
+  @apply ml-4 text-ink-muted;
+}
+
+.year-card__days-count {
+  @apply font-semibold text-ink;
+}

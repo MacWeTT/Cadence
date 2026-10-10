@@ -1,0 +1,33 @@
+@reference '../../app/globals.css';
+
+.skeleton {
+  @apply animate-pulse rounded-xl bg-line/60 motion-reduce:animate-none;
+}
+
+.skeleton--row {
+  @apply h-16;
+}
+
+.skeleton--chips {
+  @apply h-8 w-80 rounded-full;
+}
+
+.skeleton--card-small {
+  @apply h-52 rounded-2xl;
+}
+
+.skeleton--card-large {
+  @apply h-72 rounded-2xl;
+}
+
+.skeleton--ring {
+  @apply size-22 rounded-full;
+}
+
+.skeleton--greeting {
+  @apply h-12 w-80;
+}
+
+.skeleton--banner {
+  @apply mt-6 h-13 rounded-2xl;
+}

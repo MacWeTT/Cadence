@@ -1,0 +1,5 @@
+@reference '../../globals.css';
+
+.progress-page__title {
+  @apply font-display text-4xl;
+}

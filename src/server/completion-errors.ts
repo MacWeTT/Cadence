@@ -8,6 +8,6 @@ const MESSAGES: Record<string, string> = {
   before_start: 'That day is before the habit started.',
 };
 
-export function completionErrorMessage(message: string): string {
+export const completionErrorMessage = (message: string): string => {
   return MESSAGES[message] ?? GENERIC_SAVE_ERROR;
-}
+};

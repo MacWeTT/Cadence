@@ -1,17 +1,20 @@
-import { Suspense } from "react";
-import { ListSkeleton } from "@/components/skeleton";
-import { listHabits } from "@/server/habits";
-import { HabitsClient } from "./habits-client";
+import { Suspense } from 'react';
+import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
+import { listHabits } from '@/server/habits';
+import { HabitsClient } from './habits-client/habits-client';
 
-export default function HabitsPage() {
+const HabitsPage = () => {
   return (
     <Suspense fallback={<ListSkeleton title="Habits" />}>
       <HabitsContent />
     </Suspense>
   );
-}
+};
 
-async function HabitsContent() {
+export default HabitsPage;
+
+const HabitsContent = async () => {
   const view = await listHabits();
+
   return <HabitsClient view={view} />;
-}
+};

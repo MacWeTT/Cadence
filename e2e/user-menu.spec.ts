@@ -5,6 +5,7 @@ import { signInState } from './support/session';
 // Each test gets its own session, so signing out never invalidates the shared one.
 test.beforeEach(async ({ context }) => {
   const state = await signInState(E2E_USER.email, E2E_USER.password);
+
   await context.clearCookies();
   await context.addCookies(state.cookies);
 });
@@ -13,6 +14,7 @@ test('the account menu shows the user and can be dismissed', async ({ page }) =>
   await page.goto('/today');
   await page.getByRole('button', { name: 'Account menu' }).click();
   const menu = page.getByRole('menu');
+
   await expect(menu).toContainText('E2E User');
   await expect(menu.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
 

@@ -18,7 +18,9 @@ describe('todayIn', () => {
   });
 
   it('throws on an invalid timezone instead of returning a wrong date', () => {
-    expect(() => todayIn('Not/AZone')).toThrow();
+    expect(() => {
+      return todayIn('Not/AZone');
+    }).toThrow();
   });
 });
 

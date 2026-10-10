@@ -3,12 +3,17 @@ import { nextEditDate, parseScheduleInput, scheduleFor, scheduleOn } from './sch
 import type { Schedule } from './types';
 import { makeHabit } from './test-helpers';
 
-const daily = (effectiveFrom: string): Schedule => ({ kind: 'daily', effectiveFrom });
-const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({
-  kind: 'weekly_count',
-  timesPerWeek,
-  effectiveFrom,
-});
+const daily = (effectiveFrom: string): Schedule => {
+  return { kind: 'daily', effectiveFrom };
+};
+
+const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => {
+  return {
+    kind: 'weekly_count',
+    timesPerWeek,
+    effectiveFrom,
+  };
+};
 
 describe('scheduleOn', () => {
   const schedules = [daily('2026-09-01'), weekly(3, '2026-10-05')];
@@ -27,6 +32,7 @@ describe('scheduleOn', () => {
 describe('scheduleFor', () => {
   it('lets the earliest schedule cover days between startDate and its effectiveFrom', () => {
     const h = makeHabit({ startDate: '2026-09-01', schedules: [daily('2026-09-10')] });
+
     expect(scheduleFor(h, '2026-09-05')).toEqual(daily('2026-09-10'));
     expect(scheduleFor(h, '2026-08-31')).toBeUndefined();
   });
@@ -38,9 +44,10 @@ describe('scheduleFor', () => {
 
 describe('parseScheduleInput', () => {
   it('accepts a valid weekly schedule and a valid daily one', () => {
-    expect(
-      parseScheduleInput({ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-10-05' }),
-    ).toEqual({ ok: true, value: weekly(3, '2026-10-05') });
+    expect(parseScheduleInput({ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-10-05' })).toEqual({
+      ok: true,
+      value: weekly(3, '2026-10-05'),
+    });
     expect(parseScheduleInput({ kind: 'daily', effectiveFrom: '2026-10-05' })).toEqual({
       ok: true,
       value: daily('2026-10-05'),

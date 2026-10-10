@@ -1,0 +1,5 @@
+@reference '../../../globals.css';
+
+.habit-filter {
+  @apply flex flex-wrap gap-2;
+}

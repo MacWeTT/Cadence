@@ -5,16 +5,27 @@ test.beforeEach(async () => {
   await resetUserData();
 });
 
-const activeList = (page: Page) => page.getByRole('list', { name: 'Habits' });
-const archivedToggle = (page: Page) => page.getByRole('button', { name: /^Archived \(\d+\)/ });
-const archivedList = (page: Page) => page.getByRole('list', { name: 'Archived habits' });
-const actions = (page: Page, name: string) => page.getByRole('button', { name: `Actions for ${name}` });
+const activeList = (page: Page) => {
+  return page.getByRole('list', { name: 'Habits' });
+};
 
-async function archive(page: Page, name: string) {
+const archivedToggle = (page: Page) => {
+  return page.getByRole('button', { name: /^Archived \(\d+\)/ });
+};
+
+const archivedList = (page: Page) => {
+  return page.getByRole('list', { name: 'Archived habits' });
+};
+
+const actions = (page: Page, name: string) => {
+  return page.getByRole('button', { name: `Actions for ${name}` });
+};
+
+const archive = async (page: Page, name: string) => {
   await actions(page, name).click();
   await page.getByRole('menuitem', { name: 'Archive' }).click();
   await expect(page.getByText('Habit archived')).toBeVisible();
-}
+};
 
 test('archiving moves a habit to the collapsed Archived section', async ({ page }) => {
   await seedHabit({ name: 'Read', startDate: daysAgo(3) });
@@ -32,6 +43,7 @@ test('archiving moves a habit to the collapsed Archived section', async ({ page 
 
 test('restoring moves it back, and the pause is recorded as a closed zero-length period', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(3) });
+
   await page.goto('/habits');
   await archive(page, 'Read');
   await archivedToggle(page).click();
@@ -43,6 +55,7 @@ test('restoring moves it back, and the pause is recorded as a closed zero-length
   await expect(archivedToggle(page)).toHaveCount(0);
 
   const periods = await getArchivePeriods(id);
+
   expect(periods).toHaveLength(1);
   expect(periods[0].restored_on).toBe(periods[0].archived_on); // archived and restored on the same day
   expect((await getHabits())[0].archived_at).toBeNull();
@@ -74,10 +87,12 @@ test('deleting asks for confirmation, can be cancelled, and removes the habit', 
   const open = async () => {
     await actions(page, 'Read').click();
     await page.getByRole('menuitem', { name: 'Delete' }).click();
+
     return page.getByRole('alertdialog', { name: 'Delete Read?' });
   };
 
   let dialog = await open();
+
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).toBeHidden();
   await expect(actions(page, 'Read')).toBeFocused(); // focus returns to the row's menu button
@@ -92,6 +107,10 @@ test('deleting asks for confirmation, can be cancelled, and removes the habit', 
   dialog = await open();
   await dialog.getByRole('button', { name: 'Delete' }).click();
   await expect(page.getByText('Habit deleted')).toBeVisible();
-  await expect.poll(async () => (await getHabits()).length).toBe(0);
+  await expect
+    .poll(async () => {
+      return (await getHabits()).length;
+    })
+    .toBe(0);
   await expect(archivedToggle(page)).toHaveCount(0);
 });
