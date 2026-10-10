@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.120.0
       - name: Link the hosted project
         run: supabase link --project-ref "${{ vars.SUPABASE_PROJECT_REF }}"
       - name: Show the migrations that are about to run
