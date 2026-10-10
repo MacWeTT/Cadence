@@ -77,3 +77,35 @@ export function pickGreeting(ctx: GreetingContext, random: () => number, lastId?
   const picked = pool[Math.floor(random() * pool.length)];
   return { id: picked.id, text: picked.text.replace('{name}', firstName(ctx.name)) };
 }
+
+const STORAGE_KEY = 'cadence:greeting';
+const ALL_LINES = [...Object.values(BY_DAY_PART).flat(), ...Object.values(BY_WEEKDAY), ...ALL_DONE, FRESH_PAGE];
+
+/**
+ * The greeting for this visit: kept while the day part and state stay the same (so ticking or coming back to Home does
+ * not reshuffle it), and never the same line as the previous one when they change. `storage` is sessionStorage in the
+ * browser; any failure to use it (private mode, blocked, junk) just means a fresh pick.
+ */
+export function chooseGreeting(
+  ctx: GreetingContext,
+  random: () => number,
+  storage: Pick<Storage, 'getItem' | 'setItem'> | null,
+): Greeting {
+  const key = `${dayPart(ctx.hour)}:${ctx.allDone ? 'done' : ctx.noneDone ? 'none' : 'some'}`;
+  let stored: { key?: string; id?: string } = {};
+  try {
+    stored = JSON.parse(storage?.getItem(STORAGE_KEY) ?? '{}') ?? {};
+  } catch {
+    // unreadable storage: pick fresh
+  }
+  const kept = stored.key === key ? ALL_LINES.find((g) => g.id === stored.id) : undefined;
+  const greeting = kept
+    ? { id: kept.id, text: kept.text.replace('{name}', firstName(ctx.name)) }
+    : pickGreeting(ctx, random, stored.id);
+  try {
+    storage?.setItem(STORAGE_KEY, JSON.stringify({ key, id: greeting.id }));
+  } catch {
+    // unwritable storage: the greeting just won't stick
+  }
+  return greeting;
+}

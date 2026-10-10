@@ -4,7 +4,7 @@ import type { Ctx, HabitData } from '@/domain/types';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { fetchAll } from './fetch-all';
 import type { HabitRow } from './habit-view';
-import { getProfile } from './habits';
+import { getProfile, type Profile } from './habits';
 import { toHabitData } from './today-view';
 
 export interface HabitEntry {
@@ -19,7 +19,7 @@ function groupBy<T>(rows: T[], key: (row: T) => string): Map<string, T[]> {
 }
 
 /** Every habit (archived ones too) with its schedules, pauses and ticks, in creation order, plus the user's day context. */
-export async function loadHabitData(): Promise<{ entries: HabitEntry[]; ctx: Ctx }> {
+export async function loadHabitData(): Promise<{ entries: HabitEntry[]; ctx: Ctx; profile: Profile }> {
   await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
   const profile = await getProfile();
   const ctx = { today: profile.today, weekStartsOn: profile.weekStartsOn };
@@ -27,7 +27,7 @@ export async function loadHabitData(): Promise<{ entries: HabitEntry[]; ctx: Ctx
   const supabase = await createSupabaseServerClient();
   const { data: habits, error } = await supabase.from('habits').select('*').order('created_at');
   if (error) throw error;
-  if (habits.length === 0) return { entries: [], ctx };
+  if (habits.length === 0) return { entries: [], ctx, profile };
 
   const ids = habits.map((h) => h.id);
   const [schedules, periods, completions] = await Promise.all([
@@ -60,5 +60,5 @@ export async function loadHabitData(): Promise<{ entries: HabitEntry[]; ctx: Ctx
       (completionsBy.get(habit.id) ?? []).map((c) => c.completion_date),
     ),
   }));
-  return { entries, ctx };
+  return { entries, ctx, profile };
 }

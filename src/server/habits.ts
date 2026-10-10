@@ -22,6 +22,8 @@ export interface Profile {
   timezone: string;
   weekStartsOn: WeekStart;
   today: CalendarDate;
+  /** The Google display name, if any. */
+  displayName: string | null;
 }
 
 export interface HabitsView {
@@ -32,10 +34,10 @@ export interface HabitsView {
 
 export async function getProfile(): Promise<Profile> {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('profiles').select('timezone, week_starts_on').maybeSingle();
+  const { data, error } = await supabase.from('profiles').select('timezone, week_starts_on, display_name').maybeSingle();
   if (error) throw error;
   const timezone = data && isValidTimeZone(data.timezone) ? data.timezone : 'UTC';
-  return { timezone, weekStartsOn: data?.week_starts_on === 7 ? 7 : 1, today: todayIn(timezone) };
+  return { timezone, weekStartsOn: data?.week_starts_on === 7 ? 7 : 1, today: todayIn(timezone), displayName: data?.display_name ?? null };
 }
 
 export async function listHabits(): Promise<HabitsView> {

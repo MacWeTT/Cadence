@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dayPart, firstName, pickGreeting, type GreetingContext } from './greeting';
+import { chooseGreeting, dayPart, firstName, pickGreeting, type GreetingContext } from './greeting';
 
 const WEDNESDAY = 3;
 const ctx = (over: Partial<GreetingContext> = {}): GreetingContext => ({
@@ -60,5 +60,47 @@ describe('pickGreeting', () => {
   });
   it('uses the night lines late at night', () => {
     expect(pickGreeting(ctx({ hour: 23 }), () => 0).id).toBe('n1');
+  });
+});
+
+describe('chooseGreeting (stable within a session)', () => {
+  const fakeStorage = () => {
+    const data = new Map<string, string>();
+    return { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v) };
+  };
+
+  it('keeps the same line while the day part and state stay the same', () => {
+    const storage = fakeStorage();
+    const first = chooseGreeting(ctx(), () => 0, storage);
+    for (const r of [0.3, 0.6, 0.99]) expect(chooseGreeting(ctx(), () => r, storage)).toEqual(first);
+  });
+  it('picks a different line when the state changes', () => {
+    const storage = fakeStorage();
+    const before = chooseGreeting(ctx({ hour: 9 }), () => 0, storage);
+    const after = chooseGreeting(ctx({ hour: 9, allDone: true }), () => 0, storage);
+    expect(after.id).not.toBe(before.id);
+    expect(['d1', 'd2']).toContain(after.id);
+  });
+  it('does not repeat the previous line when the day part changes', () => {
+    const storage = fakeStorage();
+    const morning = chooseGreeting(ctx({ hour: 11 }), () => 0, storage);
+    const noon = chooseGreeting(ctx({ hour: 12 }), () => 0, storage);
+    expect(noon.id).not.toBe(morning.id);
+  });
+  it('still answers when storage is missing, throws, or holds junk', () => {
+    expect(chooseGreeting(ctx(), () => 0, null).id).toBe('m1');
+    const broken = {
+      getItem: () => {
+        throw new Error('blocked');
+      },
+      setItem: () => {
+        throw new Error('blocked');
+      },
+    };
+    expect(chooseGreeting(ctx(), () => 0, broken).id).toBe('m1');
+    const junk = { getItem: () => '{not json', setItem: () => {} };
+    expect(chooseGreeting(ctx(), () => 0, junk).id).toBe('m1');
+    const unknownId = { getItem: () => JSON.stringify({ key: 'morning:some', id: 'zzz' }), setItem: () => {} };
+    expect(chooseGreeting(ctx(), () => 0, unknownId).id).toBe('m1');
   });
 });
