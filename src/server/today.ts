@@ -30,7 +30,7 @@ export async function getTodayView(dateParam: string | string[] | undefined): Pr
   const supabase = await createSupabaseServerClient();
   const { data: habits, error } = await supabase.from('habits').select('*').order('created_at');
   if (error) throw error;
-  if (habits.length === 0) return { view: { todo: [], done: [], hasHabits: false }, date, today: profile.today, earliest: profile.today };
+  if (habits.length === 0) return { view: { todo: [], done: [], strip: [], hasHabits: false }, date, today: profile.today, earliest: profile.today };
 
   const ids = habits.map((h) => h.id);
   const [schedules, periods, completions] = await Promise.all([

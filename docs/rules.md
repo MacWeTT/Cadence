@@ -36,3 +36,4 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - A weekly habit shows how many ticks you have this week ("1 of 3 this week") and "Goal met" once you reach the target. Extra ticks are bonus: they never push a rate above 100%.
 - Streak tags appear only when you view today. Looking at an earlier day shows what you did then, without a "current streak" that would be confusing.
 - The day you view is in the address (`/today?date=2026-10-08`). A missing, malformed or future date means today.
+- The side card shows "done of listed" for the viewed day and the week around it, one cell per day. A daily habit is expected on every day it is active. A weekly habit counts only on the days you ticked it, because no particular day is expected of it. Paused and not-yet-started days expect nothing.

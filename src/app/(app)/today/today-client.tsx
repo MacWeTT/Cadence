@@ -11,6 +11,7 @@ import { applyToggle, type TodayRow, type TodayView } from "@/server/today-view"
 import { setCompletionAction } from "./actions";
 import { CheckRow } from "./check-row";
 import { DateNav } from "./date-nav";
+import { DayCard } from "./day-card";
 
 export function TodayClient({
   view,
@@ -97,17 +98,27 @@ export function TodayClient({
             <Link href="/habits">Create your first habit</Link>
           </Button>
         </div>
-      ) : nothingListed ? (
-        <p className="mt-8 text-ink-muted">No habits on this day.</p>
       ) : (
-        <>
-          {shown.todo.length === 0 && (
-            <p className="mt-8 text-ink-muted">{isToday ? "Nothing left for today." : "Nothing left for this day."}</p>
-          )}
-          {section("todo-heading", "To do", shown.todo)}
-          {section("done-heading", isToday ? "Done today" : "Done", shown.done)}
-        </>
+        <div className="grid items-start gap-x-10 lg:grid-cols-[1fr_18rem]">
+          <div className="min-w-0">
+            {nothingListed ? (
+              <p className="mt-8 text-ink-muted">No habits on this day.</p>
+            ) : (
+              <>
+                {shown.todo.length === 0 && (
+                  <p className="mt-8 text-ink-muted">{isToday ? "Nothing left for today." : "Nothing left for this day."}</p>
+                )}
+                {section("todo-heading", "To do", shown.todo)}
+                {section("done-heading", isToday ? "Done today" : "Done", shown.done)}
+              </>
+            )}
+          </div>
+          <div className="order-first mt-8 lg:order-last">
+            <DayCard done={shown.done.length} total={shown.done.length + shown.todo.length} strip={shown.strip} date={date} today={today} />
+          </div>
+        </div>
       )}
+
     </>
   );
 }
