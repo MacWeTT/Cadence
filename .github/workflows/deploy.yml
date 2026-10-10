@@ -1,0 +1,81 @@
+name: Deploy
+
+# Every push to develop (a merged PR): run the full CI, apply the new database migrations, deploy the app, check it
+# answers. Nothing happens until the repository variable DEPLOY_ENABLED is "true" (see docs/deploy.md).
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+# One deploy at a time, in order. A newer push waits for the running one instead of cancelling it half-way.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    if: vars.DEPLOY_ENABLED == 'true'
+    uses: ./.github/workflows/ci.yml
+
+  migrate:
+    name: Apply database migrations
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      # supabase/config.toml reads these; the hosted project keeps its own Google settings, so the values are not used.
+      SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID: unused
+      SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET: unused
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Link the hosted project
+        run: supabase link --project-ref "${{ vars.SUPABASE_PROJECT_REF }}"
+      - name: Show the migrations that are about to run
+        run: supabase db push --dry-run
+      - name: Apply them
+        run: supabase db push --yes
+
+  deploy:
+    name: Build and deploy to Vercel
+    needs: migrate
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # Vercel builds with the environment variables stored in the Vercel project (the Supabase URL and public key).
+      - name: Deploy to production
+        run: npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
+
+  check:
+    name: Check the site answers
+    needs: deploy
+    if: vars.APP_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: The login page loads
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error --output /dev/null "${{ vars.APP_URL }}/login"; then
+              echo "up"
+              exit 0
+            fi
+            echo "not yet (attempt $attempt)"
+            sleep 10
+          done
+          exit 1
