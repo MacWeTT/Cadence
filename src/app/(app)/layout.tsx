@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }
       />
       <TimezoneSync />
-      <main className="mx-auto w-full max-w-[1180px] px-8 py-10">{children}</main>
+      <main className="mx-auto w-full max-w-295 px-8 py-10">{children}</main>
     </>
   );
 }

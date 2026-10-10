@@ -1,15 +1,29 @@
 "use client";
 
+import Link from "next/link";
 import { useOptimistic, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import type { CalendarDate } from "@/domain/dates";
 import { formatCalendarDate } from "@/lib/format";
 import { GENERIC_SAVE_ERROR } from "@/server/completion-errors";
 import { applyToggle, type TodayRow, type TodayView } from "@/server/today-view";
 import { setCompletionAction } from "./actions";
 import { CheckRow } from "./check-row";
+import { DateNav } from "./date-nav";
 
-export function TodayClient({ view, date }: { view: TodayView; date: CalendarDate; today: CalendarDate; earliest: CalendarDate }) {
+export function TodayClient({
+  view,
+  date,
+  today,
+  earliest,
+}: {
+  view: TodayView;
+  date: CalendarDate;
+  today: CalendarDate;
+  earliest: CalendarDate;
+}) {
+  const isToday = date === today;
   // The optimistic view reverts by itself when the transition ends: to the server's new view after a refresh, or to
   // the old one if the save failed.
   const [shown, showToggle] = useOptimistic(view, (current, change: { id: string; ticked: boolean }) =>
@@ -52,12 +66,39 @@ export function TodayClient({ view, date }: { view: TodayView; date: CalendarDat
       </section>
     );
 
+  const nothingListed = shown.todo.length === 0 && shown.done.length === 0;
+
   return (
     <>
-      <p className="text-sm text-ink-muted">{formatCalendarDate(date, { weekday: "long", day: "numeric", month: "long" })}</p>
-      <h1 className="font-display text-4xl">Today</h1>
-      {section("todo-heading", "To do", shown.todo)}
-      {section("done-heading", "Done today", shown.done)}
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          {isToday && <p className="text-sm text-ink-muted">{formatCalendarDate(date, { weekday: "long", day: "numeric", month: "long" })}</p>}
+          <h1 className="font-display text-4xl">
+            {isToday ? "Today" : formatCalendarDate(date, { weekday: "long", day: "numeric", month: "short" })}
+          </h1>
+        </div>
+        <DateNav date={date} today={today} earliest={earliest} />
+      </div>
+
+      {!view.hasHabits ? (
+        <div className="mt-8 rounded-2xl border border-line bg-surface px-6 py-14 text-center">
+          <h2 className="font-display text-2xl">No habits yet</h2>
+          <p className="mx-auto mb-6 mt-2 max-w-sm text-ink-muted">Create a habit and it will show up here, ready to tick off.</p>
+          <Button asChild>
+            <Link href="/habits">Create your first habit</Link>
+          </Button>
+        </div>
+      ) : nothingListed ? (
+        <p className="mt-8 text-ink-muted">No habits on this day.</p>
+      ) : (
+        <>
+          {shown.todo.length === 0 && (
+            <p className="mt-8 text-ink-muted">{isToday ? "Nothing left for today." : "Nothing left for this day."}</p>
+          )}
+          {section("todo-heading", "To do", shown.todo)}
+          {section("done-heading", isToday ? "Done today" : "Done", shown.done)}
+        </>
+      )}
     </>
   );
 }

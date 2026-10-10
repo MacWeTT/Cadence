@@ -58,7 +58,7 @@ test('an archived habit is hidden and comes back with its earlier ticks after a 
   await seedCompletion(id, daysAgo(1));
   await archiveHabitDirect(id, daysAgo(0));
   await page.goto('/today');
-  await expect(page.getByText('Read')).toHaveCount(0);
+  await expect(page.getByText('Read', { exact: true })).toHaveCount(0);
 
   await restoreHabitDirect(id, daysAgo(0));
   await page.reload();

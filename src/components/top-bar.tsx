@@ -14,7 +14,7 @@ export function TopBar({ menu }: { menu?: React.ReactNode }) {
   const pathname = usePathname();
   return (
     <header className="border-b border-line bg-topbar">
-      <div className="mx-auto flex h-16 w-full max-w-[1180px] items-center gap-8 px-8">
+      <div className="mx-auto flex h-16 w-full max-w-295 items-center gap-8 px-8">
         <span className="font-display text-xl">Cadence</span>
         <nav className="flex gap-6">
           {links.map(({ href, label }) => {
