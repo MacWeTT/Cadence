@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ctx, makeHabit } from '@/domain/test-helpers';
 import type { HabitData, Schedule } from '@/domain/types';
 import type { HabitRow, ScheduleRow } from './habit-view';
-import { buildTodayView, earliestDate, parseDateParam, toHabitData } from './today-view';
+import { applyToggle, buildTodayView, earliestDate, parseDateParam, toHabitData, type TodayRow, type TodayView } from './today-view';
 
 const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => ({
   id,
@@ -117,5 +117,33 @@ describe('earliestDate', () => {
 
   it('is today when there are no habits', () => {
     expect(earliestDate([], '2026-10-09')).toBe('2026-10-09');
+  });
+});
+
+describe('applyToggle', () => {
+  const daily: TodayRow = { id: 'a', name: 'a', icon: '📖', color: 'moss', ticked: false, streak: null, week: null };
+  const weeklyRow: TodayRow = { id: 'w', name: 'w', icon: '🏃', color: 'clay', ticked: false, streak: null, week: { done: 2, target: 3, goalMet: false } };
+  const view: TodayView = { todo: [daily, weeklyRow], done: [], hasHabits: true };
+
+  it('moves a ticked row to done and back to todo', () => {
+    const ticked = applyToggle(view, 'a', true);
+    expect(ticked.todo.map((r) => r.id)).toEqual(['w']);
+    expect(ticked.done.map((r) => [r.id, r.ticked])).toEqual([['a', true]]);
+    const back = applyToggle(ticked, 'a', false);
+    expect(back.todo.map((r) => r.id).sort()).toEqual(['a', 'w']);
+    expect(back.done).toEqual([]);
+  });
+
+  it('adjusts weekly progress and the goal with each tick (Review Focus 5)', () => {
+    const ticked = applyToggle(view, 'w', true);
+    expect(ticked.done[0].week).toEqual({ done: 3, target: 3, goalMet: true });
+    const unticked = applyToggle(ticked, 'w', false);
+    expect(unticked.todo.find((r) => r.id === 'w')?.week).toEqual({ done: 2, target: 3, goalMet: false });
+  });
+
+  it('never lets weekly progress go below 0 and ignores unknown ids', () => {
+    const zero: TodayView = { ...view, done: [{ ...weeklyRow, ticked: true, week: { done: 0, target: 3, goalMet: false } }], todo: [] };
+    expect(applyToggle(zero, 'w', false).todo[0].week?.done).toBe(0);
+    expect(applyToggle(view, 'nope', true)).toEqual(view);
   });
 });

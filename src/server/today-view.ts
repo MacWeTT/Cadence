@@ -72,3 +72,19 @@ export function earliestDate(habits: { data: HabitData }[], today: CalendarDate)
   const starts = habits.filter((h) => !isArchivedNow(h.data)).map((h) => h.data.startDate);
   return starts.length > 0 ? starts.reduce((a, b) => (b < a ? b : a)) : today;
 }
+
+/**
+ * The view after ticking or unticking one row, for the optimistic update: moves the row between the two lists and
+ * adjusts weekly progress. Streaks are left alone; the server refresh brings the real ones.
+ */
+export function applyToggle(view: TodayView, id: string, ticked: boolean): TodayView {
+  const row = [...view.todo, ...view.done].find((r) => r.id === id);
+  if (!row || row.ticked === ticked) return view;
+  const week = row.week && {
+    ...row.week,
+    done: Math.max(0, row.week.done + (ticked ? 1 : -1)),
+  };
+  const next: TodayRow = { ...row, ticked, week: week && { ...week, goalMet: week.done >= week.target } };
+  const rest = (rows: TodayRow[]) => rows.filter((r) => r.id !== id);
+  return { ...view, todo: ticked ? rest(view.todo) : [...rest(view.todo), next], done: ticked ? [...rest(view.done), next] : rest(view.done) };
+}
