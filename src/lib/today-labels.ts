@@ -1,0 +1,11 @@
+import type { WeekProgress } from '@/domain/listing';
+import type { Streak } from '@/domain/streaks';
+
+export function streakLabel(streak: Streak): string {
+  if (streak.unit === 'week') return `${streak.count} week streak`;
+  return `🔥 ${streak.count} ${streak.count === 1 ? 'day' : 'days'}`;
+}
+
+export function weekLabel(week: WeekProgress): string {
+  return week.goalMet ? 'Goal met' : `${week.done} of ${week.target} this week`;
+}

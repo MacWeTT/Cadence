@@ -55,7 +55,7 @@ export function EmojiField({ value, onChange }: { value: string; onChange: (emoj
                 Emoji: ({ emoji, ...props }) => (
                   <button
                     type="button"
-                    className="flex size-8 items-center justify-center rounded-md text-xl data-[active]:bg-line"
+                    className="flex size-8 items-center justify-center rounded-md text-xl data-active:bg-line"
                     {...props}
                   >
                     {emoji.emoji}

@@ -108,3 +108,27 @@ export async function setProfileTimezone(timezone: string): Promise<void> {
   const { error } = await adminClient().from('profiles').update({ timezone }).eq('user_id', userId);
   if (error) throw error;
 }
+
+export async function getCompletions(habitId: string) {
+  const { data, error } = await adminClient().from('habit_completions').select('*').eq('habit_id', habitId).order('completion_date');
+  if (error) throw error;
+  return data;
+}
+
+/** Archive and restore through the same database functions the app uses (the service role bypasses RLS). */
+export async function archiveHabitDirect(habitId: string, on: string): Promise<void> {
+  const { error } = await adminClient().rpc('archive_habit', { p_habit_id: habitId, p_on: on });
+  if (error) throw error;
+}
+export async function restoreHabitDirect(habitId: string, on: string): Promise<void> {
+  const { error } = await adminClient().rpc('restore_habit', { p_habit_id: habitId, p_on: on });
+  if (error) throw error;
+}
+
+/** Weeks start on Monday, except when today is a Monday: then Sunday-start keeps yesterday in the same week. */
+export async function setWeekStartForTests(): Promise<void> {
+  const userId = await ensureE2EUser();
+  const todayIsMonday = new Date().getUTCDay() === 1;
+  const { error } = await adminClient().from('profiles').update({ week_starts_on: todayIsMonday ? 7 : 1 }).eq('user_id', userId);
+  if (error) throw error;
+}

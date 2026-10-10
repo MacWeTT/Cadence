@@ -5,6 +5,7 @@ import { planScheduleChange } from '@/domain/schedule-change';
 import { formatCalendarDate } from '@/lib/format';
 import { isValidTimeZone, type HabitInput } from '@/lib/habit-schema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { fetchAll } from './fetch-all';
 import { toListItem, toSchedule, type HabitListItem } from './habit-view';
 
 /** An expected failure with a message that is safe to show the user. */
@@ -48,12 +49,20 @@ export async function listHabits(): Promise<HabitsView> {
   const ids = habits.map((h) => h.id);
   const [schedules, completions] = await Promise.all([
     supabase.from('habit_schedules').select('*').in('habit_id', ids),
-    // shortcut: fetches one row per tick just to know which habits have any; use a count or an RPC once ticking lands (milestone 4).
-    supabase.from('habit_completions').select('habit_id').in('habit_id', ids),
+    // shortcut: fetches one row per tick just to know which habits have any (paged past the API's row cap); use a
+    // count or an RPC when the volume grows.
+    fetchAll((from, to) =>
+      supabase
+        .from('habit_completions')
+        .select('habit_id, completion_date')
+        .in('habit_id', ids)
+        .order('habit_id')
+        .order('completion_date')
+        .range(from, to),
+    ),
   ]);
   if (schedules.error) throw schedules.error;
-  if (completions.error) throw completions.error;
-  const withTicks = new Set(completions.data.map((c) => c.habit_id));
+  const withTicks = new Set(completions.map((c) => c.habit_id));
 
   const items = habits.map((h) =>
     toListItem(

@@ -47,5 +47,8 @@ describe('text contrast (WCAG AA, 4.5:1)', () => {
     expect(contrast(token(b, 'btn-text'), token(b, 'btn')), 'button text on button').toBeGreaterThanOrEqual(4.5);
     expect(contrast(token(b, 'danger'), token(b, 'surface')), 'error text on surface').toBeGreaterThanOrEqual(4.5);
     expect(contrast(token(b, 'danger'), token(b, 'bg')), 'error text on page').toBeGreaterThanOrEqual(4.5);
+    expect(contrast(token(b, 'ink-muted'), token(b, 'surface')), 'muted text on surface').toBeGreaterThanOrEqual(4.5);
+    expect(contrast(token(b, 'ink-muted'), token(b, 'bg')), 'muted text on page').toBeGreaterThanOrEqual(4.5);
+    expect(contrast(token(b, 'ink-muted'), token(b, 'topbar')), 'muted text on the top bar').toBeGreaterThanOrEqual(4.5);
   });
 });

@@ -28,9 +28,14 @@ export function toSchedule(row: ScheduleRow): Schedule {
     : { kind: 'daily', effectiveFrom: row.effective_from };
 }
 
+/** A stored color, or a known one if the stored value is unexpected. */
+export function toColorKey(value: string): ColorKey {
+  return (COLOR_KEYS as readonly string[]).includes(value) ? (value as ColorKey) : 'moss';
+}
+
 export function toListItem(habit: HabitRow, scheduleRows: ScheduleRow[], hasCompletions: boolean, today: CalendarDate): HabitListItem {
   const schedules = scheduleRows.map(toSchedule).sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
-  const color = (COLOR_KEYS as readonly string[]).includes(habit.color) ? (habit.color as ColorKey) : 'moss';
+  const color = toColorKey(habit.color);
   return {
     id: habit.id,
     name: habit.name,

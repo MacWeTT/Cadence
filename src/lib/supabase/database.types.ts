@@ -128,6 +128,9 @@ isOneToOne: false
                            },
 "restore_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined
+                           },
+"set_completion":
+{ Args: { "p_date": string,"p_done": boolean,"p_habit_id": string,"p_today": string }; Returns: undefined
                            }
           }
           Enums: {
