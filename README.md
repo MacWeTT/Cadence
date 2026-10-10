@@ -23,6 +23,7 @@ Copy `.env.example` to `.env.local` and fill in the values from `npx supabase st
 ## Read next
 
 - [`docs/policies.md`](docs/policies.md): the code policies (enforced by lint and CI)
+- [`docs/deploy.md`](docs/deploy.md): how every merge into `develop` is migrated and deployed (and the one-time setup)
 - [`docs/rules.md`](docs/rules.md): how streaks, rates and the Home banner are counted
 - [`docs/superpowers/specs/`](docs/superpowers/specs/): the design of each milestone
 - [`AGENTS.md`](AGENTS.md): notes for coding agents (this Next.js version has breaking changes)
