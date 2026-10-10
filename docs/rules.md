@@ -37,3 +37,9 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - Streak tags appear only when you view today. Looking at an earlier day shows what you did then, without a "current streak" that would be confusing.
 - The day you view is in the address (`/today?date=2026-10-08`). A missing, malformed or future date means today.
 - The side card shows "done of listed" for the viewed day and the week around it, one cell per day. A daily habit is expected on every day it is active. A weekly habit counts only on the days you ticked it, because no particular day is expected of it. Paused and not-yet-started days expect nothing.
+
+## Progress page
+- The heatmap shows the past 53 weeks. With all habits, a day's shade is habits done over habits expected, in five levels. A daily habit expects 1 a day and a weekly habit N/7 a day, capped at 1. With one habit selected a day is ticked or not. Days before a habit started, in a pause, or in the future are blank.
+- The completion rate uses the last 7, 30, 90 or 365 closed days. Today is progress, not part of the rate. If nothing was expected there is no rate, never 0%.
+- "Ticks per week" and "ticks per month" count ticks, not rates: they show how active you were, not how much was expected.
+- The habit filter and the period live in the address (`/progress?habit=...&range=90`). An unknown habit or period falls back to all habits and 30 days.

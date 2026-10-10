@@ -9,3 +9,8 @@ export function streakLabel(streak: Streak): string {
 export function weekLabel(week: WeekProgress): string {
   return week.goalMet ? 'Goal met' : `${week.done} of ${week.target} this week`;
 }
+
+/** A streak length on its own: "3 days", "1 week". */
+export function streakLength(streak: Streak): string {
+  return `${streak.count} ${streak.unit}${streak.count === 1 ? '' : 's'}`;
+}
