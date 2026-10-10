@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { syncTimezoneAction } from "./timezone-actions";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { syncTimezoneAction } from './timezone-actions';
 
-const FLAG = "timezone-synced";
+const FLAG = 'timezone-synced';
 
 /**
  * Once per browser session, offers the browser's timezone to the server (which only saves it over the UTC default).
@@ -19,10 +19,10 @@ export function TimezoneSync() {
       return; // storage unavailable (private mode): skip rather than retry on every page
     }
     syncTimezoneAction(Intl.DateTimeFormat().resolvedOptions().timeZone)
-      .then((saved) => {
+      .then(saved => {
         // Set the flag only after the server answered, so a failed attempt is retried.
         try {
-          sessionStorage.setItem(FLAG, "1");
+          sessionStorage.setItem(FLAG, '1');
         } catch {}
         if (saved) router.refresh();
       })

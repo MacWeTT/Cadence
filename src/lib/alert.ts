@@ -21,7 +21,8 @@ export interface AlertInput {
 }
 
 export type AlertTier = 'none' | 'done' | 'late' | 'evening' | 'afternoon' | 'morning';
-export type AlertAction = { kind: 'focus'; id: string; label: string } | { kind: 'link'; href: string; label: string } | null;
+export type AlertAction =
+  { kind: 'focus'; id: string; label: string } | { kind: 'link'; href: string; label: string } | null;
 export interface Alert {
   tier: AlertTier;
   message: string;
@@ -48,7 +49,7 @@ export function alertFor(input: AlertInput): Alert {
   if (total === 0) return { tier: 'none', message: '', action: null };
 
   if (open.length === 0) {
-    const next = continuing.slice(0, 2).map((c) => `${c.name} ${c.count + 1}`);
+    const next = continuing.slice(0, 2).map(c => `${c.name} ${c.count + 1}`);
     const streaks = next.length > 0 ? ` Tomorrow's streaks: ${next.join(', ')}.` : '';
     return { tier: 'done', message: `All ${total} done. Nice.${streaks}`, action: null };
   }
@@ -64,8 +65,16 @@ export function alertFor(input: AlertInput): Alert {
 
   if (minutesToMidnight <= 360) {
     return top
-      ? { tier: 'evening', message: `${left} left. ${top.name}'s ${top.count}-${top.unit} streak ends at midnight.`, action: doNow(top.name, top.id) }
-      : { tier: 'evening', message: `${left} left. ${plural(open.length, 'habit', 'habits')} to go.`, action: doNow(open[0].name, open[0].id) };
+      ? {
+          tier: 'evening',
+          message: `${left} left. ${top.name}'s ${top.count}-${top.unit} streak ends at midnight.`,
+          action: doNow(top.name, top.id),
+        }
+      : {
+          tier: 'evening',
+          message: `${left} left. ${plural(open.length, 'habit', 'habits')} to go.`,
+          action: doNow(open[0].name, open[0].id),
+        };
   }
 
   if (hour >= 12) {
@@ -76,13 +85,20 @@ export function alertFor(input: AlertInput): Alert {
     };
   }
 
-  return { tier: 'morning', message: `${plural(total, 'habit', 'habits')} today. A good day to start with ${open[0].name}.`, action: null };
+  return {
+    tier: 'morning',
+    message: `${plural(total, 'habit', 'habits')} today. A good day to start with ${open[0].name}.`,
+    action: null,
+  };
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /** The local date, hour, weekday (0 = Sunday) and minutes to midnight of `now` in `timeZone`. */
-export function clockIn(timeZone: string, now: Date): { date: string; hour: number; weekday: number; minutesToMidnight: number } {
+export function clockIn(
+  timeZone: string,
+  now: Date,
+): { date: string; hour: number; weekday: number; minutesToMidnight: number } {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-CA', {
       timeZone,
@@ -95,7 +111,7 @@ export function clockIn(timeZone: string, now: Date): { date: string; hour: numb
       weekday: 'short',
     })
       .formatToParts(now)
-      .map((p) => [p.type, p.value]),
+      .map(p => [p.type, p.value]),
   );
   const hour = Number(parts.hour);
   return {

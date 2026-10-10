@@ -1,7 +1,7 @@
-import { Suspense } from "react";
-import { GoogleSignInButton } from "@/components/google-sign-in-button";
-import { LoginError } from "@/components/login-error";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Suspense } from 'react';
+import { GoogleSignInButton } from '@/components/google-sign-in-button';
+import { LoginError } from '@/components/login-error';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function LoginPage() {
   return (

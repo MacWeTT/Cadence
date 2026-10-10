@@ -16,6 +16,8 @@ describe('fetchAll', () => {
     expect(await fetchAll(source(0))).toHaveLength(0);
   });
   it('throws the error it is given', async () => {
-    await expect(fetchAll(async () => ({ data: null, error: { message: 'boom' } }))).rejects.toMatchObject({ message: 'boom' });
+    await expect(fetchAll(async () => ({ data: null, error: { message: 'boom' } }))).rejects.toMatchObject({
+      message: 'boom',
+    });
   });
 });

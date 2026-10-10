@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Ellipsis } from "lucide-react";
-import { useRef } from "react";
+import { Ellipsis } from 'lucide-react';
+import { useRef } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { formatCalendarDate } from "@/lib/format";
-import { habitColor } from "@/lib/palette";
-import { scheduleLabel } from "@/lib/schedule-label";
-import type { HabitListItem } from "@/server/habit-view";
+} from '@/components/ui/dropdown-menu';
+import { formatCalendarDate } from '@/lib/format';
+import { habitColor } from '@/lib/palette';
+import { scheduleLabel } from '@/lib/schedule-label';
+import type { HabitListItem } from '@/server/habit-view';
 
 export interface HabitRowActions {
   /** Called with the menu button, so focus can return to it when the dialog closes. */
@@ -36,7 +36,7 @@ export function HabitRow({
   const archived = archivedOn !== undefined;
 
   return (
-    <li className={`flex items-center gap-4 border-b border-line px-3 py-4 ${archived ? "opacity-75" : ""}`}>
+    <li className={`flex items-center gap-4 border-b border-line px-3 py-4 ${archived ? 'opacity-75' : ''}`}>
       <span
         aria-hidden
         className="flex size-11 shrink-0 items-center justify-center rounded-xl text-2xl"
@@ -58,7 +58,7 @@ export function HabitRow({
         </span>
         {pending && !archived && (
           <p className="mt-1 text-xs text-ink-muted">
-            {`Changes to ${scheduleLabel(pending)} on ${formatCalendarDate(pending.effectiveFrom, { day: "numeric", month: "short" })}`}
+            {`Changes to ${scheduleLabel(pending)} on ${formatCalendarDate(pending.effectiveFrom, { day: 'numeric', month: 'short' })}`}
           </p>
         )}
       </div>

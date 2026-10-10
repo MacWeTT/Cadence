@@ -19,16 +19,24 @@ const row = (id: string): HabitRow => ({
   archived_at: null,
 });
 const entry = (id: string, data: HabitData) => ({ habit: row(id), data });
-const weekly = (timesPerWeek: number): Schedule => ({ kind: 'weekly_count', timesPerWeek, effectiveFrom: '2026-09-14' });
+const weekly = (timesPerWeek: number): Schedule => ({
+  kind: 'weekly_count',
+  timesPerWeek,
+  effectiveFrom: '2026-09-14',
+});
 const daily = (done: string[]) => makeHabit({ startDate: '2026-09-14', done });
 // A weekly habit with one met week behind it (a weekly streak of 1) and `thisWeek` ticks so far.
 const weeklyWithStreak = (target: number, thisWeek: string[]) =>
-  makeHabit({ startDate: '2026-09-14', schedules: [weekly(target)], done: ['2026-09-29', '2026-09-30', '2026-10-01', ...thisWeek] });
+  makeHabit({
+    startDate: '2026-09-14',
+    schedules: [weekly(target)],
+    done: ['2026-09-29', '2026-09-30', '2026-10-01', ...thisWeek],
+  });
 
 const home = (entries: ReturnType<typeof entry>[]) => buildHomeView(entries, ctx(TODAY));
 
 describe('buildHomeView', () => {
-  it('carries today\'s lists, strip and flags from the Today view', () => {
+  it("carries today's lists, strip and flags from the Today view", () => {
     const entries = [entry('a', daily(['2026-10-09'])), entry('b', daily([]))];
     expect(home(entries).view).toEqual(buildTodayView(entries, TODAY, ctx(TODAY)));
   });
@@ -70,7 +78,11 @@ describe('buildHomeView', () => {
   });
 
   it('ignores archived habits and habits that start tomorrow', () => {
-    const archived = makeHabit({ startDate: '2026-09-14', done: ['2026-10-07', '2026-10-08'], pauses: [{ from: '2026-10-09', to: null }] });
+    const archived = makeHabit({
+      startDate: '2026-09-14',
+      done: ['2026-10-07', '2026-10-08'],
+      pauses: [{ from: '2026-10-09', to: null }],
+    });
     const future = makeHabit({ startDate: '2026-10-10' });
     const h = home([entry('old', archived), entry('new', future)]);
     expect(h.atRisk).toEqual([]);
@@ -79,7 +91,7 @@ describe('buildHomeView', () => {
   it('puts the longest streak first', () => {
     const short = daily(['2026-10-07', '2026-10-08']);
     const long = daily(['2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08']);
-    expect(home([entry('short', short), entry('long', long)]).atRisk.map((r) => r.id)).toEqual(['long', 'short']);
+    expect(home([entry('short', short), entry('long', long)]).atRisk.map(r => r.id)).toEqual(['long', 'short']);
   });
 });
 
@@ -96,14 +108,23 @@ describe('continuingStreaks', () => {
   });
 
   it('takes the streak as it stands for habits that were already done', () => {
-    expect(continuingStreaks([doneRow('a', { streak: { unit: 'day', count: 4 } }), doneRow('b', { streak: { unit: 'day', count: 9 } })], new Set())).toEqual([
+    expect(
+      continuingStreaks(
+        [doneRow('a', { streak: { unit: 'day', count: 4 } }), doneRow('b', { streak: { unit: 'day', count: 9 } })],
+        new Set(),
+      ),
+    ).toEqual([
       { name: 'b', count: 9 },
       { name: 'a', count: 4 },
     ]);
   });
   it('adds today for a habit ticked just now, before the server has counted it', () => {
-    expect(continuingStreaks([doneRow('a', { streak: { unit: 'day', count: 4 } })], new Set(['a']))).toEqual([{ name: 'a', count: 5 }]);
-    expect(continuingStreaks([doneRow('new', { streak: null })], new Set(['new']))).toEqual([{ name: 'new', count: 1 }]);
+    expect(continuingStreaks([doneRow('a', { streak: { unit: 'day', count: 4 } })], new Set(['a']))).toEqual([
+      { name: 'a', count: 5 },
+    ]);
+    expect(continuingStreaks([doneRow('new', { streak: null })], new Set(['new']))).toEqual([
+      { name: 'new', count: 1 },
+    ]);
   });
   it('leaves out weekly habits and habits with no streak', () => {
     const weekly = doneRow('w', { week: { done: 3, target: 3, goalMet: true }, streak: { unit: 'week', count: 2 } });

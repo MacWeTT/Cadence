@@ -3,7 +3,11 @@ import { isListedOn, weekProgress } from './listing';
 import { ctx, makeHabit } from './test-helpers';
 import type { Schedule } from './types';
 
-const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({ kind: 'weekly_count', timesPerWeek, effectiveFrom });
+const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({
+  kind: 'weekly_count',
+  timesPerWeek,
+  effectiveFrom,
+});
 
 describe('isListedOn', () => {
   const h = makeHabit();
@@ -41,7 +45,9 @@ describe('isListedOn', () => {
   });
 
   it('lists a habit on both sides of a switch from daily to weekly', () => {
-    const switched = makeHabit({ schedules: [{ kind: 'daily', effectiveFrom: '2026-10-01' }, weekly(3, '2026-10-05')] });
+    const switched = makeHabit({
+      schedules: [{ kind: 'daily', effectiveFrom: '2026-10-01' }, weekly(3, '2026-10-05')],
+    });
     expect(isListedOn(switched, '2026-10-04', ctx())).toBe(true);
     expect(isListedOn(switched, '2026-10-06', ctx())).toBe(true);
   });
@@ -72,7 +78,11 @@ describe('weekProgress', () => {
   });
 
   it('counts only from the start date in a partial first week', () => {
-    const partial = makeHabit({ startDate: '2026-10-07', schedules: [weekly(3, '2026-10-07')], done: ['2026-10-05', '2026-10-07'] });
+    const partial = makeHabit({
+      startDate: '2026-10-07',
+      schedules: [weekly(3, '2026-10-07')],
+      done: ['2026-10-05', '2026-10-07'],
+    });
     expect(weekProgress(partial, '2026-10-08', ctx())?.done).toBe(1);
   });
 

@@ -18,7 +18,7 @@ const unitNow = (h: HabitData, ctx: Ctx): Streak['unit'] =>
  */
 export function currentStreak(h: HabitData, ctx: Ctx): Streak {
   const unit = unitNow(h, ctx);
-  if (h.pauses.some((p) => p.to === null) || !scheduleFor(h, ctx.today)) return { unit, count: 0 };
+  if (h.pauses.some(p => p.to === null) || !scheduleFor(h, ctx.today)) return { unit, count: 0 };
 
   let count = 0;
   if (unit === 'day') {

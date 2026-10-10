@@ -77,7 +77,7 @@ const poolFor = (ctx: GreetingContext): Greeting[] =>
 /** `random` returns a number in [0, 1); it is injected so the choice can be tested. `lastId` is never repeated. */
 export function pickGreeting(ctx: GreetingContext, random: () => number, lastId?: string | null): Greeting {
   let pool = poolFor(ctx);
-  if (pool.length > 1) pool = pool.filter((g) => g.id !== lastId);
+  if (pool.length > 1) pool = pool.filter(g => g.id !== lastId);
   const picked = pool[Math.floor(random() * pool.length)];
   return { id: picked.id, text: picked.text.replace('{name}', () => firstName(ctx.name)) };
 }
@@ -100,7 +100,8 @@ export function chooseGreeting(
   } catch {
     // unreadable storage: pick fresh
   }
-  const kept = poolFor(ctx).find((g) => g.id === stored.id);
+  // "Fresh page" is kept after the first tick: ticking must not reshuffle the greeting.
+  const kept = poolFor({ ...ctx, noneDone: true }).find(g => g.id === stored.id);
   const greeting = kept
     ? { id: kept.id, text: kept.text.replace('{name}', () => firstName(ctx.name)) }
     : pickGreeting(ctx, random, stored.id);

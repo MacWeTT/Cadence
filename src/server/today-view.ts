@@ -14,11 +14,16 @@ export interface PauseRow {
   restored_on: string | null;
 }
 
-export function toHabitData(habit: HabitRow, schedules: ScheduleRow[], pauses: PauseRow[], completionDates: string[]): HabitData {
+export function toHabitData(
+  habit: HabitRow,
+  schedules: ScheduleRow[],
+  pauses: PauseRow[],
+  completionDates: string[],
+): HabitData {
   return {
     startDate: habit.start_date,
     schedules: schedules.map(toSchedule),
-    pauses: pauses.map((p) => ({ from: p.archived_on, to: p.restored_on })),
+    pauses: pauses.map(p => ({ from: p.archived_on, to: p.restored_on })),
     completions: new Set(completionDates),
   };
 }
@@ -52,11 +57,24 @@ export interface TodayView {
   hasHabits: boolean;
 }
 
-const isArchivedNow = (data: HabitData) => data.pauses.some((p) => p.to === null);
+const isArchivedNow = (data: HabitData) => data.pauses.some(p => p.to === null);
 
 /** `habits` must already be in the order to show (creation order). */
-export function buildTodayView(habits: { habit: HabitRow; data: HabitData }[], date: CalendarDate, ctx: Ctx): TodayView {
-  const view: TodayView = { todo: [], done: [], strip: weekStrip(habits.map((h) => h.data), date, ctx), hasHabits: habits.some((h) => !isArchivedNow(h.data)) };
+export function buildTodayView(
+  habits: { habit: HabitRow; data: HabitData }[],
+  date: CalendarDate,
+  ctx: Ctx,
+): TodayView {
+  const view: TodayView = {
+    todo: [],
+    done: [],
+    strip: weekStrip(
+      habits.map(h => h.data),
+      date,
+      ctx,
+    ),
+    hasHabits: habits.some(h => !isArchivedNow(h.data)),
+  };
   for (const { habit, data } of habits) {
     if (!isListedOn(data, date, ctx)) continue;
     const ticked = data.completions.has(date);
@@ -101,7 +119,7 @@ export function parseDateParam(value: string | string[] | undefined, today: Cale
 
 /** The earliest day worth showing: the earliest start date among habits that are not archived, or today. */
 export function earliestDate(habits: { data: HabitData }[], today: CalendarDate): CalendarDate {
-  const starts = habits.filter((h) => !isArchivedNow(h.data)).map((h) => h.data.startDate);
+  const starts = habits.filter(h => !isArchivedNow(h.data)).map(h => h.data.startDate);
   return starts.length > 0 ? starts.reduce((a, b) => (b < a ? b : a)) : today;
 }
 
@@ -110,13 +128,17 @@ export function earliestDate(habits: { data: HabitData }[], today: CalendarDate)
  * adjusts weekly progress. Streaks are left alone; the server refresh brings the real ones.
  */
 export function applyToggle(view: TodayView, id: string, ticked: boolean): TodayView {
-  const row = [...view.todo, ...view.done].find((r) => r.id === id);
+  const row = [...view.todo, ...view.done].find(r => r.id === id);
   if (!row || row.ticked === ticked) return view;
   const week = row.week && {
     ...row.week,
     done: Math.max(0, row.week.done + (ticked ? 1 : -1)),
   };
   const next: TodayRow = { ...row, ticked, week: week && { ...week, goalMet: week.done >= week.target } };
-  const rest = (rows: TodayRow[]) => rows.filter((r) => r.id !== id);
-  return { ...view, todo: ticked ? rest(view.todo) : [...rest(view.todo), next], done: ticked ? [...rest(view.done), next] : rest(view.done) };
+  const rest = (rows: TodayRow[]) => rows.filter(r => r.id !== id);
+  return {
+    ...view,
+    todo: ticked ? rest(view.todo) : [...rest(view.todo), next],
+    done: ticked ? [...rest(view.done), next] : rest(view.done),
+  };
 }

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Check } from "lucide-react";
-import { habitColor } from "@/lib/palette";
-import { streakLabel, weekLabel } from "@/lib/today-labels";
-import type { TodayRow } from "@/server/today-view";
+import { Check } from 'lucide-react';
+import { habitColor } from '@/lib/palette';
+import { streakLabel, weekLabel } from '@/lib/today-labels';
+import type { TodayRow } from '@/server/today-view';
 
 /** A titled list of rows (To do, Done, Next up...), shared by Today and Home. */
 export function CheckSection({
@@ -12,7 +12,7 @@ export function CheckSection({
   rows,
   saving,
   onToggle,
-  className = "mt-8",
+  className = 'mt-8',
 }: {
   id: string;
   title: string;
@@ -28,7 +28,7 @@ export function CheckSection({
         {title}
       </h2>
       <ul aria-labelledby={id}>
-        {rows.map((row) => (
+        {rows.map(row => (
           <CheckRow key={row.id} row={row} disabled={saving.has(row.id)} onToggle={() => onToggle(row)} />
         ))}
       </ul>
@@ -58,7 +58,7 @@ export function CheckRow({
         aria-disabled={disabled}
         onClick={onToggle}
         className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay aria-disabled:opacity-60 ${
-          row.ticked ? "border-primary bg-primary text-primary-foreground" : "border-ink-muted hover:border-ink"
+          row.ticked ? 'border-primary bg-primary text-primary-foreground' : 'border-ink-muted hover:border-ink'
         }`}
       >
         {row.ticked && <Check className="size-4" aria-hidden />}
@@ -70,7 +70,9 @@ export function CheckRow({
       >
         {row.icon}
       </span>
-      <p className={`min-w-0 flex-1 truncate font-semibold ${row.ticked ? "text-ink-muted line-through" : ""}`}>{row.name}</p>
+      <p className={`min-w-0 flex-1 truncate font-semibold ${row.ticked ? 'text-ink-muted line-through' : ''}`}>
+        {row.name}
+      </p>
       <div className="flex items-center gap-2 text-sm text-ink-muted">
         {row.week && <span>{weekLabel(row.week)}</span>}
         {row.week && row.streak && <span aria-hidden>·</span>}

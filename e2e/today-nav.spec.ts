@@ -37,7 +37,7 @@ test('ticking yesterday persists after a reload', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
   await page.goto(`/today?date=${daysAgo(1)}`);
   await check(page, 'Read').click();
-  await expect.poll(async () => (await getCompletions(id)).map((c) => c.completion_date)).toEqual([daysAgo(1)]);
+  await expect.poll(async () => (await getCompletions(id)).map(c => c.completion_date)).toEqual([daysAgo(1)]);
   await page.reload();
   await expect(done(page).getByRole('listitem').filter({ hasText: 'Read' })).toBeVisible();
 });

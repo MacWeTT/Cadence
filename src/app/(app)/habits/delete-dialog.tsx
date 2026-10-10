@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import { toast } from "sonner";
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,9 +11,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import type { HabitListItem } from "@/server/habit-view";
-import { deleteHabitAction } from "./actions";
+} from '@/components/ui/alert-dialog';
+import type { HabitListItem } from '@/server/habit-view';
+import { deleteHabitAction } from './actions';
 
 export function DeleteHabitDialog({
   habit,
@@ -33,7 +33,7 @@ export function DeleteHabitDialog({
     setBusy(true);
     const result = await deleteHabitAction(habit.id);
     if (result.ok) {
-      toast.success("Habit deleted");
+      toast.success('Habit deleted');
       onClose();
       return;
     }
@@ -43,7 +43,7 @@ export function DeleteHabitDialog({
   }
 
   return (
-    <AlertDialog open onOpenChange={(open) => !open && onClose()}>
+    <AlertDialog open onOpenChange={open => !open && onClose()}>
       <AlertDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <AlertDialogHeader>
           <AlertDialogTitle>{`Delete ${habit.name}?`}</AlertDialogTitle>
@@ -55,7 +55,7 @@ export function DeleteHabitDialog({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             disabled={busy}
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault(); // keep the dialog open until the server has answered
               void confirm();
             }}

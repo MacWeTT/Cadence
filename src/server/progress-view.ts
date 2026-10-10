@@ -62,17 +62,22 @@ export interface MonthBlock {
 
 /** The heatmap regrouped by calendar month, like LeetCode's: each month is its own block of week columns. */
 export function monthBlocks(weeks: HeatCell[][], ctx: Ctx): MonthBlock[] {
-  const byDate = new Map(weeks.flat().map((c) => [c.date, c]));
+  const byDate = new Map(weeks.flat().map(c => [c.date, c]));
   const blocks: MonthBlock[] = [];
   let year = Number(weeks[0][0].date.slice(0, 4));
   let month = Number(weeks[0][0].date.slice(5, 7));
   for (;;) {
     const key = `${year}-${String(month).padStart(2, '0')}`;
-    const monthLast = addDays(`${month === 12 ? year + 1 : year}-${String(month === 12 ? 1 : month + 1).padStart(2, '0')}-01`, -1);
+    const monthLast = addDays(
+      `${month === 12 ? year + 1 : year}-${String(month === 12 ? 1 : month + 1).padStart(2, '0')}-01`,
+      -1,
+    );
     const columns: (HeatCell | null)[][] = [];
     for (let col = weekStart(`${key}-01`, ctx.weekStartsOn); col <= monthLast; col = addDays(col, 7)) {
-      const days = Array.from({ length: 7 }, (_, d) => addDays(col, d)).map((day) => (day.startsWith(key) ? (byDate.get(day) ?? null) : null));
-      if (days.some((c) => c !== null)) columns.push(days);
+      const days = Array.from({ length: 7 }, (_, d) => addDays(col, d)).map(day =>
+        day.startsWith(key) ? (byDate.get(day) ?? null) : null,
+      );
+      if (days.some(c => c !== null)) columns.push(days);
     }
     blocks.push({ month: key, columns });
     if (key === ctx.today.slice(0, 7)) return blocks;
@@ -83,21 +88,22 @@ export function monthBlocks(weeks: HeatCell[][], ctx: Ctx): MonthBlock[] {
 /** Ticks and days with at least one tick across the heatmap. */
 export function heatTotals(weeks: HeatCell[][]): { ticks: number; activeDays: number } {
   const cells = weeks.flat();
-  return { ticks: cells.reduce((n, c) => n + c.done, 0), activeDays: cells.filter((c) => c.done > 0).length };
+  return { ticks: cells.reduce((n, c) => n + c.done, 0), activeDays: cells.filter(c => c.done > 0).length };
 }
 
 /** Done vs expected over the last `days` closed days (today is progress, not part of the rate). */
 export function rangeRate(habits: HabitData[], days: number, ctx: Ctx): Rate {
-  return addRates(habits.map((h) => completionRate(h, addDays(ctx.today, -days), addDays(ctx.today, -1), ctx)));
+  return addRates(habits.map(h => completionRate(h, addDays(ctx.today, -days), addDays(ctx.today, -1), ctx)));
 }
 
-const allTicks = (habits: HabitData[]) => habits.flatMap((h) => [...h.completions]);
+const allTicks = (habits: HabitData[]) => habits.flatMap(h => [...h.completions]);
 
 /** Ticks per week for the last `n` weeks, oldest first, ending with the current week. */
 export function weeklyTicks(habits: HabitData[], n: number, ctx: Ctx): { start: CalendarDate; count: number }[] {
   const thisWeek = weekStart(ctx.today, ctx.weekStartsOn);
   const counts = new Map<CalendarDate, number>();
-  for (const d of allTicks(habits)) counts.set(weekStart(d, ctx.weekStartsOn), (counts.get(weekStart(d, ctx.weekStartsOn)) ?? 0) + 1);
+  for (const d of allTicks(habits))
+    counts.set(weekStart(d, ctx.weekStartsOn), (counts.get(weekStart(d, ctx.weekStartsOn)) ?? 0) + 1);
   return Array.from({ length: n }, (_, i) => {
     const start = addDays(thisWeek, -7 * (n - 1 - i));
     return { start, count: counts.get(start) ?? 0 };
@@ -122,7 +128,7 @@ export type Range = (typeof RANGES)[number];
 
 /** The rate window from the URL: one of the offered ranges, else 30 days. */
 export function parseRange(value: string | string[] | undefined): Range {
-  return RANGES.find((r) => String(r) === value) ?? 30;
+  return RANGES.find(r => String(r) === value) ?? 30;
 }
 
 export interface ProgressHabit {
@@ -155,9 +161,9 @@ export function buildProgress(
   range: Range,
   ctx: Ctx,
 ): ProgressView {
-  const selected = entries.find((e) => e.habit.id === habitParam);
+  const selected = entries.find(e => e.habit.id === habitParam);
   const shown = selected ? [selected] : entries;
-  const data = shown.map((e) => e.data);
+  const data = shown.map(e => e.data);
   const weeks = heatmap(data, Boolean(selected), ctx);
   return {
     selectedId: selected?.habit.id ?? null,
@@ -171,7 +177,7 @@ export function buildProgress(
         name: habit.name,
         icon: habit.icon,
         color: toColorKey(habit.color),
-        archived: h.pauses.some((p) => p.to === null),
+        archived: h.pauses.some(p => p.to === null),
         current: current.count > 0 ? current : null,
         longest: longestStreak(h, ctx),
         rate: rangeRate([h], range, ctx),

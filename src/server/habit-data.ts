@@ -29,7 +29,7 @@ export async function loadHabitData(): Promise<{ entries: HabitEntry[]; ctx: Ctx
   if (error) throw error;
   if (habits.length === 0) return { entries: [], ctx, profile };
 
-  const ids = habits.map((h) => h.id);
+  const ids = habits.map(h => h.id);
   const [schedules, periods, completions] = await Promise.all([
     supabase.from('habit_schedules').select('*').in('habit_id', ids),
     supabase.from('habit_archive_periods').select('*').in('habit_id', ids),
@@ -48,16 +48,16 @@ export async function loadHabitData(): Promise<{ entries: HabitEntry[]; ctx: Ctx
   if (schedules.error) throw schedules.error;
   if (periods.error) throw periods.error;
 
-  const schedulesBy = groupBy(schedules.data, (s) => s.habit_id);
-  const periodsBy = groupBy(periods.data, (p) => p.habit_id);
-  const completionsBy = groupBy(completions, (c) => c.habit_id);
-  const entries = habits.map((habit) => ({
+  const schedulesBy = groupBy(schedules.data, s => s.habit_id);
+  const periodsBy = groupBy(periods.data, p => p.habit_id);
+  const completionsBy = groupBy(completions, c => c.habit_id);
+  const entries = habits.map(habit => ({
     habit,
     data: toHabitData(
       habit,
       schedulesBy.get(habit.id) ?? [],
       periodsBy.get(habit.id) ?? [],
-      (completionsBy.get(habit.id) ?? []).map((c) => c.completion_date),
+      (completionsBy.get(habit.id) ?? []).map(c => c.completion_date),
     ),
   }));
   return { entries, ctx, profile };

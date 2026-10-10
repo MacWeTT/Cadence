@@ -33,7 +33,12 @@ export function toColorKey(value: string): ColorKey {
   return (COLOR_KEYS as readonly string[]).includes(value) ? (value as ColorKey) : 'moss';
 }
 
-export function toListItem(habit: HabitRow, scheduleRows: ScheduleRow[], hasCompletions: boolean, today: CalendarDate): HabitListItem {
+export function toListItem(
+  habit: HabitRow,
+  scheduleRows: ScheduleRow[],
+  hasCompletions: boolean,
+  today: CalendarDate,
+): HabitListItem {
   const schedules = scheduleRows.map(toSchedule).sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
   const color = toColorKey(habit.color);
   return {
@@ -46,7 +51,7 @@ export function toListItem(habit: HabitRow, scheduleRows: ScheduleRow[], hasComp
     archivedAt: habit.archived_at,
     // A start date moved before every row is covered by the earliest schedule (see scheduleFor in the domain).
     schedule: scheduleOn(schedules, today) ?? schedules[0],
-    pendingSchedule: schedules.find((s) => s.effectiveFrom > today) ?? null,
+    pendingSchedule: schedules.find(s => s.effectiveFrom > today) ?? null,
     hasCompletions,
   };
 }

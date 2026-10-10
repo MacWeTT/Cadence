@@ -5,7 +5,8 @@ test.beforeEach(async () => {
   await resetUserData();
 });
 
-const rowFor = (page: Page, name: string) => page.getByRole('list', { name: 'Habits' }).getByRole('listitem').filter({ hasText: name });
+const rowFor = (page: Page, name: string) =>
+  page.getByRole('list', { name: 'Habits' }).getByRole('listitem').filter({ hasText: name });
 
 async function openEdit(page: Page, name: string) {
   await page.goto('/habits');

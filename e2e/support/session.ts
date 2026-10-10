@@ -21,12 +21,16 @@ export type StorageState = {
  */
 export async function signInState(email: string, password: string): Promise<StorageState> {
   const jar = new Map<string, string>();
-  const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
-    cookies: {
-      getAll: () => [...jar].map(([name, value]) => ({ name, value })),
-      setAll: (list) => list.forEach(({ name, value }) => jar.set(name, value)),
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll: () => [...jar].map(([name, value]) => ({ name, value })),
+        setAll: list => list.forEach(({ name, value }) => jar.set(name, value)),
+      },
     },
-  });
+  );
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
   await supabase.auth.getSession(); // make sure the session cookies have been written to the jar

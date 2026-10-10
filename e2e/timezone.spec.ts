@@ -3,7 +3,8 @@ import { getProfileTimezone, resetUserData, setProfileTimezone } from './support
 
 const localDate = (timeZone: string) => new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date());
 // At any instant at least one of these two zones is on a different calendar date from UTC.
-const farZone = () => ['Pacific/Kiritimati', 'Pacific/Pago_Pago'].find((z) => localDate(z) !== localDate('UTC')) ?? 'Pacific/Kiritimati';
+const farZone = () =>
+  ['Pacific/Kiritimati', 'Pacific/Pago_Pago'].find(z => localDate(z) !== localDate('UTC')) ?? 'Pacific/Kiritimati';
 
 test.beforeEach(async () => {
   await resetUserData();
@@ -13,7 +14,10 @@ test.afterEach(async () => {
   await setProfileTimezone('UTC');
 });
 
-test('a first visit from another timezone saves it and uses its "today" for new habits', async ({ browser, baseURL }) => {
+test('a first visit from another timezone saves it and uses its "today" for new habits', async ({
+  browser,
+  baseURL,
+}) => {
   const timeZone = farZone();
   const context = await browser.newContext({ baseURL, storageState: 'e2e/.auth/user.json', timezoneId: timeZone });
   const page = await context.newPage();

@@ -38,9 +38,10 @@ describe('scheduleFor', () => {
 
 describe('parseScheduleInput', () => {
   it('accepts a valid weekly schedule and a valid daily one', () => {
-    expect(
-      parseScheduleInput({ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-10-05' }),
-    ).toEqual({ ok: true, value: weekly(3, '2026-10-05') });
+    expect(parseScheduleInput({ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-10-05' })).toEqual({
+      ok: true,
+      value: weekly(3, '2026-10-05'),
+    });
     expect(parseScheduleInput({ kind: 'daily', effectiveFrom: '2026-10-05' })).toEqual({
       ok: true,
       value: daily('2026-10-05'),

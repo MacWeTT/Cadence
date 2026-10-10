@@ -1,4 +1,4 @@
-import { signOut } from "@/app/auth/actions";
+import { signOut } from '@/app/auth/actions';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,13 +6,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { getUser } from "@/lib/supabase/server";
+} from '@/components/ui/dropdown-menu';
+import { getUser } from '@/lib/supabase/server';
 
 export async function UserMenu() {
   const user = await getUser();
   if (!user) return null;
-  const name: string = user.user_metadata.full_name ?? user.email ?? "Account";
+  const name: string = user.user_metadata.full_name ?? user.email ?? 'Account';
   const avatarUrl: string | undefined = user.user_metadata.avatar_url;
 
   return (

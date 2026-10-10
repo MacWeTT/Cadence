@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { ctx, makeHabit } from '@/domain/test-helpers';
 import type { HabitData, Schedule } from '@/domain/types';
 import type { HabitRow, ScheduleRow } from './habit-view';
-import { applyToggle, buildTodayView, earliestDate, parseDateParam, toHabitData, weekStrip, type TodayRow, type TodayView } from './today-view';
+import {
+  applyToggle,
+  buildTodayView,
+  earliestDate,
+  parseDateParam,
+  toHabitData,
+  weekStrip,
+  type TodayRow,
+  type TodayView,
+} from './today-view';
 
 const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => ({
   id,
@@ -18,8 +27,18 @@ const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => ({
   ...over,
 });
 const entry = (id: string, data: HabitData) => ({ habit: row(id), data });
-const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({ kind: 'weekly_count', timesPerWeek, effectiveFrom });
-const scheduleRow = (effective_from: string): ScheduleRow => ({ id: effective_from, habit_id: 'h', kind: 'daily', times_per_week: null, effective_from });
+const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({
+  kind: 'weekly_count',
+  timesPerWeek,
+  effectiveFrom,
+});
+const scheduleRow = (effective_from: string): ScheduleRow => ({
+  id: effective_from,
+  habit_id: 'h',
+  kind: 'daily',
+  times_per_week: null,
+  effective_from,
+});
 
 describe('toHabitData', () => {
   it('maps schedules, completions and closed and open archive periods', () => {
@@ -49,8 +68,8 @@ describe('buildTodayView', () => {
       '2026-10-09',
       ctx(),
     );
-    expect(view.todo.map((r) => r.id)).toEqual(['a', 'c']);
-    expect(view.done.map((r) => [r.id, r.ticked])).toEqual([['b', true]]);
+    expect(view.todo.map(r => r.id)).toEqual(['a', 'c']);
+    expect(view.done.map(r => [r.id, r.ticked])).toEqual([['b', true]]);
     expect(view.hasHabits).toBe(true);
   });
 
@@ -66,9 +85,17 @@ describe('buildTodayView', () => {
 
   it('shows weekly progress and flips goalMet as ticks are added and removed', () => {
     const base = { startDate: '2026-09-21', schedules: [weekly(3, '2026-09-21')] };
-    const two = buildTodayView([entry('w', makeHabit({ ...base, done: ['2026-10-05', '2026-10-06'] }))], '2026-10-09', ctx());
+    const two = buildTodayView(
+      [entry('w', makeHabit({ ...base, done: ['2026-10-05', '2026-10-06'] }))],
+      '2026-10-09',
+      ctx(),
+    );
     expect(two.todo[0].week).toEqual({ done: 2, target: 3, goalMet: false });
-    const three = buildTodayView([entry('w', makeHabit({ ...base, done: ['2026-10-05', '2026-10-06', '2026-10-07'] }))], '2026-10-09', ctx());
+    const three = buildTodayView(
+      [entry('w', makeHabit({ ...base, done: ['2026-10-05', '2026-10-06', '2026-10-07'] }))],
+      '2026-10-09',
+      ctx(),
+    );
     expect(three.todo[0].week).toEqual({ done: 3, target: 3, goalMet: true });
     expect(buildTodayView([entry('d', makeHabit())], '2026-10-09', ctx()).todo[0].week).toBeNull();
   });
@@ -82,15 +109,18 @@ describe('buildTodayView', () => {
   });
 
   it('reports no habits when every habit is archived, or there are none', () => {
-    expect(buildTodayView([entry('x', makeHabit({ pauses: [{ from: '2026-10-05', to: null }] }))], '2026-10-09', ctx()).hasHabits).toBe(false);
+    expect(
+      buildTodayView([entry('x', makeHabit({ pauses: [{ from: '2026-10-05', to: null }] }))], '2026-10-09', ctx())
+        .hasHabits,
+    ).toBe(false);
     expect(buildTodayView([], '2026-10-09', ctx()).hasHabits).toBe(false);
   });
 
   it('lists a habit again after a restore, with its earlier ticks', () => {
     const restored = makeHabit({ done: ['2026-10-02'], pauses: [{ from: '2026-10-03', to: '2026-10-06' }] });
     const view = buildTodayView([entry('r', restored)], '2026-10-02', ctx());
-    expect(view.done.map((r) => r.id)).toEqual(['r']);
-    expect(buildTodayView([entry('r', restored)], '2026-10-09', ctx()).todo.map((r) => r.id)).toEqual(['r']);
+    expect(view.done.map(r => r.id)).toEqual(['r']);
+    expect(buildTodayView([entry('r', restored)], '2026-10-09', ctx()).todo.map(r => r.id)).toEqual(['r']);
   });
 });
 
@@ -100,9 +130,12 @@ describe('parseDateParam', () => {
     expect(parseDateParam('2026-10-09', '2026-10-09')).toBe('2026-10-09');
   });
 
-  it.each([['2026-10-10'], ['nonsense'], [''], [undefined], [['2026-10-08']], ['2026-02-30']])('falls back to today for %j', (value) => {
-    expect(parseDateParam(value as string | string[] | undefined, '2026-10-09')).toBe('2026-10-09');
-  });
+  it.each([['2026-10-10'], ['nonsense'], [''], [undefined], [['2026-10-08']], ['2026-02-30']])(
+    'falls back to today for %j',
+    value => {
+      expect(parseDateParam(value as string | string[] | undefined, '2026-10-09')).toBe('2026-10-09');
+    },
+  );
 });
 
 describe('earliestDate', () => {
@@ -122,15 +155,23 @@ describe('earliestDate', () => {
 
 describe('applyToggle', () => {
   const daily: TodayRow = { id: 'a', name: 'a', icon: '📖', color: 'moss', ticked: false, streak: null, week: null };
-  const weeklyRow: TodayRow = { id: 'w', name: 'w', icon: '🏃', color: 'clay', ticked: false, streak: null, week: { done: 2, target: 3, goalMet: false } };
+  const weeklyRow: TodayRow = {
+    id: 'w',
+    name: 'w',
+    icon: '🏃',
+    color: 'clay',
+    ticked: false,
+    streak: null,
+    week: { done: 2, target: 3, goalMet: false },
+  };
   const view: TodayView = { todo: [daily, weeklyRow], done: [], strip: [], hasHabits: true };
 
   it('moves a ticked row to done and back to todo', () => {
     const ticked = applyToggle(view, 'a', true);
-    expect(ticked.todo.map((r) => r.id)).toEqual(['w']);
-    expect(ticked.done.map((r) => [r.id, r.ticked])).toEqual([['a', true]]);
+    expect(ticked.todo.map(r => r.id)).toEqual(['w']);
+    expect(ticked.done.map(r => [r.id, r.ticked])).toEqual([['a', true]]);
     const back = applyToggle(ticked, 'a', false);
-    expect(back.todo.map((r) => r.id).sort()).toEqual(['a', 'w']);
+    expect(back.todo.map(r => r.id).sort()).toEqual(['a', 'w']);
     expect(back.done).toEqual([]);
   });
 
@@ -138,18 +179,22 @@ describe('applyToggle', () => {
     const ticked = applyToggle(view, 'w', true);
     expect(ticked.done[0].week).toEqual({ done: 3, target: 3, goalMet: true });
     const unticked = applyToggle(ticked, 'w', false);
-    expect(unticked.todo.find((r) => r.id === 'w')?.week).toEqual({ done: 2, target: 3, goalMet: false });
+    expect(unticked.todo.find(r => r.id === 'w')?.week).toEqual({ done: 2, target: 3, goalMet: false });
   });
 
   it('never lets weekly progress go below 0 and ignores unknown ids', () => {
-    const zero: TodayView = { ...view, done: [{ ...weeklyRow, ticked: true, week: { done: 0, target: 3, goalMet: false } }], todo: [] };
+    const zero: TodayView = {
+      ...view,
+      done: [{ ...weeklyRow, ticked: true, week: { done: 0, target: 3, goalMet: false } }],
+      todo: [],
+    };
     expect(applyToggle(zero, 'w', false).todo[0].week?.done).toBe(0);
     expect(applyToggle(view, 'nope', true)).toEqual(view);
   });
 });
 
 describe('weekStrip', () => {
-  const days = (strip: ReturnType<typeof weekStrip>) => strip.map((d) => [d.date, d.done, d.total, d.future]);
+  const days = (strip: ReturnType<typeof weekStrip>) => strip.map(d => [d.date, d.done, d.total, d.future]);
 
   it('covers the viewed week from its first day, counting daily habits done against expected', () => {
     const strip = weekStrip([makeHabit({ done: ['2026-10-05', '2026-10-06'] })], '2026-10-07', ctx('2026-10-09'));
@@ -165,7 +210,11 @@ describe('weekStrip', () => {
   });
 
   it('counts a weekly habit only on the days it was ticked, so an untouched day is not a miss', () => {
-    const strip = weekStrip([makeHabit({ schedules: [weekly(3, '2026-10-01')], done: ['2026-10-06'] })], '2026-10-09', ctx('2026-10-09'));
+    const strip = weekStrip(
+      [makeHabit({ schedules: [weekly(3, '2026-10-01')], done: ['2026-10-06'] })],
+      '2026-10-09',
+      ctx('2026-10-09'),
+    );
     expect(days(strip).slice(0, 3)).toEqual([
       ['2026-10-05', 0, 0, false],
       ['2026-10-06', 1, 1, false],
@@ -177,7 +226,11 @@ describe('weekStrip', () => {
     const started = weekStrip([makeHabit({ startDate: '2026-10-08' })], '2026-10-09', ctx('2026-10-09'));
     expect(started[2].total).toBe(0); // 2026-10-07
     expect(started[3].total).toBe(1); // 2026-10-08
-    const paused = weekStrip([makeHabit({ pauses: [{ from: '2026-10-06', to: '2026-10-08' }] })], '2026-10-09', ctx('2026-10-09'));
+    const paused = weekStrip(
+      [makeHabit({ pauses: [{ from: '2026-10-06', to: '2026-10-08' }] })],
+      '2026-10-09',
+      ctx('2026-10-09'),
+    );
     expect(paused[1].total).toBe(0);
     expect(paused[2].total).toBe(0);
     expect(paused[3].total).toBe(1);

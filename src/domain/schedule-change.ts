@@ -18,7 +18,9 @@ const same = (s: Schedule, d: DesiredSchedule): boolean =>
   s.kind === d.kind && (s.kind === 'daily' || (d.kind === 'weekly_count' && s.timesPerWeek === d.timesPerWeek));
 
 const build = (d: DesiredSchedule, effectiveFrom: CalendarDate): Schedule =>
-  d.kind === 'daily' ? { kind: 'daily', effectiveFrom } : { kind: 'weekly_count', timesPerWeek: d.timesPerWeek, effectiveFrom };
+  d.kind === 'daily'
+    ? { kind: 'daily', effectiveFrom }
+    : { kind: 'weekly_count', timesPerWeek: d.timesPerWeek, effectiveFrom };
 
 export function planScheduleChange(input: {
   schedules: Schedule[];
@@ -39,10 +41,11 @@ export function planScheduleChange(input: {
   }
 
   const current = scheduleOn(schedules, today);
-  const pending = schedules.filter((s) => s.effectiveFrom > today);
+  const pending = schedules.filter(s => s.effectiveFrom > today);
   const effective = nextEditDate(today, weekStartsOn);
 
   if (current && same(current, desired)) return pending.length > 0 ? { action: 'delete_pending' } : { action: 'none' };
-  if (pending.length === 1 && pending[0].effectiveFrom === effective && same(pending[0], desired)) return { action: 'none' };
+  if (pending.length === 1 && pending[0].effectiveFrom === effective && same(pending[0], desired))
+    return { action: 'none' };
   return { action: 'upsert', schedule: build(desired, effective) };
 }

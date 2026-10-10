@@ -1,7 +1,7 @@
-import { Suspense } from "react";
-import { ListSkeleton } from "@/components/skeleton";
-import { listHabits } from "@/server/habits";
-import { HabitsClient } from "./habits-client";
+import { Suspense } from 'react';
+import { ListSkeleton } from '@/components/skeleton';
+import { listHabits } from '@/server/habits';
+import { HabitsClient } from './habits-client';
 
 export default function HabitsPage() {
   return (

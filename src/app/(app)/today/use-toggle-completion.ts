@@ -1,9 +1,9 @@
-import { useEffect, useOptimistic, useRef, useState, useTransition } from "react";
-import { toast } from "sonner";
-import type { CalendarDate } from "@/domain/dates";
-import { GENERIC_SAVE_ERROR } from "@/server/completion-errors";
-import { applyToggle, type TodayRow, type TodayView } from "@/server/today-view";
-import { setCompletionAction } from "./actions";
+import { useEffect, useOptimistic, useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
+import type { CalendarDate } from '@/domain/dates';
+import { GENERIC_SAVE_ERROR } from '@/server/completion-errors';
+import { applyToggle, type TodayRow, type TodayView } from '@/server/today-view';
+import { setCompletionAction } from './actions';
 
 /**
  * Ticking for any page that shows a TodayView: instant (optimistic) moves between the lists, one request per row at a
@@ -27,6 +27,21 @@ export function useToggleCompletion(view: TodayView, date: CalendarDate) {
       document.getElementById(`check-${focusId.current}`)?.focus();
     }
   }, [shown]);
+
+  // Once you press or click anything else, focus is yours: stop restoring it.
+  useEffect(() => {
+    const forget = () => {
+      focusId.current = null;
+    };
+
+    document.addEventListener('pointerdown', forget);
+    document.addEventListener('keydown', forget);
+
+    return () => {
+      document.removeEventListener('pointerdown', forget);
+      document.removeEventListener('keydown', forget);
+    };
+  }, []);
 
   function toggle(row: TodayRow) {
     if (inFlight.current.has(row.id)) return;

@@ -27,11 +27,16 @@ export const habitInputSchema = (today: CalendarDate) =>
       icon: z.string().refine(isSingleEmoji, 'Choose a single emoji'),
       color: z.enum(COLOR_KEYS, 'Choose a color'),
       kind: z.enum(['daily', 'weekly_count']),
-      timesPerWeek: z.number().int().min(1, 'Choose 1 to 6 times a week').max(6, 'Choose 1 to 6 times a week').optional(),
+      timesPerWeek: z
+        .number()
+        .int()
+        .min(1, 'Choose 1 to 6 times a week')
+        .max(6, 'Choose 1 to 6 times a week')
+        .optional(),
       startDate: z
         .string()
         .refine(isCalendarDate, 'Enter a valid date')
-        .refine((d) => d >= '2000-01-01' && d <= today, 'The start date can be any day up to today'),
+        .refine(d => d >= '2000-01-01' && d <= today, 'The start date can be any day up to today'),
     })
     .superRefine((v, ctx) => {
       if (v.kind === 'weekly_count' && v.timesPerWeek === undefined) {

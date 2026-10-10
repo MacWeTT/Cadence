@@ -80,7 +80,10 @@ describe('weekStatus (weekly habits)', () => {
   it('puts Saturday and Sunday in different weeks when weeks start on Sunday', () => {
     const base = { startDate: '2026-09-21', schedules: [weekly(2, '2026-09-21')], done: ['2026-10-03', '2026-10-04'] };
     expect(weekStatus(makeHabit(base), '2026-09-28', ctx('2026-10-09', 1))).toMatchObject({ status: 'met', done: 2 });
-    expect(weekStatus(makeHabit(base), '2026-09-27', ctx('2026-10-09', 7))).toMatchObject({ status: 'missed', done: 1 });
+    expect(weekStatus(makeHabit(base), '2026-09-27', ctx('2026-10-09', 7))).toMatchObject({
+      status: 'missed',
+      done: 1,
+    });
     expect(weekStatus(makeHabit(base), '2026-10-04', ctx('2026-10-09', 7))).toMatchObject({ done: 1 });
   });
 

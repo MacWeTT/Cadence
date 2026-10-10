@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { EmojiPicker } from "frimousse";
-import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { EmojiPicker } from 'frimousse';
+import { useState } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 /** The emoji button of the habit dialog. Opens a searchable grid; picking an emoji closes it. */
 export function EmojiField({ value, onChange }: { value: string; onChange: (emoji: string) => void }) {

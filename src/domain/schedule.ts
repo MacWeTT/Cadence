@@ -28,7 +28,8 @@ export function parseScheduleInput(input: unknown): ScheduleParseResult {
   const { kind, timesPerWeek, effectiveFrom } = input as Record<string, unknown>;
   if (!isCalendarDate(effectiveFrom)) return { ok: false, error: 'effectiveFrom must be a valid YYYY-MM-DD date' };
   if (kind === 'daily') {
-    if (timesPerWeek !== undefined && timesPerWeek !== null) return { ok: false, error: 'A daily schedule has no timesPerWeek' };
+    if (timesPerWeek !== undefined && timesPerWeek !== null)
+      return { ok: false, error: 'A daily schedule has no timesPerWeek' };
     return { ok: true, value: { kind, effectiveFrom } };
   }
   if (kind === 'weekly_count') {

@@ -34,7 +34,10 @@ export function completionRate(h: HabitData, from: CalendarDate, to: CalendarDat
 }
 
 export function addRates(rates: Rate[]): Rate {
-  return rates.reduce((a, r) => ({ done: a.done + r.done, expected: a.expected + r.expected }), { done: 0, expected: 0 });
+  return rates.reduce((a, r) => ({ done: a.done + r.done, expected: a.expected + r.expected }), {
+    done: 0,
+    expected: 0,
+  });
 }
 
 /** done ÷ expected, or null when nothing was expected (never 0%). */

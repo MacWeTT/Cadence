@@ -18,8 +18,14 @@ const days = (from: string, to: string): string[] => {
 
 describe('currentStreak, daily', () => {
   it('counts consecutive done days; a pending today never breaks it', () => {
-    expect(currentStreak(makeHabit({ done: days('2026-10-01', '2026-10-08') }), ctx())).toEqual({ unit: 'day', count: 8 });
-    expect(currentStreak(makeHabit({ done: days('2026-10-01', '2026-10-09') }), ctx())).toEqual({ unit: 'day', count: 9 });
+    expect(currentStreak(makeHabit({ done: days('2026-10-01', '2026-10-08') }), ctx())).toEqual({
+      unit: 'day',
+      count: 8,
+    });
+    expect(currentStreak(makeHabit({ done: days('2026-10-01', '2026-10-09') }), ctx())).toEqual({
+      unit: 'day',
+      count: 9,
+    });
   });
 
   it('stops at a missed day', () => {
@@ -71,7 +77,9 @@ describe('currentStreak, weekly', () => {
     const mid = { startDate: '2026-09-30', schedules: [weekly(3, '2026-09-30')] };
     const first = ['2026-09-30', '2026-10-01', '2026-10-02'];
     expect(currentStreak(makeHabit({ ...mid, done: first }), ctx()).count).toBe(0);
-    expect(currentStreak(makeHabit({ ...mid, done: [...first, '2026-10-06', '2026-10-07', '2026-10-08'] }), ctx()).count).toBe(1);
+    expect(
+      currentStreak(makeHabit({ ...mid, done: [...first, '2026-10-06', '2026-10-07', '2026-10-08'] }), ctx()).count,
+    ).toBe(1);
   });
 });
 

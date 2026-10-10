@@ -77,7 +77,7 @@ test('a double tap sends one request and creates one completion', async ({ page 
 test('a failed save rolls the row back and shows a message', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
   await page.goto('/today');
-  await page.route('**/*', (route) => (route.request().headers()['next-action'] ? route.abort() : route.continue()));
+  await page.route('**/*', route => (route.request().headers()['next-action'] ? route.abort() : route.continue()));
   await check(page, 'Read').click();
   await expect(page.getByText("Couldn't save that")).toBeVisible();
   await expect(row(todo(page), 'Read')).toBeVisible(); // back in To do

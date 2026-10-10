@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useRef, useState, useTransition } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { toCalendarDate } from "@/domain/dates";
-import { formatCalendarDate } from "@/lib/format";
-import type { HabitListItem } from "@/server/habit-view";
-import type { HabitsView } from "@/server/habits";
-import { archiveHabitAction, restoreHabitAction, type ActionResult } from "./actions";
-import { DeleteHabitDialog } from "./delete-dialog";
-import { HabitDialog } from "./habit-dialog";
-import { HabitRow, type HabitRowActions } from "./habit-row";
+import { useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { toCalendarDate } from '@/domain/dates';
+import { formatCalendarDate } from '@/lib/format';
+import type { HabitListItem } from '@/server/habit-view';
+import type { HabitsView } from '@/server/habits';
+import { archiveHabitAction, restoreHabitAction, type ActionResult } from './actions';
+import { DeleteHabitDialog } from './delete-dialog';
+import { HabitDialog } from './habit-dialog';
+import { HabitRow, type HabitRowActions } from './habit-row';
 
 export function HabitsClient({ view }: { view: HabitsView }) {
   // `dialog` is null when closed, `{}` to create, `{ habit }` to edit.
@@ -36,8 +36,8 @@ export function HabitsClient({ view }: { view: HabitsView }) {
 
   const actions: HabitRowActions = {
     onEdit: (habit, from) => openDialog(habit, from),
-    onArchive: (habit) => run(() => archiveHabitAction(habit.id), "Habit archived"),
-    onRestore: (habit) => run(() => restoreHabitAction(habit.id), "Habit restored"),
+    onArchive: habit => run(() => archiveHabitAction(habit.id), 'Habit archived'),
+    onRestore: habit => run(() => restoreHabitAction(habit.id), 'Habit restored'),
     onDelete: (habit, from) => {
       opener.current = from;
       setDeleting(habit);
@@ -61,7 +61,7 @@ export function HabitsClient({ view }: { view: HabitsView }) {
         </div>
       ) : (
         <ul aria-label="Habits">
-          {active.map((habit) => (
+          {active.map(habit => (
             <HabitRow key={habit.id} habit={habit} actions={actions} />
           ))}
         </ul>
@@ -72,19 +72,19 @@ export function HabitsClient({ view }: { view: HabitsView }) {
           <button
             type="button"
             aria-expanded={showArchived}
-            onClick={() => setShowArchived((v) => !v)}
+            onClick={() => setShowArchived(v => !v)}
             className="flex items-center gap-2 rounded-md text-sm text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay"
           >
-            <span aria-hidden>{showArchived ? "▾" : "▸"}</span>
+            <span aria-hidden>{showArchived ? '▾' : '▸'}</span>
             {`Archived (${archived.length})`}
           </button>
           {showArchived && (
             <ul aria-label="Archived habits" className="mt-2">
-              {archived.map((habit) => (
+              {archived.map(habit => (
                 <HabitRow
                   key={habit.id}
                   habit={habit}
-                  archivedOn={formatCalendarDate(toCalendarDate(habit.archivedAt ?? "", profile.timezone))}
+                  archivedOn={formatCalendarDate(toCalendarDate(habit.archivedAt ?? '', profile.timezone))}
                   actions={actions}
                 />
               ))}
@@ -96,12 +96,12 @@ export function HabitsClient({ view }: { view: HabitsView }) {
       {dialog && (
         <HabitDialog
           // A fresh form for each habit (or for create).
-          key={dialog.habit?.id ?? "new"}
+          key={dialog.habit?.id ?? 'new'}
           habit={dialog.habit}
           today={profile.today}
           weekStartsOn={profile.weekStartsOn}
           onClose={() => setDialog(null)}
-          onCloseAutoFocus={(e) => {
+          onCloseAutoFocus={e => {
             e.preventDefault();
             opener.current?.focus();
           }}
@@ -111,7 +111,7 @@ export function HabitsClient({ view }: { view: HabitsView }) {
         <DeleteHabitDialog
           habit={deleting}
           onClose={() => setDeleting(null)}
-          onCloseAutoFocus={(e) => {
+          onCloseAutoFocus={e => {
             e.preventDefault();
             opener.current?.focus();
           }}

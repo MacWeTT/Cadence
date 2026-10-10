@@ -42,8 +42,13 @@ describe('completionRate, weekly', () => {
     startDate: '2026-09-21',
     schedules: [weekly(3, '2026-09-21')],
     done: [
-      '2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', // 5 ticks, capped to 3
-      '2026-09-29', '2026-10-01', // 2 ticks
+      '2026-09-21',
+      '2026-09-22',
+      '2026-09-23',
+      '2026-09-24',
+      '2026-09-25', // 5 ticks, capped to 3
+      '2026-09-29',
+      '2026-10-01', // 2 ticks
       '2026-10-06', // current week, not counted
     ],
   });
@@ -90,7 +95,12 @@ describe('completionRate, week straddling a type change', () => {
 
 describe('addRates / ratio', () => {
   it('adds numerators and denominators', () => {
-    expect(addRates([{ done: 1, expected: 2 }, { done: 3, expected: 3 }])).toEqual({ done: 4, expected: 5 });
+    expect(
+      addRates([
+        { done: 1, expected: 2 },
+        { done: 3, expected: 3 },
+      ]),
+    ).toEqual({ done: 4, expected: 5 });
     expect(addRates([])).toEqual({ done: 0, expected: 0 });
   });
 

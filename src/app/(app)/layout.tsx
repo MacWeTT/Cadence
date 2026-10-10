@@ -1,7 +1,7 @@
-import { Suspense } from "react";
-import { TopBar } from "@/components/top-bar";
-import { UserMenu } from "@/components/user-menu";
-import { TimezoneSync } from "./timezone-sync";
+import { Suspense } from 'react';
+import { TopBar } from '@/components/top-bar';
+import { UserMenu } from '@/components/user-menu';
+import { TimezoneSync } from './timezone-sync';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (

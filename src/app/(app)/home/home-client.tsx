@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import type { CalendarDate, WeekStart } from "@/domain/dates";
-import { alertFor, clockIn } from "@/lib/alert";
-import { formatCalendarDate } from "@/lib/format";
-import { continuingStreaks, type HomeView } from "@/server/home-view";
-import { HabitDialog } from "../habits/habit-dialog";
-import { CheckSection } from "../today/check-row";
-import { WeekStrip } from "../today/day-card";
-import { useToggleCompletion } from "../today/use-toggle-completion";
-import { AlertBanner } from "./alert-banner";
-import { StreaksCard } from "./streaks-card";
-import { useGreeting } from "./use-greeting";
-import { useNow } from "./use-now";
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import type { CalendarDate, WeekStart } from '@/domain/dates';
+import { alertFor, clockIn } from '@/lib/alert';
+import { formatCalendarDate } from '@/lib/format';
+import { continuingStreaks, type HomeView } from '@/server/home-view';
+import { HabitDialog } from '../habits/habit-dialog';
+import { CheckSection } from '../today/check-row';
+import { WeekStrip } from '../today/day-card';
+import { useToggleCompletion } from '../today/use-toggle-completion';
+import { AlertBanner } from './alert-banner';
+import { StreaksCard } from './streaks-card';
+import { useGreeting } from './use-greeting';
+import { useNow } from './use-now';
 
-const card = "rounded-2xl border border-line bg-surface p-5";
+const card = 'rounded-2xl border border-line bg-surface p-5';
 
 export function HomeClient({
   home,
@@ -42,22 +42,27 @@ export function HomeClient({
   const done = shown.done.length;
 
   const greeting = useGreeting(
-    clock && { hour: clock.hour, weekday: clock.weekday, name, allDone: total > 0 && done === total, noneDone: total > 0 && done === 0 },
+    clock && {
+      hour: clock.hour,
+      weekday: clock.weekday,
+      name,
+      allDone: total > 0 && done === total,
+      noneDone: total > 0 && done === 0,
+    },
   );
 
-  const openIds = new Set(shown.todo.map((r) => r.id));
+  const openIds = new Set(shown.todo.map(r => r.id));
   const alert =
     clock &&
     alertFor({
       hour: clock.hour,
       minutesToMidnight: clock.minutesToMidnight,
       total,
-      open: shown.todo.map((r) => ({ id: r.id, name: r.name })),
-      atRisk: home.atRisk.filter((r) => openIds.has(r.id)).map((r) => ({ id: r.id, name: r.name, count: r.streak.count, unit: r.streak.unit })),
-      continuing: continuingStreaks(
-        shown.done,
-        new Set(home.view.todo.map((r) => r.id)),
-      ),
+      open: shown.todo.map(r => ({ id: r.id, name: r.name })),
+      atRisk: home.atRisk
+        .filter(r => openIds.has(r.id))
+        .map(r => ({ id: r.id, name: r.name, count: r.streak.count, unit: r.streak.unit })),
+      continuing: continuingStreaks(shown.done, new Set(home.view.todo.map(r => r.id))),
     });
 
   // A tab left open past local midnight: the lists are yesterday's, so fetch today's once.
@@ -83,13 +88,18 @@ export function HomeClient({
           className="flex size-22 shrink-0 items-center justify-center rounded-full"
           style={{ background: `conic-gradient(var(--primary) ${total ? (done / total) * 360 : 0}deg, var(--line) 0)` }}
         >
-          <span aria-hidden className="flex size-17 items-center justify-center rounded-full bg-bg font-display text-xl">
+          <span
+            aria-hidden
+            className="flex size-17 items-center justify-center rounded-full bg-bg font-display text-xl"
+          >
             {done}/{total}
           </span>
         </div>
         <div className="min-w-0">
-          <p className="text-sm text-ink-muted">{formatCalendarDate(today, { weekday: "long", day: "numeric", month: "long" })}</p>
-          <h1 className="min-h-[1.15em] break-words font-display text-4xl leading-tight">{greeting?.text ?? " "}</h1>
+          <p className="text-sm text-ink-muted">
+            {formatCalendarDate(today, { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
+          <h1 className="min-h-[1.15em] break-words font-display text-4xl leading-tight">{greeting?.text ?? ' '}</h1>
         </div>
         <Button className="ml-auto shrink-0" onClick={openDialog}>
           New habit
@@ -99,7 +109,9 @@ export function HomeClient({
       {!home.view.hasHabits ? (
         <div className="mt-8 rounded-2xl border border-line bg-surface px-6 py-14 text-center">
           <h2 className="font-display text-2xl">No habits yet</h2>
-          <p className="mx-auto mb-6 mt-2 max-w-sm text-ink-muted">Create a habit and it will show up here, ready to tick off.</p>
+          <p className="mx-auto mb-6 mt-2 max-w-sm text-ink-muted">
+            Create a habit and it will show up here, ready to tick off.
+          </p>
           <Button onClick={openDialog}>Create your first habit</Button>
         </div>
       ) : (
@@ -122,11 +134,15 @@ export function HomeClient({
                 rows={shown.done}
                 saving={saving}
                 onToggle={toggle}
-                className={shown.todo.length === 0 ? "mt-0" : "mt-8"}
+                className={shown.todo.length === 0 ? 'mt-0' : 'mt-8'}
               />
             </div>
             <div className="space-y-6">
-              <StreaksCard rows={home.atRisk.filter((r) => openIds.has(r.id))} today={today} weekStartsOn={weekStartsOn} />
+              <StreaksCard
+                rows={home.atRisk.filter(r => openIds.has(r.id))}
+                today={today}
+                weekStartsOn={weekStartsOn}
+              />
               <section className={`${card} max-w-md lg:max-w-none`} aria-label="This week">
                 <WeekStrip strip={shown.strip} date={today} today={today} />
               </section>
@@ -140,7 +156,7 @@ export function HomeClient({
           today={today}
           weekStartsOn={weekStartsOn}
           onClose={() => setCreating(false)}
-          onCloseAutoFocus={(e) => {
+          onCloseAutoFocus={e => {
             e.preventDefault();
             opener.current?.focus();
           }}

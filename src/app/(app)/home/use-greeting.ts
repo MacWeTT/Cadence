@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { chooseGreeting, dayPart, type Greeting, type GreetingContext } from "@/lib/greeting";
+import { useMemo } from 'react';
+import { chooseGreeting, dayPart, type Greeting, type GreetingContext } from '@/lib/greeting';
 
 const sessionStore = () => {
   try {

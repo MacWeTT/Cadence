@@ -27,7 +27,7 @@ export async function ensureE2EUser(): Promise<string> {
   if (error && error.code !== 'email_exists') throw error;
   const { data: list, error: listError } = await admin.auth.admin.listUsers({ perPage: 1000 });
   if (listError) throw listError;
-  const existing = list.users.find((u) => u.email === E2E_USER.email);
+  const existing = list.users.find(u => u.email === E2E_USER.email);
   if (!existing) throw new Error('E2E user exists but could not be found');
   return existing.id;
 }
@@ -47,13 +47,21 @@ export async function getHabits() {
 }
 
 export async function getSchedules(habitId: string) {
-  const { data, error } = await adminClient().from('habit_schedules').select('*').eq('habit_id', habitId).order('effective_from');
+  const { data, error } = await adminClient()
+    .from('habit_schedules')
+    .select('*')
+    .eq('habit_id', habitId)
+    .order('effective_from');
   if (error) throw error;
   return data;
 }
 
 export async function getArchivePeriods(habitId: string) {
-  const { data, error } = await adminClient().from('habit_archive_periods').select('*').eq('habit_id', habitId).order('archived_on');
+  const { data, error } = await adminClient()
+    .from('habit_archive_periods')
+    .select('*')
+    .eq('habit_id', habitId)
+    .order('archived_on');
   if (error) throw error;
   return data;
 }
@@ -110,7 +118,11 @@ export async function setProfileTimezone(timezone: string): Promise<void> {
 }
 
 export async function getCompletions(habitId: string) {
-  const { data, error } = await adminClient().from('habit_completions').select('*').eq('habit_id', habitId).order('completion_date');
+  const { data, error } = await adminClient()
+    .from('habit_completions')
+    .select('*')
+    .eq('habit_id', habitId)
+    .order('completion_date');
   if (error) throw error;
   return data;
 }
@@ -129,6 +141,9 @@ export async function restoreHabitDirect(habitId: string, on: string): Promise<v
 export async function setWeekStartForTests(): Promise<void> {
   const userId = await ensureE2EUser();
   const todayIsMonday = new Date().getUTCDay() === 1;
-  const { error } = await adminClient().from('profiles').update({ week_starts_on: todayIsMonday ? 7 : 1 }).eq('user_id', userId);
+  const { error } = await adminClient()
+    .from('profiles')
+    .update({ week_starts_on: todayIsMonday ? 7 : 1 })
+    .eq('user_id', userId);
   if (error) throw error;
 }

@@ -59,7 +59,9 @@ test('the banner grows louder through the day', async ({ page }) => {
   }
 });
 
-test('the evening banner button focuses the habit, and the streak shows under "Streaks to protect"', async ({ page }) => {
+test('the evening banner button focuses the habit, and the streak shows under "Streaks to protect"', async ({
+  page,
+}) => {
   await seedStreakAndPlain();
   await at(page, '20:00');
   await page.goto('/');
@@ -146,7 +148,7 @@ test('the page refreshing itself does not pull focus back to a ticked row', asyn
 test('a clock past local midnight refreshes the lists once, and does not loop', async ({ page }) => {
   await seedHabit({ name: 'Read', startDate: daysAgo(5) });
   const refreshes: string[] = [];
-  page.on('request', (r) => {
+  page.on('request', r => {
     const u = new URL(r.url());
     if (u.pathname === '/' && u.searchParams.has('_rsc')) refreshes.push(u.href);
   });
@@ -155,4 +157,18 @@ test('a clock past local midnight refreshes the lists once, and does not loop', 
   await expect.poll(() => refreshes.length).toBeGreaterThan(0);
   await page.waitForTimeout(1500);
   expect(refreshes.length).toBeLessThanOrEqual(2);
+});
+
+test('a save that finishes after you click away does not pull focus back to the row', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  await seedHabit({ name: 'Run', startDate: daysAgo(5) });
+  await page.route('**/*', async route => {
+    if (route.request().headers()['next-action']) await new Promise(resolve => setTimeout(resolve, 1200));
+    await route.continue();
+  });
+  await page.goto('/');
+  await check(page, 'Read').click();
+  await page.getByRole('heading', { level: 1 }).click(); // click away while the save is still on its way
+  await page.waitForTimeout(2500); // the save finishes and the page refreshes
+  expect(await page.evaluate(() => document.activeElement === document.body)).toBe(true);
 });

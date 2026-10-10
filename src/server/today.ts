@@ -15,6 +15,12 @@ export interface TodayData {
 export async function getTodayView(dateParam: string | string[] | undefined): Promise<TodayData> {
   const { entries, ctx } = await loadHabitData();
   const date = parseDateParam(dateParam, ctx.today);
-  if (entries.length === 0) return { view: { todo: [], done: [], strip: [], hasHabits: false }, date, today: ctx.today, earliest: ctx.today };
-  return { view: buildTodayView(entries, date, ctx), date, today: ctx.today, earliest: earliestDate(entries, ctx.today) };
+  if (entries.length === 0)
+    return { view: { todo: [], done: [], strip: [], hasHabits: false }, date, today: ctx.today, earliest: ctx.today };
+  return {
+    view: buildTodayView(entries, date, ctx),
+    date,
+    today: ctx.today,
+    earliest: earliestDate(entries, ctx.today),
+  };
 }

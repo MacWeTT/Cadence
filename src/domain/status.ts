@@ -12,11 +12,11 @@ export interface WeekStatus {
 
 /** True if `date` falls inside one of the habit's archive pauses (`to` is exclusive; a zero-length pause covers nothing). */
 export function isPaused(h: HabitData, date: CalendarDate): boolean {
-  return h.pauses.some((p) => p.from <= date && (p.to === null || date < p.to));
+  return h.pauses.some(p => p.from <= date && (p.to === null || date < p.to));
 }
 
 function overlapsPause(h: HabitData, a: CalendarDate, b: CalendarDate): boolean {
-  return h.pauses.some((p) => p.from <= b && (p.to === null || (p.from < p.to && a < p.to)));
+  return h.pauses.some(p => p.from <= b && (p.to === null || (p.from < p.to && a < p.to)));
 }
 
 /** Status of one day for a habit on a daily schedule. Anything else is `inactive`. A tick is always honoured, even on a paused day. */

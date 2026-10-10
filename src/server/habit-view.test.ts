@@ -13,8 +13,20 @@ const habit: HabitRow = {
   updated_at: '2026-10-01T08:00:00Z',
   archived_at: null,
 };
-const daily = (effective_from: string): ScheduleRow => ({ id: effective_from, habit_id: 'h1', kind: 'daily', times_per_week: null, effective_from });
-const weekly = (n: number, effective_from: string): ScheduleRow => ({ id: effective_from, habit_id: 'h1', kind: 'weekly_count', times_per_week: n, effective_from });
+const daily = (effective_from: string): ScheduleRow => ({
+  id: effective_from,
+  habit_id: 'h1',
+  kind: 'daily',
+  times_per_week: null,
+  effective_from,
+});
+const weekly = (n: number, effective_from: string): ScheduleRow => ({
+  id: effective_from,
+  habit_id: 'h1',
+  kind: 'weekly_count',
+  times_per_week: n,
+  effective_from,
+});
 
 describe('toListItem', () => {
   it('shows the schedule in effect today and no pending change', () => {
@@ -46,11 +58,18 @@ describe('toListItem', () => {
   });
 
   it('falls back to a known color for an unexpected value', () => {
-    expect(toListItem({ ...habit, color: 'chartreuse' }, [daily('2026-10-01')], false, '2026-10-09').color).toBe('moss');
+    expect(toListItem({ ...habit, color: 'chartreuse' }, [daily('2026-10-01')], false, '2026-10-09').color).toBe(
+      'moss',
+    );
   });
 
   it('keeps the archive timestamp and the description', () => {
-    const item = toListItem({ ...habit, description: 'Before bed', archived_at: '2026-10-05T10:00:00Z' }, [daily('2026-10-01')], false, '2026-10-09');
+    const item = toListItem(
+      { ...habit, description: 'Before bed', archived_at: '2026-10-05T10:00:00Z' },
+      [daily('2026-10-01')],
+      false,
+      '2026-10-09',
+    );
     expect([item.description, item.archivedAt]).toEqual(['Before bed', '2026-10-05T10:00:00Z']);
   });
 });

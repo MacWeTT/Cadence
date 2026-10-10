@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { useState } from 'react';
+import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 
 export function GoogleSignInButton() {
   const [busy, setBusy] = useState(false);
@@ -11,7 +11,7 @@ export function GoogleSignInButton() {
     setBusy(true);
     setError(null);
     const { error } = await createSupabaseBrowserClient().auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: { redirectTo: `${location.origin}/auth/callback` },
     });
     if (error) {
@@ -28,7 +28,7 @@ export function GoogleSignInButton() {
         disabled={busy}
         className="w-full rounded-lg bg-moss px-5 py-3 font-semibold text-bg hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay disabled:opacity-60"
       >
-        {busy ? "Redirecting to Google…" : "Continue with Google"}
+        {busy ? 'Redirecting to Google…' : 'Continue with Google'}
       </button>
       {error && (
         <p role="alert" className="mt-3 text-sm text-danger">

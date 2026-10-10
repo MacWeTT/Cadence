@@ -1,8 +1,8 @@
-import { Suspense } from "react";
-import { HomeSkeleton } from "@/components/skeleton";
-import { loadHabitData } from "@/server/habit-data";
-import { buildHomeView } from "@/server/home-view";
-import { HomeClient } from "./home/home-client";
+import { Suspense } from 'react';
+import { HomeSkeleton } from '@/components/skeleton';
+import { loadHabitData } from '@/server/habit-data';
+import { buildHomeView } from '@/server/home-view';
+import { HomeClient } from './home/home-client';
 
 export default function HomePage() {
   return (

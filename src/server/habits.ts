@@ -34,10 +34,18 @@ export interface HabitsView {
 
 export async function getProfile(): Promise<Profile> {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('profiles').select('timezone, week_starts_on, display_name').maybeSingle();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('timezone, week_starts_on, display_name')
+    .maybeSingle();
   if (error) throw error;
   const timezone = data && isValidTimeZone(data.timezone) ? data.timezone : 'UTC';
-  return { timezone, weekStartsOn: data?.week_starts_on === 7 ? 7 : 1, today: todayIn(timezone), displayName: data?.display_name ?? null };
+  return {
+    timezone,
+    weekStartsOn: data?.week_starts_on === 7 ? 7 : 1,
+    today: todayIn(timezone),
+    displayName: data?.display_name ?? null,
+  };
 }
 
 export async function listHabits(): Promise<HabitsView> {
@@ -48,7 +56,7 @@ export async function listHabits(): Promise<HabitsView> {
   if (error) throw error;
   if (habits.length === 0) return { active: [], archived: [], profile };
 
-  const ids = habits.map((h) => h.id);
+  const ids = habits.map(h => h.id);
   const [schedules, completions] = await Promise.all([
     supabase.from('habit_schedules').select('*').in('habit_id', ids),
     // shortcut: fetches one row per tick just to know which habits have any (paged past the API's row cap); use a
@@ -64,17 +72,17 @@ export async function listHabits(): Promise<HabitsView> {
     ),
   ]);
   if (schedules.error) throw schedules.error;
-  const withTicks = new Set(completions.map((c) => c.habit_id));
+  const withTicks = new Set(completions.map(c => c.habit_id));
 
-  const items = habits.map((h) =>
+  const items = habits.map(h =>
     toListItem(
       h,
-      schedules.data.filter((s) => s.habit_id === h.id),
+      schedules.data.filter(s => s.habit_id === h.id),
       withTicks.has(h.id),
       profile.today,
     ),
   );
-  return { active: items.filter((i) => !i.archivedAt), archived: items.filter((i) => i.archivedAt), profile };
+  return { active: items.filter(i => !i.archivedAt), archived: items.filter(i => i.archivedAt), profile };
 }
 
 // A Postgres exception raised by our functions (P0001) means the habit is missing, not yours, or in the wrong state.
@@ -137,7 +145,8 @@ export async function updateHabit(id: string, input: HabitInput): Promise<void> 
   if (rows.error) throw rows.error;
   const plan = planScheduleChange({
     schedules: rows.data.map(toSchedule),
-    desired: input.kind === 'daily' ? { kind: 'daily' } : { kind: 'weekly_count', timesPerWeek: input.timesPerWeek ?? 1 },
+    desired:
+      input.kind === 'daily' ? { kind: 'daily' } : { kind: 'weekly_count', timesPerWeek: input.timesPerWeek ?? 1 },
     startDate: input.startDate,
     today,
     weekStartsOn,

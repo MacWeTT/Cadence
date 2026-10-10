@@ -14,7 +14,17 @@ const ctx = (over: Partial<GreetingContext> = {}): GreetingContext => ({
 describe('dayPart', () => {
   it('splits the day at 5, 12, 18 and 22', () => {
     const parts = [4, 5, 11, 12, 17, 18, 21, 22, 0].map(dayPart);
-    expect(parts).toEqual(['night', 'morning', 'morning', 'afternoon', 'afternoon', 'evening', 'evening', 'night', 'night']);
+    expect(parts).toEqual([
+      'night',
+      'morning',
+      'morning',
+      'afternoon',
+      'afternoon',
+      'evening',
+      'evening',
+      'night',
+      'night',
+    ]);
   });
 });
 
@@ -50,11 +60,11 @@ describe('pickGreeting', () => {
   });
   it('adds the weekday line to the pool', () => {
     const friday = ctx({ hour: 19, weekday: 5 });
-    const ids = [0, 0.2, 0.4, 0.6, 0.8, 0.99].map((r) => pickGreeting(friday, () => r).id);
+    const ids = [0, 0.2, 0.4, 0.6, 0.8, 0.99].map(r => pickGreeting(friday, () => r).id);
     expect(ids).toContain('w5');
   });
   it('offers the fresh-page line only from noon with nothing ticked', () => {
-    const seen = (c: GreetingContext) => [0, 0.2, 0.4, 0.6, 0.8, 0.99].map((r) => pickGreeting(c, () => r).id);
+    const seen = (c: GreetingContext) => [0, 0.2, 0.4, 0.6, 0.8, 0.99].map(r => pickGreeting(c, () => r).id);
     expect(seen(ctx({ hour: 14, noneDone: true }))).toContain('z1');
     expect(seen(ctx({ hour: 9, noneDone: true }))).not.toContain('z1');
   });
@@ -108,7 +118,10 @@ describe('chooseGreeting (stable within a session)', () => {
 describe('chooseGreeting keeps a line while it still fits', () => {
   it('does not reshuffle when the first tick moves "none done" to "some done"', () => {
     const data = new Map<string, string>();
-    const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v) };
+    const storage = {
+      getItem: (k: string) => data.get(k) ?? null,
+      setItem: (k: string, v: string) => void data.set(k, v),
+    };
     const first = chooseGreeting(ctx({ hour: 14, noneDone: true }), () => 0, storage);
     expect(first.id).toBe('a1');
     expect(chooseGreeting(ctx({ hour: 14, noneDone: false }), () => 0.99, storage).id).toBe('a1');
@@ -120,8 +133,25 @@ describe('names with special characters', () => {
     expect(pickGreeting(ctx({ name: '$&' }), () => 0).text).toBe('Good morning, $&');
     expect(pickGreeting(ctx({ name: "$'x" }), () => 0).text).toBe("Good morning, $'x");
     const data = new Map<string, string>();
-    const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v) };
+    const storage = {
+      getItem: (k: string) => data.get(k) ?? null,
+      setItem: (k: string, v: string) => void data.set(k, v),
+    };
     chooseGreeting(ctx({ name: 'Bob' }), () => 0, storage);
     expect(chooseGreeting(ctx({ name: '$&' }), () => 0.5, storage).text).toBe('Good morning, $&'); // the kept line, too
+  });
+});
+
+describe('chooseGreeting and the fresh-page line', () => {
+  it('keeps "Fresh page" after the first tick instead of reshuffling', () => {
+    const data = new Map<string, string>();
+    const storage = {
+      getItem: (k: string) => data.get(k) ?? null,
+      setItem: (k: string, v: string) => void data.set(k, v),
+    };
+    const first = chooseGreeting(ctx({ hour: 14, noneDone: true }), () => 0.99, storage);
+
+    expect(first.id).toBe('z1');
+    expect(chooseGreeting(ctx({ hour: 14, noneDone: false }), () => 0, storage).id).toBe('z1');
   });
 });

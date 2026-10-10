@@ -57,7 +57,7 @@ test('the year heatmap fits its card without a scrollbar', async ({ page }) => {
     await page.goto('/progress');
     const heatmap = page.getByRole('img', { name: 'Activity over the past year' });
     await expect(heatmap).toBeVisible();
-    expect(await heatmap.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+    expect(await heatmap.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
 });

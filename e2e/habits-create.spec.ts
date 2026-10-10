@@ -21,7 +21,10 @@ test('creates a daily habit with an emoji found by search', async ({ page }) => 
   await dialog.getByLabel('Name').fill('Read');
   await dialog.getByRole('button', { name: 'Choose emoji' }).click();
   await page.getByPlaceholder('Search emoji').fill('open book');
-  await page.getByRole('gridcell', { name: /open book/i }).first().click();
+  await page
+    .getByRole('gridcell', { name: /open book/i })
+    .first()
+    .click();
   await expect(dialog.getByRole('button', { name: 'Choose emoji' })).toContainText('📖');
   await dialog.getByRole('button', { name: 'Save habit' }).click();
 

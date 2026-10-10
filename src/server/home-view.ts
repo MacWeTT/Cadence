@@ -35,7 +35,15 @@ export function buildHomeView(entries: { habit: HabitRow; data: HabitData }[], c
     // A weekly goal is in danger when every remaining day is needed. Fewer needed is comfortable, more is already lost
     // (one tick a day), and a met goal is safe.
     if (r.week && (r.week.goalMet || needed !== daysLeft)) continue;
-    atRisk.push({ id: r.id, name: r.name, icon: r.icon, color: r.color, streak: r.streak, needed, daysLeft: r.week ? daysLeft : null });
+    atRisk.push({
+      id: r.id,
+      name: r.name,
+      icon: r.icon,
+      color: r.color,
+      streak: r.streak,
+      needed,
+      daysLeft: r.week ? daysLeft : null,
+    });
   }
   atRisk.sort((a, b) => b.streak.count - a.streak.count);
 
@@ -49,8 +57,8 @@ export function buildHomeView(entries: { habit: HabitRow; data: HabitData }[], c
  */
 export function continuingStreaks(done: TodayRow[], wasOpen: ReadonlySet<string>): { name: string; count: number }[] {
   return done
-    .filter((r) => !r.week)
-    .map((r) => ({ name: r.name, count: (r.streak?.count ?? 0) + (wasOpen.has(r.id) ? 1 : 0) }))
-    .filter((c) => c.count > 0)
+    .filter(r => !r.week)
+    .map(r => ({ name: r.name, count: (r.streak?.count ?? 0) + (wasOpen.has(r.id) ? 1 : 0) }))
+    .filter(c => c.count > 0)
     .sort((a, b) => b.count - a.count);
 }

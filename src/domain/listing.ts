@@ -9,7 +9,7 @@ import type { Ctx, HabitData } from './types';
  */
 export function isListedOn(h: HabitData, date: CalendarDate, ctx: Ctx): boolean {
   if (date > ctx.today || date < h.startDate || !scheduleFor(h, date)) return false;
-  if (h.pauses.some((p) => p.to === null)) return false;
+  if (h.pauses.some(p => p.to === null)) return false;
   return !isPaused(h, date) || h.completions.has(date);
 }
 
