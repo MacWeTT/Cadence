@@ -67,11 +67,17 @@ jobs:
     needs: deploy
     if: vars.APP_URL != ''
     runs-on: ubuntu-latest
+    env:
+      APP_URL: ${{ vars.APP_URL }}
     steps:
       - name: The login page loads
         run: |
+          # A pasted variable can carry spaces, line breaks or quotes: keep only the address, without a trailing slash.
+          url="$(printf '%s' "$APP_URL" | tr -d '[:space:]"'"'"'')"
+          url="${url%/}"
+          echo "Checking $url/login"
           for attempt in 1 2 3 4 5 6; do
-            if curl --fail --silent --show-error --output /dev/null "${{ vars.APP_URL }}/login"; then
+            if curl --fail --silent --show-error --location --output /dev/null "$url/login"; then
               echo "up"
               exit 0
             fi
