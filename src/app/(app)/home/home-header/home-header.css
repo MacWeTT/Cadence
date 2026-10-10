@@ -13,7 +13,7 @@
 }
 
 .home-header__greeting {
-  @apply min-h-[1.15em] font-display text-4xl leading-tight break-words;
+  @apply min-h-[1.15em] font-display text-4xl leading-tight wrap-break-word;
 }
 
 .home-header__button {

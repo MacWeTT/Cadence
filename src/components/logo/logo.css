@@ -1,0 +1,17 @@
+@reference '../../app/globals.css';
+
+.logo {
+  @apply block h-(--logo-height,1.75rem) w-auto;
+}
+
+.logo__c {
+  @apply fill-moss;
+}
+
+.logo__letter {
+  @apply fill-ink;
+}
+
+.logo__stop {
+  @apply fill-clay;
+}

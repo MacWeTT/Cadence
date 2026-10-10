@@ -7,6 +7,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     storageState: 'e2e/.auth/user.json', // a signed-in session; signed-out specs override it
+    reducedMotion: 'reduce', // no splash or animation in the way of clicks; e2e/logo.spec.ts turns motion back on
     timezoneId: 'UTC', // the e2e user's profile timezone is UTC, so the timezone sync stays quiet
   },
   webServer: {

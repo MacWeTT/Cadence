@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { getTodayView } from '@/server/today';
@@ -14,6 +16,12 @@ const TodayPage = (props: PageProps<'/today'>) => {
       <TodayContent searchParams={searchParams} />
     </Suspense>
   );
+};
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const t = await getTranslations('today');
+
+  return { title: t('title') };
 };
 
 export default TodayPage;

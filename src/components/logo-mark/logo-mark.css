@@ -1,0 +1,14 @@
+@reference '../../app/globals.css';
+
+.logo-mark {
+  @apply block size-(--logo-height,1.75rem);
+}
+
+.logo-mark__ring {
+  @apply fill-none stroke-moss;
+  stroke-linecap: round;
+}
+
+.logo-mark__dot {
+  @apply fill-clay;
+}
