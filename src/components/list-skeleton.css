@@ -1,0 +1,9 @@
+@reference '../app/globals.css';
+
+.list-skeleton__title {
+  @apply font-display text-4xl;
+}
+
+.list-skeleton__rows {
+  @apply mt-8 space-y-3;
+}

@@ -1,0 +1,9 @@
+@reference '../globals.css';
+
+.app-layout__avatar-fallback {
+  @apply size-9 rounded-full bg-line;
+}
+
+.app-layout__main {
+  @apply mx-auto w-full max-w-295 px-8 py-10;
+}

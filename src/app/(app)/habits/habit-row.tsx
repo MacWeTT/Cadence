@@ -11,7 +11,9 @@ import {
 import { formatCalendarDate } from '@/lib/format';
 import { habitColor } from '@/lib/palette';
 import { scheduleLabel } from '@/lib/schedule-label';
+import { cn } from '@/lib/utils';
 import type { HabitListItem } from '@/server/habit-view';
+import './habit-row.css';
 
 export interface HabitRowActions {
   /** Called with the menu button, so focus can return to it when the dialog closes. */
@@ -21,74 +23,91 @@ export interface HabitRowActions {
   onDelete: (habit: HabitListItem, opener: HTMLElement | null) => void;
 }
 
-export function HabitRow({
-  habit,
-  archivedOn,
-  actions,
-}: {
+interface HabitRowProps {
   habit: HabitListItem;
   /** A readable archive date. Present only for archived habits. */
   archivedOn?: string;
   actions: HabitRowActions;
-}) {
+}
+
+export const HabitRow = (props: HabitRowProps) => {
+  const { habit, archivedOn, actions } = props;
+
   const menuButton = useRef<HTMLButtonElement>(null);
+
   const pending = habit.pendingSchedule;
   const archived = archivedOn !== undefined;
 
   return (
-    <li className={`flex items-center gap-4 border-b border-line px-3 py-4 ${archived ? 'opacity-75' : ''}`}>
+    <li className={cn('habit-row', archived && 'habit-row--archived')}>
       <span
         aria-hidden
-        className="flex size-11 shrink-0 items-center justify-center rounded-xl text-2xl"
+        className="habit-row__icon"
         style={{ backgroundColor: `color-mix(in oklab, ${habitColor(habit.color)} 22%, var(--surface))` }}
       >
         {habit.icon}
       </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold">{habit.name}</p>
+      <div className="habit-row__body">
+        <p className="habit-row__name">{habit.name}</p>
         {archived ? (
-          <p className="truncate text-sm text-ink-muted">{`Archived ${archivedOn}`}</p>
+          <p className="habit-row__note">{`Archived ${archivedOn}`}</p>
         ) : (
-          habit.description && <p className="truncate text-sm text-ink-muted">{habit.description}</p>
+          habit.description && <p className="habit-row__note">{habit.description}</p>
         )}
       </div>
-      <div className="text-right">
-        <span className="rounded-full border border-line px-3 py-0.5 text-sm text-ink-muted">
-          {scheduleLabel(habit.schedule)}
-        </span>
+      <div className="habit-row__schedule">
+        <span className="habit-row__badge">{scheduleLabel(habit.schedule)}</span>
         {pending && !archived && (
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="habit-row__pending">
             {`Changes to ${scheduleLabel(pending)} on ${formatCalendarDate(pending.effectiveFrom, { day: 'numeric', month: 'short' })}`}
           </p>
         )}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
-            ref={menuButton}
-            type="button"
-            aria-label={`Actions for ${habit.name}`}
-            className="flex size-8 items-center justify-center rounded-md text-ink-muted hover:bg-line hover:text-ink focus-visible:outline-2 focus-visible:outline-clay"
-          >
-            <Ellipsis className="size-5" aria-hidden />
+          <button ref={menuButton} type="button" aria-label={`Actions for ${habit.name}`} className="habit-row__menu">
+            <Ellipsis className="habit-row__menu-icon" aria-hidden />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {archived ? (
             <>
-              <DropdownMenuItem onSelect={() => actions.onRestore(habit)}>Restore</DropdownMenuItem>
-              <DropdownMenuItem className="text-danger" onSelect={() => actions.onDelete(habit, menuButton.current)}>
+              <DropdownMenuItem
+                onSelect={() => {
+                  return actions.onRestore(habit);
+                }}
+              >
+                Restore
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="habit-row__delete"
+                onSelect={() => {
+                  return actions.onDelete(habit, menuButton.current);
+                }}
+              >
                 Delete
               </DropdownMenuItem>
             </>
           ) : (
             <>
-              <DropdownMenuItem onSelect={() => actions.onEdit(habit, menuButton.current)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => actions.onArchive(habit)}>Archive</DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  return actions.onEdit(habit, menuButton.current);
+                }}
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  return actions.onArchive(habit);
+                }}
+              >
+                Archive
+              </DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
     </li>
   );
-}
+};

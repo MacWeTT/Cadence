@@ -6,8 +6,12 @@ describe('completionErrorMessage', () => {
 
   it('gives each database rule its own readable message', () => {
     const messages = known.map(completionErrorMessage);
+
     expect(new Set(messages).size).toBe(known.length);
-    for (const m of messages) expect(m).not.toMatch(/_/);
+
+    for (const m of messages) {
+      expect(m).not.toMatch(/_/);
+    }
   });
 
   it('falls back to a generic message for anything else', () => {

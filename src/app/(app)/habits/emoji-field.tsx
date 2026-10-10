@@ -1,26 +1,66 @@
 'use client';
 
-import { EmojiPicker } from 'frimousse';
+import {
+  EmojiPicker,
+  type EmojiPickerListCategoryHeaderProps,
+  type EmojiPickerListEmojiProps,
+  type EmojiPickerListRowProps,
+} from 'frimousse';
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import './emoji-field.css';
+
+const CategoryHeader = (props: EmojiPickerListCategoryHeaderProps) => {
+  const { category, ...rest } = props;
+
+  return (
+    <div className="emoji-field__category" {...rest}>
+      {category.label}
+    </div>
+  );
+};
+
+const GridRow = (props: EmojiPickerListRowProps) => {
+  const { children, ...rest } = props;
+
+  return (
+    <div className="emoji-field__row" {...rest}>
+      {children}
+    </div>
+  );
+};
+
+const EmojiButton = (props: EmojiPickerListEmojiProps) => {
+  const { emoji, ...rest } = props;
+
+  return (
+    <button type="button" className="emoji-field__emoji" {...rest}>
+      {emoji.emoji}
+    </button>
+  );
+};
+
+interface EmojiFieldProps {
+  value: string;
+  onChange: (emoji: string) => void;
+}
 
 /** The emoji button of the habit dialog. Opens a searchable grid; picking an emoji closes it. */
-export function EmojiField({ value, onChange }: { value: string; onChange: (emoji: string) => void }) {
+export const EmojiField = (props: EmojiFieldProps) => {
+  const { value, onChange } = props;
+
   const [open, setOpen] = useState(false);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label="Choose emoji"
-          className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-line bg-bg text-3xl focus-visible:outline-2 focus-visible:outline-clay"
-        >
+        <button type="button" aria-label="Choose emoji" className="emoji-field__trigger">
           {value}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 p-0">
+      <PopoverContent align="start" className="emoji-field__popover">
         <EmojiPicker.Root
-          className="flex h-80 flex-col"
+          className="emoji-field__root"
           onEmojiSelect={({ emoji }) => {
             onChange(emoji);
             setOpen(false);
@@ -30,42 +70,18 @@ export function EmojiField({ value, onChange }: { value: string; onChange: (emoj
             placeholder="Search emoji"
             aria-label="Search emoji"
             autoFocus
-            className="m-2 rounded-md border border-line bg-bg px-3 py-2 text-sm outline-none focus-visible:border-clay"
+            className="emoji-field__search"
           />
-          <EmojiPicker.Viewport className="flex-1 outline-none">
-            <EmojiPicker.Loading className="flex h-full items-center justify-center text-sm text-ink-muted">
-              Loading…
-            </EmojiPicker.Loading>
-            <EmojiPicker.Empty className="flex h-full items-center justify-center text-sm text-ink-muted">
-              No emoji found.
-            </EmojiPicker.Empty>
+          <EmojiPicker.Viewport className="emoji-field__viewport">
+            <EmojiPicker.Loading className="emoji-field__message">Loading…</EmojiPicker.Loading>
+            <EmojiPicker.Empty className="emoji-field__message">No emoji found.</EmojiPicker.Empty>
             <EmojiPicker.List
-              className="select-none pb-2"
-              components={{
-                CategoryHeader: ({ category, ...props }) => (
-                  <div className="bg-popover px-3 pb-1.5 pt-3 text-xs font-medium text-ink-muted" {...props}>
-                    {category.label}
-                  </div>
-                ),
-                Row: ({ children, ...props }) => (
-                  <div className="scroll-my-1.5 px-1.5" {...props}>
-                    {children}
-                  </div>
-                ),
-                Emoji: ({ emoji, ...props }) => (
-                  <button
-                    type="button"
-                    className="flex size-8 items-center justify-center rounded-md text-xl data-active:bg-line"
-                    {...props}
-                  >
-                    {emoji.emoji}
-                  </button>
-                ),
-              }}
+              className="emoji-field__list"
+              components={{ CategoryHeader, Row: GridRow, Emoji: EmojiButton }}
             />
           </EmojiPicker.Viewport>
         </EmojiPicker.Root>
       </PopoverContent>
     </Popover>
   );
-}
+};

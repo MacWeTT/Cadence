@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/session';
 
-export function proxy(request: NextRequest) {
+export const proxy = (request: NextRequest) => {
   return updateSession(request);
-}
+};
 
 export const config = {
   // Everything except static assets.

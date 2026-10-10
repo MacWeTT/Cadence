@@ -2,44 +2,54 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { EmptyState } from '@/components/empty-state';
 import { Button } from '@/components/ui/button';
 import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { alertFor, clockIn } from '@/lib/alert';
-import { formatCalendarDate } from '@/lib/format';
 import { continuingStreaks, type HomeView } from '@/server/home-view';
 import { HabitDialog } from '../habits/habit-dialog';
-import { CheckSection } from '../today/check-row';
-import { WeekStrip } from '../today/day-card';
+import { CheckSection } from '../today/check-section';
 import { useToggleCompletion } from '../today/use-toggle-completion';
+import { WeekStrip } from '../today/week-strip';
 import { AlertBanner } from './alert-banner';
+import { HomeHeader } from './home-header';
 import { StreaksCard } from './streaks-card';
 import { useGreeting } from './use-greeting';
 import { useNow } from './use-now';
+import './home-client.css';
 
-const card = 'rounded-2xl border border-line bg-surface p-5';
-
-export function HomeClient({
-  home,
-  today,
-  name,
-  timezone,
-  weekStartsOn,
-}: {
+interface HomeClientProps {
   home: HomeView;
   today: CalendarDate;
   name: string | null;
   timezone: string;
   weekStartsOn: WeekStart;
-}) {
-  const router = useRouter();
-  const { shown, saving, toggle } = useToggleCompletion(home.view, today);
-  const [creating, setCreating] = useState(false);
-  const opener = useRef<HTMLElement | null>(null);
+}
 
+export const HomeClient = (props: HomeClientProps) => {
+  const { home, today, name, timezone, weekStartsOn } = props;
+
+  const [creating, setCreating] = useState(false);
+
+  const router = useRouter();
   const now = useNow();
+  const { shown, saving, toggle } = useToggleCompletion(home.view, today);
+
+  const opener = useRef<HTMLElement | null>(null);
+  const refreshedFor = useRef<string | null>(null);
+
   const clock = now && clockIn(timezone, now);
   const total = shown.todo.length + shown.done.length;
   const done = shown.done.length;
+
+  const openIds = new Set(
+    shown.todo.map(r => {
+      return r.id;
+    }),
+  );
+  const atRisk = home.atRisk.filter(r => {
+    return openIds.has(r.id);
+  });
 
   const greeting = useGreeting(
     clock && {
@@ -51,22 +61,29 @@ export function HomeClient({
     },
   );
 
-  const openIds = new Set(shown.todo.map(r => r.id));
   const alert =
     clock &&
     alertFor({
       hour: clock.hour,
       minutesToMidnight: clock.minutesToMidnight,
       total,
-      open: shown.todo.map(r => ({ id: r.id, name: r.name })),
-      atRisk: home.atRisk
-        .filter(r => openIds.has(r.id))
-        .map(r => ({ id: r.id, name: r.name, count: r.streak.count, unit: r.streak.unit })),
-      continuing: continuingStreaks(shown.done, new Set(home.view.todo.map(r => r.id))),
+      open: shown.todo.map(r => {
+        return { id: r.id, name: r.name };
+      }),
+      atRisk: atRisk.map(r => {
+        return { id: r.id, name: r.name, count: r.streak.count, unit: r.streak.unit };
+      }),
+      continuing: continuingStreaks(
+        shown.done,
+        new Set(
+          home.view.todo.map(r => {
+            return r.id;
+          }),
+        ),
+      ),
     });
 
   // A tab left open past local midnight: the lists are yesterday's, so fetch today's once.
-  const refreshedFor = useRef<string | null>(null);
   useEffect(() => {
     if (clock && clock.date !== today && refreshedFor.current !== clock.date) {
       refreshedFor.current = clock.date;
@@ -81,52 +98,27 @@ export function HomeClient({
 
   return (
     <>
-      <div className="flex items-center gap-5">
-        <div
-          role="img"
-          aria-label={`${done} of ${total} done today`}
-          className="flex size-22 shrink-0 items-center justify-center rounded-full"
-          style={{ background: `conic-gradient(var(--primary) ${total ? (done / total) * 360 : 0}deg, var(--line) 0)` }}
-        >
-          <span
-            aria-hidden
-            className="flex size-17 items-center justify-center rounded-full bg-bg font-display text-xl"
-          >
-            {done}/{total}
-          </span>
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm text-ink-muted">
-            {formatCalendarDate(today, { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
-          <h1 className="min-h-[1.15em] break-words font-display text-4xl leading-tight">{greeting?.text ?? ' '}</h1>
-        </div>
-        <Button className="ml-auto shrink-0" onClick={openDialog}>
-          New habit
-        </Button>
-      </div>
+      <HomeHeader done={done} total={total} today={today} greeting={greeting?.text ?? null} onNewHabit={openDialog} />
 
       {!home.view.hasHabits ? (
-        <div className="mt-8 rounded-2xl border border-line bg-surface px-6 py-14 text-center">
-          <h2 className="font-display text-2xl">No habits yet</h2>
-          <p className="mx-auto mb-6 mt-2 max-w-sm text-ink-muted">
-            Create a habit and it will show up here, ready to tick off.
-          </p>
-          <Button onClick={openDialog}>Create your first habit</Button>
-        </div>
+        <EmptyState
+          title="No habits yet"
+          text="Create a habit and it will show up here, ready to tick off."
+          action={<Button onClick={openDialog}>Create your first habit</Button>}
+        />
       ) : (
         <>
           <AlertBanner alert={alert} />
-          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
-            <div className="min-w-0">
-              {total === 0 && <p className="text-ink-muted">No habits today.</p>}
+          <div className="home__columns">
+            <div className="home__main">
+              {total === 0 && <p className="home__note">No habits today.</p>}
               <CheckSection
                 id="next-heading"
                 title={`Next up · ${shown.todo.length} left`}
                 rows={shown.todo}
                 saving={saving}
                 onToggle={toggle}
-                className="mt-0"
+                flush
               />
               <CheckSection
                 id="done-heading"
@@ -134,16 +126,12 @@ export function HomeClient({
                 rows={shown.done}
                 saving={saving}
                 onToggle={toggle}
-                className={shown.todo.length === 0 ? 'mt-0' : 'mt-8'}
+                flush={shown.todo.length === 0}
               />
             </div>
-            <div className="space-y-6">
-              <StreaksCard
-                rows={home.atRisk.filter(r => openIds.has(r.id))}
-                today={today}
-                weekStartsOn={weekStartsOn}
-              />
-              <section className={`${card} max-w-md lg:max-w-none`} aria-label="This week">
+            <div className="home__side">
+              <StreaksCard rows={atRisk} today={today} weekStartsOn={weekStartsOn} />
+              <section className="home__week" aria-label="This week">
                 <WeekStrip strip={shown.strip} date={today} today={today} />
               </section>
             </div>
@@ -155,7 +143,9 @@ export function HomeClient({
         <HabitDialog
           today={today}
           weekStartsOn={weekStartsOn}
-          onClose={() => setCreating(false)}
+          onClose={() => {
+            return setCreating(false);
+          }}
           onCloseAutoFocus={e => {
             e.preventDefault();
             opener.current?.focus();
@@ -164,4 +154,4 @@ export function HomeClient({
       )}
     </>
   );
-}
+};

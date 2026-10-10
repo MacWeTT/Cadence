@@ -1,0 +1,21 @@
+@reference '../../globals.css';
+
+.home__columns {
+  @apply mt-6 grid items-start gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8;
+}
+
+.home__main {
+  @apply min-w-0;
+}
+
+.home__note {
+  @apply text-ink-muted;
+}
+
+.home__side {
+  @apply space-y-6;
+}
+
+.home__week {
+  @apply max-w-md rounded-2xl border border-line bg-surface p-5 lg:max-w-none;
+}

@@ -2,39 +2,39 @@
 
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import './google-sign-in-button.css';
 
-export function GoogleSignInButton() {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+interface SignInState {
+  busy: boolean;
+  error: string | null;
+}
 
-  async function signIn() {
-    setBusy(true);
-    setError(null);
+export const GoogleSignInButton = () => {
+  const [state, setState] = useState<SignInState>({ busy: false, error: null });
+
+  const signIn = async () => {
+    setState({ busy: true, error: null });
+
     const { error } = await createSupabaseBrowserClient().auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${location.origin}/auth/callback` },
     });
+
     if (error) {
-      setError(error.message);
-      setBusy(false);
+      setState({ busy: false, error: error.message });
     }
-  }
+  };
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={signIn}
-        disabled={busy}
-        className="w-full rounded-lg bg-moss px-5 py-3 font-semibold text-bg hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay disabled:opacity-60"
-      >
-        {busy ? 'Redirecting to Google…' : 'Continue with Google'}
+      <button type="button" onClick={signIn} disabled={state.busy} className="google-sign-in">
+        {state.busy ? 'Redirecting to Google…' : 'Continue with Google'}
       </button>
-      {error && (
-        <p role="alert" className="mt-3 text-sm text-danger">
-          {error}
+      {state.error && (
+        <p role="alert" className="google-sign-in__error">
+          {state.error}
         </p>
       )}
     </div>
   );
-}
+};

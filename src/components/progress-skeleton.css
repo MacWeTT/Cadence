@@ -1,0 +1,5 @@
+@reference '../app/globals.css';
+
+.progress-skeleton {
+  @apply mt-6 space-y-6;
+}

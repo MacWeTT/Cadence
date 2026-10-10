@@ -1,0 +1,5 @@
+@reference '../app/globals.css';
+
+.login-error {
+  @apply mb-4 text-sm text-danger;
+}

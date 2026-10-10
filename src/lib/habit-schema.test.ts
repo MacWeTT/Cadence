@@ -3,11 +3,18 @@ import { habitInputSchema, isSingleEmoji, isValidTimeZone, toFieldErrors } from 
 
 const today = '2026-10-09';
 const valid = { name: 'Read', icon: '📖', color: 'moss', kind: 'daily', startDate: '2026-10-01' };
-const parse = (over: Record<string, unknown>) => habitInputSchema(today).safeParse({ ...valid, ...over });
+
+const parse = (over: Record<string, unknown>) => {
+  return habitInputSchema(today).safeParse({ ...valid, ...over });
+};
 
 describe('isSingleEmoji', () => {
-  it.each(['📖', '👍🏽', '👨‍👩‍👧', '🇮🇳', '❤️', '1️⃣', '#️⃣', '*️⃣'])('accepts %s', e => expect(isSingleEmoji(e)).toBe(true));
-  it.each(['a', '1', '', '📖📖', 'ab', ' '])('rejects %j', e => expect(isSingleEmoji(e)).toBe(false));
+  it.each(['📖', '👍🏽', '👨‍👩‍👧', '🇮🇳', '❤️', '1️⃣', '#️⃣', '*️⃣'])('accepts %s', e => {
+    return expect(isSingleEmoji(e)).toBe(true);
+  });
+  it.each(['a', '1', '', '📖📖', 'ab', ' '])('rejects %j', e => {
+    return expect(isSingleEmoji(e)).toBe(false);
+  });
 });
 
 describe('habitInputSchema', () => {
@@ -18,6 +25,7 @@ describe('habitInputSchema', () => {
 
   it('trims the name and the description', () => {
     const r = parse({ name: '  Read  ', description: '  note ' });
+
     expect(r.success && [r.data.name, r.data.description]).toEqual(['Read', 'note']);
   });
 
@@ -51,8 +59,12 @@ describe('habitInputSchema', () => {
 describe('toFieldErrors', () => {
   it('keeps the first message per field', () => {
     const r = parse({ name: '   ', color: 'red' });
+
     expect(r.success).toBe(false);
-    if (!r.success) expect(Object.keys(toFieldErrors(r.error)).sort()).toEqual(['color', 'name']);
+
+    if (!r.success) {
+      expect(Object.keys(toFieldErrors(r.error)).sort()).toEqual(['color', 'name']);
+    }
   });
 });
 

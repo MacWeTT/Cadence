@@ -1,0 +1,9 @@
+@reference '../app/globals.css';
+
+.google-sign-in {
+  @apply w-full rounded-lg bg-moss px-5 py-3 font-semibold text-bg hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay disabled:opacity-60;
+}
+
+.google-sign-in__error {
+  @apply mt-3 text-sm text-danger;
+}

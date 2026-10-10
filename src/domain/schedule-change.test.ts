@@ -2,12 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { planScheduleChange } from './schedule-change';
 import type { Schedule } from './types';
 
-const daily = (effectiveFrom: string): Schedule => ({ kind: 'daily', effectiveFrom });
-const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({
-  kind: 'weekly_count',
-  timesPerWeek,
-  effectiveFrom,
-});
+const daily = (effectiveFrom: string): Schedule => {
+  return { kind: 'daily', effectiveFrom };
+};
+
+const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => {
+  return {
+    kind: 'weekly_count',
+    timesPerWeek,
+    effectiveFrom,
+  };
+};
 
 // Fri 2026-10-09; with Monday weeks the next edit date is 2026-10-12, with Sunday weeks 2026-10-11.
 const base = { startDate: '2026-09-01', today: '2026-10-09', weekStartsOn: 1 as const, hasCompletions: true };
@@ -55,6 +60,7 @@ describe('planScheduleChange, habit with history', () => {
 
   it('drops the pending change when the user changes back', () => {
     const schedules = [daily('2026-09-01'), weekly(3, '2026-10-12')];
+
     expect(planScheduleChange({ ...base, schedules, desired: { kind: 'daily' } })).toEqual({
       action: 'delete_pending',
     });
@@ -62,6 +68,7 @@ describe('planScheduleChange, habit with history', () => {
 
   it('replaces a pending change with a different one', () => {
     const schedules = [daily('2026-09-01'), weekly(3, '2026-10-12')];
+
     expect(planScheduleChange({ ...base, schedules, desired: { kind: 'weekly_count', timesPerWeek: 4 } })).toEqual({
       action: 'upsert',
       schedule: weekly(4, '2026-10-12'),
@@ -70,6 +77,7 @@ describe('planScheduleChange, habit with history', () => {
 
   it('does nothing when the pending change already matches', () => {
     const schedules = [daily('2026-09-01'), weekly(3, '2026-10-12')];
+
     expect(planScheduleChange({ ...base, schedules, desired: { kind: 'weekly_count', timesPerWeek: 3 } })).toEqual({
       action: 'none',
     });

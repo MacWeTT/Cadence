@@ -1,0 +1,21 @@
+@reference '../../globals.css';
+
+.date-nav {
+  @apply flex items-center gap-1;
+}
+
+.date-nav__arrow {
+  @apply flex size-9 items-center justify-center rounded-md text-xl text-ink-muted focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.date-nav__arrow--enabled {
+  @apply hover:bg-line hover:text-ink;
+}
+
+.date-nav__arrow--disabled {
+  @apply opacity-40;
+}
+
+.date-nav__today {
+  @apply ml-1 rounded-md border border-line px-3 py-1 text-sm hover:bg-line focus-visible:outline-2 focus-visible:outline-clay;
+}

@@ -1,0 +1,21 @@
+@reference '../../globals.css';
+
+.color-picker__legend {
+  @apply mb-1.5 text-sm font-medium;
+}
+
+.color-picker__swatches {
+  @apply flex gap-2.5;
+}
+
+.color-picker__option {
+  @apply cursor-pointer;
+}
+
+.color-picker__input {
+  @apply sr-only;
+}
+
+.color-picker__swatch {
+  @apply block size-7 rounded-full ring-offset-2 ring-offset-surface peer-checked:ring-2 peer-checked:ring-ink peer-focus-visible:ring-2 peer-focus-visible:ring-clay;
+}

@@ -1,19 +1,22 @@
 import { Suspense } from 'react';
-import { HomeSkeleton } from '@/components/skeleton';
+import { HomeSkeleton } from '@/components/home-skeleton';
 import { loadHabitData } from '@/server/habit-data';
 import { buildHomeView } from '@/server/home-view';
 import { HomeClient } from './home/home-client';
 
-export default function HomePage() {
+const HomePage = () => {
   return (
     <Suspense fallback={<HomeSkeleton />}>
       <HomeContent />
     </Suspense>
   );
-}
+};
 
-async function HomeContent() {
+export default HomePage;
+
+const HomeContent = async () => {
   const { entries, ctx, profile } = await loadHabitData();
+
   return (
     <HomeClient
       home={buildHomeView(entries, ctx)}
@@ -23,4 +26,4 @@ async function HomeContent() {
       weekStartsOn={ctx.weekStartsOn}
     />
   );
-}
+};

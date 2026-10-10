@@ -1,53 +1,24 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { habitColor } from '@/lib/palette';
 import { streakLabel, weekLabel } from '@/lib/today-labels';
 import type { TodayRow } from '@/server/today-view';
+import './check-row.css';
 
-/** A titled list of rows (To do, Done, Next up...), shared by Today and Home. */
-export function CheckSection({
-  id,
-  title,
-  rows,
-  saving,
-  onToggle,
-  className = 'mt-8',
-}: {
-  id: string;
-  title: string;
-  rows: TodayRow[];
-  saving: ReadonlySet<string>;
-  onToggle: (row: TodayRow) => void;
-  className?: string;
-}) {
-  if (rows.length === 0) return null;
-  return (
-    <section className={className}>
-      <h2 id={id} className="mb-1 text-xs font-medium uppercase tracking-wider text-ink-muted">
-        {title}
-      </h2>
-      <ul aria-labelledby={id}>
-        {rows.map(row => (
-          <CheckRow key={row.id} row={row} disabled={saving.has(row.id)} onToggle={() => onToggle(row)} />
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-export function CheckRow({
-  row,
-  disabled,
-  onToggle,
-}: {
+interface CheckRowProps {
   row: TodayRow;
   /** True while a save for this row is in flight, so a double tap sends one request. */
   disabled: boolean;
   onToggle: () => void;
-}) {
+}
+
+export const CheckRow = (props: CheckRowProps) => {
+  const { row, disabled, onToggle } = props;
+
   return (
-    <li className="flex items-center gap-4 border-b border-line px-3 py-3.5">
+    <li className="check-row">
       <button
         type="button"
         role="checkbox"
@@ -57,27 +28,23 @@ export function CheckRow({
         // aria-disabled, not disabled: a disabled button drops keyboard focus; the toggle ignores taps while saving.
         aria-disabled={disabled}
         onClick={onToggle}
-        className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay aria-disabled:opacity-60 ${
-          row.ticked ? 'border-primary bg-primary text-primary-foreground' : 'border-ink-muted hover:border-ink'
-        }`}
+        className={cn('check-row__box', row.ticked && 'check-row__box--done')}
       >
-        {row.ticked && <Check className="size-4" aria-hidden />}
+        {row.ticked && <Check className="check-row__check" aria-hidden />}
       </button>
       <span
         aria-hidden
-        className="flex size-10 shrink-0 items-center justify-center rounded-xl text-2xl"
+        className="check-row__icon"
         style={{ backgroundColor: `color-mix(in oklab, ${habitColor(row.color)} 22%, var(--surface))` }}
       >
         {row.icon}
       </span>
-      <p className={`min-w-0 flex-1 truncate font-semibold ${row.ticked ? 'text-ink-muted line-through' : ''}`}>
-        {row.name}
-      </p>
-      <div className="flex items-center gap-2 text-sm text-ink-muted">
+      <p className={cn('check-row__name', row.ticked && 'check-row__name--done')}>{row.name}</p>
+      <div className="check-row__tags">
         {row.week && <span>{weekLabel(row.week)}</span>}
         {row.week && row.streak && <span aria-hidden>·</span>}
         {row.streak && <span>{streakLabel(row.streak)}</span>}
       </div>
     </li>
   );
-}
+};

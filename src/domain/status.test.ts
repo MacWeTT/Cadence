@@ -3,11 +3,13 @@ import { dayStatus, isPaused, weekStatus } from './status';
 import { ctx, makeHabit } from './test-helpers';
 import type { Schedule } from './types';
 
-const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => ({
-  kind: 'weekly_count',
-  timesPerWeek,
-  effectiveFrom,
-});
+const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => {
+  return {
+    kind: 'weekly_count',
+    timesPerWeek,
+    effectiveFrom,
+  };
+};
 
 describe('dayStatus (daily habits)', () => {
   const h = makeHabit({ done: ['2026-10-01', '2026-10-08', '2026-10-09'] });
@@ -24,12 +26,14 @@ describe('dayStatus (daily habits)', () => {
 
   it('is inactive before start and in the future', () => {
     const only = makeHabit({ done: ['2026-10-01'] });
+
     expect(dayStatus(only, '2026-09-30', ctx())).toBe('inactive');
     expect(dayStatus(only, '2026-10-10', ctx())).toBe('inactive');
   });
 
   it('ignores ticks before start and in the future', () => {
     const odd = makeHabit({ done: ['2026-09-30', '2026-10-12'] });
+
     expect(dayStatus(odd, '2026-09-30', ctx())).toBe('inactive');
     expect(dayStatus(odd, '2026-10-12', ctx())).toBe('inactive');
   });
@@ -63,8 +67,10 @@ describe('weekStatus (weekly habits)', () => {
       schedules: [weekly(3, '2026-09-30')],
       done: ['2026-09-30', '2026-10-01'],
     });
+
     expect(weekStatus(mid, '2026-09-28', ctx())).toEqual({ status: 'excluded', done: 2, target: 3 });
     const monday = makeHabit({ startDate: '2026-09-28', schedules: [weekly(3, '2026-09-28')] });
+
     expect(weekStatus(monday, '2026-09-28', ctx()).status).toBe('missed');
   });
 
@@ -74,11 +80,13 @@ describe('weekStatus (weekly habits)', () => {
       schedules: [weekly(3, '2026-09-21')],
       done: ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01'],
     });
+
     expect(weekStatus(over, '2026-09-28', ctx())).toEqual({ status: 'met', done: 4, target: 3 });
   });
 
   it('puts Saturday and Sunday in different weeks when weeks start on Sunday', () => {
     const base = { startDate: '2026-09-21', schedules: [weekly(2, '2026-09-21')], done: ['2026-10-03', '2026-10-04'] };
+
     expect(weekStatus(makeHabit(base), '2026-09-28', ctx('2026-10-09', 1))).toMatchObject({ status: 'met', done: 2 });
     expect(weekStatus(makeHabit(base), '2026-09-27', ctx('2026-10-09', 7))).toMatchObject({
       status: 'missed',
@@ -93,6 +101,7 @@ describe('weekStatus (weekly habits)', () => {
       schedules: [weekly(3, '2026-09-21')],
       pauses: [{ from: '2026-10-05', to: null }],
     });
+
     expect(weekStatus(archived, '2026-10-05', ctx()).status).toBe('paused');
     expect(weekStatus(h, '2026-10-12', ctx()).status).toBe('inactive');
   });
@@ -104,6 +113,7 @@ describe('weekStatus (weekly habits)', () => {
       schedules: [weekly(3, '2026-09-06'), { kind: 'daily', effectiveFrom: '2026-09-28' }],
       done: ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03'],
     });
+
     expect(weekStatus(toDaily, '2026-09-27', ctx('2026-10-09', 7)).status).toBe('excluded');
 
     const toWeekly = makeHabit({
@@ -111,6 +121,7 @@ describe('weekStatus (weekly habits)', () => {
       schedules: [{ kind: 'daily', effectiveFrom: '2026-09-06' }, weekly(3, '2026-09-28')],
       done: ['2026-09-27', '2026-09-29', '2026-09-30', '2026-10-01'],
     });
+
     expect(weekStatus(toWeekly, '2026-09-27', ctx('2026-10-09', 7)).status).toBe('excluded');
   });
 
@@ -118,6 +129,7 @@ describe('weekStatus (weekly habits)', () => {
     expect(weekStatus(makeHabit(), '2026-10-05', ctx()).status).toBe('inactive');
     expect(weekStatus(makeHabit({ schedules: [] }), '2026-10-05', ctx()).status).toBe('inactive');
     const future = makeHabit({ startDate: '2026-10-12', schedules: [weekly(3, '2026-10-12')] });
+
     expect(weekStatus(future, '2026-10-05', ctx()).status).toBe('inactive');
   });
 });
@@ -136,17 +148,20 @@ describe('pauses', () => {
 
   it('honours a tick on a paused day', () => {
     const ticked = makeHabit({ done: ['2026-10-05'], pauses: [{ from: '2026-10-05', to: '2026-10-07' }] });
+
     expect(dayStatus(ticked, '2026-10-05', ctx())).toBe('done');
   });
 
   it('treats the archive day as done when ticked and inactive after, with an open pause', () => {
     const open = makeHabit({ done: days5, pauses: [{ from: '2026-10-05', to: null }] });
+
     expect(dayStatus(open, '2026-10-05', ctx())).toBe('done');
     expect(dayStatus(open, '2026-10-06', ctx())).toBe('inactive');
   });
 
   it('ignores a zero-length pause (archive and restore on the same day)', () => {
     const zero = makeHabit({ done: days5.slice(0, 4), pauses: [{ from: '2026-10-09', to: '2026-10-09' }] });
+
     expect(dayStatus(zero, '2026-10-09', ctx())).toBe('pending');
     expect(isPaused(zero, '2026-10-09')).toBe(false);
   });
@@ -158,6 +173,7 @@ describe('pauses', () => {
       done: ['2026-09-29', '2026-10-01'],
       pauses: [{ from: '2026-09-30', to: '2026-10-02' }],
     });
+
     expect(weekStatus(h, '2026-09-28', ctx())).toEqual({ status: 'paused', done: 2, target: 3 });
     expect(weekStatus(h, '2026-09-21', ctx()).status).toBe('missed');
   });

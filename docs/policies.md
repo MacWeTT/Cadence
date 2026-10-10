@@ -8,8 +8,9 @@ Run everything with `npm run verify` before opening a PR.
 
 | # | Rule | Enforced by |
 |---|------|-------------|
-| 1 | **No inline returns.** An arrow function has a block body with an explicit `return`. | ESLint `arrow-body-style: always` |
+| 1 | **No inline returns, everything scoped.** An arrow function has a block body with an explicit `return`, and every `if`/`else`/`for`/`while` has braces, even for one statement. | ESLint `arrow-body-style: always`, `curly: all` |
 | 2 | **Components take `props` and destructure inside the body**, never in the parameter list. | ESLint `no-restricted-syntax` |
+| 2b | **Props have a named type** declared above the component: `(props: EmojiProps)`, not an inline `{ ... }`. | ESLint `no-restricted-syntax` |
 | 3 | **One `useState` holding an object** instead of many. One handler updates one field of it. | ESLint `cadence/max-use-state` (max 2) + review |
 | 4 | **Blank lines separate blocks of logic**: after declarations, around `if`/`for`/`try`/blocks, before `return`. | ESLint `padding-line-between-statements` |
 | 5 | **Order inside a component or hook:** state first, then queries (data hooks), then everything else (derived values, effects, handlers). | Review |
@@ -21,7 +22,13 @@ Run everything with `npm run verify` before opening a PR.
 // A component the way these rules want it.
 import './check-row.css';
 
-const CheckRow = props => {
+interface CheckRowProps {
+  row: TodayRow;
+  disabled: boolean;
+  onToggle: () => void;
+}
+
+const CheckRow = (props: CheckRowProps) => {
   const { row, disabled, onToggle } = props;
 
   const [state, setState] = useState({ pending: false, error: null });

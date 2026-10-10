@@ -1,0 +1,41 @@
+@reference '../../globals.css';
+
+.emoji-field__trigger {
+  @apply flex size-14 shrink-0 items-center justify-center rounded-xl border border-line bg-bg text-3xl focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.emoji-field__popover {
+  @apply w-80 p-0;
+}
+
+.emoji-field__root {
+  @apply flex h-80 flex-col;
+}
+
+.emoji-field__search {
+  @apply m-2 rounded-md border border-line bg-bg px-3 py-2 text-sm outline-none focus-visible:border-clay;
+}
+
+.emoji-field__viewport {
+  @apply flex-1 outline-none;
+}
+
+.emoji-field__message {
+  @apply flex h-full items-center justify-center text-sm text-ink-muted;
+}
+
+.emoji-field__list {
+  @apply pb-2 select-none;
+}
+
+.emoji-field__category {
+  @apply bg-popover px-3 pt-3 pb-1.5 text-xs font-medium text-ink-muted;
+}
+
+.emoji-field__row {
+  @apply scroll-my-1.5 px-1.5;
+}
+
+.emoji-field__emoji {
+  @apply flex size-8 items-center justify-center rounded-md text-xl data-active:bg-line;
+}

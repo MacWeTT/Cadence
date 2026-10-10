@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/empty-state';
 import { Button } from '@/components/ui/button';
 import { toCalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
@@ -11,112 +12,165 @@ import { archiveHabitAction, restoreHabitAction, type ActionResult } from './act
 import { DeleteHabitDialog } from './delete-dialog';
 import { HabitDialog } from './habit-dialog';
 import { HabitRow, type HabitRowActions } from './habit-row';
+import './habits-client.css';
 
-export function HabitsClient({ view }: { view: HabitsView }) {
-  // `dialog` is null when closed, `{}` to create, `{ habit }` to edit.
-  const [dialog, setDialog] = useState<{ habit?: HabitListItem } | null>(null);
-  const [deleting, setDeleting] = useState<HabitListItem | null>(null);
-  const [showArchived, setShowArchived] = useState(false);
+interface HabitsClientProps {
+  view: HabitsView;
+}
+
+interface HabitsState {
+  /** `null` when closed, `{}` to create, `{ habit }` to edit. */
+  dialog: { habit?: HabitListItem } | null;
+  deleting: HabitListItem | null;
+  showArchived: boolean;
+}
+
+export const HabitsClient = (props: HabitsClientProps) => {
+  const { view } = props;
+
+  const [state, setState] = useState<HabitsState>({ dialog: null, deleting: null, showArchived: false });
+
   const [, startTransition] = useTransition();
   const opener = useRef<HTMLElement | null>(null);
+
   const { active, archived, profile } = view;
+
+  const setField = <K extends keyof HabitsState>(field: K, value: HabitsState[K]) => {
+    setState(current => {
+      return { ...current, [field]: value };
+    });
+  };
 
   const openDialog = (habit?: HabitListItem, from?: HTMLElement | null) => {
     opener.current = from ?? (document.activeElement as HTMLElement | null);
-    setDialog({ habit });
+    setField('dialog', { habit });
   };
 
-  function run(action: () => Promise<ActionResult>, success: string) {
+  const run = (action: () => Promise<ActionResult>, success: string) => {
     startTransition(async () => {
       const result = await action();
-      if (result.ok) toast.success(success);
-      else toast.error(result.error);
+
+      if (result.ok) {
+        toast.success(success);
+      } else {
+        toast.error(result.error);
+      }
     });
-  }
+  };
+
+  const restoreFocus = (event: Event) => {
+    event.preventDefault();
+    opener.current?.focus();
+  };
 
   const actions: HabitRowActions = {
-    onEdit: (habit, from) => openDialog(habit, from),
-    onArchive: habit => run(() => archiveHabitAction(habit.id), 'Habit archived'),
-    onRestore: habit => run(() => restoreHabitAction(habit.id), 'Habit restored'),
+    onEdit: (habit, from) => {
+      return openDialog(habit, from);
+    },
+    onArchive: habit => {
+      return run(() => {
+        return archiveHabitAction(habit.id);
+      }, 'Habit archived');
+    },
+    onRestore: habit => {
+      return run(() => {
+        return restoreHabitAction(habit.id);
+      }, 'Habit restored');
+    },
     onDelete: (habit, from) => {
       opener.current = from;
-      setDeleting(habit);
+      setField('deleting', habit);
     },
   };
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-4xl">Habits</h1>
-        <Button onClick={() => openDialog()}>New habit</Button>
+      <div className="habits__header">
+        <h1 className="habits__title">Habits</h1>
+        <Button
+          onClick={() => {
+            return openDialog();
+          }}
+        >
+          New habit
+        </Button>
       </div>
 
       {active.length === 0 ? (
-        <div className="rounded-2xl border border-line bg-surface px-6 py-14 text-center">
-          <h2 className="font-display text-2xl">No habits yet</h2>
-          <p className="mx-auto mb-6 mt-2 max-w-sm text-ink-muted">
-            Start with one small habit you can do every day. You can add more whenever you like.
-          </p>
-          <Button onClick={() => openDialog()}>New habit</Button>
-        </div>
+        <EmptyState
+          flush
+          title="No habits yet"
+          text="Start with one small habit you can do every day. You can add more whenever you like."
+          action={
+            <Button
+              onClick={() => {
+                return openDialog();
+              }}
+            >
+              New habit
+            </Button>
+          }
+        />
       ) : (
         <ul aria-label="Habits">
-          {active.map(habit => (
-            <HabitRow key={habit.id} habit={habit} actions={actions} />
-          ))}
+          {active.map(habit => {
+            return <HabitRow key={habit.id} habit={habit} actions={actions} />;
+          })}
         </ul>
       )}
 
       {archived.length > 0 && (
-        <section className="mt-10">
+        <section className="habits__archived">
           <button
             type="button"
-            aria-expanded={showArchived}
-            onClick={() => setShowArchived(v => !v)}
-            className="flex items-center gap-2 rounded-md text-sm text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay"
+            aria-expanded={state.showArchived}
+            onClick={() => {
+              return setField('showArchived', !state.showArchived);
+            }}
+            className="habits__toggle"
           >
-            <span aria-hidden>{showArchived ? '▾' : '▸'}</span>
+            <span aria-hidden>{state.showArchived ? '▾' : '▸'}</span>
             {`Archived (${archived.length})`}
           </button>
-          {showArchived && (
-            <ul aria-label="Archived habits" className="mt-2">
-              {archived.map(habit => (
-                <HabitRow
-                  key={habit.id}
-                  habit={habit}
-                  archivedOn={formatCalendarDate(toCalendarDate(habit.archivedAt ?? '', profile.timezone))}
-                  actions={actions}
-                />
-              ))}
+          {state.showArchived && (
+            <ul aria-label="Archived habits" className="habits__archived-list">
+              {archived.map(habit => {
+                return (
+                  <HabitRow
+                    key={habit.id}
+                    habit={habit}
+                    archivedOn={formatCalendarDate(toCalendarDate(habit.archivedAt ?? '', profile.timezone))}
+                    actions={actions}
+                  />
+                );
+              })}
             </ul>
           )}
         </section>
       )}
 
-      {dialog && (
+      {state.dialog && (
         <HabitDialog
           // A fresh form for each habit (or for create).
-          key={dialog.habit?.id ?? 'new'}
-          habit={dialog.habit}
+          key={state.dialog.habit?.id ?? 'new'}
+          habit={state.dialog.habit}
           today={profile.today}
           weekStartsOn={profile.weekStartsOn}
-          onClose={() => setDialog(null)}
-          onCloseAutoFocus={e => {
-            e.preventDefault();
-            opener.current?.focus();
+          onClose={() => {
+            return setField('dialog', null);
           }}
+          onCloseAutoFocus={restoreFocus}
         />
       )}
-      {deleting && (
+      {state.deleting && (
         <DeleteHabitDialog
-          habit={deleting}
-          onClose={() => setDeleting(null)}
-          onCloseAutoFocus={e => {
-            e.preventDefault();
-            opener.current?.focus();
+          habit={state.deleting}
+          onClose={() => {
+            return setField('deleting', null);
           }}
+          onCloseAutoFocus={restoreFocus}
         />
       )}
     </>
   );
-}
+};

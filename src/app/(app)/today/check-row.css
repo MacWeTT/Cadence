@@ -1,0 +1,33 @@
+@reference '../../globals.css';
+
+.check-row {
+  @apply flex items-center gap-4 border-b border-line px-3 py-3.5;
+}
+
+.check-row__box {
+  @apply flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-ink-muted transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay aria-disabled:opacity-60;
+}
+
+.check-row__box--done {
+  @apply border-primary bg-primary text-primary-foreground hover:border-primary;
+}
+
+.check-row__check {
+  @apply size-4;
+}
+
+.check-row__icon {
+  @apply flex size-10 shrink-0 items-center justify-center rounded-xl text-2xl;
+}
+
+.check-row__name {
+  @apply min-w-0 flex-1 truncate font-semibold;
+}
+
+.check-row__name--done {
+  @apply text-ink-muted line-through;
+}
+
+.check-row__tags {
+  @apply flex items-center gap-2 text-sm text-ink-muted;
+}

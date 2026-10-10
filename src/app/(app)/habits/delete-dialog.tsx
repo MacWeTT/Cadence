@@ -15,35 +15,46 @@ import {
 import type { HabitListItem } from '@/server/habit-view';
 import { deleteHabitAction } from './actions';
 
-export function DeleteHabitDialog({
-  habit,
-  onClose,
-  onCloseAutoFocus,
-}: {
+interface DeleteHabitDialogProps {
   habit: HabitListItem;
   onClose: () => void;
   onCloseAutoFocus: (event: Event) => void;
-}) {
+}
+
+export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
+  const { habit, onClose, onCloseAutoFocus } = props;
+
   const [busy, setBusy] = useState(false);
   const deleting = useRef(false);
 
-  async function confirm() {
-    if (deleting.current) return;
+  const confirm = async () => {
+    if (deleting.current) {
+      return;
+    }
+
     deleting.current = true;
     setBusy(true);
     const result = await deleteHabitAction(habit.id);
+
     if (result.ok) {
       toast.success('Habit deleted');
       onClose();
+
       return;
     }
+
     toast.error(result.error);
     deleting.current = false;
     setBusy(false);
-  }
+  };
 
   return (
-    <AlertDialog open onOpenChange={open => !open && onClose()}>
+    <AlertDialog
+      open
+      onOpenChange={open => {
+        return !open && onClose();
+      }}
+    >
       <AlertDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <AlertDialogHeader>
           <AlertDialogTitle>{`Delete ${habit.name}?`}</AlertDialogTitle>
@@ -66,4 +77,4 @@ export function DeleteHabitDialog({
       </AlertDialogContent>
     </AlertDialog>
   );
-}
+};

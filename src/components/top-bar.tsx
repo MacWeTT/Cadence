@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import { ThemeToggle } from './theme-toggle';
+import './top-bar.css';
 
 const links = [
   { href: '/today', label: 'Today' },
@@ -10,40 +12,46 @@ const links = [
   { href: '/progress', label: 'Progress' },
 ];
 
-export function TopBar({ menu }: { menu?: React.ReactNode }) {
+interface TopBarProps {
+  menu?: React.ReactNode;
+}
+
+export const TopBar = (props: TopBarProps) => {
+  const { menu } = props;
+
   const pathname = usePathname();
+
   return (
-    <header className="border-b border-line bg-topbar">
-      <div className="mx-auto flex h-16 w-full max-w-295 items-center gap-8 px-8">
+    <header className="top-bar">
+      <div className="top-bar__inner">
         <Link
           href="/"
           aria-current={pathname === '/' ? 'page' : undefined}
-          className={`rounded-sm font-display text-xl focus-visible:outline-2 focus-visible:outline-clay ${
-            pathname === '/' ? 'underline decoration-2 underline-offset-8' : ''
-          }`}
+          className={cn('top-bar__logo', pathname === '/' && 'top-bar__logo--current')}
         >
           Cadence
         </Link>
-        <nav className="flex gap-6">
+        <nav className="top-bar__nav">
           {links.map(({ href, label }) => {
             const active = pathname === href;
+
             return (
               <Link
                 key={href}
                 href={href}
                 aria-current={active ? 'page' : undefined}
-                className={active ? 'font-semibold text-ink' : 'text-ink-muted hover:text-ink'}
+                className={cn('top-bar__link', active && 'top-bar__link--active')}
               >
                 {label}
               </Link>
             );
           })}
         </nav>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="top-bar__actions">
           <ThemeToggle />
           {menu}
         </div>
       </div>
     </header>
   );
-}
+};

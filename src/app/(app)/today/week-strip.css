@@ -1,0 +1,17 @@
+@reference '../../globals.css';
+
+.week-strip__title {
+  @apply mb-2 text-xs font-medium tracking-wider text-ink-muted uppercase;
+}
+
+.week-strip__days {
+  @apply grid grid-cols-7 gap-1.5;
+}
+
+.week-strip__day {
+  @apply text-center;
+}
+
+.week-strip__initial {
+  @apply text-xs text-ink-muted;
+}

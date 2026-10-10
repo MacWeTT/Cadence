@@ -1,0 +1,17 @@
+@reference '../../globals.css';
+
+.heatmap {
+  @apply grid gap-x-0.5 gap-y-0.5;
+}
+
+.heatmap__cell {
+  @apply aspect-square rounded-xs;
+}
+
+.heatmap__cell--blank {
+  @apply bg-line/30;
+}
+
+.heatmap__month {
+  @apply mt-1.5 text-xs text-ink-muted;
+}

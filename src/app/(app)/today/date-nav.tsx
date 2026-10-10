@@ -1,52 +1,60 @@
 import Link from 'next/link';
 import { addDays, type CalendarDate } from '@/domain/dates';
+import './date-nav.css';
 
-const arrow =
-  'flex size-9 items-center justify-center rounded-md text-xl text-ink-muted focus-visible:outline-2 focus-visible:outline-clay';
-
-/** Previous and next day, plus a way back to today. The viewed day lives in the URL, so back and reload just work. */
-export function DateNav({
-  date,
-  today,
-  earliest,
-}: {
+interface DateNavProps {
   date: CalendarDate;
   today: CalendarDate;
   earliest: CalendarDate;
-}) {
-  const href = (d: CalendarDate) => (d === today ? '/today' : `/today?date=${d}`);
+}
+
+/** Previous and next day, plus a way back to today. The viewed day lives in the URL, so back and reload just work. */
+export const DateNav = (props: DateNavProps) => {
+  const { date, today, earliest } = props;
+
+  const href = (d: CalendarDate) => {
+    return d === today ? '/today' : `/today?date=${d}`;
+  };
+
   return (
-    <nav aria-label="Choose day" className="flex items-center gap-1">
+    <nav aria-label="Choose day" className="date-nav">
       {date > earliest ? (
         <Link
           href={href(addDays(date, -1))}
           aria-label="Previous day"
-          className={`${arrow} hover:bg-line hover:text-ink`}
+          className="date-nav__arrow date-nav__arrow--enabled"
         >
           <span aria-hidden>‹</span>
         </Link>
       ) : (
-        <span role="link" aria-disabled="true" aria-label="Previous day" className={`${arrow} opacity-40`}>
+        <span
+          role="link"
+          aria-disabled="true"
+          aria-label="Previous day"
+          className="date-nav__arrow date-nav__arrow--disabled"
+        >
           <span aria-hidden>‹</span>
         </span>
       )}
       {date < today ? (
-        <Link href={href(addDays(date, 1))} aria-label="Next day" className={`${arrow} hover:bg-line hover:text-ink`}>
+        <Link href={href(addDays(date, 1))} aria-label="Next day" className="date-nav__arrow date-nav__arrow--enabled">
           <span aria-hidden>›</span>
         </Link>
       ) : (
-        <span role="link" aria-disabled="true" aria-label="Next day" className={`${arrow} opacity-40`}>
+        <span
+          role="link"
+          aria-disabled="true"
+          aria-label="Next day"
+          className="date-nav__arrow date-nav__arrow--disabled"
+        >
           <span aria-hidden>›</span>
         </span>
       )}
       {date !== today && (
-        <Link
-          href="/today"
-          className="ml-1 rounded-md border border-line px-3 py-1 text-sm hover:bg-line focus-visible:outline-2 focus-visible:outline-clay"
-        >
+        <Link href="/today" className="date-nav__today">
           Today
         </Link>
       )}
     </nav>
   );
-}
+};

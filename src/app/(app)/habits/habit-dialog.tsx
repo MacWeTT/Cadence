@@ -14,93 +14,107 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import type { WeekStart } from '@/domain/dates';
 import { nextEditDate } from '@/domain/schedule';
 import { formatCalendarDate } from '@/lib/format';
-import { COLOR_KEYS, habitColor, type ColorKey } from '@/lib/palette';
 import type { HabitListItem } from '@/server/habit-view';
 import { createHabitAction, updateHabitAction } from './actions';
+import { ColorPicker } from './color-picker';
 import { EmojiField } from './emoji-field';
+import { FieldError } from './field-error';
+import { initialHabitForm, type HabitFormState } from './habit-form';
+import { ScheduleField } from './schedule-field';
+import './habit-dialog.css';
 
-const DEFAULT_ICON = '🎯';
-
-export function HabitDialog({
-  habit,
-  today,
-  weekStartsOn,
-  onClose,
-  onCloseAutoFocus,
-}: {
+interface HabitDialogProps {
   /** The habit being edited, or undefined to create a new one. */
   habit?: HabitListItem;
   today: string;
   weekStartsOn: WeekStart;
   onClose: () => void;
   onCloseAutoFocus: (event: Event) => void;
-}) {
-  // When a schedule change is already pending, the form starts from it so the user sees what they set.
-  const shown = habit ? (habit.pendingSchedule ?? habit.schedule) : undefined;
-  const [icon, setIcon] = useState(habit?.icon ?? DEFAULT_ICON);
-  const [name, setName] = useState(habit?.name ?? '');
-  const [description, setDescription] = useState(habit?.description ?? '');
-  const [color, setColor] = useState<ColorKey>(habit?.color ?? 'moss');
-  const [kind, setKind] = useState<'daily' | 'weekly_count'>(shown?.kind ?? 'daily');
-  const [timesPerWeek, setTimesPerWeek] = useState(shown?.kind === 'weekly_count' ? String(shown.timesPerWeek) : '3');
-  const [startDate, setStartDate] = useState(habit?.startDate ?? today);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [formError, setFormError] = useState<string | null>(null);
+}
+
+export const HabitDialog = (props: HabitDialogProps) => {
+  const { habit, today, weekStartsOn, onClose, onCloseAutoFocus } = props;
+
+  const [form, setForm] = useState<HabitFormState>(() => {
+    return initialHabitForm(habit, today);
+  });
+
   const [pending, startTransition] = useTransition();
   const nameRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false); // guards against a double-click before React re-renders the disabled button
+
+  const setField = <K extends keyof HabitFormState>(field: K, value: HabitFormState[K]) => {
+    setForm(current => {
+      return { ...current, [field]: value };
+    });
+  };
 
   // A habit with ticks keeps its history, so a schedule change only applies from next week.
   const current = habit?.schedule;
   const scheduleChanged =
     current !== undefined &&
-    (kind !== current.kind || (current.kind === 'weekly_count' && Number(timesPerWeek) !== current.timesPerWeek));
-  const showEffectiveNote = Boolean(habit?.hasCompletions) && scheduleChanged;
+    (form.kind !== current.kind ||
+      (current.kind === 'weekly_count' && Number(form.timesPerWeek) !== current.timesPerWeek));
   const effectiveDate = formatCalendarDate(nextEditDate(today, weekStartsOn), { dateStyle: 'full' });
+  const effectiveNote =
+    habit?.hasCompletions && scheduleChanged
+      ? `Changes apply from ${effectiveDate}, so your history stays as it was.`
+      : null;
 
-  function submit(event: React.FormEvent) {
+  const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (submitting.current) return;
+
+    if (submitting.current) {
+      return;
+    }
+
     submitting.current = true;
-    setFieldErrors({});
-    setFormError(null);
+    setForm(state => {
+      return { ...state, fieldErrors: {}, formError: null };
+    });
+
     startTransition(async () => {
       const input = {
-        name,
-        description: description || undefined,
-        icon,
-        color,
-        kind,
-        timesPerWeek: kind === 'weekly_count' ? Number(timesPerWeek) : undefined,
-        startDate,
+        name: form.name,
+        description: form.description || undefined,
+        icon: form.icon,
+        color: form.color,
+        kind: form.kind,
+        timesPerWeek: form.kind === 'weekly_count' ? Number(form.timesPerWeek) : undefined,
+        startDate: form.startDate,
       };
       const result = habit ? await updateHabitAction(habit.id, input) : await createHabitAction(input);
+
       if (result.ok) {
         toast.success(habit ? 'Habit saved' : 'Habit created');
         onClose();
+
         return;
       }
-      submitting.current = false;
-      setFieldErrors(result.fieldErrors ?? {});
-      if (!result.fieldErrors) setFormError(result.error);
-    });
-  }
 
-  const error = (field: string) =>
-    fieldErrors[field] && (
-      <p id={`error-${field}`} role="alert" className="mt-1 text-sm text-danger">
-        {fieldErrors[field]}
-      </p>
-    );
+      submitting.current = false;
+      setForm(state => {
+        return {
+          ...state,
+          fieldErrors: result.fieldErrors ?? {},
+          formError: result.fieldErrors ? null : result.error,
+        };
+      });
+    });
+  };
 
   return (
-    <Dialog open onOpenChange={open => !open && onClose()}>
+    <Dialog
+      open
+      onOpenChange={open => {
+        return !open && onClose();
+      }}
+    >
       <DialogContent
-        className="max-w-lg"
+        className="habit-dialog"
         onCloseAutoFocus={onCloseAutoFocus}
         // Focus the name field here (not with autoFocus) so Radix remembers the opener and returns focus to it on close.
         onOpenAutoFocus={e => {
@@ -109,13 +123,18 @@ export function HabitDialog({
         }}
       >
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl font-normal">{habit ? 'Edit habit' : 'New habit'}</DialogTitle>
+          <DialogTitle className="habit-dialog__title">{habit ? 'Edit habit' : 'New habit'}</DialogTitle>
           <DialogDescription className="sr-only">Choose an emoji, a name, a color and a schedule.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-5" noValidate>
-          <div className="flex items-start gap-3">
-            <EmojiField value={icon} onChange={setIcon} />
-            <div className="flex-1">
+        <form onSubmit={submit} className="habit-dialog__form" noValidate>
+          <div className="habit-dialog__top">
+            <EmojiField
+              value={form.icon}
+              onChange={icon => {
+                return setField('icon', icon);
+              }}
+            />
+            <div className="habit-dialog__name">
               <Label htmlFor="habit-name" className="sr-only">
                 Name
               </Label>
@@ -123,111 +142,61 @@ export function HabitDialog({
                 id="habit-name"
                 aria-label="Name"
                 placeholder="Name your habit"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.name)}
-                aria-describedby={fieldErrors.name ? 'error-name' : undefined}
+                value={form.name}
+                onChange={e => {
+                  return setField('name', e.target.value);
+                }}
+                aria-invalid={Boolean(form.fieldErrors.name)}
+                aria-describedby={form.fieldErrors.name ? 'error-name' : undefined}
                 ref={nameRef}
-                className="h-14 text-base"
+                className="habit-dialog__name-input"
               />
-              {error('name')}
-              {error('icon')}
+              <FieldError field="name" message={form.fieldErrors.name} />
+              <FieldError field="icon" message={form.fieldErrors.icon} />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="habit-description" className="mb-1.5">
+            <Label htmlFor="habit-description" className="habit-dialog__label">
               Description (optional)
             </Label>
             <Textarea
               id="habit-description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              aria-invalid={Boolean(fieldErrors.description)}
+              value={form.description}
+              onChange={e => {
+                return setField('description', e.target.value);
+              }}
+              aria-invalid={Boolean(form.fieldErrors.description)}
               rows={2}
             />
-            {error('description')}
-          </div>
-
-          <fieldset>
-            <legend className="mb-1.5 text-sm font-medium">Color</legend>
-            <div className="flex gap-2.5">
-              {COLOR_KEYS.map(key => (
-                <label key={key} className="cursor-pointer">
-                  <input
-                    type="radio"
-                    name="color"
-                    value={key}
-                    checked={color === key}
-                    onChange={() => setColor(key)}
-                    className="peer sr-only"
-                  />
-                  <span
-                    aria-hidden
-                    className="block size-7 rounded-full ring-offset-2 ring-offset-surface peer-checked:ring-2 peer-checked:ring-ink peer-focus-visible:ring-2 peer-focus-visible:ring-clay"
-                    style={{ backgroundColor: habitColor(key) }}
-                  />
-                  <span className="sr-only">{key}</span>
-                </label>
-              ))}
-            </div>
-            {error('color')}
-          </fieldset>
-
-          <div>
-            <p className="mb-1.5 text-sm font-medium" id="schedule-label">
-              Schedule
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                value={kind}
-                onValueChange={v => v && setKind(v as typeof kind)}
-                aria-labelledby="schedule-label"
-              >
-                <ToggleGroupItem
-                  value="daily"
-                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                >
-                  Every day
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="weekly_count"
-                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                >
-                  Times a week
-                </ToggleGroupItem>
-              </ToggleGroup>
-              {kind === 'weekly_count' && (
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="habit-times" className="sr-only">
-                    Times per week
-                  </Label>
-                  <Input
-                    id="habit-times"
-                    type="number"
-                    min={1}
-                    max={6}
-                    value={timesPerWeek}
-                    onChange={e => setTimesPerWeek(e.target.value)}
-                    aria-invalid={Boolean(fieldErrors.timesPerWeek)}
-                    className="w-20"
-                  />
-                  <span className="text-sm text-ink-muted">per week</span>
-                </div>
-              )}
-            </div>
-            {error('timesPerWeek')}
-            {showEffectiveNote && (
-              <p className="mt-2 text-sm text-ink-muted">
-                {`Changes apply from ${effectiveDate}, so your history stays as it was.`}
-              </p>
-            )}
+            <FieldError field="description" message={form.fieldErrors.description} />
           </div>
 
           <div>
-            <Label htmlFor="habit-start" className="mb-1.5">
+            <ColorPicker
+              value={form.color}
+              onChange={color => {
+                return setField('color', color);
+              }}
+            />
+            <FieldError field="color" message={form.fieldErrors.color} />
+          </div>
+
+          <ScheduleField
+            kind={form.kind}
+            timesPerWeek={form.timesPerWeek}
+            onKindChange={kind => {
+              return setField('kind', kind);
+            }}
+            onTimesPerWeekChange={times => {
+              return setField('timesPerWeek', times);
+            }}
+            error={form.fieldErrors.timesPerWeek}
+            note={effectiveNote}
+          />
+
+          <div>
+            <Label htmlFor="habit-start" className="habit-dialog__label">
               Starts
             </Label>
             <Input
@@ -235,17 +204,19 @@ export function HabitDialog({
               type="date"
               max={today}
               min="2000-01-01"
-              value={startDate}
-              onChange={e => setStartDate(e.target.value)}
-              aria-invalid={Boolean(fieldErrors.startDate)}
-              className="w-44"
+              value={form.startDate}
+              onChange={e => {
+                return setField('startDate', e.target.value);
+              }}
+              aria-invalid={Boolean(form.fieldErrors.startDate)}
+              className="habit-dialog__date"
             />
-            {error('startDate')}
+            <FieldError field="startDate" message={form.fieldErrors.startDate} />
           </div>
 
-          {formError && (
-            <p role="alert" className="text-sm text-danger">
-              {formError}
+          {form.formError && (
+            <p role="alert" className="habit-dialog__error">
+              {form.formError}
             </p>
           )}
 
@@ -261,4 +232,4 @@ export function HabitDialog({
       </DialogContent>
     </Dialog>
   );
-}
+};

@@ -30,32 +30,47 @@ export interface Alert {
 }
 
 /** 340 -> "5h 40m", 180 -> "3h", 45 -> "45m". */
-export function formatLeft(minutes: number): string {
+export const formatLeft = (minutes: number): string => {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  if (h === 0) return `${m}m`;
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
-}
 
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-const doNow = (name: string, id: string): AlertAction => ({ kind: 'focus', id, label: `Do ${name} now` });
+  if (h === 0) {
+    return `${m}m`;
+  }
+
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+};
+
+const plural = (n: number, one: string, many: string) => {
+  return `${n} ${n === 1 ? one : many}`;
+};
+
+const doNow = (name: string, id: string): AlertAction => {
+  return { kind: 'focus', id, label: `Do ${name} now` };
+};
 
 /** The one message the banner shows. Thresholds: late 180 minutes, evening 360, afternoon from noon. */
-export function alertFor(input: AlertInput): Alert {
+export const alertFor = (input: AlertInput): Alert => {
   const { hour, minutesToMidnight, total, open, atRisk, continuing } = input;
   const left = formatLeft(minutesToMidnight);
   const top = atRisk[0];
 
-  if (total === 0) return { tier: 'none', message: '', action: null };
+  if (total === 0) {
+    return { tier: 'none', message: '', action: null };
+  }
 
   if (open.length === 0) {
-    const next = continuing.slice(0, 2).map(c => `${c.name} ${c.count + 1}`);
+    const next = continuing.slice(0, 2).map(c => {
+      return `${c.name} ${c.count + 1}`;
+    });
     const streaks = next.length > 0 ? ` Tomorrow's streaks: ${next.join(', ')}.` : '';
+
     return { tier: 'done', message: `All ${total} done. Nice.${streaks}`, action: null };
   }
 
   if (minutesToMidnight <= 180 && top) {
     const more = atRisk.length > 1 ? ` And ${atRisk.length - 1} more at risk.` : '';
+
     return {
       tier: 'late',
       message: `Last call: ${left}. Don't lose your ${top.count}-${top.unit} ${top.name} streak!${more}`,
@@ -90,15 +105,15 @@ export function alertFor(input: AlertInput): Alert {
     message: `${plural(total, 'habit', 'habits')} today. A good day to start with ${open[0].name}.`,
     action: null,
   };
-}
+};
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /** The local date, hour, weekday (0 = Sunday) and minutes to midnight of `now` in `timeZone`. */
-export function clockIn(
+export const clockIn = (
   timeZone: string,
   now: Date,
-): { date: string; hour: number; weekday: number; minutesToMidnight: number } {
+): { date: string; hour: number; weekday: number; minutesToMidnight: number } => {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-CA', {
       timeZone,
@@ -111,13 +126,16 @@ export function clockIn(
       weekday: 'short',
     })
       .formatToParts(now)
-      .map(p => [p.type, p.value]),
+      .map(p => {
+        return [p.type, p.value];
+      }),
   );
   const hour = Number(parts.hour);
+
   return {
     date: `${parts.year}-${parts.month}-${parts.day}`,
     hour,
     weekday: WEEKDAYS.indexOf(parts.weekday),
     minutesToMidnight: 1440 - (hour * 60 + Number(parts.minute)),
   };
-}
+};
