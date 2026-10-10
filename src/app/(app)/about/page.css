@@ -1,0 +1,21 @@
+@reference '../../globals.css';
+
+.about {
+  @apply max-w-prose;
+}
+
+.about__title {
+  @apply font-display text-3xl;
+}
+
+.about__subtitle {
+  @apply mt-8 font-display text-xl;
+}
+
+.about__text {
+  @apply mt-3 text-ink-muted;
+}
+
+.about__link {
+  @apply text-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-clay;
+}

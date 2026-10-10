@@ -1,9 +1,14 @@
 @reference '../globals.css';
 
+/* The footer sits at the bottom of the window even on a short page. */
+.app-layout {
+  @apply flex min-h-dvh flex-col;
+}
+
 .app-layout__avatar-fallback {
   @apply size-9 rounded-full bg-line;
 }
 
 .app-layout__main {
-  @apply mx-auto w-full max-w-295 px-8 py-10;
+  @apply mx-auto w-full flex-1 max-w-295 px-8 py-10;
 }
