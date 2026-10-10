@@ -27,8 +27,8 @@ test.describe('with motion', () => {
       const logo = page.getByRole('heading', { name: 'Cadence' }).getByRole('img', { name: 'Cadence' });
 
       await expect(logo.locator('.animated-logo__letter').last()).toHaveCSS('opacity', '1', { timeout: 10_000 });
-      await expect(logo.locator('.animated-logo__c')).toHaveCSS('opacity', '1');
-      await expect(logo.locator('.animated-logo__ring')).toHaveCSS('opacity', '0');
+      await expect(logo.locator('.animated-logo__ring')).toHaveCSS('opacity', '1');
+      await expect(logo.locator('.animated-logo__dot')).toHaveCSS('opacity', '1');
     });
   });
 });

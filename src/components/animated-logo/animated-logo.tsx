@@ -15,8 +15,8 @@ interface AnimatedLogoProps {
 }
 
 /**
- * The ring "C" draws itself and its dot pops in. Then the ring glides left, the letters flow out of it, the ring turns
- * into the serif C and the dot slides to the end to become the full stop. With "reduce motion" it shows the finished logo.
+ * The ring "C" draws itself and the full stop pops in beside it: "C.". Then the ring glides left, the letters flow out
+ * after it and the full stop slides to the end: "Cadence." With "reduce motion" it shows the finished logo.
  */
 export const AnimatedLogo = (props: AnimatedLogoProps) => {
   const { onComplete } = props;
@@ -26,9 +26,9 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
   const t = useTranslations('common');
   const reduceMotion = useReducedMotion();
 
-  const { viewBox, letters, stop, ring, ringCenter } = WORDMARK;
+  const { viewBox, letters, stop, markStop, ring, ringLeft } = WORDMARK;
   const width = Number(viewBox.split(' ')[2]);
-  const startX = width / 2 - ringCenter.cx; // the ring starts in the middle, then the word grows out of it
+  const startX = width / 2 - (ringLeft + markStop.cx + markStop.r) / 2; // "C." starts in the middle, then the word grows out of it
 
   useEffect(() => {
     if (reduceMotion) {
@@ -40,6 +40,8 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
     let cancelled = false;
 
     const play = async () => {
+      await animate('.animated-logo__stage', { x: startX }, { duration: 0 }); // "C." is drawn in the middle
+
       await animate(
         '.animated-logo__ring',
         { pathLength: [0, 1], opacity: [0, 1] },
@@ -55,19 +57,13 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
       }
 
       await Promise.all([
-        animate('.animated-logo__stage', { x: [startX, 0] }, { duration: 0.95, ease: EASE }),
+        animate('.animated-logo__stage', { x: 0 }, { duration: 0.95, ease: EASE }),
         animate(
           '.animated-logo__letter',
           { opacity: [0, 1], x: [-16, 0] },
           { duration: 0.5, delay: stagger(0.07, { startDelay: 0.3 }) },
         ),
-        animate('.animated-logo__ring', { opacity: [1, 0] }, { duration: 0.45, delay: 0.3 }),
-        animate('.animated-logo__c', { opacity: [0, 1] }, { duration: 0.45, delay: 0.3 }),
-        animate(
-          '.animated-logo__dot',
-          { x: stop.cx - ring.dot.cx, y: stop.cy - ring.dot.cy, scale: stop.r / ring.dot.r },
-          { duration: 0.95, ease: EASE },
-        ),
+        animate('.animated-logo__dot', { x: stop.cx - markStop.cx }, { duration: 0.95, ease: EASE }),
       ]);
 
       if (!cancelled) {
@@ -92,11 +88,11 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
   return (
     <svg ref={scope} role="img" aria-label={t('brand')} viewBox={viewBox} className="animated-logo">
       <g className="animated-logo__stage">
-        <path d={ring.ring} strokeWidth={ring.strokeWidth} className="animated-logo__ring" />
+        <path d={ring.d} strokeWidth={ring.strokeWidth} className="animated-logo__ring" />
         {letters.map(({ char, d }, i) => {
-          return <path key={`${char}-${i}`} d={d} className={i === 0 ? 'animated-logo__c' : 'animated-logo__letter'} />;
+          return <path key={`${char}-${i}`} d={d} className="animated-logo__letter" />;
         })}
-        <circle cx={ring.dot.cx} cy={ring.dot.cy} r={ring.dot.r} className="animated-logo__dot" />
+        <circle cx={markStop.cx} cy={markStop.cy} r={markStop.r} className="animated-logo__dot" />
       </g>
     </svg>
   );

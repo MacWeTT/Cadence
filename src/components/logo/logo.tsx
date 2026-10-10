@@ -2,16 +2,19 @@ import { useTranslations } from 'next-intl';
 import { WORDMARK } from './logo-shapes';
 import './logo.css';
 
-/** The full logo, "Cadence." Its height comes from `--logo-height` on the parent; its colours follow the theme. */
+/** The full logo, "Cadence.": the ring is the C. Its height comes from `--logo-height` on the parent; its colours follow the theme. */
 export const Logo = () => {
   const t = useTranslations('common');
 
+  const { viewBox, ring, letters, stop } = WORDMARK;
+
   return (
-    <svg role="img" aria-label={t('brand')} viewBox={WORDMARK.viewBox} className="logo">
-      {WORDMARK.letters.map(({ char, d }, i) => {
-        return <path key={`${char}-${i}`} d={d} className={i === 0 ? 'logo__c' : 'logo__letter'} />;
+    <svg role="img" aria-label={t('brand')} viewBox={viewBox} className="logo">
+      <path d={ring.d} strokeWidth={ring.strokeWidth} className="logo__ring" />
+      {letters.map(({ char, d }, i) => {
+        return <path key={`${char}-${i}`} d={d} className="logo__letter" />;
       })}
-      <circle cx={WORDMARK.stop.cx} cy={WORDMARK.stop.cy} r={WORDMARK.stop.r} className="logo__stop" />
+      <circle cx={stop.cx} cy={stop.cy} r={stop.r} className="logo__stop" />
     </svg>
   );
 };

@@ -15,10 +15,6 @@
   transform-box: fill-box;
 }
 
-.animated-logo__c {
-  @apply fill-moss opacity-0;
-}
-
 .animated-logo__letter {
   @apply fill-ink opacity-0;
 }

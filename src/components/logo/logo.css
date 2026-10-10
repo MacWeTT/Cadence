@@ -4,8 +4,9 @@
   @apply block h-(--logo-height,1.75rem) w-auto;
 }
 
-.logo__c {
-  @apply fill-moss;
+.logo__ring {
+  @apply fill-none stroke-moss;
+  stroke-linecap: round;
 }
 
 .logo__letter {
