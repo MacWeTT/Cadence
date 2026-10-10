@@ -79,7 +79,7 @@ export function pickGreeting(ctx: GreetingContext, random: () => number, lastId?
   let pool = poolFor(ctx);
   if (pool.length > 1) pool = pool.filter((g) => g.id !== lastId);
   const picked = pool[Math.floor(random() * pool.length)];
-  return { id: picked.id, text: picked.text.replace('{name}', firstName(ctx.name)) };
+  return { id: picked.id, text: picked.text.replace('{name}', () => firstName(ctx.name)) };
 }
 
 const STORAGE_KEY = 'cadence:greeting';
@@ -102,7 +102,7 @@ export function chooseGreeting(
   }
   const kept = poolFor(ctx).find((g) => g.id === stored.id);
   const greeting = kept
-    ? { id: kept.id, text: kept.text.replace('{name}', firstName(ctx.name)) }
+    ? { id: kept.id, text: kept.text.replace('{name}', () => firstName(ctx.name)) }
     : pickGreeting(ctx, random, stored.id);
   try {
     storage?.setItem(STORAGE_KEY, JSON.stringify({ id: greeting.id }));

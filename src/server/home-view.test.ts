@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { ctx, makeHabit } from '@/domain/test-helpers';
 import type { HabitData, Schedule } from '@/domain/types';
 import type { HabitRow } from './habit-view';
-import { buildHomeView } from './home-view';
-import { buildTodayView } from './today-view';
+import { buildHomeView, continuingStreaks } from './home-view';
+import { buildTodayView, type TodayRow } from './today-view';
 
 const TODAY = '2026-10-09'; // a Friday: with Monday weeks, 3 days (Fri, Sat, Sun) are left
 const row = (id: string): HabitRow => ({
@@ -37,13 +37,10 @@ describe('buildHomeView', () => {
     const h = home([entry('read', daily(['2026-10-06', '2026-10-07', '2026-10-08']))]);
     expect(h.atRisk).toHaveLength(1);
     expect(h.atRisk[0]).toMatchObject({ id: 'read', streak: { unit: 'day', count: 3 }, needed: null, daysLeft: null });
-    expect(h.continuing).toEqual([]);
   });
 
-  it('moves a habit to "continuing" once it is ticked today', () => {
-    const h = home([entry('read', daily(['2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09']))]);
-    expect(h.atRisk).toEqual([]);
-    expect(h.continuing).toEqual([{ name: 'read', count: 4 }]);
+  it('does not flag a habit once it is ticked today', () => {
+    expect(home([entry('read', daily(['2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09']))]).atRisk).toEqual([]);
   });
 
   it('does not flag a daily habit without a streak', () => {
@@ -59,6 +56,14 @@ describe('buildHomeView', () => {
     expect(home([entry('run', weeklyWithStreak(2, ['2026-10-06', '2026-10-07']))]).atRisk).toEqual([]); // goal met
   });
 
+  it('does not flag a weekly habit whose week can no longer be saved', () => {
+    // Sunday: one day left, but 3 ticks needed. The streak is already lost, so a "last call" would mislead.
+    const sunday = buildHomeView([entry('run', weeklyWithStreak(3, []))], ctx('2026-10-11'));
+    expect(sunday.atRisk).toEqual([]);
+    const saturday = buildHomeView([entry('run', weeklyWithStreak(2, []))], ctx('2026-10-10')); // 2 days left, 2 needed
+    expect(saturday.atRisk).toHaveLength(1);
+  });
+
   it('does not flag a weekly habit with no streak', () => {
     const noStreak = makeHabit({ startDate: '2026-09-14', schedules: [weekly(3)], done: [] });
     expect(home([entry('run', noStreak)]).atRisk).toEqual([]);
@@ -69,12 +74,39 @@ describe('buildHomeView', () => {
     const future = makeHabit({ startDate: '2026-10-10' });
     const h = home([entry('old', archived), entry('new', future)]);
     expect(h.atRisk).toEqual([]);
-    expect(h.continuing).toEqual([]);
   });
 
   it('puts the longest streak first', () => {
     const short = daily(['2026-10-07', '2026-10-08']);
     const long = daily(['2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08']);
     expect(home([entry('short', short), entry('long', long)]).atRisk.map((r) => r.id)).toEqual(['long', 'short']);
+  });
+});
+
+describe('continuingStreaks', () => {
+  const doneRow = (id: string, over: Partial<TodayRow> = {}): TodayRow => ({
+    id,
+    name: id,
+    icon: '📖',
+    color: 'moss',
+    ticked: true,
+    streak: { unit: 'day', count: 4 },
+    week: null,
+    ...over,
+  });
+
+  it('takes the streak as it stands for habits that were already done', () => {
+    expect(continuingStreaks([doneRow('a', { streak: { unit: 'day', count: 4 } }), doneRow('b', { streak: { unit: 'day', count: 9 } })], new Set())).toEqual([
+      { name: 'b', count: 9 },
+      { name: 'a', count: 4 },
+    ]);
+  });
+  it('adds today for a habit ticked just now, before the server has counted it', () => {
+    expect(continuingStreaks([doneRow('a', { streak: { unit: 'day', count: 4 } })], new Set(['a']))).toEqual([{ name: 'a', count: 5 }]);
+    expect(continuingStreaks([doneRow('new', { streak: null })], new Set(['new']))).toEqual([{ name: 'new', count: 1 }]);
+  });
+  it('leaves out weekly habits and habits with no streak', () => {
+    const weekly = doneRow('w', { week: { done: 3, target: 3, goalMet: true }, streak: { unit: 'week', count: 2 } });
+    expect(continuingStreaks([weekly, doneRow('none', { streak: null })], new Set())).toEqual([]);
   });
 });

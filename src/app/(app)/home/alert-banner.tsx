@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import type { Alert, AlertTier } from "@/lib/alert";
 
 const LOOK: Record<Exclude<AlertTier, "none">, { icon: string; box: string }> = {
@@ -19,15 +20,23 @@ function focusHabit(id: string) {
 
 /**
  * The one message about how the day is going. `null` means the clock is not known yet: the space is held so the page
- * does not jump. The wrapper is a polite live region, so a change of tier is announced without interrupting.
+ * does not jump. A hidden polite live region announces it, but only when the tier or the habit it names changes: the
+ * visible message carries a countdown that changes every minute, which must not be read out every minute.
  */
 export function AlertBanner({ alert }: { alert: Alert | null }) {
   const look = alert && alert.tier !== "none" ? LOOK[alert.tier] : null;
   const action = alert?.action ?? null;
+  const spokenKey = `${alert?.tier}:${action?.kind === "focus" ? action.id : ""}`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately keyed to `spokenKey`, not to the message
+  const spoken = useMemo(() => alert?.message ?? "", [spokenKey]);
   return (
-    <div role="status" aria-live="polite" className={alert === null ? "mt-6 h-13" : undefined}>
+    <>
+      <div role="status" aria-live="polite" className="sr-only">
+        {spoken}
+      </div>
+      {alert === null && <div className="mt-6 h-13" />}
       {look && alert && (
-        <div className={`mt-6 flex items-center gap-4 rounded-2xl border px-5 py-3 ${look.box}`}>
+        <div data-testid="banner" className={`mt-6 flex items-center gap-4 rounded-2xl border px-5 py-3 ${look.box}`}>
           <span aria-hidden className={`text-2xl ${alert.tier === "late" ? "motion-safe:animate-pulse" : ""}`}>
             {look.icon}
           </span>
@@ -51,6 +60,6 @@ export function AlertBanner({ alert }: { alert: Alert | null }) {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }

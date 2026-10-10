@@ -20,12 +20,13 @@ export function useToggleCompletion(view: TodayView, date: CalendarDate) {
   const [, startTransition] = useTransition();
   const focusId = useRef<string | null>(null);
 
-  // A ticked row moves to the other list, which remounts its button and drops keyboard focus; put it back.
+  // A ticked row moves to the other list, which remounts its button and drops keyboard focus; put it back. Only when the
+  // lists change, so a page that re-renders for other reasons (Home's clock) never pulls focus back from where you went.
   useEffect(() => {
     if (focusId.current && document.activeElement === document.body) {
       document.getElementById(`check-${focusId.current}`)?.focus();
     }
-  });
+  }, [shown]);
 
   function toggle(row: TodayRow) {
     if (inFlight.current.has(row.id)) return;

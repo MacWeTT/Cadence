@@ -7,7 +7,7 @@ test.beforeEach(async () => {
 
 // The e2e profile is UTC, so a fixed UTC time on the server's own date drives the banner tier. Set before `goto`.
 const at = async (page: Page, hhmm: string) => page.clock.setFixedTime(new Date(`${daysAgo(0)}T${hhmm}:00Z`));
-const banner = (page: Page) => page.getByRole('status').filter({ hasNotText: /Loading/ });
+const banner = (page: Page) => page.getByTestId('banner'); // the visible message; the live region keeps its own copy
 const check = (page: Page, name: string) => page.getByRole('checkbox', { name: `Mark ${name} done` });
 
 /** Read has a 3-day streak that ends at midnight unless it is ticked; Run has none. */
@@ -114,4 +114,45 @@ test('a weekly habit with no streak is not listed under streaks to protect', asy
   await at(page, '20:00');
   await page.goto('/');
   await expect(page.getByRole('region', { name: 'Streaks to protect' })).toContainText('No streaks at risk right now.');
+});
+
+test('the screen-reader announcement does not repeat every minute', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  await seedHabit({ name: 'Run', startDate: daysAgo(5) });
+  await page.clock.install({ time: new Date(`${daysAgo(0)}T14:00:30Z`) });
+  await page.goto('/');
+  const spoken = page.getByRole('status').filter({ hasText: 'to go' });
+  const visible = page.getByTestId('banner');
+  const spokenBefore = await spoken.textContent();
+  const visibleBefore = await visible.textContent();
+  await page.clock.runFor(61_000);
+  await expect(visible).not.toHaveText(visibleBefore!); // the visible countdown moved on...
+  expect(await spoken.textContent()).toBe(spokenBefore); // ...but nothing new was announced
+});
+
+test('the page refreshing itself does not pull focus back to a ticked row', async ({ page }) => {
+  const read = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  await seedHabit({ name: 'Run', startDate: daysAgo(5) });
+  await page.clock.install({ time: new Date(`${daysAgo(0)}T14:00:30Z`) });
+  await page.goto('/');
+  await check(page, 'Read').click();
+  await expect.poll(async () => (await getCompletions(read)).length).toBe(1);
+  await page.getByRole('heading', { level: 1 }).click(); // click away: focus goes to the page body
+  expect(await page.evaluate(() => document.activeElement === document.body)).toBe(true);
+  await page.clock.runFor(61_000); // Home re-renders when the minute changes
+  expect(await page.evaluate(() => document.activeElement === document.body)).toBe(true);
+});
+
+test('a clock past local midnight refreshes the lists once, and does not loop', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  const refreshes: string[] = [];
+  page.on('request', (r) => {
+    const u = new URL(r.url());
+    if (u.pathname === '/' && u.searchParams.has('_rsc')) refreshes.push(u.href);
+  });
+  await page.clock.setFixedTime(new Date(`${daysAgo(-1)}T00:05:00Z`)); // tomorrow, shortly after midnight
+  await page.goto('/');
+  await expect.poll(() => refreshes.length).toBeGreaterThan(0);
+  await page.waitForTimeout(1500);
+  expect(refreshes.length).toBeLessThanOrEqual(2);
 });

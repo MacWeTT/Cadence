@@ -114,3 +114,14 @@ describe('chooseGreeting keeps a line while it still fits', () => {
     expect(chooseGreeting(ctx({ hour: 14, noneDone: false }), () => 0.99, storage).id).toBe('a1');
   });
 });
+
+describe('names with special characters', () => {
+  it('are inserted as typed, never read as replacement patterns', () => {
+    expect(pickGreeting(ctx({ name: '$&' }), () => 0).text).toBe('Good morning, $&');
+    expect(pickGreeting(ctx({ name: "$'x" }), () => 0).text).toBe("Good morning, $'x");
+    const data = new Map<string, string>();
+    const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => void data.set(k, v) };
+    chooseGreeting(ctx({ name: 'Bob' }), () => 0, storage);
+    expect(chooseGreeting(ctx({ name: '$&' }), () => 0.5, storage).text).toBe('Good morning, $&'); // the kept line, too
+  });
+});

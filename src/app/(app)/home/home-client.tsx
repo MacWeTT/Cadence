@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { CalendarDate, WeekStart } from "@/domain/dates";
 import { alertFor, clockIn } from "@/lib/alert";
 import { formatCalendarDate } from "@/lib/format";
-import type { HomeView } from "@/server/home-view";
+import { continuingStreaks, type HomeView } from "@/server/home-view";
 import { HabitDialog } from "../habits/habit-dialog";
 import { CheckSection } from "../today/check-row";
 import { WeekStrip } from "../today/day-card";
@@ -54,7 +54,10 @@ export function HomeClient({
       total,
       open: shown.todo.map((r) => ({ id: r.id, name: r.name })),
       atRisk: home.atRisk.filter((r) => openIds.has(r.id)).map((r) => ({ id: r.id, name: r.name, count: r.streak.count, unit: r.streak.unit })),
-      continuing: home.continuing,
+      continuing: continuingStreaks(
+        shown.done,
+        new Set(home.view.todo.map((r) => r.id)),
+      ),
     });
 
   // A tab left open past local midnight: the lists are yesterday's, so fetch today's once.
@@ -86,7 +89,7 @@ export function HomeClient({
         </div>
         <div className="min-w-0">
           <p className="text-sm text-ink-muted">{formatCalendarDate(today, { weekday: "long", day: "numeric", month: "long" })}</p>
-          <h1 className="min-h-[1.15em] font-display text-4xl leading-tight">{greeting?.text ?? " "}</h1>
+          <h1 className="min-h-[1.15em] break-words font-display text-4xl leading-tight">{greeting?.text ?? " "}</h1>
         </div>
         <Button className="ml-auto shrink-0" onClick={openDialog}>
           New habit
@@ -113,7 +116,14 @@ export function HomeClient({
                 onToggle={toggle}
                 className="mt-0"
               />
-              <CheckSection id="done-heading" title={`Done today · ${done}`} rows={shown.done} saving={saving} onToggle={toggle} />
+              <CheckSection
+                id="done-heading"
+                title={`Done today · ${done}`}
+                rows={shown.done}
+                saving={saving}
+                onToggle={toggle}
+                className={shown.todo.length === 0 ? "mt-0" : "mt-8"}
+              />
             </div>
             <div className="space-y-6">
               <StreaksCard rows={home.atRisk.filter((r) => openIds.has(r.id))} today={today} weekStartsOn={weekStartsOn} />
