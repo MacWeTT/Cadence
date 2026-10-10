@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { listHabits } from '@/server/habits';
@@ -12,6 +14,12 @@ const HabitsPage = () => {
       <HabitsContent />
     </Suspense>
   );
+};
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const t = await getTranslations('habits');
+
+  return { title: t('title') };
 };
 
 export default HabitsPage;

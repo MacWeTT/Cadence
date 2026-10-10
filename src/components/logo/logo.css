@@ -1,0 +1,18 @@
+@reference '../../app/globals.css';
+
+.logo {
+  @apply block h-(--logo-height,1.75rem) w-auto;
+}
+
+.logo__ring {
+  @apply fill-none stroke-moss;
+  stroke-linecap: round;
+}
+
+.logo__letter {
+  @apply fill-ink;
+}
+
+.logo__stop {
+  @apply fill-clay;
+}

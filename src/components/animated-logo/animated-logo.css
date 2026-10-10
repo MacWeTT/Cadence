@@ -1,0 +1,20 @@
+@reference '../../app/globals.css';
+
+.animated-logo {
+  @apply block h-(--logo-height,3rem) w-auto overflow-visible;
+}
+
+/* Everything starts hidden; the animation brings each part in (see animated-logo.tsx). */
+.animated-logo__ring {
+  @apply fill-none stroke-moss opacity-0;
+  stroke-linecap: round;
+}
+
+.animated-logo__dot {
+  @apply origin-center fill-clay opacity-0;
+  transform-box: fill-box;
+}
+
+.animated-logo__letter {
+  @apply fill-ink opacity-0;
+}

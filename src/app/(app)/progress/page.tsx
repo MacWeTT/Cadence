@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import { ProgressSkeleton } from '@/components/progress-skeleton/progress-skeleton';
 import { ProgressContent } from './progress-content/progress-content';
@@ -17,6 +19,12 @@ const ProgressPage = (props: PageProps<'/progress'>) => {
       </Suspense>
     </>
   );
+};
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const t = await getTranslations('progress');
+
+  return { title: t('title') };
 };
 
 export default ProgressPage;

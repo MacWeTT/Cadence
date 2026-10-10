@@ -9,11 +9,12 @@
 }
 
 .top-bar__logo {
-  @apply rounded-sm font-display text-xl focus-visible:outline-2 focus-visible:outline-clay;
+  @apply inline-block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay;
+  --logo-height: 1.6rem;
 }
 
 .top-bar__logo--current {
-  @apply underline decoration-2 underline-offset-8;
+  @apply rounded-none border-b-2 border-ink pb-1;
 }
 
 .top-bar__nav {
