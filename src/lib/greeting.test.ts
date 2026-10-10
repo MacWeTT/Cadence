@@ -1,0 +1,64 @@
+import { describe, expect, it } from 'vitest';
+import { dayPart, firstName, pickGreeting, type GreetingContext } from './greeting';
+
+const WEDNESDAY = 3;
+const ctx = (over: Partial<GreetingContext> = {}): GreetingContext => ({
+  hour: 9,
+  weekday: WEDNESDAY,
+  allDone: false,
+  noneDone: false,
+  name: 'Manas Bajpai',
+  ...over,
+});
+
+describe('dayPart', () => {
+  it('splits the day at 5, 12, 18 and 22', () => {
+    const parts = [4, 5, 11, 12, 17, 18, 21, 22, 0].map(dayPart);
+    expect(parts).toEqual(['night', 'morning', 'morning', 'afternoon', 'afternoon', 'evening', 'evening', 'night', 'night']);
+  });
+});
+
+describe('firstName', () => {
+  it('is the first word, or "friend" when there is none', () => {
+    expect(firstName(null)).toBe('friend');
+    expect(firstName('')).toBe('friend');
+    expect(firstName('   ')).toBe('friend');
+    expect(firstName('  Manas Bajpai ')).toBe('Manas');
+    const long = 'A'.repeat(60);
+    expect(firstName(long)).toBe(long);
+  });
+});
+
+describe('pickGreeting', () => {
+  it('takes the first line of the pool when random is 0', () => {
+    expect(pickGreeting(ctx(), () => 0)).toEqual({ id: 'm1', text: 'Good morning, Manas' });
+  });
+  it('never leaves a placeholder behind, with or without a name', () => {
+    for (const name of ['Manas', null]) {
+      for (const r of [0, 0.5, 0.99]) expect(pickGreeting(ctx({ name }), () => r).text).not.toContain('{name}');
+    }
+    expect(pickGreeting(ctx({ name: null }), () => 0).text).toBe('Good morning, friend');
+  });
+  it('uses only the done lines when everything is ticked', () => {
+    for (const r of [0, 0.4, 0.99]) expect(['d1', 'd2']).toContain(pickGreeting(ctx({ allDone: true }), () => r).id);
+  });
+  it('does not repeat the last line', () => {
+    for (const r of [0, 0.3, 0.6, 0.99]) expect(pickGreeting(ctx(), () => r, 'm1').id).not.toBe('m1');
+  });
+  it('still answers when the pool has a single line and it was the last one', () => {
+    expect(pickGreeting(ctx({ allDone: true }), () => 0, 'd1').id).toBe('d2');
+  });
+  it('adds the weekday line to the pool', () => {
+    const friday = ctx({ hour: 19, weekday: 5 });
+    const ids = [0, 0.2, 0.4, 0.6, 0.8, 0.99].map((r) => pickGreeting(friday, () => r).id);
+    expect(ids).toContain('w5');
+  });
+  it('offers the fresh-page line only from noon with nothing ticked', () => {
+    const seen = (c: GreetingContext) => [0, 0.2, 0.4, 0.6, 0.8, 0.99].map((r) => pickGreeting(c, () => r).id);
+    expect(seen(ctx({ hour: 14, noneDone: true }))).toContain('z1');
+    expect(seen(ctx({ hour: 9, noneDone: true }))).not.toContain('z1');
+  });
+  it('uses the night lines late at night', () => {
+    expect(pickGreeting(ctx({ hour: 23 }), () => 0).id).toBe('n1');
+  });
+});
