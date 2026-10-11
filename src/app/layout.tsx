@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import { AppSplash } from '@/components/app-splash/app-splash';
 import { MotionProvider } from '@/components/motion-provider/motion-provider';
 import { ThemeFavicon } from '@/components/theme-favicon/theme-favicon';
+import { ServiceWorkerRegister } from '@/components/service-worker-register/service-worker-register';
 import { Toaster } from '@/components/ui/sonner';
 import { BOOT_SCRIPT } from '@/lib/appearance';
 import './globals.css';
@@ -16,6 +17,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     applicationName: t('title'),
     title: { default: t('title'), template: t('template') },
     description: t('description'),
+    appleWebApp: { capable: true, title: t('title'), statusBarStyle: 'default' },
     openGraph: { type: 'website', siteName: t('title'), title: t('title'), description: t('description') },
   };
 };
@@ -45,6 +47,7 @@ const RootLayout = async (props: LayoutProps<'/'>) => {
             <MotionProvider>
               <ThemeFavicon />
               <AppSplash />
+              <ServiceWorkerRegister />
               {children}
               <Toaster />
             </MotionProvider>

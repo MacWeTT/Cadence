@@ -31,6 +31,11 @@
     "save": "Save",
     "newHabit": "New habit"
   },
+  "install": {
+    "app": "Install app",
+    "ios": "Add to Home Screen",
+    "iosHelp": "In Safari, tap the Share button, then \"Add to Home Screen\"."
+  },
   "links": {
     "open": "Open links for {name}",
     "tooltip": "{count, plural, one {Open the link} other {Open all # links}}",
