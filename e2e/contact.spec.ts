@@ -118,3 +118,38 @@ test.describe('with motion', () => {
     await expect(page.getByLabel('Your message')).toHaveCount(0);
   });
 });
+
+test.describe('with motion, arriving from another page', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('the page arrives whole: the form is never missing while the title is already there', async ({ page }) => {
+    await page.addInitScript(() => {
+      return window.sessionStorage.setItem('cadence:splash', '1');
+    });
+    await page.goto('/habits');
+    await expect(page.getByRole('heading', { name: 'Habits', level: 1 })).toBeVisible();
+
+    // Watch every change to the page: record whether the title was ever there without the form.
+    await page.evaluate(() => {
+      const w = window as unknown as { __titleWithoutForm: boolean };
+
+      w.__titleWithoutForm = false;
+      new MutationObserver(() => {
+        const title = [...document.querySelectorAll('h1')].some(h => {
+          return h.textContent === 'Contact';
+        });
+
+        if (title && !document.querySelector('#contact-message')) {
+          w.__titleWithoutForm = true;
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+    });
+
+    await page.getByRole('contentinfo').getByRole('link', { name: 'Contact' }).click();
+    await expect(page.locator('#contact-message')).toBeVisible();
+
+    expect(await page.evaluate(() => {return (window as unknown as { __titleWithoutForm: boolean }).__titleWithoutForm})).toBe(
+      false,
+    );
+  });
+});
