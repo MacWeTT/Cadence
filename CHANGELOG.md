@@ -5,6 +5,7 @@ This file is shown on the app's What's new page, so it is for people using Caden
 ## Planned
 
 - Install Cadence on your phone or computer like an app.
+- A layout that fits phones and tablets properly, on every page.
 - A full profile page.
 - Reminders: push notifications in your browser and by email.
 - Focus sessions: a timer for a habit, with a confirmation when you finish.
