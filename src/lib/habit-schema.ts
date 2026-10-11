@@ -50,11 +50,13 @@ export const habitInputSchema = (today: CalendarDate) => {
         }, 'startRange'),
     })
     .superRefine((v, ctx) => {
-      if (v.kind === 'weekly_count' && v.timesPerWeek === undefined) {
+      const { kind, timesPerWeek } = v;
+
+      if (kind === 'weekly_count' && timesPerWeek === undefined) {
         ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'timesRange' });
       }
 
-      if (v.kind === 'daily' && v.timesPerWeek !== undefined) {
+      if (kind === 'daily' && timesPerWeek !== undefined) {
         ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'timesOnDaily' });
       }
     });
@@ -67,9 +69,10 @@ export const toFieldErrors = (error: z.ZodError): Record<string, FieldIssue> => 
   const out: Record<string, FieldIssue> = {};
 
   for (const issue of error.issues) {
-    const key = String(issue.path[0] ?? 'form');
+    const { path, message } = issue;
+    const key = String(path[0] ?? 'form');
 
-    out[key] ??= { code: issue.message as ValidationCode };
+    out[key] ??= { code: message as ValidationCode };
   }
 
   return out;

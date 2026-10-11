@@ -51,12 +51,12 @@ export const ThemeToggle = () => {
 
     // Colours glide between the themes instead of snapping: the class turns on a short transition (see globals.css)
     // for just the moment of the switch, so it never slows down ordinary hover effects.
-    const root = document.documentElement;
+    const { classList } = document.documentElement;
 
-    root.classList.add('theme-transition');
+    classList.add('theme-transition');
     setTheme(value);
     window.setTimeout(() => {
-      return root.classList.remove('theme-transition');
+      return classList.remove('theme-transition');
     }, 400);
   };
 

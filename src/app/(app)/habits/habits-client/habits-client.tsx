@@ -36,7 +36,14 @@ export const HabitsClient = (props: HabitsClientProps) => {
   const [, startTransition] = useTransition();
   const opener = useRef<HTMLElement | null>(null);
 
-  const { active, archived, profile } = view;
+  const {
+    active,
+    archived,
+    profile: { today, weekStartsOn, timezone },
+  } = view;
+  const { dialog, deleting, showArchived } = state;
+  const editing = dialog?.habit;
+  const archivedCount = archived.length;
 
   const setField = <K extends keyof HabitsState>(field: K, value: HabitsState[K]) => {
     setState(current => {
@@ -92,7 +99,7 @@ export const HabitsClient = (props: HabitsClientProps) => {
   };
 
   const onArchivedToggle = () => {
-    setField('showArchived', !state.showArchived);
+    setField('showArchived', !showArchived);
   };
 
   const onDialogClose = () => {
@@ -131,25 +138,22 @@ export const HabitsClient = (props: HabitsClientProps) => {
         </ul>
       )}
 
-      {archived.length > 0 && (
+      {archivedCount > 0 && (
         <section className="habits__archived">
-          <button
-            type="button"
-            aria-expanded={state.showArchived}
-            onClick={onArchivedToggle}
-            className="habits__toggle"
-          >
-            <span aria-hidden>{state.showArchived ? '▾' : '▸'}</span>
-            {t('archivedToggle', { count: archived.length })}
+          <button type="button" aria-expanded={showArchived} onClick={onArchivedToggle} className="habits__toggle">
+            <span aria-hidden>{showArchived ? '▾' : '▸'}</span>
+            {t('archivedToggle', { count: archivedCount })}
           </button>
-          {state.showArchived && (
+          {showArchived && (
             <ul aria-label={t('archivedLabel')} className="habits__archived-list">
               {archived.map(habit => {
+                const { id, archivedAt } = habit;
+
                 return (
                   <HabitRow
-                    key={habit.id}
+                    key={id}
                     habit={habit}
-                    archivedOn={formatCalendarDate(toCalendarDate(habit.archivedAt ?? '', profile.timezone))}
+                    archivedOn={formatCalendarDate(toCalendarDate(archivedAt ?? '', timezone))}
                     actions={actions}
                   />
                 );
@@ -159,20 +163,18 @@ export const HabitsClient = (props: HabitsClientProps) => {
         </section>
       )}
 
-      {state.dialog && (
+      {dialog && (
         <HabitDialog
           // A fresh form for each habit (or for create).
-          key={state.dialog.habit?.id ?? 'new'}
-          habit={state.dialog.habit}
-          today={profile.today}
-          weekStartsOn={profile.weekStartsOn}
+          key={editing?.id ?? 'new'}
+          habit={editing}
+          today={today}
+          weekStartsOn={weekStartsOn}
           onClose={onDialogClose}
           onCloseAutoFocus={restoreFocus}
         />
       )}
-      {state.deleting && (
-        <DeleteHabitDialog habit={state.deleting} onClose={onDeleteClose} onCloseAutoFocus={restoreFocus} />
-      )}
+      {deleting && <DeleteHabitDialog habit={deleting} onClose={onDeleteClose} onCloseAutoFocus={restoreFocus} />}
     </>
   );
 };

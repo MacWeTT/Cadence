@@ -22,28 +22,26 @@ export const setCompletionAction = async (habitId: string, date: string, done: b
     return fail(msg('errors.signIn'));
   }
 
-  const parsed = input.safeParse({ habitId, date, done });
+  const { success, data } = input.safeParse({ habitId, date, done });
 
-  if (!parsed.success) {
+  if (!success) {
     return fail(msg('errors.saveFailed'));
   }
 
   try {
     const { today } = await getProfile();
     const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.rpc('set_completion', {
-      p_habit_id: parsed.data.habitId,
-      p_date: parsed.data.date,
-      p_done: parsed.data.done,
-      p_today: today,
-    });
+    const { habitId: p_habit_id, date: p_date, done: p_done } = data;
+    const { error } = await supabase.rpc('set_completion', { p_habit_id, p_date, p_done, p_today: today });
 
     if (error) {
-      if (error.code === 'P0001') {
-        return fail(completionErrorMsg(error.message));
+      const { code, message } = error;
+
+      if (code === 'P0001') {
+        return fail(completionErrorMsg(message));
       }
 
-      throw new Error(error.message);
+      throw new Error(message);
     }
 
     return { ok: true };

@@ -28,7 +28,9 @@ export const CheckSection = (props: CheckSectionProps) => {
       </h2>
       <ul aria-labelledby={id}>
         {rows.map(row => {
-          return <CheckRow key={row.id} row={row} disabled={saving.has(row.id)} onToggle={onToggle} />;
+          const { id: rowId } = row;
+
+          return <CheckRow key={rowId} row={row} disabled={saving.has(rowId)} onToggle={onToggle} />;
         })}
       </ul>
     </section>

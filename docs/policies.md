@@ -19,6 +19,8 @@ Run everything with `npm run verify` before opening a PR.
 | 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
 | 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `locales/<language>/<area>.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
 | 9 | **No anonymous functions as props.** A handler passed to a component or element is a named `const` declared above the `return` (`onHabitClose`, `onNameChange`), never an inline `() => {...}`. Pass it by name. (Callbacks for `.map`, `.filter` and hooks stay inline.) | ESLint `no-restricted-syntax` |
+| 10 | **Absolute imports.** Import with `@/...` (src), `@tests/...`, `@e2e/...` and `@locales/...`, never `./x` or `../x`. A component's own stylesheet (`import './x.css'`) is the one relative import. | ESLint `no-restricted-syntax` |
+| 11 | **Read an object's properties once.** When the same object's properties are read two or more times, destructure it once (`const { week, streak } = row`). Checks like `result.ok`, `action.kind` that narrow a union, calls (`x.method()`), assignments, a ref's `.current` and optional chains (`a?.b`) are not counted. | ESLint `cadence/destructure-repeated-reads` |
 
 ```tsx
 // check-row/check-row.tsx: a component the way these rules want it.
@@ -76,7 +78,7 @@ const CheckRow = (props: CheckRowProps) => {
 ## Localisation
 - Messages live in `locales/en/*.json`, one file per area (`today.json`, `habits.json`, ...), merged in `locales/en/index.ts`. Keys are typed from those files: a missing key fails the typecheck.
 - Components read text with `useTranslations('area')` (client components and non-async server components) or `await getTranslations('area')` (async server components and actions).
-- Pure code (rules, helpers) never returns English. It returns a `Msg`: `msg('alert.doNow', { name })`, with another `Msg` allowed as a value (a time inside a sentence). The UI turns it into text with `useMsg()` or `getMsg()`. Tests read the words with `tr()` from `src/lib/test-translate.ts`.
+- Pure code (rules, helpers) never returns English. It returns a `Msg`: `msg('alert.doNow', { name })`, with another `Msg` allowed as a value (a time inside a sentence). The UI turns it into text with `useMsg()` or `getMsg()`. Tests read the words with `tr()` from `tests/support/translate.ts`.
 - Server errors are codes (`new HabitError('habitNotFound')`), and validation messages are codes too; the server action translates them.
 - Plurals use ICU (`{count, plural, one {# habit} other {# habits}}`), never `count === 1 ? ... : ...`.
 - A new language is a new folder `locales/<lang>/` with the same files and index, plus a way to pick it in `src/i18n/request.ts`. Dates are formatted through `formatCalendarDate`, which is fixed to `en-GB` for now (a marked shortcut in `src/lib/format.ts`).
@@ -96,7 +98,7 @@ const CheckRow = (props: CheckRowProps) => {
 
 ## Testing
 - Write the failing test first; watch it fail; make it pass (TDD). A bug fix starts with a test that reproduces it.
-- Rules and calculations are unit-tested next to the code (`*.test.ts`). Database rules have pgTAP tests in `supabase/tests`. User flows have Playwright tests in `e2e/`.
+- Rules and calculations are unit-tested in `tests/unit/`, which mirrors `src/` (`tests/unit/domain/dates.test.ts` tests `src/domain/dates.ts`); shared test helpers are in `tests/support/`. Test files never sit beside the code. Database rules have pgTAP tests in `supabase/tests`. User flows have Playwright tests in `e2e/`.
 - Tests assert behaviour a user could see, not implementation details. A flaky test is fixed or deleted, never retried until green.
 
 ## Process

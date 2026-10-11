@@ -97,7 +97,7 @@ const eslintConfig = defineConfig([
     plugins: { cadence: policies },
     rules: {
       // 11: read an object's properties once, by destructuring.
-      'cadence/destructure-repeated-reads': 'warn',
+      'cadence/destructure-repeated-reads': STYLE,
     },
   },
 

@@ -8,19 +8,22 @@ import type { Ctx, HabitData } from '@/domain/types';
  * right now, and is not paused on that day (unless it was ticked then).
  */
 export const isListedOn = (h: HabitData, date: CalendarDate, ctx: Ctx): boolean => {
-  if (date > ctx.today || date < h.startDate || !scheduleFor(h, date)) {
+  const { today } = ctx;
+  const { startDate, pauses, completions } = h;
+
+  if (date > today || date < startDate || !scheduleFor(h, date)) {
     return false;
   }
 
   if (
-    h.pauses.some(p => {
-      return p.to === null;
+    pauses.some(({ to }) => {
+      return to === null;
     })
   ) {
     return false;
   }
 
-  return !isPaused(h, date) || h.completions.has(date);
+  return !isPaused(h, date) || completions.has(date);
 };
 
 export interface WeekProgress {
@@ -31,23 +34,26 @@ export interface WeekProgress {
 
 /** Ticks so far in the week containing `date` for a weekly habit, or null for any other schedule. Bonus ticks keep counting. */
 export const weekProgress = (h: HabitData, date: CalendarDate, ctx: Ctx): WeekProgress | null => {
-  const start = weekStart(date, ctx.weekStartsOn);
-  const from = start < h.startDate ? h.startDate : start;
+  const { today, weekStartsOn } = ctx;
+  const { startDate, completions } = h;
+  const start = weekStart(date, weekStartsOn);
+  const from = start < startDate ? startDate : start;
   const schedule = scheduleFor(h, from);
 
   if (schedule?.kind !== 'weekly_count') {
     return null;
   }
 
-  const end = weekEnd(date, ctx.weekStartsOn);
-  const last = end < ctx.today ? end : ctx.today;
+  const { timesPerWeek } = schedule;
+  const end = weekEnd(date, weekStartsOn);
+  const last = end < today ? end : today;
   let done = 0;
 
   for (let d = from; d <= last; d = addDays(d, 1)) {
-    if (h.completions.has(d)) {
+    if (completions.has(d)) {
       done++;
     }
   }
 
-  return { done, target: schedule.timesPerWeek, goalMet: done >= schedule.timesPerWeek };
+  return { done, target: timesPerWeek, goalMet: done >= timesPerWeek };
 };

@@ -28,14 +28,16 @@ export const GoogleSignInButton = () => {
     }
   };
 
+  const { busy, error: signInError } = state;
+
   return (
     <div>
-      <button type="button" onClick={signIn} disabled={state.busy} className="google-sign-in">
-        {state.busy ? t('redirecting') : t('continueWithGoogle')}
+      <button type="button" onClick={signIn} disabled={busy} className="google-sign-in">
+        {busy ? t('redirecting') : t('continueWithGoogle')}
       </button>
-      {state.error && (
+      {signInError && (
         <p role="alert" className="google-sign-in__error">
-          {state.error}
+          {signInError}
         </p>
       )}
     </div>

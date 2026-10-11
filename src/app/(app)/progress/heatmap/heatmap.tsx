@@ -36,41 +36,43 @@ export const Heatmap = (props: HeatmapProps) => {
     <div role="img" aria-label={t('heatmap')} className="heatmap" style={{ gridTemplateColumns: tracks }}>
       {months.flatMap((block, k) => {
         const first = starts[k];
+        const { columns, month } = block;
 
         return [
-          ...block.columns.flatMap((column, i) => {
+          ...columns.flatMap((column, i) => {
             return column.map((cell, d) => {
               if (cell === null) {
                 return null;
               }
 
-              const day = formatCalendarDate(cell.date, { weekday: 'short', day: 'numeric', month: 'short' });
+              const { date, done, expected, level } = cell;
+              const day = formatCalendarDate(date, { weekday: 'short', day: 'numeric', month: 'short' });
               const title = single
-                ? cell.done
+                ? done
                   ? t('singleDone', { day })
                   : t('singleNotDone', { day })
-                : t('cell', { day, done: cell.done, total: Math.max(cell.done, Math.round(cell.expected)) });
+                : t('cell', { day, done: done, total: Math.max(done, Math.round(expected)) });
 
               return (
                 <div
-                  key={cell.date}
-                  title={cell.level === null ? undefined : title}
-                  className={cn('heatmap__cell', cell.level === null && 'heatmap__cell--blank')}
+                  key={date}
+                  title={level === null ? undefined : title}
+                  className={cn('heatmap__cell', level === null && 'heatmap__cell--blank')}
                   style={{
                     gridColumn: first + i,
                     gridRow: d + 1,
-                    ...(cell.level === null ? {} : { backgroundColor: `var(--heat-${cell.level})` }),
+                    ...(level === null ? {} : { backgroundColor: `var(--heat-${level})` }),
                   }}
                 />
               );
             });
           }),
           <p
-            key={block.month}
+            key={month}
             className="heatmap__month"
-            style={{ gridColumn: `${first} / span ${block.columns.length}`, gridRow: 8 }}
+            style={{ gridColumn: `${first} / span ${columns.length}`, gridRow: 8 }}
           >
-            {formatCalendarDate(`${block.month}-01`, { month: 'short' })}
+            {formatCalendarDate(`${month}-01`, { month: 'short' })}
           </p>,
         ];
       })}

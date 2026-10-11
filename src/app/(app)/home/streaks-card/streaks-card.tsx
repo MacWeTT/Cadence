@@ -10,15 +10,16 @@ import type { AtRiskRow } from '@/server/home-view';
 import './streaks-card.css';
 
 const tagMsg = (row: AtRiskRow, today: CalendarDate, weekStartsOn: WeekStart): Msg => {
-  const length = streakLengthMsg(row.streak);
+  const { streak, needed } = row;
+  const length = streakLengthMsg(streak);
 
-  if (row.needed === null) {
+  if (needed === null) {
     return msg('home.streaks.endsAtMidnight', { length });
   }
 
   const day = formatCalendarDate(weekEnd(today, weekStartsOn), { weekday: 'long' });
 
-  return msg('home.streaks.moreBy', { length, needed: row.needed, day });
+  return msg('home.streaks.moreBy', { length, needed, day });
 };
 
 interface StreaksCardProps {
@@ -44,17 +45,19 @@ export const StreaksCard = (props: StreaksCardProps) => {
       ) : (
         <ul className="streaks-card__list">
           {rows.map(row => {
+            const { id, color, icon, name } = row;
+
             return (
-              <li key={row.id} className="streaks-card__item">
+              <li key={id} className="streaks-card__item">
                 <span
                   aria-hidden
                   className="streaks-card__icon"
-                  style={{ backgroundColor: `color-mix(in oklab, ${habitColor(row.color)} 22%, var(--surface))` }}
+                  style={{ backgroundColor: `color-mix(in oklab, ${habitColor(color)} 22%, var(--surface))` }}
                 >
-                  {row.icon}
+                  {icon}
                 </span>
                 <div className="streaks-card__body">
-                  <p className="streaks-card__name">{row.name}</p>
+                  <p className="streaks-card__name">{name}</p>
                   <p className="streaks-card__tag">{tm(tagMsg(row, today, weekStartsOn))}</p>
                 </div>
               </li>

@@ -21,14 +21,14 @@ export const BarsCard = (props: BarsCardProps) => {
     <ProgressCard label={title}>
       <h2 className="bars-card__title">{title}</h2>
       <ul className="bars-card__list">
-        {rows.map(r => {
+        {rows.map(({ key, label, count }) => {
           return (
-            <li key={r.key} className="bars-card__row">
-              <span className="bars-card__label">{r.label}</span>
+            <li key={key} className="bars-card__row">
+              <span className="bars-card__label">{label}</span>
               <span className="bars-card__track">
-                <span className="bars-card__fill" style={{ width: `${(r.count / max) * 100}%` }} />
+                <span className="bars-card__fill" style={{ width: `${(count / max) * 100}%` }} />
               </span>
-              <span className="bars-card__count">{r.count}</span>
+              <span className="bars-card__count">{count}</span>
             </li>
           );
         })}

@@ -20,7 +20,7 @@ export interface HabitFormState {
 /** The form's first values: the habit being edited, or the defaults for a new one. */
 export const initialHabitForm = (habit: HabitListItem | undefined, today: string): HabitFormState => {
   // When a schedule change is already pending, the form starts from it so the user sees what they set.
-  const shown = habit ? (habit.pendingSchedule ?? habit.schedule) : undefined;
+  const shown = habit?.pendingSchedule ?? habit?.schedule;
 
   return {
     icon: habit?.icon ?? DEFAULT_ICON,

@@ -52,6 +52,9 @@ const maxUseState = {
 };
 
 /** A read like `row.week` (not a call, an assignment, a ref's `.current` or an optional chain) that destructuring could replace. */
+// Checks like `result.ok` or `action.kind` narrow a union: the object has to stay whole, so they are not counted.
+const DISCRIMINANTS = new Set(['ok', 'success', 'kind', 'type', 'action']);
+
 const isPlainRead = reference => {
   const id = reference.identifier;
   const member = id.parent;
@@ -70,7 +73,9 @@ const isPlainRead = reference => {
     return false;
   }
 
-  return parent.type !== 'UpdateExpression' && member.property.name !== 'current';
+  return (
+    parent.type !== 'UpdateExpression' && member.property.name !== 'current' && !DISCRIMINANTS.has(member.property.name)
+  );
 };
 
 /** Reading properties off one object twice or more: destructure it once, `const { week, streak } = row`. */

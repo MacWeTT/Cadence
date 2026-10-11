@@ -29,23 +29,26 @@ const heatCell = (habits: HabitData[], single: boolean, day: CalendarDate, ctx: 
 
   if (single) {
     const h = habits[0];
+    const { completions, startDate } = h;
 
-    if (h.completions.has(day)) {
+    if (completions.has(day)) {
       return { date: day, level: 4, done: 1, expected: 1 };
     }
 
-    return h && day >= h.startDate && !isPaused(h, day) ? { date: day, level: 0, done: 0, expected: 1 } : blank;
+    return h && day >= startDate && !isPaused(h, day) ? { date: day, level: 0, done: 0, expected: 1 } : blank;
   }
 
   let done = 0;
   let expected = 0;
 
   for (const h of habits) {
-    if (h.completions.has(day)) {
+    const { completions, startDate } = h;
+
+    if (completions.has(day)) {
       done++;
     } // a tick is always honoured
 
-    const schedule = day >= h.startDate && !isPaused(h, day) ? scheduleFor(h, day) : undefined;
+    const schedule = day >= startDate && !isPaused(h, day) ? scheduleFor(h, day) : undefined;
 
     if (schedule) {
       expected += schedule.kind === 'weekly_count' ? schedule.timesPerWeek / 7 : 1;
@@ -66,7 +69,8 @@ const heatCell = (habits: HabitData[], single: boolean, day: CalendarDate, ctx: 
  * done over expected, where a weekly habit expects N/7 a day. A single habit: ticked or not.
  */
 export const heatmap = (habits: HabitData[], single: boolean, ctx: Ctx): HeatCell[][] => {
-  const first = addDays(weekStart(ctx.today, ctx.weekStartsOn), -7 * (WEEKS_SHOWN - 1));
+  const { today, weekStartsOn } = ctx;
+  const first = addDays(weekStart(today, weekStartsOn), -7 * (WEEKS_SHOWN - 1));
 
   return Array.from({ length: WEEKS_SHOWN }, (_, w) => {
     return Array.from({ length: 7 }, (_, d) => {
@@ -84,6 +88,7 @@ export interface MonthBlock {
 
 /** The heatmap regrouped by calendar month, like LeetCode's: each month is its own block of week columns. */
 export const monthBlocks = (weeks: HeatCell[][], ctx: Ctx): MonthBlock[] => {
+  const { today, weekStartsOn } = ctx;
   const byDate = new Map(
     weeks.flat().map(c => {
       return [c.date, c];
@@ -101,7 +106,7 @@ export const monthBlocks = (weeks: HeatCell[][], ctx: Ctx): MonthBlock[] => {
     );
     const columns: (HeatCell | null)[][] = [];
 
-    for (let col = weekStart(`${key}-01`, ctx.weekStartsOn); col <= monthLast; col = addDays(col, 7)) {
+    for (let col = weekStart(`${key}-01`, weekStartsOn); col <= monthLast; col = addDays(col, 7)) {
       const days = Array.from({ length: 7 }, (_, d) => {
         return addDays(col, d);
       }).map(day => {
@@ -119,7 +124,7 @@ export const monthBlocks = (weeks: HeatCell[][], ctx: Ctx): MonthBlock[] => {
 
     blocks.push({ month: key, columns });
 
-    if (key === ctx.today.slice(0, 7)) {
+    if (key === today.slice(0, 7)) {
       return blocks;
     }
 
@@ -143,9 +148,11 @@ export const heatTotals = (weeks: HeatCell[][]): { ticks: number; activeDays: nu
 
 /** Done vs expected over the last `days` closed days (today is progress, not part of the rate). */
 export const rangeRate = (habits: HabitData[], days: number, ctx: Ctx): Rate => {
+  const { today } = ctx;
+
   return addRates(
     habits.map(h => {
-      return completionRate(h, addDays(ctx.today, -days), addDays(ctx.today, -1), ctx);
+      return completionRate(h, addDays(today, -days), addDays(today, -1), ctx);
     }),
   );
 };
@@ -158,11 +165,14 @@ const allTicks = (habits: HabitData[]) => {
 
 /** Ticks per week for the last `n` weeks, oldest first, ending with the current week. */
 export const weeklyTicks = (habits: HabitData[], n: number, ctx: Ctx): { start: CalendarDate; count: number }[] => {
-  const thisWeek = weekStart(ctx.today, ctx.weekStartsOn);
+  const { today, weekStartsOn } = ctx;
+  const thisWeek = weekStart(today, weekStartsOn);
   const counts = new Map<CalendarDate, number>();
 
   for (const d of allTicks(habits)) {
-    counts.set(weekStart(d, ctx.weekStartsOn), (counts.get(weekStart(d, ctx.weekStartsOn)) ?? 0) + 1);
+    const week = weekStart(d, weekStartsOn);
+
+    counts.set(week, (counts.get(week) ?? 0) + 1);
   }
 
   return Array.from({ length: n }, (_, i) => {
@@ -177,11 +187,14 @@ export const monthlyTicks = (habits: HabitData[], n: number, ctx: Ctx): { month:
   const counts = new Map<string, number>();
 
   for (const d of allTicks(habits)) {
-    counts.set(d.slice(0, 7), (counts.get(d.slice(0, 7)) ?? 0) + 1);
+    const key = d.slice(0, 7);
+
+    counts.set(key, (counts.get(key) ?? 0) + 1);
   }
 
-  const year = Number(ctx.today.slice(0, 4));
-  const month = Number(ctx.today.slice(5, 7)) - 1;
+  const { today } = ctx;
+  const year = Number(today.slice(0, 4));
+  const month = Number(today.slice(5, 7)) - 1;
 
   return Array.from({ length: n }, (_, i) => {
     const at = new Date(Date.UTC(year, month - (n - 1 - i), 1));
@@ -249,12 +262,13 @@ export const buildProgress = (
     totals: heatTotals(weeks),
     habits: shown.map(({ habit, data: h }) => {
       const current = currentStreak(h, ctx);
+      const { id, name, icon, color } = habit;
 
       return {
-        id: habit.id,
-        name: habit.name,
-        icon: habit.icon,
-        color: toColorKey(habit.color),
+        id,
+        name,
+        icon,
+        color: toColorKey(color),
         archived: h.pauses.some(p => {
           return p.to === null;
         }),

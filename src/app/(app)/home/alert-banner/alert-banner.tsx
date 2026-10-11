@@ -23,6 +23,23 @@ const focusHabit = (id: string) => {
   checkbox?.focus();
 };
 
+/** Where the banner's button goes: to a habit's checkbox on this page, or to a link. */
+const actionTarget = (action: NonNullable<Alert>['action']) => {
+  if (action?.kind === 'focus') {
+    const { id } = action;
+
+    return { focusId: id, href: null };
+  }
+
+  if (action?.kind === 'link') {
+    const { href } = action;
+
+    return { focusId: null, href };
+  }
+
+  return { focusId: null, href: null };
+};
+
 interface AlertBannerProps {
   alert: Alert | null;
 }
@@ -37,9 +54,12 @@ export const AlertBanner = (props: AlertBannerProps) => {
 
   const tm = useMsg();
 
+  const tier = alert?.tier ?? 'none';
   const action = alert?.action ?? null;
   const message = alert?.message ? tm(alert.message) : '';
-  const spokenKey = `${alert?.tier}:${action?.kind === 'focus' ? action.id : ''}`;
+  const label = action ? tm(action.label) : null;
+  const { focusId, href } = actionTarget(action);
+  const spokenKey = `${tier}:${focusId ?? ''}`;
 
   const spoken = useMemo(() => {
     return message;
@@ -47,8 +67,8 @@ export const AlertBanner = (props: AlertBannerProps) => {
   }, [spokenKey]);
 
   const onFocusClick = () => {
-    if (action?.kind === 'focus') {
-      focusHabit(action.id);
+    if (focusId !== null) {
+      focusHabit(focusId);
     }
   };
 
@@ -58,28 +78,28 @@ export const AlertBanner = (props: AlertBannerProps) => {
         {spoken}
       </div>
       {alert === null && <div className="alert-banner__placeholder" />}
-      {alert && alert.tier !== 'none' && (
+      {alert && tier !== 'none' && (
         <motion.div
           // A new tier is a new message: it eases in, where the old one was.
-          key={alert.tier}
+          key={tier}
           data-testid="banner"
-          className={cn('alert-banner', `alert-banner--${alert.tier}`)}
+          className={cn('alert-banner', `alert-banner--${tier}`)}
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
         >
-          <span aria-hidden className={cn('alert-banner__icon', alert.tier === 'late' && 'alert-banner__icon--pulse')}>
-            {ICONS[alert.tier]}
+          <span aria-hidden className={cn('alert-banner__icon', tier === 'late' && 'alert-banner__icon--pulse')}>
+            {ICONS[tier]}
           </span>
           <p className="alert-banner__message">{message}</p>
           {action?.kind === 'focus' && (
             <button type="button" onClick={onFocusClick} className="alert-banner__action">
-              {tm(action.label)}
+              {label}
             </button>
           )}
-          {action?.kind === 'link' && (
-            <Link href={action.href} className="alert-banner__action">
-              {tm(action.label)}
+          {href !== null && (
+            <Link href={href} className="alert-banner__action">
+              {label}
             </Link>
           )}
         </motion.div>

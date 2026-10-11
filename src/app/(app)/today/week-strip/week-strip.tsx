@@ -22,12 +22,14 @@ export const WeekStrip = (props: WeekStripProps) => {
       <h2 className="week-strip__title">{t('thisWeek')}</h2>
       <ul className="week-strip__days">
         {strip.map(d => {
+          const { date: dayDate } = d;
+
           return (
-            <li key={d.date} className="week-strip__day">
+            <li key={dayDate} className="week-strip__day">
               <span aria-hidden className="week-strip__initial">
-                {formatCalendarDate(d.date, { weekday: 'narrow' })}
+                {formatCalendarDate(dayDate, { weekday: 'narrow' })}
               </span>
-              <DayCell d={d} viewed={d.date === date} today={today} />
+              <DayCell d={d} viewed={dayDate === date} today={today} />
             </li>
           );
         })}

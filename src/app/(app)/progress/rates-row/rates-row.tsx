@@ -17,24 +17,26 @@ export const RatesRow = (props: RatesRowProps) => {
   const t = useTranslations('progress.rates');
   const tm = useMsg();
 
+  const { icon, color, name, archived, current, longest, rate } = habit;
+
   return (
     <li className="rates-row">
       <span
         aria-hidden
         className="rates-row__icon"
-        style={{ backgroundColor: `color-mix(in oklab, ${habitColor(habit.color)} 22%, var(--surface))` }}
+        style={{ backgroundColor: `color-mix(in oklab, ${habitColor(color)} 22%, var(--surface))` }}
       >
-        {habit.icon}
+        {icon}
       </span>
       <p className="rates-row__name">
-        {habit.name}
-        {habit.archived && <span className="rates-row__archived">{t('archived')}</span>}
+        {name}
+        {archived && <span className="rates-row__archived">{t('archived')}</span>}
       </p>
-      <p className="rates-row__streak">{habit.current ? tm(streakMsg(habit.current)) : t('noStreak')}</p>
+      <p className="rates-row__streak">{current ? tm(streakMsg(current)) : t('noStreak')}</p>
       <p className="rates-row__best">
-        {habit.longest.count > 0 ? t('best', { length: tm(streakLengthMsg(habit.longest)) }) : t('bestNone')}
+        {longest.count > 0 ? t('best', { length: tm(streakLengthMsg(longest)) }) : t('bestNone')}
       </p>
-      <p className="rates-row__rate">{tm(percentMsg(habit.rate))}</p>
+      <p className="rates-row__rate">{tm(percentMsg(rate))}</p>
     </li>
   );
 };

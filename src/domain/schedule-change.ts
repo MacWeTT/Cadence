@@ -49,11 +49,13 @@ export const planScheduleChange = (input: {
   });
   const effective = nextEditDate(today, weekStartsOn);
 
+  const pendingCount = pending.length;
+
   if (current && same(current, desired)) {
-    return pending.length > 0 ? { action: 'delete_pending' } : { action: 'none' };
+    return pendingCount > 0 ? { action: 'delete_pending' } : { action: 'none' };
   }
 
-  if (pending.length === 1 && pending[0].effectiveFrom === effective && same(pending[0], desired)) {
+  if (pendingCount === 1 && pending[0].effectiveFrom === effective && same(pending[0], desired)) {
     return { action: 'none' };
   }
 

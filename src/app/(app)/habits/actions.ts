@@ -27,8 +27,8 @@ const describe = async (code: ErrorCode, fieldIssues?: Record<string, FieldIssue
     error: t(code),
     fieldErrors: fieldIssues
       ? Object.fromEntries(
-          Object.entries(fieldIssues).map(([field, issue]) => {
-            return [field, tv(issue.code, issue.values)];
+          Object.entries(fieldIssues).map(([field, { code, values }]) => {
+            return [field, tv(code, values)];
           }),
         )
       : undefined,
@@ -49,7 +49,9 @@ const run = async (work: () => Promise<void>): Promise<ActionResult> => {
     return { ok: true };
   } catch (e) {
     if (e instanceof HabitError) {
-      return describe(e.code, e.fieldIssues);
+      const { code, fieldIssues } = e;
+
+      return describe(code, fieldIssues);
     }
 
     console.error(e);
@@ -62,11 +64,13 @@ const parseInput = async (input: unknown) => {
   const { today } = await getProfile();
   const parsed = habitInputSchema(today).safeParse(input);
 
-  if (!parsed.success) {
-    throw new HabitError('fixFields', toFieldErrors(parsed.error));
+  const { success, data, error } = parsed;
+
+  if (!success) {
+    throw new HabitError('fixFields', toFieldErrors(error));
   }
 
-  return parsed.data;
+  return data;
 };
 
 export const createHabitAction = async (input: unknown): Promise<ActionResult> => {

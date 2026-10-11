@@ -47,7 +47,8 @@ export const getProfile = async (): Promise<Profile> => {
     throw error;
   }
 
-  const timezone = data && isValidTimeZone(data.timezone) ? data.timezone : 'UTC';
+  const stored = data?.timezone;
+  const timezone = stored && isValidTimeZone(stored) ? stored : 'UTC';
 
   return {
     timezone,
@@ -74,7 +75,7 @@ export const listHabits = async (): Promise<HabitsView> => {
   const ids = habits.map(h => {
     return h.id;
   });
-  const [schedules, completions] = await Promise.all([
+  const [{ data: scheduleRows, error: scheduleError }, completions] = await Promise.all([
     supabase.from('habit_schedules').select('*').in('habit_id', ids),
     // shortcut: fetches one row per tick just to know which habits have any (paged past the API's row cap); use a
     // count or an RPC when the volume grows.
@@ -89,8 +90,8 @@ export const listHabits = async (): Promise<HabitsView> => {
     }),
   ]);
 
-  if (schedules.error) {
-    throw schedules.error;
+  if (scheduleError) {
+    throw scheduleError;
   }
 
   const withTicks = new Set(
@@ -100,12 +101,14 @@ export const listHabits = async (): Promise<HabitsView> => {
   );
 
   const items = habits.map(h => {
+    const { id } = h;
+
     return toListItem(
       h,
-      schedules.data.filter(s => {
-        return s.habit_id === h.id;
+      scheduleRows.filter(s => {
+        return s.habit_id === id;
       }),
-      withTicks.has(h.id),
+      withTicks.has(id),
       profile.today,
     );
   });
@@ -123,24 +126,27 @@ export const listHabits = async (): Promise<HabitsView> => {
 
 // A Postgres exception raised by our functions (P0001) means the habit is missing, not yours, or in the wrong state.
 const failRpc = (error: { code?: string; message: string }): never => {
-  if (error.code === 'P0001') {
+  const { code, message } = error;
+
+  if (code === 'P0001') {
     throw new HabitError('habitChanged');
   }
 
-  throw new Error(error.message);
+  throw new Error(message);
 };
 
 export const createHabit = async (input: HabitInput): Promise<void> => {
+  const { name, description, icon, color, startDate, kind, timesPerWeek } = input;
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc('create_habit', {
-    p_name: input.name,
-    p_description: input.description ?? '',
-    p_icon: input.icon,
-    p_color: input.color,
-    p_start_date: input.startDate,
-    p_kind: input.kind,
+    p_name: name,
+    p_description: description ?? '',
+    p_icon: icon,
+    p_color: color,
+    p_start_date: startDate,
+    p_kind: kind,
     // The generated argument types are non-null, but the function accepts null for a daily habit.
-    p_times_per_week: (input.timesPerWeek ?? null) as number,
+    p_times_per_week: (timesPerWeek ?? null) as number,
   });
 
   if (error) {
@@ -149,6 +155,7 @@ export const createHabit = async (input: HabitInput): Promise<void> => {
 };
 
 export const updateHabit = async (id: string, input: HabitInput): Promise<void> => {
+  const { name, description, icon, color, startDate, kind, timesPerWeek } = input;
   const supabase = await createSupabaseServerClient();
   const { weekStartsOn, today } = await getProfile();
 
@@ -166,20 +173,20 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
     throw new HabitError('editArchived');
   }
 
-  const first = await supabase
+  const { data: firstTicks, error: firstError } = await supabase
     .from('habit_completions')
     .select('completion_date')
     .eq('habit_id', id)
     .order('completion_date')
     .limit(1);
 
-  if (first.error) {
-    throw first.error;
+  if (firstError) {
+    throw firstError;
   }
 
-  const firstTick = first.data[0]?.completion_date;
+  const firstTick = firstTicks[0]?.completion_date;
 
-  if (firstTick && input.startDate > firstTick) {
+  if (firstTick && startDate > firstTick) {
     throw new HabitError('checkStartDate', {
       startDate: { code: 'startAfterFirstTick', values: { date: formatCalendarDate(firstTick) } },
     });
@@ -187,30 +194,23 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
 
   const { error: updateError } = await supabase
     .from('habits')
-    .update({
-      name: input.name,
-      description: input.description || null,
-      icon: input.icon,
-      color: input.color,
-      start_date: input.startDate,
-    })
+    .update({ name, description: description || null, icon, color, start_date: startDate })
     .eq('id', id);
 
   if (updateError) {
     throw updateError;
   }
 
-  const rows = await supabase.from('habit_schedules').select('*').eq('habit_id', id);
+  const { data: rows, error: rowsError } = await supabase.from('habit_schedules').select('*').eq('habit_id', id);
 
-  if (rows.error) {
-    throw rows.error;
+  if (rowsError) {
+    throw rowsError;
   }
 
   const plan = planScheduleChange({
-    schedules: rows.data.map(toSchedule),
-    desired:
-      input.kind === 'daily' ? { kind: 'daily' } : { kind: 'weekly_count', timesPerWeek: input.timesPerWeek ?? 1 },
-    startDate: input.startDate,
+    schedules: rows.map(toSchedule),
+    desired: kind === 'daily' ? { kind: 'daily' } : { kind: 'weekly_count', timesPerWeek: timesPerWeek ?? 1 },
+    startDate,
     today,
     weekStartsOn,
     hasCompletions: firstTick !== undefined,

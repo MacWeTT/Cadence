@@ -18,22 +18,23 @@ export const RatesCard = (props: RatesCardProps) => {
   const t = useTranslations('progress.rates');
   const tm = useMsg();
 
+  const { range, rate, selectedId, habits } = view;
+  const { done, expected } = rate;
+
   return (
     <ProgressCard labelledBy="rate-heading">
       <div className="rates-card__top">
         <div>
           <h2 id="rate-heading" className="rates-card__title">
-            {t('title', { range: view.range })}
+            {t('title', { range })}
           </h2>
-          <p className="rates-card__percent">{tm(percentMsg(view.rate))}</p>
-          {view.rate.expected > 0 && (
-            <p className="rates-card__detail">{t('detail', { done: view.rate.done, expected: view.rate.expected })}</p>
-          )}
+          <p className="rates-card__percent">{tm(percentMsg(rate))}</p>
+          {expected > 0 && <p className="rates-card__detail">{t('detail', { done, expected })}</p>}
         </div>
         <nav aria-label={t('period')} className="rates-card__periods">
           {RANGES.map(r => {
             return (
-              <ChipLink key={r} href={progressHref(view.selectedId, r)} active={view.range === r}>
+              <ChipLink key={r} href={progressHref(selectedId, r)} active={range === r}>
                 {r === 365 ? t('year') : t('days', { range: r })}
               </ChipLink>
             );
@@ -42,7 +43,7 @@ export const RatesCard = (props: RatesCardProps) => {
       </div>
 
       <ul className="rates-card__list">
-        {view.habits.map(h => {
+        {habits.map(h => {
           return <RatesRow key={h.id} habit={h} />;
         })}
       </ul>

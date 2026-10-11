@@ -31,6 +31,8 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
   const ta = useTranslations('common.actions');
   const deleting = useRef(false);
 
+  const { id, name } = habit;
+
   const confirm = async () => {
     if (deleting.current) {
       return;
@@ -38,7 +40,7 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
 
     deleting.current = true;
     setBusy(true);
-    const result = await deleteHabitAction(habit.id);
+    const result = await deleteHabitAction(id);
 
     if (result.ok) {
       toast.success(t('toasts.deleted'));
@@ -68,7 +70,7 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
     <AlertDialog open onOpenChange={onOpenChange}>
       <AlertDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t('delete.title', { name: habit.name })}</AlertDialogTitle>
+          <AlertDialogTitle>{t('delete.title', { name })}</AlertDialogTitle>
           <AlertDialogDescription>{t('delete.description')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

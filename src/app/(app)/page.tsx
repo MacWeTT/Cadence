@@ -16,14 +16,16 @@ export default HomePage;
 
 const HomeContent = async () => {
   const { entries, ctx, profile } = await loadHabitData();
+  const { today, weekStartsOn } = ctx;
+  const { displayName, timezone } = profile;
 
   return (
     <HomeClient
       home={buildHomeView(entries, ctx)}
-      today={ctx.today}
-      name={profile.displayName}
-      timezone={profile.timezone}
-      weekStartsOn={ctx.weekStartsOn}
+      today={today}
+      name={displayName}
+      timezone={timezone}
+      weekStartsOn={weekStartsOn}
     />
   );
 };

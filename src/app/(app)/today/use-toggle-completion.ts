@@ -17,8 +17,8 @@ export const useToggleCompletion = (view: TodayView, date: CalendarDate) => {
 
   // The optimistic view reverts by itself when the transition ends: to the server's new view after a refresh, or to
   // the old one if the save failed.
-  const [shown, showToggle] = useOptimistic(view, (current, change: { id: string; ticked: boolean }) => {
-    return applyToggle(current, change.id, change.ticked);
+  const [shown, showToggle] = useOptimistic(view, (current, { id, ticked }: { id: string; ticked: boolean }) => {
+    return applyToggle(current, id, ticked);
   });
 
   const inFlight = useRef(new Set<string>()); // a ref as well, so two taps in one render still send one request
@@ -48,20 +48,22 @@ export const useToggleCompletion = (view: TodayView, date: CalendarDate) => {
   }, []);
 
   const toggle = (row: TodayRow) => {
-    if (inFlight.current.has(row.id)) {
+    const { id, ticked: wasTicked } = row;
+
+    if (inFlight.current.has(id)) {
       return;
     }
 
-    inFlight.current.add(row.id);
-    focusId.current = row.id;
+    inFlight.current.add(id);
+    focusId.current = id;
     setSaving(new Set(inFlight.current));
-    const ticked = !row.ticked;
+    const ticked = !wasTicked;
 
     startTransition(async () => {
-      showToggle({ id: row.id, ticked });
+      showToggle({ id: id, ticked });
 
       try {
-        const result = await setCompletionAction(row.id, date, ticked);
+        const result = await setCompletionAction(id, date, ticked);
 
         if (!result.ok) {
           toast.error(result.error);
@@ -69,7 +71,7 @@ export const useToggleCompletion = (view: TodayView, date: CalendarDate) => {
       } catch {
         toast.error(t('saveFailed'));
       } finally {
-        inFlight.current.delete(row.id);
+        inFlight.current.delete(id);
         setSaving(new Set(inFlight.current));
       }
     });

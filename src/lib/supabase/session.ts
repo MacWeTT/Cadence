@@ -10,23 +10,26 @@ const PUBLIC_PATHS = ['/login', '/auth'];
  */
 export const updateSession = async (request: NextRequest): Promise<NextResponse> => {
   const { url, key } = supabaseConfig();
+  const { cookies, nextUrl } = request;
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(url, key, {
     cookies: {
-      getAll: () => {return request.cookies.getAll()},
+      getAll: () => {return cookies.getAll()},
       setAll(toSet, headers) {
-        toSet.forEach(({ name, value }) => {return request.cookies.set(name, value)});
+        toSet.forEach(({ name, value }) => {return cookies.set(name, value)});
         response = NextResponse.next({ request });
-        toSet.forEach(({ name, value, options }) => {return response.cookies.set(name, value, options)});
-        Object.entries(headers).forEach(([k, v]) => {return response.headers.set(k, v)});
+        const { cookies: responseCookies, headers: responseHeaders } = response;
+
+        toSet.forEach(({ name, value, options }) => {return responseCookies.set(name, value, options)});
+        Object.entries(headers).forEach(([k, v]) => {return responseHeaders.set(k, v)});
       },
     },
   });
 
   const { data } = await supabase.auth.getClaims();
   const signedIn = Boolean(data?.claims);
-  const { pathname } = request.nextUrl;
+  const { pathname } = nextUrl;
   const isPublic = PUBLIC_PATHS.some((p) => {return pathname === p || pathname.startsWith(`${p}/`)});
 
   if (!signedIn && !isPublic) {return redirectTo(request, '/login');}

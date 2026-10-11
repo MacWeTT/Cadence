@@ -65,26 +65,28 @@ const toGreeting = (id: string, name: string | null): Greeting => {
 
 /** The lines that suit this moment. */
 const poolFor = (ctx: GreetingContext): string[] => {
-  if (ctx.allDone) {
+  const { allDone, noneDone, hour, weekday } = ctx;
+
+  if (allDone) {
     return ALL_DONE;
   }
 
   return [
-    ...BY_DAY_PART[dayPart(ctx.hour)],
-    ...(BY_WEEKDAY[ctx.weekday] ? [BY_WEEKDAY[ctx.weekday]] : []),
-    ...(ctx.noneDone && ctx.hour >= 12 ? [FRESH_PAGE] : []),
+    ...BY_DAY_PART[dayPart(hour)],
+    ...(BY_WEEKDAY[weekday] ? [BY_WEEKDAY[weekday]] : []),
+    ...(noneDone && hour >= 12 ? [FRESH_PAGE] : []),
   ];
 };
 
 /** `random` returns a number in [0, 1); it is injected so the choice can be tested. `lastId` is never repeated. */
 export const pickGreeting = (ctx: GreetingContext, random: () => number, lastId?: string | null): Greeting => {
-  let pool = poolFor(ctx);
-
-  if (pool.length > 1) {
-    pool = pool.filter(id => {
-      return id !== lastId;
-    });
-  }
+  const candidates = poolFor(ctx);
+  const pool =
+    candidates.length > 1
+      ? candidates.filter(id => {
+          return id !== lastId;
+        })
+      : candidates;
 
   return toGreeting(pool[Math.floor(random() * pool.length)], ctx.name);
 };
@@ -110,10 +112,11 @@ export const chooseGreeting = (
   }
 
   // "Fresh page" is kept after the first tick: ticking must not reshuffle the greeting.
+  const { id: storedId } = stored;
   const keep = poolFor({ ...ctx, noneDone: true }).find(id => {
-    return id === stored.id;
+    return id === storedId;
   });
-  const greeting = keep ? toGreeting(keep, ctx.name) : pickGreeting(ctx, random, stored.id);
+  const greeting = keep ? toGreeting(keep, ctx.name) : pickGreeting(ctx, random, storedId);
 
   try {
     storage?.setItem(STORAGE_KEY, JSON.stringify({ id: greeting.id }));

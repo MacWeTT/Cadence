@@ -26,9 +26,12 @@ export const TodayClient = (props: TodayClientProps) => {
   const t = useTranslations('today');
   const tc = useTranslations('common.emptyHabits');
   const { shown, saving, toggle } = useToggleCompletion(view, date);
+  const { todo, done: finished, strip } = shown;
 
   const isToday = date === today;
-  const nothingListed = shown.todo.length === 0 && shown.done.length === 0;
+  const todoCount = todo.length;
+  const doneCount = finished.length;
+  const nothingListed = todoCount === 0 && doneCount === 0;
 
   return (
     <>
@@ -62,14 +65,14 @@ export const TodayClient = (props: TodayClientProps) => {
               <p className="today__note">{t('noneThisDay')}</p>
             ) : (
               <>
-                {shown.todo.length === 0 && (
+                {todoCount === 0 && (
                   <p className="today__note">{isToday ? t('nothingLeftToday') : t('nothingLeftThisDay')}</p>
                 )}
-                <CheckSection id="todo-heading" title={t('todo')} rows={shown.todo} saving={saving} onToggle={toggle} />
+                <CheckSection id="todo-heading" title={t('todo')} rows={todo} saving={saving} onToggle={toggle} />
                 <CheckSection
                   id="done-heading"
                   title={isToday ? t('doneToday') : t('done')}
-                  rows={shown.done}
+                  rows={finished}
                   saving={saving}
                   onToggle={toggle}
                 />
@@ -77,13 +80,7 @@ export const TodayClient = (props: TodayClientProps) => {
             )}
           </div>
           <div className="today__side">
-            <DayCard
-              done={shown.done.length}
-              total={shown.done.length + shown.todo.length}
-              strip={shown.strip}
-              date={date}
-              today={today}
-            />
+            <DayCard done={doneCount} total={doneCount + todoCount} strip={strip} date={date} today={today} />
           </div>
         </div>
       )}

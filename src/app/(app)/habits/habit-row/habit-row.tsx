@@ -40,7 +40,7 @@ export const HabitRow = (props: HabitRowProps) => {
   const tm = useMsg();
   const menuButton = useRef<HTMLButtonElement>(null);
 
-  const pending = habit.pendingSchedule;
+  const { icon, color, name, description, schedule, pendingSchedule: pending } = habit;
   const archived = archivedOn !== undefined;
 
   const onRestore = () => {
@@ -64,20 +64,20 @@ export const HabitRow = (props: HabitRowProps) => {
       <span
         aria-hidden
         className="habit-row__icon"
-        style={{ backgroundColor: `color-mix(in oklab, ${habitColor(habit.color)} 22%, var(--surface))` }}
+        style={{ backgroundColor: `color-mix(in oklab, ${habitColor(color)} 22%, var(--surface))` }}
       >
-        {habit.icon}
+        {icon}
       </span>
       <div className="habit-row__body">
-        <p className="habit-row__name">{habit.name}</p>
+        <p className="habit-row__name">{name}</p>
         {archived ? (
           <p className="habit-row__note">{t('archivedOn', { date: archivedOn })}</p>
         ) : (
-          habit.description && <p className="habit-row__note">{habit.description}</p>
+          description && <p className="habit-row__note">{description}</p>
         )}
       </div>
       <div className="habit-row__schedule">
-        <span className="habit-row__badge">{tm(scheduleMsg(habit.schedule))}</span>
+        <span className="habit-row__badge">{tm(scheduleMsg(schedule))}</span>
         {pending && !archived && (
           <p className="habit-row__pending">
             {t('pendingChange', {
@@ -92,7 +92,7 @@ export const HabitRow = (props: HabitRowProps) => {
           <button
             ref={menuButton}
             type="button"
-            aria-label={t('actionsFor', { name: habit.name })}
+            aria-label={t('actionsFor', { name: name })}
             className="habit-row__menu"
           >
             <Ellipsis className="habit-row__menu-icon" aria-hidden />

@@ -38,6 +38,7 @@ export const ProgressContent = async (props: ProgressContentProps) => {
   }
 
   const view = buildProgress(entries, habit, parseRange(rangeParam), ctx);
+  const { selectedId, range, weekly, monthly } = view;
 
   return (
     <div className="progress-content">
@@ -45,29 +46,29 @@ export const ProgressContent = async (props: ProgressContentProps) => {
         habits={entries.map(e => {
           return e.habit;
         })}
-        selectedId={view.selectedId}
-        range={view.range}
+        selectedId={selectedId}
+        range={range}
       />
       <YearCard view={view} />
       <RatesCard view={view} />
       <div className="progress-content__bars">
         <BarsCard
           title={t('bars.perWeek')}
-          rows={view.weekly.map(w => {
+          rows={weekly.map(({ start, count }) => {
             return {
-              key: w.start,
-              label: formatCalendarDate(w.start, { day: 'numeric', month: 'short' }),
-              count: w.count,
+              key: start,
+              label: formatCalendarDate(start, { day: 'numeric', month: 'short' }),
+              count,
             };
           })}
         />
         <BarsCard
           title={t('bars.perMonth')}
-          rows={view.monthly.map(m => {
+          rows={monthly.map(({ month, count }) => {
             return {
-              key: m.month,
-              label: formatCalendarDate(`${m.month}-01`, { month: 'short' }),
-              count: m.count,
+              key: month,
+              label: formatCalendarDate(`${month}-01`, { month: 'short' }),
+              count,
             };
           })}
         />
