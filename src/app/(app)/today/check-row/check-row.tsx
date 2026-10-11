@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
-import { streakMsg, weekMsg } from '@/lib/today-labels';
+import { streakMsg, weekMsg, yearMsg } from '@/lib/today-labels';
 import { cn } from '@/lib/utils';
 import type { TodayRow } from '@/server/today-view';
 import './check-row.css';
@@ -23,7 +23,7 @@ export const CheckRow = (props: CheckRowProps) => {
   const t = useTranslations('today.row');
   const tm = useMsg();
 
-  const { id, ticked, name, icon, color, week, streak } = row;
+  const { id, ticked, name, icon, color, week, streak, year } = row;
 
   const onClick = () => {
     onToggle(row);
@@ -62,6 +62,7 @@ export const CheckRow = (props: CheckRowProps) => {
         {week && <span>{tm(weekMsg(week))}</span>}
         {week && streak && <span aria-hidden>{'·'}</span>}
         {streak && <span>{tm(streakMsg(streak))}</span>}
+        {year !== undefined && <span>{tm(yearMsg(year))}</span>}
       </div>
     </motion.li>
   );

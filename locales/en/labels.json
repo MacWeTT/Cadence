@@ -5,6 +5,7 @@
     "lengthDays": "{count, plural, one {# day} other {# days}}",
     "lengthWeeks": "{count, plural, one {# week} other {# weeks}}"
   },
+  "year": "{count, plural, one {# time} other {# times}} this year",
   "week": {
     "progress": "{done} of {target} this week",
     "goalMet": "Goal met"
