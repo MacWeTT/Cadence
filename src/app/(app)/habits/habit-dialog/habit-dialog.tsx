@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
     return initialHabitForm(habit, today);
   });
 
+  const queryClient = useQueryClient();
   const t = useTranslations('habits');
   const ta = useTranslations('common.actions');
   const [pending, startTransition] = useTransition();
@@ -100,6 +102,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
       if (result.ok) {
         toast.success(habit ? t('toasts.saved') : t('toasts.created'));
+        void queryClient.invalidateQueries();
         onClose();
 
         return;

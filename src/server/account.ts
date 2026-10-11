@@ -8,3 +8,8 @@ export const getAccountContact = async (): Promise<{ name: string; email: string
 
   return { name: full_name ?? '', email: user?.email ?? '' };
 };
+
+/** Whether a verified user is signed in (for the endpoints the browser's cache reads from). */
+export const isSignedIn = async (): Promise<boolean> => {
+  return Boolean(await getUser());
+};
