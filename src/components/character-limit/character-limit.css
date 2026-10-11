@@ -1,0 +1,43 @@
+@reference '../../app/globals.css';
+
+.character-limit {
+  @apply relative flex items-center gap-2;
+}
+
+.character-limit__ring {
+  @apply size-6 -rotate-90 transition-[width,height] duration-200;
+}
+
+.character-limit--close .character-limit__ring {
+  @apply size-7;
+}
+
+.character-limit__track {
+  @apply fill-none stroke-line stroke-2;
+}
+
+.character-limit__bar {
+  @apply fill-none stroke-primary stroke-2 transition-colors;
+  stroke-linecap: round;
+}
+
+.character-limit--warn .character-limit__bar {
+  stroke: var(--habit-ochre);
+}
+
+.character-limit--full .character-limit__bar {
+  @apply stroke-danger;
+}
+
+.character-limit--warn .character-limit__remaining {
+  color: var(--habit-ochre);
+}
+
+.character-limit__remaining {
+  @apply text-sm tabular-nums;
+}
+
+/* The note above the ring when the limit is reached, right-aligned with it. */
+.character-limit__tooltip {
+  @apply absolute right-0 bottom-full mb-2 rounded-md bg-ink px-2.5 py-1 text-xs whitespace-nowrap text-bg shadow-sm;
+}

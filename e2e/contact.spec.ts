@@ -155,3 +155,28 @@ test.describe('with motion, arriving from another page', () => {
     ).toBe(false);
   });
 });
+
+test('the message is capped at 1000 characters, and a ring counts down to it like a tweet', async ({ page }) => {
+  await page.goto('/contact');
+
+  const message = page.getByLabel('Your message');
+  const limit = page.getByRole('img', { name: /characters left/ });
+
+  await expect(limit).toHaveAttribute('aria-label', '1000 characters left');
+
+  await message.fill('x'.repeat(985));
+  await expect(limit).toHaveAttribute('aria-label', '15 characters left');
+  await expect(page.locator('.character-limit__remaining')).toHaveText('15');
+  await expect(limit).toHaveClass(/character-limit--warn/);
+  await expect(page.getByRole('tooltip')).toHaveCount(0);
+
+  await message.fill('y'.repeat(1300));
+  await expect(message).toHaveValue('y'.repeat(1000));
+  await expect(limit).toHaveAttribute('aria-label', '0 characters left');
+  await expect(limit).toHaveClass(/character-limit--full/);
+  await expect(page.getByRole('tooltip')).toHaveText('Limit reached: 1000 characters');
+
+  await message.fill('z'.repeat(500));
+  await expect(limit).not.toHaveClass(/character-limit--(warn|full)/);
+  await expect(page.getByRole('tooltip')).toHaveCount(0);
+});

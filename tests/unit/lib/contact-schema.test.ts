@@ -40,10 +40,10 @@ describe('contactInputSchema', () => {
     expect(result.success && result.data).toMatchObject({ name: null, email: null });
   });
 
-  it('needs a message, and at most 2000 characters of it', () => {
+  it('needs a message, and at most 1000 characters of it', () => {
     expect(parse({ message: '   ', anonymous: true }).error?.issues[0].message).toBe('messageRequired');
-    expect(parse({ message: 'x'.repeat(2001), anonymous: true }).error?.issues[0].message).toBe('messageTooLong');
-    expect(parse({ message: 'x'.repeat(2000), anonymous: true }).success).toBe(true);
+    expect(parse({ message: 'x'.repeat(1001), anonymous: true }).error?.issues[0].message).toBe('messageTooLong');
+    expect(parse({ message: 'x'.repeat(1000), anonymous: true }).success).toBe(true);
   });
 
   it('limits the name to 80 characters', () => {
