@@ -1,10 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo/logo';
+import { NavLink } from '@/components/nav-link/nav-link';
 import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
 import './top-bar.css';
 
@@ -21,32 +19,20 @@ interface TopBarProps {
 export const TopBar = (props: TopBarProps) => {
   const { menu } = props;
 
-  const pathname = usePathname();
   const t = useTranslations('common');
 
   return (
     <header className="top-bar">
       <div className="top-bar__inner">
-        <Link
-          href="/"
-          aria-current={pathname === '/' ? 'page' : undefined}
-          className={cn('top-bar__logo', pathname === '/' && 'top-bar__logo--current')}
-        >
+        <NavLink href="/" group="top-nav" className="top-bar__logo">
           <Logo />
-        </Link>
+        </NavLink>
         <nav className="top-bar__nav">
           {links.map(({ href, name }) => {
-            const active = pathname === href;
-
             return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? 'page' : undefined}
-                className={cn('top-bar__link', active && 'top-bar__link--active')}
-              >
+              <NavLink key={href} href={href} group="top-nav">
                 {t(`nav.${name}`)}
-              </Link>
+              </NavLink>
             );
           })}
         </nav>

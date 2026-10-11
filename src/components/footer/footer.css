@@ -9,7 +9,12 @@
 }
 
 .footer__nav {
-  @apply flex gap-6;
+  @apply flex items-center gap-1;
+}
+
+/* Matches the padding of the nav links (which hold the highlight) so the row stays evenly spaced. */
+.footer__contact {
+  @apply px-3 py-1.5;
 }
 
 .footer__link {
