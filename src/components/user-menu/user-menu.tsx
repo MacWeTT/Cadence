@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { InstallMenuItem } from '@/components/install-menu-item/install-menu-item';
 import { getUser } from '@/lib/supabase/server';
 import './user-menu.css';
 
@@ -48,6 +49,7 @@ export const UserMenu = async () => {
             {t('appearance')}
           </Link>
         </DropdownMenuItem>
+        <InstallMenuItem />
         <form action={signOut}>
           <DropdownMenuItem asChild>
             <button type="submit" className="user-menu__sign-out">

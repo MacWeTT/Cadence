@@ -31,6 +31,11 @@
     "save": "Save",
     "newHabit": "New habit"
   },
+  "install": {
+    "app": "Install app",
+    "ios": "Add to Home Screen",
+    "iosHelp": "In Safari, tap the Share button, then \"Add to Home Screen\"."
+  },
   "emptyHabits": {
     "title": "No habits yet",
     "text": "Create a habit and it will show up here, ready to tick off.",
