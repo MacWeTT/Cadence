@@ -17,7 +17,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | Version | Feature | Notes |
 |---|---|---|
 | 0.6 | PWA: installable, app icon, offline page | built (PR #51); the service worker is shared with push later |
-| (after 0.6, version to be placed) | Responsive pass: every page fits phones and tablets (portrait and landscape), with touch-sized targets and no horizontal scroll | before the profile page, by decision on 2026-10-11 |
+| 0.6.3 | Responsive pass: every page fits phones and tablets (portrait and landscape), with touch-sized targets and no horizontal scroll | before the profile page (0.6.5), by decision on 2026-10-11 |
 | 0.6.5 | Full profile page | proposed contents: name, avatar, timezone, week start, data export, delete account |
 | 0.7 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
 | 0.7 | Focus sessions: a timer per habit | timestamp-based; finishing asks "I did it" before ticking; open: one timer or 25/5 cycles, a target length per habit or chosen at start |
