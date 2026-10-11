@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "habit_archive_periods": {
+            "contact_messages": {
+                  Row: {
+                    "anonymous": boolean,"created_at": string,"email": string | null,"id": string,"message": string,"name": string | null,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "anonymous"?: boolean,"created_at"?: string,"email"?: string | null,"id"?: string,"message": string,"name"?: string | null,"user_id"?: string | null
+                  }
+                  Update: {
+                    "anonymous"?: boolean,"created_at"?: string,"email"?: string | null,"id"?: string,"message"?: string,"name"?: string | null,"user_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"habit_archive_periods": {
                   Row: {
                     "archived_on": string,"habit_id": string,"id": string,"restored_on": string | null
                   }

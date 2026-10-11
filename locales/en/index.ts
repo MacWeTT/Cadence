@@ -4,6 +4,7 @@ import appearance from './appearance.json';
 import auth from './auth.json';
 import changelog from './changelog.json';
 import common from './common.json';
+import contact from './contact.json';
 import errors from './errors.json';
 import footer from './footer.json';
 import greeting from './greeting.json';
@@ -23,6 +24,7 @@ const en = {
   auth,
   changelog,
   common,
+  contact,
   errors,
   footer,
   greeting,

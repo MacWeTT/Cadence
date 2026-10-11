@@ -48,6 +48,14 @@ Until 1.0 Cadence is in beta: `develop` deploys on every merge, and a version is
 - To cut a release: bump `version` in `package.json`, add a heading for it in `CHANGELOG.md` (`## 0.3.6 (2026-10-11)`) with the features it added and remove those lines from *Planned*, merge that PR, then tag the merge commit and publish a release: `git tag -a v0.3.6 <merge-sha> -m "..." && git push origin v0.3.6`, then `gh release create v0.3.6 --prerelease`. The changelog is public (the What's new page): features only, nothing internal or sensitive, and no version numbers on *Planned* items.
 - To go back to a release in a hurry, use Instant Rollback (above). To go back in the code, open a PR into `develop` that reverts the bad merge: `git revert -m 1 <merge-sha>`. Compare with the last tag to see what changed: `git diff v0.3.0..develop`.
 
+## Contact form
+
+The contact page saves every message in the `contact_messages` table (Supabase dashboard: Table Editor; only the dashboard and the service key can read it, the app and the sender cannot) and emails it to you with [Resend](https://resend.com). The email is optional: without the three variables below the message is still saved.
+
+- `RESEND_API_KEY`: an API key from Resend. `CONTACT_TO_EMAIL`: where messages go. `CONTACT_FROM_EMAIL`: the sender, such as `Cadence <hello@your-domain>` (verify the domain in Resend), or `Cadence <onboarding@resend.dev>` for a test when the destination is your own Resend email.
+- Put them in `.env.local` and in Vercel (Project settings, Environment Variables, Production). Never commit them or paste them in chat.
+- An anonymous message is stored with no name, email or account, and the email says it is anonymous.
+
 ## What is not verified
 
 This pipeline has never run, because it needs the accounts above. The first run may need a small adjustment (for example a Supabase CLI flag). Check the **Migrate** step's dry-run output on the first deploy before trusting it.

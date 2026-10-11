@@ -8,5 +8,8 @@
   "timesOnDaily": "A daily habit has no weekly count",
   "dateInvalid": "Enter a valid date",
   "startRange": "The start date can be any day up to today",
-  "startAfterFirstTick": "The start date can't be after your first check-in on {date}."
+  "startAfterFirstTick": "The start date can't be after your first check-in on {date}.",
+  "messageRequired": "Write a message first",
+  "messageTooLong": "Keep the message to 2000 characters or fewer",
+  "emailInvalid": "Enter a valid email address, or leave it empty"
 }

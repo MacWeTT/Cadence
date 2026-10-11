@@ -6,7 +6,7 @@ test('every app page ends with a footer: about, contact and who built it', async
   const footer = page.getByRole('contentinfo');
 
   await expect(footer.getByRole('link', { name: 'About' })).toBeVisible();
-  await expect(footer.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', /github\.com\/MacWeTT/);
+  await expect(footer.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/contact');
   await expect(footer.getByRole('link', { name: 'MacWeTT' })).toBeVisible();
   await expect(footer).toContainText('Developed by MacWeTT');
   await expect(footer).toContainText('Version 0.3.5');

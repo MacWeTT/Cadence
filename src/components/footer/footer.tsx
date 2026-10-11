@@ -25,9 +25,9 @@ export const Footer = () => {
           <NavLink href="/about" group="footer-nav">
             {t('about')}
           </NavLink>
-          <a href={DEVELOPER.url} target="_blank" rel="noreferrer" className="footer__link footer__contact">
+          <NavLink href="/contact" group="footer-nav">
             {t('contact')}
-          </a>
+          </NavLink>
         </nav>
       </div>
     </footer>

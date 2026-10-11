@@ -1,0 +1,50 @@
+@reference '../../../globals.css';
+
+.contact-form {
+  @apply space-y-5;
+}
+
+.contact-form__message {
+  @apply mt-1 h-40;
+}
+
+.contact-form__hint {
+  @apply mt-1 block text-sm text-ink-muted;
+}
+
+.contact-form__anonymous {
+  @apply flex cursor-pointer items-start gap-3;
+}
+
+.contact-form__checkbox {
+  @apply mt-1 size-4 accent-primary;
+}
+
+.contact-form__anonymous-label {
+  @apply block font-medium;
+}
+
+.contact-form__who {
+  @apply grid items-start gap-4 sm:grid-cols-2;
+}
+
+/* Off the page, not display: none, which some bots skip. */
+.contact-form__trap {
+  @apply absolute -left-2499.75 h-0 w-0 opacity-0;
+}
+
+.contact-form__send {
+  @apply w-full sm:w-auto;
+}
+
+.contact-form__thanks {
+  @apply rounded-2xl border border-line bg-surface p-8 text-center;
+}
+
+.contact-form__thanks-title {
+  @apply font-display text-2xl;
+}
+
+.contact-form__thanks-text {
+  @apply mt-2 mb-5 text-ink-muted;
+}
