@@ -1,0 +1,5 @@
+@reference '../../app/globals.css';
+
+.animated-error {
+  @apply overflow-hidden pt-1 text-sm text-danger;
+}

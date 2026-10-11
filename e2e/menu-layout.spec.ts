@@ -40,3 +40,12 @@ test('opening a dialog does not move or resize the page either', async ({ page }
 
   expect(Math.round(after!.width)).toBe(Math.round(before!.width));
 });
+
+test('the habit description box has a fixed size too: no resize handle', async ({ page }) => {
+  await page.goto('/habits');
+  await page.getByRole('button', { name: 'New habit' }).first().click();
+  await expect(page.getByLabel('Description (optional)').or(page.locator('#habit-description'))).toHaveCSS(
+    'resize',
+    'none',
+  );
+});

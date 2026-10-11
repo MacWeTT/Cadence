@@ -215,3 +215,21 @@ export const setWeekStartForTests = async (): Promise<void> => {
     throw error;
   }
 };
+
+export const clearContactMessages = async (): Promise<void> => {
+  const { error } = await adminClient().from('contact_messages').delete().not('id', 'is', null);
+
+  if (error) {
+    throw error;
+  }
+};
+
+export const getContactMessages = async () => {
+  const { data, error } = await adminClient().from('contact_messages').select('*').order('created_at');
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};

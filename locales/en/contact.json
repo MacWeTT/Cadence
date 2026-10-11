@@ -1,0 +1,17 @@
+{
+  "pageTitle": "Contact",
+  "title": "Contact",
+  "intro": "Found a bug, have an idea, or just want to say hi? Write to me here. I read every message.",
+  "message": "Your message",
+  "messageHint": "{count} of 2000",
+  "anonymous": "Send anonymously",
+  "anonymousHint": "Your name, email and account are not attached to the message. I won't be able to answer.",
+  "name": "Your name (optional)",
+  "email": "Your email (optional)",
+  "emailHint": "So I can answer you.",
+  "send": "Send message",
+  "sending": "Sending…",
+  "thanksTitle": "Thanks, it's on its way",
+  "thanksText": "I'll read it soon.",
+  "again": "Write another"
+}

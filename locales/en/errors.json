@@ -10,5 +10,6 @@
   "fixFields": "Please fix the highlighted fields.",
   "habitChanged": "That habit could not be found, or it has already changed.",
   "deleteNeedsArchive": "Archive a habit before deleting it.",
-  "checkStartDate": "Check the start date."
+  "checkStartDate": "Check the start date.",
+  "contactFailed": "Couldn't send that. Try again in a moment."
 }

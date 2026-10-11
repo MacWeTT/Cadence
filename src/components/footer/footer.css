@@ -12,11 +12,6 @@
   @apply flex items-center gap-1;
 }
 
-/* Matches the padding of the nav links (which hold the highlight) so the row stays evenly spaced. */
-.footer__contact {
-  @apply px-3 py-1.5;
-}
-
 .footer__link {
   @apply rounded-sm underline-offset-4 hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-clay;
 }
