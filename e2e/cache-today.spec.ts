@@ -22,7 +22,7 @@ test('coming back to Today shows the cached day at once, with no skeleton', asyn
   await expect(page.getByRole('checkbox', { name: 'Mark Read done' })).toBeVisible();
 
   await page.getByRole('banner').getByRole('link', { name: 'Progress' }).click();
-  await expect(page.getByRole('heading', { name: 'Progress', level: 1 })).toBeVisible();
+  await expect(page.getByRole('region', { name: /Completion/ })).toBeVisible(); // Progress has finished loading
 
   await page.evaluate(() => {
     const w = window as unknown as { __sawSkeleton: boolean };
