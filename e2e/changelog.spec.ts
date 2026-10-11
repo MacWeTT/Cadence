@@ -12,7 +12,7 @@ test("the footer's What's new link opens the changelog: what each release added 
 
   const coming = page.getByRole('region', { name: 'Coming soon' });
 
-  await expect(coming).toContainText('The cache-first data layer');
+  await expect(coming).toContainText('Pages open instantly with your latest data');
 
   const release = page.getByRole('region', { name: 'Version 0.3.5' });
 
