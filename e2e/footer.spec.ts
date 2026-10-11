@@ -21,11 +21,3 @@ test('the About link opens the about page', async ({ page }) => {
   await expect(page).toHaveTitle('About · Cadence');
   await expect(page.locator('svg.about-illustration')).toBeVisible();
 });
-
-test('the footer and top bar have their own transition layer, so moving page content never draws over them', async ({
-  page,
-}) => {
-  await page.goto('/progress');
-  await expect(page.getByRole('contentinfo')).toHaveCSS('view-transition-name', 'site-footer');
-  await expect(page.getByRole('banner')).toHaveCSS('view-transition-name', 'site-header');
-});

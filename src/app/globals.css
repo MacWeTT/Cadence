@@ -259,26 +259,7 @@
   }
 }
 
-/*
- * The top bar and the footer are layers of their own, above the moving content: it slides under them, never over
- * them. They do not animate. The rest of the page (the root) does not crossfade either: only the named content moves.
- */
-::view-transition-group(site-header),
-::view-transition-group(site-footer) {
-  animation: none;
-  z-index: 100;
-}
-
-::view-transition-old(site-header),
-::view-transition-old(site-footer) {
-  display: none;
-}
-
-::view-transition-new(site-header),
-::view-transition-new(site-footer) {
-  animation: none;
-}
-
+/* The rest of the page (top bar, footer) does not crossfade: only the named content above moves. */
 ::view-transition-old(root) {
   display: none;
 }
