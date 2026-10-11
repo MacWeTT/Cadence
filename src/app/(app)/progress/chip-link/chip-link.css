@@ -1,7 +1,7 @@
 @reference '../../../globals.css';
 
 .chip-link {
-  @apply inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-sm hover:bg-line focus-visible:outline-2 focus-visible:outline-clay;
+  @apply inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-sm max-sm:min-h-10 hover:bg-line focus-visible:outline-2 focus-visible:outline-clay;
 }
 
 .chip-link--active {

@@ -24,6 +24,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 // The browser's address bar and the installed app's frame take the page background (see --bg in globals.css).
 export const viewport: Viewport = {
+  viewportFit: 'cover', // lets the layout use the whole screen and keep clear of notches with env(safe-area-inset-*)
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f3e8d3' },
     { media: '(prefers-color-scheme: dark)', color: '#1a1d21' },

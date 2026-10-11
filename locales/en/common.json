@@ -1,6 +1,8 @@
 {
   "brand": "Cadence",
   "nav": {
+    "label": "Main",
+    "home": "Home",
     "today": "Today",
     "habits": "Habits",
     "progress": "Progress"

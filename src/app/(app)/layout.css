@@ -2,7 +2,7 @@
 
 /* The footer sits at the bottom of the window even on a short page. */
 .app-layout {
-  @apply flex min-h-dvh flex-col;
+  @apply flex min-h-dvh flex-col max-sm:pb-[calc(3.6rem+env(safe-area-inset-bottom))];
 }
 
 .app-layout__avatar-fallback {
@@ -10,5 +10,5 @@
 }
 
 .app-layout__main {
-  @apply mx-auto flex w-full flex-1 flex-col max-w-295 px-8 py-10;
+  @apply mx-auto flex w-full flex-1 flex-col max-w-295 px-4 py-6 sm:px-8 sm:py-10;
 }

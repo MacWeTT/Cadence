@@ -12,8 +12,9 @@ interface HeatmapProps {
 /**
  * The past year as month blocks, LeetCode style: each month is its own run of week columns with its name beneath.
  * One grid with equal week columns (and a narrow spacer between months) shares the card's width, so every square is
- * the same size, the whole year always fits and nothing scrolls. The grid is a picture for the eye (the numbers are
- * in the cards around it, and each square names its day on hover).
+ * the same size and the whole year fits. On a phone that would make squares too small to see and month names run into
+ * each other, so there the grid keeps a readable width and scrolls sideways, starting at the latest weeks. The grid
+ * is a picture for the eye (the numbers are in the cards around it, and each square names its day on hover).
  */
 export const Heatmap = (props: HeatmapProps) => {
   const { months, single } = props;
@@ -33,49 +34,51 @@ export const Heatmap = (props: HeatmapProps) => {
   });
 
   return (
-    <div role="img" aria-label={t('heatmap')} className="heatmap" style={{ gridTemplateColumns: tracks }}>
-      {months.flatMap((block, k) => {
-        const first = starts[k];
-        const { columns, month } = block;
+    <div className="heatmap-scroll">
+      <div role="img" aria-label={t('heatmap')} className="heatmap" style={{ gridTemplateColumns: tracks }}>
+        {months.flatMap((block, k) => {
+          const first = starts[k];
+          const { columns, month } = block;
 
-        return [
-          ...columns.flatMap((column, i) => {
-            return column.map((cell, d) => {
-              if (cell === null) {
-                return null;
-              }
+          return [
+            ...columns.flatMap((column, i) => {
+              return column.map((cell, d) => {
+                if (cell === null) {
+                  return null;
+                }
 
-              const { date, done, expected, level } = cell;
-              const day = formatCalendarDate(date, { weekday: 'short', day: 'numeric', month: 'short' });
-              const title = single
-                ? done
-                  ? t('singleDone', { day })
-                  : t('singleNotDone', { day })
-                : t('cell', { day, done: done, total: Math.max(done, Math.round(expected)) });
+                const { date, done, expected, level } = cell;
+                const day = formatCalendarDate(date, { weekday: 'short', day: 'numeric', month: 'short' });
+                const title = single
+                  ? done
+                    ? t('singleDone', { day })
+                    : t('singleNotDone', { day })
+                  : t('cell', { day, done: done, total: Math.max(done, Math.round(expected)) });
 
-              return (
-                <div
-                  key={date}
-                  title={level === null ? undefined : title}
-                  className={cn('heatmap__cell', level === null && 'heatmap__cell--blank')}
-                  style={{
-                    gridColumn: first + i,
-                    gridRow: d + 1,
-                    ...(level === null ? {} : { backgroundColor: `var(--heat-${level})` }),
-                  }}
-                />
-              );
-            });
-          }),
-          <p
-            key={month}
-            className="heatmap__month"
-            style={{ gridColumn: `${first} / span ${columns.length}`, gridRow: 8 }}
-          >
-            {formatCalendarDate(`${month}-01`, { month: 'short' })}
-          </p>,
-        ];
-      })}
+                return (
+                  <div
+                    key={date}
+                    title={level === null ? undefined : title}
+                    className={cn('heatmap__cell', level === null && 'heatmap__cell--blank')}
+                    style={{
+                      gridColumn: first + i,
+                      gridRow: d + 1,
+                      ...(level === null ? {} : { backgroundColor: `var(--heat-${level})` }),
+                    }}
+                  />
+                );
+              });
+            }),
+            <p
+              key={month}
+              className="heatmap__month"
+              style={{ gridColumn: `${first} / span ${columns.length}`, gridRow: 8 }}
+            >
+              {formatCalendarDate(`${month}-01`, { month: 'short' })}
+            </p>,
+          ];
+        })}
+      </div>
     </div>
   );
 };
