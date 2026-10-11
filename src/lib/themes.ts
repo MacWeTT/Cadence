@@ -1,5 +1,5 @@
-/** One light theme and two dark ones. "dark" is Slate: it keeps the name next-themes (and saved choices) already use. */
-export const THEMES = ['light', 'dark', 'forest'] as const;
+/** The two modes. The colour themes (Paper, Slate, Forest night, ...) are a separate choice, see appearance.ts. */
+export const THEMES = ['light', 'dark'] as const;
 
 export type ThemeName = (typeof THEMES)[number];
 

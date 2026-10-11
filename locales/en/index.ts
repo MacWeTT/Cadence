@@ -1,5 +1,6 @@
 import about from './about.json';
 import alert from './alert.json';
+import appearance from './appearance.json';
 import auth from './auth.json';
 import changelog from './changelog.json';
 import common from './common.json';
@@ -15,6 +16,23 @@ import today from './today.json';
 import validation from './validation.json';
 
 /** Every English message, one file per area. Add a file here when you add an area. */
-const en = { about, alert, auth, changelog, common, errors, footer, greeting, habits, home, labels, metadata, progress, today, validation };
+const en = {
+  about,
+  alert,
+  appearance,
+  auth,
+  changelog,
+  common,
+  errors,
+  footer,
+  greeting,
+  habits,
+  home,
+  labels,
+  metadata,
+  progress,
+  today,
+  validation,
+};
 
 export default en;

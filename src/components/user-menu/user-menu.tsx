@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
 import { signOut } from '@/app/auth/actions';
 import {
   DropdownMenu,
@@ -42,6 +43,11 @@ export const UserMenu = async () => {
       <DropdownMenuContent align="end" className="user-menu__content">
         <DropdownMenuLabel className="user-menu__name">{name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/appearance" className="user-menu__link">
+            {t('appearance')}
+          </Link>
+        </DropdownMenuItem>
         <form action={signOut}>
           <DropdownMenuItem asChild>
             <button type="submit" className="user-menu__sign-out">

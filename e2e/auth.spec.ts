@@ -10,58 +10,55 @@ for (const path of ['/', '/today', '/habits', '/progress']) {
   });
 }
 
-const chooseTheme = async (page: Page, name: string) => {
-  await page.getByRole('button', { name: 'Choose theme' }).click();
-  await page.getByRole('menuitemradio', { name }).click();
+const toggle = (page: Page, name: 'Switch to dark mode' | 'Switch to light mode') => {
+  return page.getByRole('button', { name }).click();
 };
 
-test('the theme menu offers one light and two dark themes', async ({ page }) => {
+test('one click flips between light and dark, and it persists after reload', async ({ page }) => {
   await page.goto('/login');
-  await page.getByRole('button', { name: 'Choose theme' }).click();
-
-  for (const name of ['Paper', 'Slate', 'Forest night']) {
-    await expect(page.getByRole('menuitemradio', { name })).toBeVisible();
-  }
-
-  await expect(page.getByRole('menuitemradio', { name: 'Paper' })).toBeChecked();
-});
-
-test('Slate is the dark theme and persists after reload', async ({ page }) => {
-  await page.goto('/login');
-  await expect(page.locator('html')).not.toHaveClass(/dark|forest/);
-  await chooseTheme(page, 'Slate');
-  await expect(page.locator('html')).toHaveClass(/dark/);
-  await page.reload();
-  await expect(page.locator('html')).toHaveClass(/dark/);
-});
-
-test('Forest night is a dark theme of its own, and Paper brings the light one back', async ({ page }) => {
-  await page.goto('/login');
-  await chooseTheme(page, 'Forest night');
-  await expect(page.locator('html')).toHaveClass(/forest/);
   await expect(page.locator('html')).not.toHaveClass(/dark/);
-  // dark: variants still apply to it
-  await expect(page.locator('.login__card')).toHaveCSS('background-color', 'rgb(31, 40, 34)');
-  await page.reload();
-  await expect(page.locator('html')).toHaveClass(/forest/);
 
-  await chooseTheme(page, 'Paper');
-  await expect(page.locator('html')).not.toHaveClass(/dark|forest/);
+  await toggle(page, 'Switch to dark mode');
+  await expect(page.locator('html')).toHaveClass(/dark/);
+  await page.reload();
+  await expect(page.locator('html')).toHaveClass(/dark/);
+
+  await toggle(page, 'Switch to light mode');
+  await expect(page.locator('html')).not.toHaveClass(/dark/);
   await expect(page.locator('html')).not.toHaveClass(/theme-transition/);
 });
 
-test('the tab icon follows the theme: Paper, Slate and Forest night each have their own', async ({ page }) => {
+test('the toggle is one button, with no menu', async ({ page }) => {
+  await page.goto('/login');
+  await expect(page.getByRole('button', { name: 'Switch to dark mode' })).toBeVisible();
+  await expect(page.getByRole('menuitemradio')).toHaveCount(0);
+});
+
+test('a colour theme applies in both modes and is the only extra class-free choice', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('cadence-palette', 'forest-night');
+  });
+  await page.goto('/login');
+  await expect(page.locator('html')).toHaveAttribute('data-palette', 'forest-night');
+  await expect(page.locator('html')).not.toHaveClass(/forest/);
+  await expect(page.locator('.login__card')).toHaveCSS('background-color', 'rgb(238, 243, 236)');
+
+  await toggle(page, 'Switch to dark mode');
+  await expect(page.locator('.login__card')).toHaveCSS('background-color', 'rgb(31, 40, 34)');
+});
+
+test('the tab icon follows the mode, and Forest night has its own dark one', async ({ page }) => {
   const icon = page.locator('link[rel="icon"][type="image/svg+xml"]').first();
 
   await page.goto('/login');
   await expect(icon).toHaveAttribute('href', /icon-light\.svg/);
 
-  await chooseTheme(page, 'Slate');
+  await toggle(page, 'Switch to dark mode');
   await expect(icon).toHaveAttribute('href', /icon-dark\.svg/);
 
-  await chooseTheme(page, 'Forest night');
-  await expect(icon).toHaveAttribute('href', /icon-forest\.svg/);
-
+  await page.evaluate(() => {
+    window.localStorage.setItem('cadence-palette', 'forest-night');
+  });
   await page.reload();
   await expect(icon).toHaveAttribute('href', /icon-forest\.svg/);
 

@@ -1,0 +1,57 @@
+@reference '../../app/globals.css';
+
+.appearance-preview {
+  @apply flex flex-col gap-5 rounded-xl border border-line bg-surface p-5;
+}
+
+.appearance-preview__title {
+  @apply font-display text-lg;
+}
+
+.appearance-preview__row {
+  @apply flex flex-wrap items-center gap-4;
+}
+
+.appearance-preview__button {
+  @apply rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground;
+}
+
+.appearance-preview__error {
+  @apply text-sm text-danger;
+}
+
+.appearance-preview__label {
+  @apply mb-2 text-sm text-ink-muted;
+}
+
+.appearance-preview__heat {
+  @apply flex gap-1.5;
+}
+
+.appearance-preview__cell {
+  @apply size-7 rounded-md;
+}
+
+.appearance-preview__cell--0 {
+  @apply bg-heat-0;
+}
+
+.appearance-preview__cell--1 {
+  @apply bg-heat-1;
+}
+
+.appearance-preview__cell--2 {
+  @apply bg-heat-2;
+}
+
+.appearance-preview__cell--3 {
+  @apply bg-heat-3;
+}
+
+.appearance-preview__cell--4 {
+  @apply bg-heat-4;
+}
+
+.appearance-preview__reset {
+  @apply self-start text-sm text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}

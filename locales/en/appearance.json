@@ -1,0 +1,51 @@
+{
+  "pageTitle": "Appearance",
+  "title": "Appearance",
+  "intro": "Choose how Cadence looks.",
+  "note": "Cadence is here for your habits and your growth, so it should feel like yours. Pick the theme and the colour that suit you.",
+  "mode": {
+    "title": "Mode",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Match my device"
+  },
+  "theme": {
+    "title": "Theme",
+    "names": {
+      "paper": "Paper",
+      "ocean": "Ocean",
+      "meadow": "Meadow",
+      "dusk": "Dusk",
+      "sunset": "Sunset",
+      "blossom": "Blossom",
+      "steel": "Steel",
+      "graphite": "Graphite",
+      "slate": "Slate",
+      "forest-night": "Forest night"
+    }
+  },
+  "accent": {
+    "title": "Accent colour",
+    "hint": "Used for buttons, the logo and your heatmap.",
+    "names": {
+      "moss": "Moss",
+      "clay": "Clay",
+      "sky": "Sky",
+      "plum": "Plum",
+      "teal": "Teal",
+      "custom": "Custom"
+    },
+    "customTitle": "Your own colour",
+    "pick": "Pick a custom colour",
+    "hex": "Colour code, such as #3f6f98",
+    "invalid": "Use a colour code like #3f6f98.",
+    "adjusted": "{mode, select, light {In light mode, buttons use a slightly deeper shade of your colour} other {In dark mode, buttons use a slightly brighter shade of your colour}} so their text stays easy to read."
+  },
+  "preview": {
+    "title": "Preview",
+    "button": "Save habit",
+    "error": "Something needs attention",
+    "heat": "Heatmap",
+    "reset": "Reset theme and accent"
+  }
+}

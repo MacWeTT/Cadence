@@ -1,0 +1,25 @@
+@reference '../../app/globals.css';
+
+.mode-picker__legend {
+  @apply mb-3 font-display text-lg;
+}
+
+.mode-picker__options {
+  @apply grid grid-cols-3 gap-3;
+}
+
+.mode-picker__option {
+  @apply cursor-pointer;
+}
+
+.mode-picker__input {
+  @apply sr-only;
+}
+
+.mode-picker__card {
+  @apply flex flex-col items-center gap-2 rounded-xl border border-line bg-surface px-3 py-4 text-center text-sm transition-colors hover:border-ink-muted peer-checked:border-ink peer-checked:font-medium peer-focus-visible:outline-2 peer-focus-visible:outline-clay;
+}
+
+.mode-picker__icon {
+  @apply size-5;
+}

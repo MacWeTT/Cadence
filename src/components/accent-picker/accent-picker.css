@@ -1,0 +1,73 @@
+@reference '../../app/globals.css';
+
+.accent-picker__legend {
+  @apply mb-1 font-display text-lg;
+}
+
+.accent-picker__hint {
+  @apply mb-3 text-sm text-ink-muted;
+}
+
+.accent-picker__swatches {
+  @apply flex flex-wrap gap-3;
+}
+
+.accent-picker__option {
+  @apply cursor-pointer;
+}
+
+.accent-picker__input {
+  @apply sr-only;
+}
+
+.accent-picker__swatch {
+  @apply block size-9 rounded-full ring-offset-2 ring-offset-bg peer-checked:ring-2 peer-checked:ring-ink peer-focus-visible:ring-2 peer-focus-visible:ring-clay;
+}
+
+.accent-picker__custom {
+  @apply mt-5 border-t border-line pt-4;
+}
+
+.accent-picker__custom-title {
+  @apply mb-2 text-sm font-medium;
+}
+
+.accent-picker__custom-row {
+  @apply flex items-center gap-3;
+}
+
+.accent-picker__color {
+  @apply size-9 shrink-0 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 ring-offset-2 ring-offset-bg focus-visible:ring-2 focus-visible:ring-clay;
+}
+
+.accent-picker__color::-webkit-color-swatch-wrapper {
+  @apply p-0;
+}
+
+.accent-picker__color::-webkit-color-swatch {
+  @apply rounded-full border border-line;
+}
+
+.accent-picker__color::-moz-color-swatch {
+  @apply rounded-full border border-line;
+}
+
+.accent-picker__color--active {
+  @apply ring-2 ring-ink;
+}
+
+.accent-picker__hex {
+  @apply w-32 rounded-md border border-line bg-surface px-3 py-2 font-mono text-sm outline-none focus-visible:border-ink;
+}
+
+.accent-picker__hex--invalid {
+  @apply border-danger;
+}
+
+.accent-picker__error {
+  @apply mt-2 text-sm text-danger;
+}
+
+.accent-picker__note {
+  @apply mt-2 text-sm text-ink-muted;
+}

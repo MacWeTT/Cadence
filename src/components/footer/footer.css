@@ -1,8 +1,7 @@
 @reference '../../app/globals.css';
 
 .footer {
-  @apply sticky bottom-0 border-t border-line bg-topbar;
-  view-transition-name: site-footer;
+  @apply border-t border-line bg-topbar;
 }
 
 .footer__inner {

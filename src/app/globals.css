@@ -2,9 +2,9 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:where(.dark, .dark *, .forest, .forest *));
+@custom-variant dark (&:where(.dark, .dark *));
 
-/* Project tokens (light). The .dark and .forest blocks below (the two dark themes) override them; the shadcn names further down alias to these. */
+/* Project tokens (light). The .dark block below overrides them; the shadcn names further down alias to these. */
 :root {
   --bg: #f3e8d3;
   --surface: #faf2e1;
@@ -58,7 +58,7 @@
   --radius: 0.625rem;
 }
 
-/* Dark, "Slate": the dark theme next-themes calls "dark". */
+/* Dark: next-themes' "dark". Paper (light) and Slate (dark) are the stock look of the Paper theme. */
 .dark {
   --bg: #1a1d21;
   --surface: #23272c;
@@ -89,35 +89,281 @@
   --habit-slate: #a8a39b;
 }
 
-/* Dark, "Forest night": a second dark theme. */
-.forest {
+/*
+ * Themes: <html data-palette="..."> (see src/lib/appearance.ts). Each one replaces the page, surface and text colours;
+ * the stock theme is the :root and .dark blocks above and sets no attribute. A .dark rule comes after its light one so
+ * it wins when both match. The contrast of every pair is checked in src/lib/appearance.test.ts.
+ */
+:root[data-palette='ocean'] {
+  --bg: #e6eef2;
+  --surface: #f2f7f9;
+  --topbar: #d8e4ea;
+  --ink: #1f2f3a;
+  --ink-muted: #4d6371;
+  --line: #c5d5de;
+  --missed: #d9b39a;
+  --heat-0: #d6e2e8;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='ocean'] {
+  --bg: #101a21;
+  --surface: #172530;
+  --topbar: #0c141a;
+  --ink: #e3eef4;
+  --ink-muted: #8fa7b6;
+  --line: #263a47;
+  --missed: #7a5340;
+  --heat-0: #1d2f3a;
+  --danger: #e0905f;
+}
+
+:root[data-palette='graphite'] {
+  --bg: #ececec;
+  --surface: #f7f7f7;
+  --topbar: #dedede;
+  --ink: #222222;
+  --ink-muted: #5a5a5a;
+  --line: #d2d2d2;
+  --missed: #d1b3a3;
+  --heat-0: #dcdcdc;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='graphite'] {
+  --bg: #161616;
+  --surface: #202020;
+  --topbar: #101010;
+  --ink: #ededed;
+  --ink-muted: #9a9a9a;
+  --line: #323232;
+  --missed: #7a5340;
+  --heat-0: #2a2a2a;
+  --danger: #e0905f;
+}
+
+:root[data-palette='blossom'] {
+  --bg: #f6e6ea;
+  --surface: #fcf1f4;
+  --topbar: #efd9df;
+  --ink: #3a2630;
+  --ink-muted: #6d4f5d;
+  --line: #e5c9d2;
+  --missed: #d9b3a8;
+  --heat-0: #ecd6dc;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='blossom'] {
+  --bg: #1d1519;
+  --surface: #281c22;
+  --topbar: #150f12;
+  --ink: #f4e3e8;
+  --ink-muted: #a98a97;
+  --line: #3d2b33;
+  --missed: #7a5340;
+  --heat-0: #33242b;
+  --danger: #e0905f;
+}
+
+:root[data-palette='meadow'] {
+  --bg: #e4ebe0;
+  --surface: #f0f5ed;
+  --topbar: #d5e0d0;
+  --ink: #1e2b1f;
+  --ink-muted: #4f6350;
+  --line: #c4d3bf;
+  --missed: #d9b39a;
+  --heat-0: #d3dfcd;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='meadow'] {
+  --bg: #121a14;
+  --surface: #19231b;
+  --topbar: #0d140f;
+  --ink: #e2eee3;
+  --ink-muted: #8fa892;
+  --line: #263628;
+  --missed: #7a5340;
+  --heat-0: #1f2e22;
+  --danger: #e0905f;
+}
+
+:root[data-palette='dusk'] {
+  --bg: #e9e7f3;
+  --surface: #f5f4fb;
+  --topbar: #dcd9ec;
+  --ink: #25223a;
+  --ink-muted: #5a5578;
+  --line: #cdc9e3;
+  --missed: #d9b39a;
+  --heat-0: #dad7ec;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='dusk'] {
+  --bg: #15131f;
+  --surface: #1d1b2b;
+  --topbar: #100e18;
+  --ink: #e8e6f5;
+  --ink-muted: #9a95b8;
+  --line: #2f2c45;
+  --missed: #7a5340;
+  --heat-0: #272439;
+  --danger: #e0905f;
+}
+
+:root[data-palette='sunset'] {
+  --bg: #f8e5d8;
+  --surface: #fdf1e8;
+  --topbar: #f1d6c5;
+  --ink: #3b261c;
+  --ink-muted: #7a5240;
+  --line: #ebcdb9;
+  --missed: #d1a48f;
+  --heat-0: #efd8c7;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='sunset'] {
+  --bg: #1e1410;
+  --surface: #2a1c16;
+  --topbar: #160e0b;
+  --ink: #f6e4d8;
+  --ink-muted: #b0907c;
+  --line: #402b21;
+  --missed: #7a5340;
+  --heat-0: #34231b;
+  --danger: #e0905f;
+}
+
+:root[data-palette='steel'] {
+  --bg: #e8ebf0;
+  --surface: #f4f6f9;
+  --topbar: #dadee6;
+  --ink: #1b2230;
+  --ink-muted: #4d586c;
+  --line: #cbd1dc;
+  --missed: #d1b3a3;
+  --heat-0: #d9dee7;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='steel'] {
+  --bg: #0b0d12;
+  --surface: #12151c;
+  --topbar: #07080b;
+  --ink: #e6e9f0;
+  --ink-muted: #8d97aa;
+  --line: #222733;
+  --missed: #7a5340;
+  --heat-0: #1a1e28;
+  --danger: #e0905f;
+}
+
+:root[data-palette='slate'] {
+  --bg: #e6e9ec;
+  --surface: #f2f4f6;
+  --topbar: #d7dce1;
+  --ink: #1a1d21;
+  --ink-muted: #4f5861;
+  --line: #c8ced4;
+  --missed: #d1b3a3;
+  --heat-0: #d6dbe0;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='slate'] {
+  --bg: #1a1d21;
+  --surface: #23272c;
+  --topbar: #14171a;
+  --ink: #e8e6e1;
+  --ink-muted: #8f979f;
+  --line: #333a41;
+  --missed: #7a5340;
+  --heat-0: #272c32;
+  --danger: #e0905f;
+}
+
+:root[data-palette='forest-night'] {
+  --bg: #e1e8de;
+  --surface: #eef3ec;
+  --topbar: #d2dcce;
+  --ink: #161d18;
+  --ink-muted: #4a5e4d;
+  --line: #c2d0be;
+  --missed: #d9b39a;
+  --heat-0: #d0dccb;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='forest-night'] {
   --bg: #161d18;
   --surface: #1f2822;
   --topbar: #101612;
   --ink: #e8e8dc;
   --ink-muted: #94a094;
   --line: #2f3b33;
-  --moss: #9bb06a;
-  --clay: #e0905f;
   --missed: #7a5340;
   --heat-0: #222c25;
-  --heat-1: #414a2b;
-  --heat-2: #5d6e3a;
-  --heat-3: #80954a;
-  --heat-4: #a6be66;
-
-  --btn: #9bb06a;
-  --btn-text: #161d18;
   --danger: #e0905f;
+}
 
-  --habit-moss: #9bb06a;
-  --habit-clay: #e0905f;
-  --habit-ochre: #d9b25a;
-  --habit-rose: #d98aa0;
-  --habit-plum: #b99ad0;
-  --habit-teal: #6fb5ac;
-  --habit-sky: #86b0d6;
-  --habit-slate: #a8a39b;
+/*
+ * Accents: <html data-accent="..."> (moss is the stock one and sets no attribute). An accent sets the button colour,
+ * and everything that was moss (the logo, the illustration) and the heatmap follow it. The button text stays the
+ * stock pair, so each --btn only has to keep AA contrast with it (checked in src/lib/appearance.test.ts). A custom accent's two
+ * button colours are worked out in src/lib/accent-color.ts and set as variables on <html>.
+ */
+:root[data-accent='clay'] {
+  --btn: #a8512b;
+}
+
+.dark[data-accent='clay'] {
+  --btn: #e0905f;
+}
+
+:root[data-accent='sky'] {
+  --btn: #3f6f98;
+}
+
+.dark[data-accent='sky'] {
+  --btn: #86b0d6;
+}
+
+:root[data-accent='plum'] {
+  --btn: #7d5a8c;
+}
+
+.dark[data-accent='plum'] {
+  --btn: #b99ad0;
+}
+
+:root[data-accent='teal'] {
+  --btn: #2f6f69;
+}
+
+.dark[data-accent='teal'] {
+  --btn: #6fb5ac;
+}
+
+:root[data-accent='custom'] {
+  --btn: var(--accent-custom-light);
+}
+
+.dark[data-accent='custom'] {
+  --btn: var(--accent-custom-dark);
+}
+
+/* Any non-stock accent: the heatmap steps from the page's empty cell up to the accent itself. */
+:root[data-accent],
+.dark[data-accent] {
+  --moss: var(--btn);
+  --heat-1: color-mix(in srgb, var(--btn) 25%, var(--heat-0));
+  --heat-2: color-mix(in srgb, var(--btn) 50%, var(--heat-0));
+  --heat-3: color-mix(in srgb, var(--btn) 75%, var(--heat-0));
+  --heat-4: var(--btn);
 }
 
 @theme inline {
@@ -259,26 +505,7 @@
   }
 }
 
-/*
- * The top bar and the footer are layers of their own, above the moving content: it slides under them, never over
- * them. They do not animate. The rest of the page (the root) does not crossfade either: only the named content moves.
- */
-::view-transition-group(site-header),
-::view-transition-group(site-footer) {
-  animation: none;
-  z-index: 100;
-}
-
-::view-transition-old(site-header),
-::view-transition-old(site-footer) {
-  display: none;
-}
-
-::view-transition-new(site-header),
-::view-transition-new(site-footer) {
-  animation: none;
-}
-
+/* The rest of the page (top bar, footer) does not crossfade: only the named content above moves. */
 ::view-transition-old(root) {
   display: none;
 }

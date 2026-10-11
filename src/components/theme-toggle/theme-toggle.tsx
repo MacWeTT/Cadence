@@ -1,30 +1,18 @@
 'use client';
 
-import { Moon, Sun, TreePine } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { isThemeName, type ThemeName } from '@/lib/themes';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './theme-toggle.css';
-
-const ICONS = { light: Sun, dark: Moon, forest: TreePine } as const;
 
 const noopSubscribe = () => {
   return () => {};
 };
 
-/** The button in the top bar that opens the theme menu: the light theme, and the two dark ones. */
+/** The button in the top bar: one click flips between light and dark, and the icon turns over as it does. */
 export const ThemeToggle = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const reduceMotion = useReducedMotion();
@@ -41,54 +29,37 @@ export const ThemeToggle = () => {
     },
   );
 
-  const current: ThemeName = mounted && isThemeName(resolvedTheme) ? resolvedTheme : 'light';
-  const Icon = mounted ? ICONS[current] : Moon;
+  const isDark = mounted && resolvedTheme === 'dark';
+  const label = !mounted ? t('toggle') : isDark ? t('toLight') : t('toDark');
+  const Icon = isDark ? Sun : Moon;
 
-  const onThemeChange = (value: string) => {
-    if (!isThemeName(value)) {
-      return;
-    }
-
-    // Colours glide between the themes instead of snapping: the class turns on a short transition (see globals.css)
+  const onToggle = () => {
+    // Colours glide between the modes instead of snapping: the class turns on a short transition (see globals.css)
     // for just the moment of the switch, so it never slows down ordinary hover effects.
     const { classList } = document.documentElement;
 
     classList.add('theme-transition');
-    setTheme(value);
+    setTheme(isDark ? 'light' : 'dark');
     window.setTimeout(() => {
       return classList.remove('theme-transition');
     }, 400);
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button type="button" aria-label={t('choose')} disabled={!mounted} className="theme-toggle">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={current}
-              aria-hidden
-              className="theme-toggle__glyph"
-              initial={reduceMotion ? false : { rotate: -90, scale: 0.5, opacity: 0 }}
-              animate={{ rotate: 0, scale: 1, opacity: 1 }}
-              exit={reduceMotion ? undefined : { rotate: 90, scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-            >
-              <Icon className="theme-toggle__icon" />
-            </motion.span>
-          </AnimatePresence>
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup value={current} onValueChange={onThemeChange}>
-          <DropdownMenuLabel>{t('light')}</DropdownMenuLabel>
-          <DropdownMenuRadioItem value="light">{t('names.light')}</DropdownMenuRadioItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>{t('dark')}</DropdownMenuLabel>
-          <DropdownMenuRadioItem value="dark">{t('names.dark')}</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="forest">{t('names.forest')}</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <button type="button" aria-label={label} disabled={!mounted} onClick={onToggle} className="theme-toggle">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={isDark ? 'sun' : 'moon'}
+          aria-hidden
+          className="theme-toggle__glyph"
+          initial={reduceMotion ? false : { rotate: -90, scale: 0.5, opacity: 0 }}
+          animate={{ rotate: 0, scale: 1, opacity: 1 }}
+          exit={reduceMotion ? undefined : { rotate: 90, scale: 0.5, opacity: 0 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+        >
+          <Icon className="theme-toggle__icon" />
+        </motion.span>
+      </AnimatePresence>
+    </button>
   );
 };

@@ -6,6 +6,7 @@ import { AppSplash } from '@/components/app-splash/app-splash';
 import { MotionProvider } from '@/components/motion-provider/motion-provider';
 import { ThemeFavicon } from '@/components/theme-favicon/theme-favicon';
 import { Toaster } from '@/components/ui/sonner';
+import { BOOT_SCRIPT } from '@/lib/appearance';
 import './globals.css';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -34,9 +35,13 @@ const RootLayout = async (props: LayoutProps<'/'>) => {
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        {/* Puts the saved theme and accent on <html> before the first paint (see src/lib/appearance.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
+      </head>
       <body className="min-h-screen">
         <NextIntlClientProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark', 'forest']}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark']}>
             <MotionProvider>
               <ThemeFavicon />
               <AppSplash />

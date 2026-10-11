@@ -16,6 +16,10 @@
   @apply truncate font-normal text-ink-muted;
 }
 
+.user-menu__link {
+  @apply w-full;
+}
+
 .user-menu__sign-out {
   @apply w-full;
 }
