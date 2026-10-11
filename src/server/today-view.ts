@@ -1,6 +1,6 @@
 // Pure mapping from database rows to what the Today page shows. Kept free of `server-only` so it can be unit-tested.
 import { addDays, isCalendarDate, weekStart, type CalendarDate } from '@/domain/dates';
-import { isListedOn, weekProgress, type WeekProgress } from '@/domain/listing';
+import { isListedOn, weekProgress, yearTicks, type WeekProgress } from '@/domain/listing';
 import { scheduleFor } from '@/domain/schedule';
 import { dayStatus } from '@/domain/status';
 import { currentStreak, type Streak } from '@/domain/streaks';
@@ -40,6 +40,8 @@ export interface TodayRow {
   streak: Streak | null;
   /** Progress this week, for weekly habits only. */
   week: WeekProgress | null;
+  /** Ticks this year, for optional habits only. */
+  year?: number;
 }
 
 /** One day of the week strip: habits done out of habits expected, and whether the day has not happened yet. */
@@ -53,6 +55,8 @@ export interface DaySummary {
 export interface TodayView {
   todo: TodayRow[];
   done: TodayRow[];
+  /** Optional habits, ticked or not: nothing is expected of them, so they are in neither list above. */
+  optional: TodayRow[];
   /** The seven days of the viewed week, for the side card. */
   strip: DaySummary[];
   /** True when at least one habit is not archived, whatever the viewed day. */
@@ -73,9 +77,11 @@ export const buildTodayView = (
 ): TodayView => {
   const todo: TodayRow[] = [];
   const done: TodayRow[] = [];
+  const optional: TodayRow[] = [];
   const view: TodayView = {
     todo,
     done,
+    optional,
     strip: weekStrip(
       habits.map(h => {
         return h.data;
@@ -98,7 +104,7 @@ export const buildTodayView = (
 
     const { id, name, icon, color } = habit;
 
-    (ticked ? done : todo).push({
+    const row: TodayRow = {
       id,
       name,
       icon,
@@ -106,7 +112,13 @@ export const buildTodayView = (
       ticked,
       streak: streak && streak.count > 0 ? streak : null,
       week: weekProgress(data, date, ctx),
-    });
+    };
+
+    if (scheduleFor(data, date)?.kind === 'optional') {
+      optional.push({ ...row, year: yearTicks(data, date) });
+    } else {
+      (ticked ? done : todo).push(row);
+    }
   }
 
   return view;
@@ -169,8 +181,8 @@ export const earliestDate = (habits: { data: HabitData }[], today: CalendarDate)
  * adjusts weekly progress. Streaks are left alone; the server refresh brings the real ones.
  */
 export const applyToggle = (view: TodayView, id: string, ticked: boolean): TodayView => {
-  const { todo, done } = view;
-  const row = [...todo, ...done].find(r => {
+  const { todo, done, optional } = view;
+  const row = [...todo, ...done, ...optional].find(r => {
     return r.id === id;
   });
 
@@ -178,7 +190,17 @@ export const applyToggle = (view: TodayView, id: string, ticked: boolean): Today
     return view;
   }
 
-  const { week: weekBefore } = row;
+  const { week: weekBefore, year } = row;
+
+  if (year !== undefined) {
+    return {
+      ...view,
+      optional: optional.map(r => {
+        return r.id === id ? { ...r, ticked, year: Math.max(0, year + (ticked ? 1 : -1)) } : r;
+      }),
+    };
+  }
+
   let week = weekBefore;
 
   if (weekBefore) {

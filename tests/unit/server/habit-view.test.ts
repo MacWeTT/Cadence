@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { shouldSyncTimezone, toListItem, type HabitRow, type ScheduleRow } from '@/server/habit-view';
+import {
+  scheduleArgs,
+  shouldSyncTimezone,
+  toDesired,
+  toListItem,
+  type HabitRow,
+  type ScheduleRow,
+} from '@/server/habit-view';
 
 const habit: HabitRow = {
   id: 'h1',
@@ -20,6 +27,7 @@ const daily = (effective_from: string): ScheduleRow => {
     habit_id: 'h1',
     kind: 'daily',
     times_per_week: null,
+    weekdays: null,
     effective_from,
   };
 };
@@ -30,6 +38,7 @@ const weekly = (n: number, effective_from: string): ScheduleRow => {
     habit_id: 'h1',
     kind: 'weekly_count',
     times_per_week: n,
+    weekdays: null,
     effective_from,
   };
 };
@@ -81,6 +90,47 @@ describe('toListItem', () => {
     );
 
     expect([item.description, item.archivedAt]).toEqual(['Before bed', '2026-10-05T10:00:00Z']);
+  });
+});
+
+describe('toListItem with the other kinds of schedule', () => {
+  const row = (kind: string, weekdays: number[] | null): ScheduleRow => {
+    return { id: kind, habit_id: 'h1', kind, times_per_week: null, weekdays, effective_from: '2026-10-01' };
+  };
+
+  it('reads fixed weekdays (sorted) and optional rows', () => {
+    expect(toListItem(habit, [row('weekdays', [5, 1, 3])], false, '2026-10-09').schedule).toEqual({
+      kind: 'weekdays',
+      days: [1, 3, 5],
+      effectiveFrom: '2026-10-01',
+    });
+    expect(toListItem(habit, [row('optional', null)], false, '2026-10-09').schedule).toEqual({
+      kind: 'optional',
+      effectiveFrom: '2026-10-01',
+    });
+  });
+});
+
+describe('toDesired and scheduleArgs', () => {
+  it('turn form input into the wanted schedule', () => {
+    expect(toDesired({ kind: 'daily' })).toEqual({ kind: 'daily' });
+    expect(toDesired({ kind: 'weekly_count', timesPerWeek: 3 })).toEqual({ kind: 'weekly_count', timesPerWeek: 3 });
+    expect(toDesired({ kind: 'weekdays', weekdays: [5, 1] })).toEqual({ kind: 'weekdays', days: [1, 5] });
+    expect(toDesired({ kind: 'optional' })).toEqual({ kind: 'optional' });
+  });
+
+  it('turn a schedule into the arguments of the database functions', () => {
+    expect(scheduleArgs({ kind: 'weekdays', days: [1, 3], effectiveFrom: '2026-10-12' })).toEqual({
+      p_kind: 'weekdays',
+      p_times_per_week: null,
+      p_weekdays: [1, 3],
+    });
+    expect(scheduleArgs({ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-10-12' })).toEqual({
+      p_kind: 'weekly_count',
+      p_times_per_week: 3,
+      p_weekdays: null,
+    });
+    expect(scheduleArgs(null)).toEqual({ p_kind: null, p_times_per_week: null, p_weekdays: null });
   });
 });
 

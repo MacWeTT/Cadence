@@ -18,7 +18,7 @@ export const getTodayView = async (dateParam: string | string[] | undefined): Pr
   const date = parseDateParam(dateParam, today);
 
   if (entries.length === 0) {
-    return { view: { todo: [], done: [], strip: [], hasHabits: false }, date, today, earliest: today };
+    return { view: { todo: [], done: [], optional: [], strip: [], hasHabits: false }, date, today, earliest: today };
   }
 
   return {

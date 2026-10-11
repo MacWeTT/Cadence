@@ -11,6 +11,8 @@
   },
   "schedule": {
     "daily": "Every day",
-    "weekly": "{times}× a week"
+    "weekly": "{times}× a week",
+    "weekdays": "Every {days}",
+    "optional": "Whenever you like"
   }
 }

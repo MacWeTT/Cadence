@@ -1,5 +1,5 @@
 import { addDays, type CalendarDate } from '@/domain/dates';
-import { scheduleFor } from '@/domain/schedule';
+import { isOffDay, scheduleFor } from '@/domain/schedule';
 import type { Ctx, HabitData } from '@/domain/types';
 
 export type DayStatus = 'done' | 'missed' | 'pending' | 'inactive';
@@ -23,11 +23,15 @@ const overlapsPause = (h: HabitData, a: CalendarDate, b: CalendarDate): boolean 
   });
 };
 
-/** Status of one day for a habit on a daily schedule. Anything else is `inactive`. A tick is always honoured, even on a paused day. */
+/**
+ * Status of one day for a habit that is expected day by day: a daily habit, or a fixed-weekday habit on one of its days.
+ * Anything else (including a fixed-weekday habit's other days, even when ticked) is `inactive`. A tick is always honoured,
+ * even on a paused day.
+ */
 export const dayStatus = (h: HabitData, date: CalendarDate, ctx: Ctx): DayStatus => {
   const schedule = scheduleFor(h, date);
 
-  if (schedule?.kind !== 'daily') {
+  if ((schedule?.kind !== 'daily' && schedule?.kind !== 'weekdays') || isOffDay(h, date)) {
     return 'inactive';
   }
 
