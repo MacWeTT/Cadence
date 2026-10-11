@@ -25,6 +25,7 @@ const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => {
     created_at: '2026-10-01T08:00:00Z',
     updated_at: '2026-10-01T08:00:00Z',
     archived_at: null,
+    links: [],
     ...over,
   };
 };
@@ -47,6 +48,7 @@ const scheduleRow = (effective_from: string): ScheduleRow => {
     habit_id: 'h',
     kind: 'daily',
     times_per_week: null,
+    weekdays: null,
     effective_from,
   };
 };
@@ -73,6 +75,65 @@ describe('toHabitData', () => {
   });
 });
 
+describe('optional habits on the Today view', () => {
+  const extra = makeHabit({
+    schedules: [{ kind: 'optional', effectiveFrom: '2026-10-01' }],
+    done: ['2026-10-02', '2026-10-09', '2025-12-31'],
+  });
+  const optionalRow: TodayRow = {
+    id: 'o',
+    name: 'o',
+    icon: '📖',
+    color: 'moss',
+    ticked: false,
+    streak: null,
+    week: null,
+    year: 4,
+  };
+
+  it('lists them apart from todo and done, ticked or not, with the yearly count', () => {
+    const view = buildTodayView([entry('a', makeHabit()), entry('o', extra)], '2026-10-09', ctx());
+
+    expect(
+      view.todo.map(r => {
+        return r.id;
+      }),
+    ).toEqual(['a']);
+    expect(view.optional).toEqual([
+      { id: 'o', name: 'o', icon: '📖', color: 'moss', ticked: true, streak: null, week: null, year: 2 },
+    ]);
+  });
+
+  it('count in the week strip only on the days of habits that expect something', () => {
+    const view = buildTodayView([entry('o', extra)], '2026-10-09', ctx());
+
+    expect(
+      view.strip.every(d => {
+        return d.total === 0;
+      }),
+    ).toBe(true);
+  });
+
+  it('flip in place when ticked, and move the yearly count', () => {
+    const view: TodayView = { todo: [], done: [], optional: [optionalRow], strip: [], hasHabits: true };
+    const ticked = applyToggle(view, 'o', true);
+    const back = applyToggle(ticked, 'o', false);
+
+    expect(ticked.optional).toEqual([{ ...optionalRow, ticked: true, year: 5 }]);
+    expect(back.optional).toEqual([optionalRow]);
+    expect(ticked.todo).toEqual([]);
+  });
+});
+
+describe('fixed weekdays on the Today view', () => {
+  it('lists the habit only on its days', () => {
+    const h = makeHabit({ schedules: [{ kind: 'weekdays', days: [1, 3, 5], effectiveFrom: '2026-10-01' }] });
+
+    expect(buildTodayView([entry('g', h)], '2026-10-09', ctx()).todo.length).toBe(1); // Friday
+    expect(buildTodayView([entry('g', h)], '2026-10-08', ctx()).todo.length).toBe(0); // Thursday
+  });
+});
+
 describe('buildTodayView', () => {
   it('puts ticked habits in done and the rest in todo, keeping the given order', () => {
     const view = buildTodayView(
@@ -92,6 +153,20 @@ describe('buildTodayView', () => {
       }),
     ).toEqual([['b', true]]);
     expect(view.hasHabits).toBe(true);
+  });
+
+  it('carries the links of a habit that has some, and none otherwise', () => {
+    const view = buildTodayView(
+      [
+        { habit: row('a', { links: ['https://a.dev/1', 'https://a.dev/2'] }), data: makeHabit() },
+        entry('b', makeHabit()),
+      ],
+      '2026-10-09',
+      ctx(),
+    );
+
+    expect(view.todo[0].links).toEqual(['https://a.dev/1', 'https://a.dev/2']);
+    expect('links' in view.todo[1]).toBe(false);
   });
 
   it('shows the current streak on today only', () => {
@@ -199,7 +274,7 @@ describe('applyToggle', () => {
     streak: null,
     week: { done: 2, target: 3, goalMet: false },
   };
-  const view: TodayView = { todo: [daily, weeklyRow], done: [], strip: [], hasHabits: true };
+  const view: TodayView = { todo: [daily, weeklyRow], done: [], optional: [], strip: [], hasHabits: true };
 
   it('moves a ticked row to done and back to todo', () => {
     const ticked = applyToggle(view, 'a', true);

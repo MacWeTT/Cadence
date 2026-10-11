@@ -1,8 +1,12 @@
 import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { nextEditDate, scheduleOn } from '@/domain/schedule';
-import type { Schedule } from '@/domain/types';
+import type { Schedule, Weekday } from '@/domain/types';
 
-export type DesiredSchedule = { kind: 'daily' } | { kind: 'weekly_count'; timesPerWeek: number };
+export type DesiredSchedule =
+  | { kind: 'daily' }
+  | { kind: 'weekdays'; days: Weekday[] }
+  | { kind: 'weekly_count'; timesPerWeek: number }
+  | { kind: 'optional' };
 
 /**
  * What to do with a habit's schedule rows after an edit. `upsert` and `delete_pending` both first remove every
@@ -14,14 +18,42 @@ export type ScheduleChange =
   | { action: 'upsert'; schedule: Schedule }
   | { action: 'delete_pending' };
 
-const same = (s: Schedule, d: DesiredSchedule): boolean => {
-  return s.kind === d.kind && (s.kind === 'daily' || (d.kind === 'weekly_count' && s.timesPerWeek === d.timesPerWeek));
+/** What makes two schedules the same: their kind and its parameters (days in any order). */
+const signature = (s: Schedule | DesiredSchedule): string => {
+  if (s.kind === 'weekly_count') {
+    const { timesPerWeek } = s;
+
+    return `weekly_count:${timesPerWeek}`;
+  }
+
+  if (s.kind === 'weekdays') {
+    const { days } = s;
+
+    return `weekdays:${[...days].sort().join()}`;
+  }
+
+  return s.kind;
+};
+
+/** True when the habit's schedule already is the wanted one. */
+export const sameSchedule = (s: Schedule, d: DesiredSchedule): boolean => {
+  return signature(s) === signature(d);
 };
 
 const build = (d: DesiredSchedule, effectiveFrom: CalendarDate): Schedule => {
-  return d.kind === 'daily'
-    ? { kind: 'daily', effectiveFrom }
-    : { kind: 'weekly_count', timesPerWeek: d.timesPerWeek, effectiveFrom };
+  if (d.kind === 'weekly_count') {
+    const { timesPerWeek } = d;
+
+    return { kind: 'weekly_count', timesPerWeek, effectiveFrom };
+  }
+
+  if (d.kind === 'weekdays') {
+    const { days } = d;
+
+    return { kind: 'weekdays', days: [...days].sort(), effectiveFrom };
+  }
+
+  return { kind: d.kind, effectiveFrom };
 };
 
 export const planScheduleChange = (input: {
@@ -38,7 +70,7 @@ export const planScheduleChange = (input: {
   if (!hasCompletions) {
     const only = schedules.length === 1 ? schedules[0] : undefined;
 
-    return only && only.effectiveFrom === startDate && same(only, desired)
+    return only && only.effectiveFrom === startDate && sameSchedule(only, desired)
       ? { action: 'none' }
       : { action: 'replace_all', schedule: build(desired, startDate) };
   }
@@ -51,11 +83,11 @@ export const planScheduleChange = (input: {
 
   const pendingCount = pending.length;
 
-  if (current && same(current, desired)) {
+  if (current && sameSchedule(current, desired)) {
     return pendingCount > 0 ? { action: 'delete_pending' } : { action: 'none' };
   }
 
-  if (pendingCount === 1 && pending[0].effectiveFrom === effective && same(pending[0], desired)) {
+  if (pendingCount === 1 && pending[0].effectiveFrom === effective && sameSchedule(pending[0], desired)) {
     return { action: 'none' };
   }
 

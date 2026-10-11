@@ -25,9 +25,14 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
 
-  database-and-e2e:
-    name: Database tests and Playwright
+  # The browser tests take about four minutes in one piece, so they run as four shards at once, each on its own database.
+  e2e:
+    name: Playwright (shard ${{ matrix.shard }} of 4)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     env:
       # `supabase start` reads these from the environment (see supabase/config.toml); the values are never used.
       SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID: ci-placeholder
@@ -45,6 +50,8 @@ jobs:
       - name: Start local Supabase and apply the migrations
         run: supabase start -x imgproxy,vector,logflare,edge-runtime,supavisor,mailpit
       - name: Database tests (pgTAP)
+        # One shard is enough: the database is the same in all of them.
+        if: matrix.shard == 1
         run: supabase test db
       - name: Write .env.local from the local stack
         run: |
@@ -57,10 +64,20 @@ jobs:
           } > .env.local
       - run: npx playwright install --with-deps chromium
       - name: Playwright
-        run: npx playwright test
+        run: npx playwright test --shard=${{ matrix.shard }}/4
       - name: Keep the report when it fails
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-results
+          name: playwright-results-${{ matrix.shard }}
           path: test-results/
+
+  # The one check the branch rules wait for: it passes when every shard did.
+  database-and-e2e:
+    name: Database tests and Playwright
+    needs: e2e
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every shard passed
+        run: test "${{ needs.e2e.result }}" = "success"

@@ -4,9 +4,6 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Planned
 
-- Habits on fixed days of the week, such as Monday, Wednesday and Friday.
-- Optional habits: habits with no fixed days, tracked only by how many times you do them each year.
-- Habit links: add one or many links to a habit and open them all in one click.
 - Install Cadence on your phone or computer like an app.
 - A full profile page.
 - Reminders: push notifications in your browser and by email.
@@ -14,6 +11,14 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - A desktop app, with native notifications and an option to start on login.
 
 ## Known issues
+
+## 0.5.0 (2026-10-11)
+
+More ways to shape a habit.
+
+- Habits on fixed days of the week, such as Monday, Wednesday and Friday: they only show on those days, and the other days never break a streak.
+- Optional habits, with no fixed days: they sit in their own "Whenever you like" list and count how many times you do them each year.
+- Links on a habit: add up to ten, then open them all in one click from Today, Home or the Habits list.
 
 ## 0.4.0 (2026-10-11)
 

@@ -1,0 +1,13 @@
+@reference '../../../globals.css';
+
+.link-row {
+  @apply flex items-center gap-2;
+}
+
+.link-row__remove {
+  @apply flex size-9 shrink-0 items-center justify-center rounded-md text-ink-muted hover:bg-line hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.link-row__icon {
+  @apply size-4;
+}

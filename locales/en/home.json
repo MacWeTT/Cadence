@@ -3,6 +3,7 @@
   "noneToday": "No habits today.",
   "nextUp": "Next up · {count} left",
   "doneToday": "Done today · {count}",
+  "whenever": "Whenever you like",
   "streaks": {
     "title": "Streaks to protect",
     "none": "No streaks at risk right now.",

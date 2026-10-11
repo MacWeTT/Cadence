@@ -1,5 +1,5 @@
 import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
-import { scheduleFor } from '@/domain/schedule';
+import { isOffDay, scheduleFor } from '@/domain/schedule';
 import { dayStatus, isPaused, weekStatus } from '@/domain/status';
 import type { Ctx, HabitData } from '@/domain/types';
 
@@ -13,9 +13,9 @@ const unitNow = (h: HabitData, ctx: Ctx): Streak['unit'] => {
 };
 
 /**
- * The streak a habit is on now, in days (daily schedule) or weeks (weekly schedule). A pending today or an
+ * The streak a habit is on now, in days (daily or fixed-weekday schedule) or weeks (weekly schedule). A pending today or an
  * in-progress week never breaks it, and it never reaches back past a schedule type change. Paused days and
- * weeks are neutral (skipped). A habit that is archived right now has no current streak.
+ * weeks are neutral (skipped), and so are a fixed-weekday habit's other days. A habit that is archived right now has no current streak.
  */
 export const currentStreak = (h: HabitData, ctx: Ctx): Streak => {
   const unit = unitNow(h, ctx);
@@ -39,7 +39,7 @@ export const currentStreak = (h: HabitData, ctx: Ctx): Streak => {
     for (; d >= startDate; d = addDays(d, -1)) {
       if (dayStatus(h, d, ctx) === 'done') {
         count++;
-      } else if (!isPaused(h, d)) {
+      } else if (!isPaused(h, d) && !isOffDay(h, d)) {
         break;
       }
     }
@@ -80,7 +80,7 @@ export const longestStreak = (h: HabitData, ctx: Ctx): Streak => {
   for (let d = startDate; d <= today; d = addDays(d, 1)) {
     if (dayStatus(h, d, ctx) === 'done') {
       consider('day', ++run, d);
-    } else if (!isPaused(h, d)) {
+    } else if (!isPaused(h, d) && !isOffDay(h, d)) {
       run = 0;
     }
   }

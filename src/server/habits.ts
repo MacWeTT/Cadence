@@ -7,7 +7,7 @@ import { isValidTimeZone, type FieldIssue, type HabitInput } from '@/lib/habit-s
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type en from '@locales/en';
 import { fetchAll } from '@/server/fetch-all';
-import { toListItem, toSchedule, type HabitListItem } from '@/server/habit-view';
+import { scheduleArgs, toDesired, toListItem, toSchedule, type HabitListItem } from '@/server/habit-view';
 
 /** The name of a message in `locales/en/errors.json`. */
 export type ErrorCode = keyof typeof en.errors;
@@ -136,26 +136,33 @@ const failRpc = (error: { code?: string; message: string }): never => {
 };
 
 export const createHabit = async (input: HabitInput): Promise<void> => {
-  const { name, description, icon, color, startDate, kind, timesPerWeek } = input;
+  const { name, description, icon, color, startDate, links } = input;
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc('create_habit', {
+  const { data: id, error } = await supabase.rpc('create_habit', {
     p_name: name,
     p_description: description ?? '',
     p_icon: icon,
     p_color: color,
     p_start_date: startDate,
-    p_kind: kind,
-    // The generated argument types are non-null, but the function accepts null for a daily habit.
-    p_times_per_week: (timesPerWeek ?? null) as number,
+    ...scheduleArgs({ ...toDesired(input), effectiveFrom: startDate }),
   });
 
   if (error) {
     failRpc(error);
   }
+
+  // The links go in right after: the habit function stays as it is, and a habit without links needs no second call.
+  if (id && links.length > 0) {
+    const { error: linksError } = await supabase.from('habits').update({ links }).eq('id', id);
+
+    if (linksError) {
+      throw linksError;
+    }
+  }
 };
 
 export const updateHabit = async (id: string, input: HabitInput): Promise<void> => {
-  const { name, description, icon, color, startDate, kind, timesPerWeek } = input;
+  const { name, description, icon, color, startDate, links } = input;
   const supabase = await createSupabaseServerClient();
   const { weekStartsOn, today } = await getProfile();
 
@@ -194,7 +201,7 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
 
   const { error: updateError } = await supabase
     .from('habits')
-    .update({ name, description: description || null, icon, color, start_date: startDate })
+    .update({ name, description: description || null, icon, color, start_date: startDate, links })
     .eq('id', id);
 
   if (updateError) {
@@ -209,7 +216,7 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
 
   const plan = planScheduleChange({
     schedules: rows.map(toSchedule),
-    desired: kind === 'daily' ? { kind: 'daily' } : { kind: 'weekly_count', timesPerWeek: timesPerWeek ?? 1 },
+    desired: toDesired(input),
     startDate,
     today,
     weekStartsOn,
@@ -224,8 +231,7 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
   const { error: rpcError } = await supabase.rpc('apply_schedule_change', {
     p_habit_id: id,
     p_action: plan.action,
-    p_kind: (schedule?.kind ?? null) as string,
-    p_times_per_week: (schedule?.kind === 'weekly_count' ? schedule.timesPerWeek : null) as number,
+    ...scheduleArgs(schedule),
     p_effective_from: (schedule?.effectiveFrom ?? null) as string,
     p_today: today,
   });

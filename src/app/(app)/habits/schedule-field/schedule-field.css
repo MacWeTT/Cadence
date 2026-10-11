@@ -12,6 +12,10 @@
   @apply data-[state=on]:bg-primary data-[state=on]:text-primary-foreground;
 }
 
+.schedule-field__days {
+  @apply mt-2 flex-wrap;
+}
+
 .schedule-field__times {
   @apply flex items-center gap-2;
 }

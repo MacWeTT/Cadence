@@ -79,14 +79,14 @@ isOneToOne: false
                   ]
                 },"habit_schedules": {
                   Row: {
-                    "effective_from": string,"habit_id": string,"id": string,"kind": string,"times_per_week": number | null
+                    "effective_from": string,"habit_id": string,"id": string,"kind": string,"times_per_week": number | null,"weekdays": (number)[] | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "effective_from": string,"habit_id": string,"id"?: string,"kind": string,"times_per_week"?: number | null
+                    "effective_from": string,"habit_id": string,"id"?: string,"kind": string,"times_per_week"?: number | null,"weekdays"?: (number)[] | null
                   }
                   Update: {
-                    "effective_from"?: string,"habit_id"?: string,"id"?: string,"kind"?: string,"times_per_week"?: number | null
+                    "effective_from"?: string,"habit_id"?: string,"id"?: string,"kind"?: string,"times_per_week"?: number | null,"weekdays"?: (number)[] | null
                   }
                   Relationships: [
                     {
@@ -99,14 +99,14 @@ isOneToOne: false
                   ]
                 },"habits": {
                   Row: {
-                    "archived_at": string | null,"color": string,"created_at": string,"description": string | null,"icon": string,"id": string,"name": string,"start_date": string,"updated_at": string,"user_id": string
+                    "archived_at": string | null,"color": string,"created_at": string,"description": string | null,"icon": string,"id": string,"links": (string)[],"name": string,"start_date": string,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"color": string,"created_at"?: string,"description"?: string | null,"icon": string,"id"?: string,"name": string,"start_date": string,"updated_at"?: string,"user_id": string
+                    "archived_at"?: string | null,"color": string,"created_at"?: string,"description"?: string | null,"icon": string,"id"?: string,"links"?: (string)[],"name": string,"start_date": string,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "archived_at"?: string | null,"color"?: string,"created_at"?: string,"description"?: string | null,"icon"?: string,"id"?: string,"name"?: string,"start_date"?: string,"updated_at"?: string,"user_id"?: string
+                    "archived_at"?: string | null,"color"?: string,"created_at"?: string,"description"?: string | null,"icon"?: string,"id"?: string,"links"?: (string)[],"name"?: string,"start_date"?: string,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -131,14 +131,24 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "apply_schedule_change":
+            "all_different":
+{ Args: { "p_values": (number)[] }; Returns: boolean
+                           },
+"all_web_links":
+{ Args: { "p_links": (string)[] }; Returns: boolean
+                           },
+"apply_schedule_change":
 { Args: { "p_action": string,"p_effective_from": string,"p_habit_id": string,"p_kind": string,"p_times_per_week": number,"p_today": string }; Returns: undefined
+                           } |
+{ Args: { "p_action": string,"p_effective_from": string,"p_habit_id": string,"p_kind": string,"p_times_per_week": number,"p_today": string,"p_weekdays": (number)[] }; Returns: undefined
                            },
 "archive_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined
                            },
 "create_habit":
 { Args: { "p_color": string,"p_description": string,"p_icon": string,"p_kind": string,"p_name": string,"p_start_date": string,"p_times_per_week": number }; Returns: string
+                           } |
+{ Args: { "p_color": string,"p_description": string,"p_icon": string,"p_kind": string,"p_name": string,"p_start_date": string,"p_times_per_week": number,"p_weekdays": (number)[] }; Returns: string
                            },
 "restore_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined
