@@ -136,9 +136,9 @@ const failRpc = (error: { code?: string; message: string }): never => {
 };
 
 export const createHabit = async (input: HabitInput): Promise<void> => {
-  const { name, description, icon, color, startDate } = input;
+  const { name, description, icon, color, startDate, links } = input;
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc('create_habit', {
+  const { data: id, error } = await supabase.rpc('create_habit', {
     p_name: name,
     p_description: description ?? '',
     p_icon: icon,
@@ -150,10 +150,19 @@ export const createHabit = async (input: HabitInput): Promise<void> => {
   if (error) {
     failRpc(error);
   }
+
+  // The links go in right after: the habit function stays as it is, and a habit without links needs no second call.
+  if (id && links.length > 0) {
+    const { error: linksError } = await supabase.from('habits').update({ links }).eq('id', id);
+
+    if (linksError) {
+      throw linksError;
+    }
+  }
 };
 
 export const updateHabit = async (id: string, input: HabitInput): Promise<void> => {
-  const { name, description, icon, color, startDate } = input;
+  const { name, description, icon, color, startDate, links } = input;
   const supabase = await createSupabaseServerClient();
   const { weekStartsOn, today } = await getProfile();
 
@@ -192,7 +201,7 @@ export const updateHabit = async (id: string, input: HabitInput): Promise<void> 
 
   const { error: updateError } = await supabase
     .from('habits')
-    .update({ name, description: description || null, icon, color, start_date: startDate })
+    .update({ name, description: description || null, icon, color, start_date: startDate, links })
     .eq('id', id);
 
   if (updateError) {

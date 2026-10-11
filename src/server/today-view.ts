@@ -42,6 +42,8 @@ export interface TodayRow {
   week: WeekProgress | null;
   /** Ticks this year, for optional habits only. */
   year?: number;
+  /** Web addresses to open together; left out when the habit has none. */
+  links?: string[];
 }
 
 /** One day of the week strip: habits done out of habits expected, and whether the day has not happened yet. */
@@ -102,7 +104,7 @@ export const buildTodayView = (
     const ticked = data.completions.has(date);
     const streak = date === ctx.today ? currentStreak(data, ctx) : null;
 
-    const { id, name, icon, color } = habit;
+    const { id, name, icon, color, links } = habit;
 
     const row: TodayRow = {
       id,
@@ -112,6 +114,7 @@ export const buildTodayView = (
       ticked,
       streak: streak && streak.count > 0 ? streak : null,
       week: weekProgress(data, date, ctx),
+      ...(links.length > 0 ? { links } : {}),
     };
 
     if (scheduleFor(data, date)?.kind === 'optional') {

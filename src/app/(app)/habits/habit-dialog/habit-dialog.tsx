@@ -24,7 +24,8 @@ import { createHabitAction, updateHabitAction } from '@/app/(app)/habits/actions
 import { ColorPicker } from '@/app/(app)/habits/color-picker/color-picker';
 import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
 import { FieldError } from '@/app/(app)/habits/field-error/field-error';
-import { initialHabitForm, scheduleChanged, scheduleInput, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { habitInput, initialHabitForm, scheduleChanged, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { LinksField } from '@/app/(app)/habits/links-field/links-field';
 import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
 
@@ -51,7 +52,8 @@ export const HabitDialog = (props: HabitDialogProps) => {
   const nameRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false); // guards against a double-click before React re-renders the disabled button
 
-  const { name, description, icon, color, kind, timesPerWeek, weekdays, startDate, fieldErrors, formError } = form;
+  const { name, description, icon, color, kind, timesPerWeek, weekdays, links, startDate, fieldErrors, formError } =
+    form;
   const {
     name: nameError,
     icon: iconError,
@@ -59,6 +61,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
     color: colorError,
     timesPerWeek: timesError,
     weekdays: daysError,
+    links: linksError,
     startDate: startDateError,
   } = fieldErrors;
 
@@ -86,14 +89,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
     });
 
     startTransition(async () => {
-      const input = {
-        name: name,
-        description: description || undefined,
-        icon: icon,
-        color: color,
-        ...scheduleInput(form),
-        startDate: startDate,
-      };
+      const input = habitInput(form);
       const result = habit ? await updateHabitAction(habit.id, input) : await createHabitAction(input);
 
       if (result.ok) {
@@ -155,6 +151,10 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
   const onWeekdaysChange = (days: HabitFormState['weekdays']) => {
     setField('weekdays', days);
+  };
+
+  const onLinksChange = (links: HabitFormState['links']) => {
+    setField('links', links);
   };
 
   const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,6 +223,8 @@ export const HabitDialog = (props: HabitDialogProps) => {
             daysError={daysError}
             note={effectiveNote}
           />
+
+          <LinksField links={links} onChange={onLinksChange} error={linksError} />
 
           <div>
             <Label htmlFor="habit-start" className="habit-dialog__label">

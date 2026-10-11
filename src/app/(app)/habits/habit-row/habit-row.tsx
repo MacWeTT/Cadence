@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { OpenLinksButton } from '@/components/open-links-button/open-links-button';
 import { formatCalendarDate } from '@/lib/format';
 import { habitColor } from '@/lib/palette';
 import { scheduleMsg } from '@/lib/schedule-label';
@@ -40,7 +41,7 @@ export const HabitRow = (props: HabitRowProps) => {
   const tm = useMsg();
   const menuButton = useRef<HTMLButtonElement>(null);
 
-  const { icon, color, name, description, schedule, pendingSchedule: pending } = habit;
+  const { icon, color, name, description, schedule, pendingSchedule: pending, links } = habit;
   const archived = archivedOn !== undefined;
 
   const onRestore = () => {
@@ -87,6 +88,7 @@ export const HabitRow = (props: HabitRowProps) => {
           </p>
         )}
       </div>
+      {links.length > 0 && !archived && <OpenLinksButton links={links} name={name} />}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button

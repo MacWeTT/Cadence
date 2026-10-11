@@ -19,6 +19,8 @@ export interface HabitFormState {
   timesPerWeek: string;
   /** For fixed days: 1 = Monday ... 7 = Sunday. */
   weekdays: number[];
+  /** One entry per row in the form; blank rows are dropped when saving. */
+  links: string[];
   startDate: string;
   fieldErrors: Record<string, string>;
   formError: string | null;
@@ -45,6 +47,7 @@ export const initialHabitForm = (habit: HabitListItem | undefined, today: string
     kind: shown?.kind ?? 'daily',
     timesPerWeek: timesOf(shown),
     weekdays: daysOf(shown),
+    links: habit?.links ?? [],
     startDate: habit?.startDate ?? today,
     fieldErrors: {},
     formError: null,
@@ -59,6 +62,25 @@ export const scheduleInput = (form: HabitFormState) => {
     kind,
     timesPerWeek: kind === 'weekly_count' ? Number(timesPerWeek) : undefined,
     weekdays: kind === 'weekdays' ? weekdays : undefined,
+  };
+};
+
+/** Everything the form sends to the server. */
+export const habitInput = (form: HabitFormState) => {
+  const { name, description, icon, color, links, startDate } = form;
+
+  return {
+    name,
+    description: description || undefined,
+    icon,
+    color,
+    ...scheduleInput(form),
+    links: links
+      .map(link => {
+        return link.trim();
+      })
+      .filter(Boolean),
+    startDate,
   };
 };
 

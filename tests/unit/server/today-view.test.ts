@@ -25,6 +25,7 @@ const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => {
     created_at: '2026-10-01T08:00:00Z',
     updated_at: '2026-10-01T08:00:00Z',
     archived_at: null,
+    links: [],
     ...over,
   };
 };
@@ -152,6 +153,20 @@ describe('buildTodayView', () => {
       }),
     ).toEqual([['b', true]]);
     expect(view.hasHabits).toBe(true);
+  });
+
+  it('carries the links of a habit that has some, and none otherwise', () => {
+    const view = buildTodayView(
+      [
+        { habit: row('a', { links: ['https://a.dev/1', 'https://a.dev/2'] }), data: makeHabit() },
+        entry('b', makeHabit()),
+      ],
+      '2026-10-09',
+      ctx(),
+    );
+
+    expect(view.todo[0].links).toEqual(['https://a.dev/1', 'https://a.dev/2']);
+    expect('links' in view.todo[1]).toBe(false);
   });
 
   it('shows the current streak on today only', () => {

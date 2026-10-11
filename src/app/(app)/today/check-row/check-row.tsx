@@ -3,6 +3,7 @@
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
+import { OpenLinksButton } from '@/components/open-links-button/open-links-button';
 import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
 import { streakMsg, weekMsg, yearMsg } from '@/lib/today-labels';
@@ -23,7 +24,7 @@ export const CheckRow = (props: CheckRowProps) => {
   const t = useTranslations('today.row');
   const tm = useMsg();
 
-  const { id, ticked, name, icon, color, week, streak, year } = row;
+  const { id, ticked, name, icon, color, week, streak, year, links } = row;
 
   const onClick = () => {
     onToggle(row);
@@ -64,6 +65,7 @@ export const CheckRow = (props: CheckRowProps) => {
         {streak && <span>{tm(streakMsg(streak))}</span>}
         {year !== undefined && <span>{tm(yearMsg(year))}</span>}
       </div>
+      {links && <OpenLinksButton links={links} name={name} />}
     </motion.li>
   );
 };
