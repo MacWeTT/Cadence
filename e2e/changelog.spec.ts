@@ -14,6 +14,8 @@ test("the footer's What's new link opens the changelog: what each release added 
 
   await expect(coming).toContainText('Pages open instantly with your latest data');
 
+  await expect(page.getByRole('region', { name: 'Version 0.3.6' })).toContainText('A contact form');
+
   const release = page.getByRole('region', { name: 'Version 0.3.5' });
 
   await expect(release).toContainText('Every page moves in smoothly');

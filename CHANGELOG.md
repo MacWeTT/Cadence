@@ -8,9 +8,17 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - Focus sessions: a timer for a habit, with a confirmation when you finish.
 - Habit links: add one or many links to a habit and open them all in one click.
 - Optional habits: habits with no fixed days, tracked only by how many times you do them each year.
-- A contact form, with an anonymous option.
-- A moving highlight that glides between the selected links in the top bar and the footer.
-- A desktop app, with desktop and email reminders and an option to start on login.
+- Reminders: push notifications in your browser and by email.
+- A desktop app, with native notifications and an option to start on login.
+
+## 0.3.6 (2026-10-11)
+
+Make it yours, and say hello.
+
+- An Appearance page: ten colour themes, each with a light and a dark version, an accent colour (five presets or any colour of your own), and light, dark or match-my-device.
+- A contact form, with an option to send anonymously.
+- A soft highlight that glides between the selected links in the top bar and the footer.
+- Text boxes keep a fixed size and scroll inside.
 
 ## 0.3.5 (2026-10-11)
 
