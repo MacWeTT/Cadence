@@ -33,15 +33,3 @@ test('a dot on the link marks a version not seen yet, and goes once the page has
   await expect(link).toBeVisible();
   await expect(link.locator('.whats-new-link__dot')).toHaveCount(0);
 });
-
-test.describe('with motion', () => {
-  test.use({ reducedMotion: 'no-preference' });
-
-  test('the cards come in one after another and every one ends fully shown', async ({ page }) => {
-    await page.goto('/changelog');
-
-    for (const name of ['Coming soon', 'Version 0.3.5', 'Version 0.3.0']) {
-      await expect(page.getByRole('region', { name })).toHaveCSS('opacity', '1', { timeout: 5000 });
-    }
-  });
-});

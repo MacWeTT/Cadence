@@ -36,6 +36,20 @@ test.describe('with motion', () => {
     });
   }
 
+  for (const path of ['/about', '/changelog']) {
+    test(`${path}: its blocks come in one after another and every one ends fully shown`, async ({ page }) => {
+      await page.goto(path);
+
+      const blocks = page.locator('.arrive');
+
+      expect(await blocks.count()).toBeGreaterThan(2);
+
+      for (const block of await blocks.all()) {
+        await expect(block).toHaveCSS('opacity', '1', { timeout: 5000 });
+      }
+    });
+  }
+
   test('moving between pages with the links keeps every page usable', async ({ page }) => {
     await seed();
     await page.goto('/today');
