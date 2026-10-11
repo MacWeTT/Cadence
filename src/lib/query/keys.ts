@@ -9,4 +9,8 @@ export const queryKeys = {
   },
   home: ['home'] as const,
   progressAll: ['progress'] as const,
+  /** Progress for one habit filter (`null` is all habits) and one rate window. */
+  progress: (habit: string | null, range: number) => {
+    return ['progress', habit ?? 'all', range] as const;
+  },
 };

@@ -31,5 +31,8 @@
   "bars": {
     "perWeek": "Ticks per week",
     "perMonth": "Ticks per month"
-  }
+  },
+  "loadFailedTitle": "Couldn't load your progress",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again"
 }
