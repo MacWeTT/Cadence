@@ -10,6 +10,24 @@
     "toLight": "Switch to light theme",
     "toDark": "Switch to dark theme"
   },
+  "appearance": {
+    "open": "Theme and accent colour",
+    "theme": "Theme",
+    "accent": "Accent colour",
+    "themes": {
+      "cadence": "Cadence",
+      "ocean": "Ocean",
+      "graphite": "Graphite",
+      "blossom": "Blossom"
+    },
+    "accents": {
+      "moss": "Moss",
+      "clay": "Clay",
+      "sky": "Sky",
+      "plum": "Plum",
+      "teal": "Teal"
+    }
+  },
   "account": {
     "fallbackName": "Account",
     "menu": "Account menu",

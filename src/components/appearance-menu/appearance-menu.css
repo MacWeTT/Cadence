@@ -1,0 +1,49 @@
+@reference '../../app/globals.css';
+
+.appearance-menu__trigger {
+  @apply flex size-9 cursor-pointer items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:bg-line hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.appearance-menu__icon {
+  @apply size-4.5;
+}
+
+.appearance-menu__content {
+  @apply w-64 gap-4 p-4;
+}
+
+.appearance-menu__legend {
+  @apply mb-2 text-sm font-medium;
+}
+
+.appearance-menu__themes {
+  @apply grid grid-cols-2 gap-2;
+}
+
+.appearance-menu__accents {
+  @apply flex gap-2.5;
+}
+
+.appearance-menu__option {
+  @apply cursor-pointer;
+}
+
+.appearance-menu__input {
+  @apply sr-only;
+}
+
+.appearance-menu__theme {
+  @apply flex items-center gap-2 rounded-lg border border-line px-2 py-1.5 text-sm peer-checked:border-ink peer-checked:font-medium peer-focus-visible:outline-2 peer-focus-visible:outline-clay;
+}
+
+.appearance-menu__chip {
+  @apply flex size-6 shrink-0 items-center justify-center rounded-full border border-line;
+}
+
+.appearance-menu__chip-surface {
+  @apply size-3 rounded-full;
+}
+
+.appearance-menu__swatch {
+  @apply block size-7 rounded-full ring-offset-2 ring-offset-popover peer-checked:ring-2 peer-checked:ring-ink peer-focus-visible:ring-2 peer-focus-visible:ring-clay;
+}

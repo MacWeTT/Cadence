@@ -88,6 +88,130 @@
   --habit-slate: #a8a39b;
 }
 
+/*
+ * Themes: <html data-palette="..."> (see src/lib/appearance.ts). Each one replaces the page, surface and text colours;
+ * the stock theme is the :root and .dark blocks above and sets no attribute. A .dark rule comes after its light one so
+ * it wins when both match. The contrast of every pair is checked in src/lib/appearance.test.ts.
+ */
+:root[data-palette='ocean'] {
+  --bg: #e6eef2;
+  --surface: #f2f7f9;
+  --topbar: #d8e4ea;
+  --ink: #1f2f3a;
+  --ink-muted: #4d6371;
+  --line: #c5d5de;
+  --missed: #d9b39a;
+  --heat-0: #d6e2e8;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='ocean'] {
+  --bg: #101a21;
+  --surface: #172530;
+  --topbar: #0c141a;
+  --ink: #e3eef4;
+  --ink-muted: #8fa7b6;
+  --line: #263a47;
+  --missed: #7a5340;
+  --heat-0: #1d2f3a;
+  --danger: #e0905f;
+}
+
+:root[data-palette='graphite'] {
+  --bg: #ececec;
+  --surface: #f7f7f7;
+  --topbar: #dedede;
+  --ink: #222222;
+  --ink-muted: #5a5a5a;
+  --line: #d2d2d2;
+  --missed: #d1b3a3;
+  --heat-0: #dcdcdc;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='graphite'] {
+  --bg: #161616;
+  --surface: #202020;
+  --topbar: #101010;
+  --ink: #ededed;
+  --ink-muted: #9a9a9a;
+  --line: #323232;
+  --missed: #7a5340;
+  --heat-0: #2a2a2a;
+  --danger: #e0905f;
+}
+
+:root[data-palette='blossom'] {
+  --bg: #f6e6ea;
+  --surface: #fcf1f4;
+  --topbar: #efd9df;
+  --ink: #3a2630;
+  --ink-muted: #6d4f5d;
+  --line: #e5c9d2;
+  --missed: #d9b3a8;
+  --heat-0: #ecd6dc;
+  --danger: #9a4f2b;
+}
+
+.dark[data-palette='blossom'] {
+  --bg: #1d1519;
+  --surface: #281c22;
+  --topbar: #150f12;
+  --ink: #f4e3e8;
+  --ink-muted: #a98a97;
+  --line: #3d2b33;
+  --missed: #7a5340;
+  --heat-0: #33242b;
+  --danger: #e0905f;
+}
+
+/*
+ * Accents: <html data-accent="..."> (moss is the stock one and sets no attribute). An accent sets the button colour,
+ * and everything that was moss (the logo, the illustration) and the heatmap follow it. The button text stays the
+ * stock pair, so each --btn only has to keep AA contrast with it (checked in src/lib/appearance.test.ts).
+ */
+:root[data-accent='clay'] {
+  --btn: #a8512b;
+}
+
+.dark[data-accent='clay'] {
+  --btn: #e0905f;
+}
+
+:root[data-accent='sky'] {
+  --btn: #3f6f98;
+}
+
+.dark[data-accent='sky'] {
+  --btn: #86b0d6;
+}
+
+:root[data-accent='plum'] {
+  --btn: #7d5a8c;
+}
+
+.dark[data-accent='plum'] {
+  --btn: #b99ad0;
+}
+
+:root[data-accent='teal'] {
+  --btn: #2f6f69;
+}
+
+.dark[data-accent='teal'] {
+  --btn: #6fb5ac;
+}
+
+/* Any non-stock accent: the heatmap steps from the page's empty cell up to the accent itself. */
+:root[data-accent],
+.dark[data-accent] {
+  --moss: var(--btn);
+  --heat-1: color-mix(in srgb, var(--btn) 25%, var(--heat-0));
+  --heat-2: color-mix(in srgb, var(--btn) 50%, var(--heat-0));
+  --heat-3: color-mix(in srgb, var(--btn) 75%, var(--heat-0));
+  --heat-4: var(--btn);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
