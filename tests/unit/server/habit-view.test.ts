@@ -19,6 +19,7 @@ const habit: HabitRow = {
   created_at: '2026-10-01T08:00:00Z',
   updated_at: '2026-10-01T08:00:00Z',
   archived_at: null,
+  links: [],
 };
 
 const daily = (effective_from: string): ScheduleRow => {
@@ -67,6 +68,17 @@ describe('toListItem', () => {
     expect(item.schedule).toEqual({ kind: 'daily', effectiveFrom: '2026-10-01' });
     expect(item.pendingSchedule).toEqual({ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-10-12' });
     expect(item.hasCompletions).toBe(true);
+  });
+
+  it('carries the links, in order', () => {
+    const item = toListItem(
+      { ...habit, links: ['https://a.dev/2', 'https://a.dev/1'] },
+      [daily('2026-10-01')],
+      false,
+      '2026-10-09',
+    );
+
+    expect(item.links).toEqual(['https://a.dev/2', 'https://a.dev/1']);
   });
 
   it('falls back to the earliest schedule when the start date was moved before every row', () => {

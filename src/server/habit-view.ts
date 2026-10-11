@@ -21,6 +21,8 @@ export interface HabitListItem {
   schedule: Schedule;
   pendingSchedule: Schedule | null;
   hasCompletions: boolean;
+  /** Web addresses opened together from the habit's row. */
+  links: string[];
 }
 
 export const toSchedule = ({ kind, times_per_week, weekdays, effective_from }: ScheduleRow): Schedule => {
@@ -81,7 +83,7 @@ export const toListItem = (
   const schedules = scheduleRows.map(toSchedule).sort((a, b) => {
     return a.effectiveFrom.localeCompare(b.effectiveFrom);
   });
-  const { id, name, description, icon, color: storedColor, start_date, archived_at } = habit;
+  const { id, name, description, icon, color: storedColor, start_date, archived_at, links } = habit;
 
   return {
     id,
@@ -98,6 +100,7 @@ export const toListItem = (
         return s.effectiveFrom > today;
       }) ?? null,
     hasCompletions,
+    links,
   };
 };
 

@@ -40,7 +40,15 @@
     "wheneverHint": "Nothing is expected of it: no streak, no rate. It only counts how many times you do it this year.",
     "timesAWeek": "Times a week",
     "timesPerWeek": "Times per week",
-    "perWeek": "per week"
+    "perWeek": "per week",
+    "links": {
+      "title": "Links (optional)",
+      "add": "Add a link",
+      "placeholder": "https://",
+      "label": "Link {number}",
+      "remove": "Remove link {number}",
+      "hint": "\"Open links\" on the habit opens them all at once. Your browser may ask you to allow pop-ups the first time."
+    }
   },
   "emoji": {
     "choose": "Choose emoji",

@@ -1,6 +1,6 @@
 # 0.5: fixed weekdays, optional habits and links, design
 
-Status: proposed. Defaults are chosen where the answer was not given; the open questions at the end can change them.
+Status: built (0.5). Defaults are chosen where the answer was not given; the open questions at the end can change them.
 
 ## Scope
 
@@ -33,7 +33,7 @@ Everything is additive: new schedule kinds, one new column, no data rewrite. Rem
 ## 3. Links
 
 - `habits.links text[] not null default '{}'`: up to 10 http or https URLs, in order. Validated in the form schema and with a CHECK on the database (array length, each value starts with `http://` or `https://`). Links are not effective-dated: editing them changes the habit, not its history.
-- **Form:** a "Links" field in the habit dialog: add, remove and reorder rows, with inline validation.
+- **Form:** a "Links" field in the habit dialog: add and remove rows, with inline validation. Reordering is left for later: remove and re-add to change the order.
 - **Opening:** an "Open links" button on the habit row (Today, Home) and the habits list. One click opens each link in its own tab (`window.open` with `noopener`). A browser lets one popup through per click, so the first run asks the person to allow popups for Cadence; if only some tabs open, a toast says how. The desktop app opens them without that step.
 
 ## Order of work

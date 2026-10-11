@@ -4,6 +4,8 @@
   "descriptionTooLong": "Keep the description to 280 characters or fewer",
   "iconInvalid": "Choose a single emoji",
   "colorInvalid": "Choose a color",
+  "linkInvalid": "A link must be a web address starting with http:// or https://",
+  "linksTooMany": "Add up to 10 links",
   "timesRange": "Choose 1 to 6 times a week",
   "timesOnDaily": "Only a weekly habit has a weekly count",
   "weekdaysRange": "Choose 1 to 6 different days of the week",

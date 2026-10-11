@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import en from '@locales/en';
-import { habitInputSchema, isSingleEmoji, isValidTimeZone, toFieldErrors } from '@/lib/habit-schema';
+import { habitInputSchema, isSingleEmoji, isValidTimeZone, isWebLink, toFieldErrors } from '@/lib/habit-schema';
 
 const today = '2026-10-09';
 const valid = { name: 'Read', icon: '📖', color: 'moss', kind: 'daily', startDate: '2026-10-01' };
@@ -18,10 +18,36 @@ describe('isSingleEmoji', () => {
   });
 });
 
+describe('isWebLink', () => {
+  it.each(['https://leetcode.com/problemset/', 'http://example.com/a?b=c#d'])('accepts %s', link => {
+    return expect(isWebLink(link)).toBe(true);
+  });
+  it.each(['javascript:alert(1)', 'ftp://example.com', 'example.com', '', 'https://a.dev/ x', 'https://'])(
+    'rejects %j',
+    link => {
+      return expect(isWebLink(link)).toBe(false);
+    },
+  );
+});
+
 describe('habitInputSchema', () => {
   it('accepts a valid daily and a valid weekly habit', () => {
     expect(parse({}).success).toBe(true);
     expect(parse({ kind: 'weekly_count', timesPerWeek: 3, description: 'Before bed' }).success).toBe(true);
+  });
+
+  it('accepts up to ten links, trimmed, and none by default', () => {
+    const r = parse({ links: ['  https://a.dev/1  ', 'https://a.dev/2'] });
+
+    expect(r.success && r.data.links).toEqual(['https://a.dev/1', 'https://a.dev/2']);
+    expect(parse({}).success && parse({}).data?.links).toEqual([]);
+    expect(
+      parse({
+        links: Array.from({ length: 10 }, (_, i) => {
+          return `https://a.dev/${i}`;
+        }),
+      }).success,
+    ).toBe(true);
   });
 
   it('accepts fixed weekdays and an optional habit', () => {
@@ -53,6 +79,16 @@ describe('habitInputSchema', () => {
     ['fixed weekdays with a day out of range', { kind: 'weekdays', weekdays: [0, 3] }],
     ['fixed weekdays with a weekly count', { kind: 'weekdays', weekdays: [1], timesPerWeek: 2 }],
     ['days on a daily habit', { kind: 'daily', weekdays: [1] }],
+    ['a link that is not a web address', { links: ['javascript:alert(1)'] }],
+    [
+      'eleven links',
+      {
+        links: Array.from({ length: 11 }, (_, i) => {
+          return `https://a.dev/${i}`;
+        }),
+      },
+    ],
+    ['a link of 2049 characters', { links: [`https://a.dev/${'x'.repeat(2035)}`] }],
     ['days on an optional habit', { kind: 'optional', weekdays: [1] }],
     ['a count on an optional habit', { kind: 'optional', timesPerWeek: 2 }],
     ['a start date in the future', { startDate: '2026-10-10' }],

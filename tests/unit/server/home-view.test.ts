@@ -19,6 +19,7 @@ const row = (id: string): HabitRow => {
     created_at: '2026-09-14T08:00:00Z',
     updated_at: '2026-09-14T08:00:00Z',
     archived_at: null,
+    links: [],
   };
 };
 

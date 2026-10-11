@@ -1,0 +1,17 @@
+@reference '../../../globals.css';
+
+.links-field__label {
+  @apply mb-1.5 text-sm font-medium;
+}
+
+.links-field__list {
+  @apply mb-2 flex flex-col gap-2;
+}
+
+.links-field__add {
+  @apply mt-1;
+}
+
+.links-field__hint {
+  @apply mt-2 text-sm text-ink-muted;
+}

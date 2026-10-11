@@ -23,6 +23,17 @@ export const isSingleEmoji = (value: string): boolean => {
   return /\p{Extended_Pictographic}|\p{Regional_Indicator}|⃣/u.test(value);
 };
 
+/** True for an http or https address with no spaces. */
+export const isWebLink = (value: string): boolean => {
+  try {
+    const { protocol } = new URL(value);
+
+    return (protocol === 'http:' || protocol === 'https:') && !/\s/.test(value);
+  } catch {
+    return false;
+  }
+};
+
 export const isValidTimeZone = (timeZone: string): boolean => {
   try {
     new Intl.DateTimeFormat('en', { timeZone });
@@ -45,6 +56,11 @@ export const habitInputSchema = (today: CalendarDate) => {
       timesPerWeek: z.number().int().min(1, 'timesRange').max(6, 'timesRange').optional(),
       /** Fixed weekdays only: 1 = Monday ... 7 = Sunday. */
       weekdays: z.array(z.number().int().min(1, 'weekdaysRange').max(7, 'weekdaysRange')).optional(),
+      /** Up to ten web addresses, opened together from the habit's row. */
+      links: z
+        .array(z.string().trim().max(2048, 'linkInvalid').refine(isWebLink, 'linkInvalid'))
+        .max(10, 'linksTooMany')
+        .default([]),
       startDate: z
         .string()
         .refine(isCalendarDate, 'dateInvalid')

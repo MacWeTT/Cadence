@@ -15,6 +15,7 @@ const habit = (id: string, over: Partial<HabitListItem> = {}): HabitListItem => 
     schedule: { kind: 'daily', effectiveFrom: '2026-10-01' },
     pendingSchedule: null,
     hasCompletions: false,
+    links: [],
     ...over,
   };
 };
