@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
-import { PageTransition } from '@/components/page-transition/page-transition';
+import { Suspense } from 'react';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
-import { getTodayView } from '@/server/today';
+import { PageTransition } from '@/components/page-transition/page-transition';
 import { TodayClient } from '@/app/(app)/today/today-client/today-client';
 
-const TodayPage = (props: PageProps<'/today'>) => {
-  const { searchParams } = props;
-
-  const t = useTranslations('today');
+/** The page is only a frame: its data comes from the browser's cache (see use-today.ts), so it opens at once. */
+const TodayPage = async () => {
+  const t = await getTranslations('today');
 
   return (
-    <PageTransition fallback={<ListSkeleton title={t('title')} />}>
-      <TodayContent searchParams={searchParams} />
+    <PageTransition>
+      <Suspense fallback={<ListSkeleton title={t('title')} />}>
+        <TodayClient />
+      </Suspense>
     </PageTransition>
   );
 };
@@ -25,15 +25,3 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 export default TodayPage;
-
-interface TodayContentProps {
-  searchParams: PageProps<'/today'>['searchParams'];
-}
-
-const TodayContent = async (props: TodayContentProps) => {
-  const { searchParams } = props;
-
-  const { date } = await searchParams;
-
-  return <TodayClient {...await getTodayView(date)} />;
-};
