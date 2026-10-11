@@ -1,10 +1,18 @@
 @reference '../../app/globals.css';
 
 .app-splash {
-  @apply pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-bg transition-opacity duration-500;
+  @apply pointer-events-none fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-bg transition-opacity duration-500;
   --logo-height: 5rem;
 }
 
 .app-splash--leaving {
   @apply opacity-0;
+}
+
+.app-splash__tagline {
+  @apply translate-y-2 text-lg text-ink-muted opacity-0 transition duration-700;
+}
+
+.app-splash__tagline--shown {
+  @apply translate-y-0 opacity-100;
 }

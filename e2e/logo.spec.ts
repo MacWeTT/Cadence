@@ -10,6 +10,9 @@ test.describe('with motion', () => {
   }) => {
     await page.goto('/today');
     await expect(page.locator('.app-splash')).toBeVisible();
+    // once the word is whole, the app's description fades in under it
+    await expect(page.locator('.app-splash__tagline')).toHaveText('A calm personal habit tracker.');
+    await expect(page.locator('.app-splash__tagline')).toHaveCSS('opacity', '1', { timeout: 10_000 });
     await expect(page.locator('.app-splash')).toHaveCount(0, { timeout: 10_000 });
 
     await page.goto('/habits');
