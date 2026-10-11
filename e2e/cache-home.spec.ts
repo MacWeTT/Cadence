@@ -37,7 +37,11 @@ test('coming back to Home shows the cached page at once, with no skeleton', asyn
   await page.getByRole('banner').getByRole('link', { name: 'Cadence' }).click();
   await expect(page.getByRole('checkbox', { name: 'Mark Read done' })).toBeVisible();
 
-  expect(await page.evaluate(() => {return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton})).toBe(false);
+  expect(
+    await page.evaluate(() => {
+      return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton;
+    }),
+  ).toBe(false);
 });
 
 test('a tick on Home is already there when you open Today', async ({ page }) => {
@@ -58,9 +62,14 @@ test('a tick that fails on Home goes back and says so', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('checkbox', { name: 'Mark Read done' })).toBeVisible();
 
-  await page.route(url => {return new URL(url).pathname === '/'}, route => {
-    return route.request().method() === 'POST' ? route.abort() : route.continue();
-  });
+  await page.route(
+    url => {
+      return new URL(url).pathname === '/';
+    },
+    route => {
+      return route.request().method() === 'POST' ? route.abort() : route.continue();
+    },
+  );
   await page.getByRole('checkbox', { name: 'Mark Read done' }).click();
 
   await expect(page.getByText(/Couldn't save that/)).toBeVisible();

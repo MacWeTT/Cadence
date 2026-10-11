@@ -37,7 +37,11 @@ test('coming back to Today shows the cached day at once, with no skeleton', asyn
   await page.getByRole('banner').getByRole('link', { name: 'Today' }).click();
   await expect(page.getByRole('checkbox', { name: 'Mark Read done' })).toBeVisible();
 
-  expect(await page.evaluate(() => {return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton})).toBe(false);
+  expect(
+    await page.evaluate(() => {
+      return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton;
+    }),
+  ).toBe(false);
 });
 
 test('yesterday opens at once from the arrow: it was fetched while today was read', async ({ page }) => {
@@ -60,7 +64,11 @@ test('yesterday opens at once from the arrow: it was fetched while today was rea
   await expect(page).toHaveURL(/date=/);
   await expect(page.getByRole('checkbox', { name: 'Mark Read done' })).toBeVisible();
 
-  expect(await page.evaluate(() => {return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton})).toBe(false);
+  expect(
+    await page.evaluate(() => {
+      return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton;
+    }),
+  ).toBe(false);
 });
 
 test('a tick shows in the cache at once, and Today and its day agree after leaving and coming back', async ({
