@@ -41,7 +41,11 @@ test('coming back to Habits shows the cached list at once, with no skeleton, the
   await page.getByRole('banner').getByRole('link', { name: 'Habits' }).click();
   await expect(page.getByRole('listitem').filter({ hasText: 'Read' })).toBeVisible();
 
-  expect(await page.evaluate(() => {return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton})).toBe(false);
+  expect(
+    await page.evaluate(() => {
+      return (window as unknown as { __sawSkeleton: boolean }).__sawSkeleton;
+    }),
+  ).toBe(false);
 });
 
 test('archiving answers at once; if the server refuses, the habit comes back and a toast says so', async ({ page }) => {
