@@ -45,7 +45,6 @@ export const TodayClient = (props: TodayClientProps) => {
         </div>
         <DateNav date={date} today={today} earliest={earliest} />
       </div>
-
       {!view.hasHabits ? (
         <EmptyState
           title={tc('title')}

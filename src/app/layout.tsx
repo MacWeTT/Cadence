@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { ThemeProvider } from 'next-themes';
 import { AppSplash } from '@/components/app-splash/app-splash';
+import { MotionProvider } from '@/components/motion-provider/motion-provider';
+import { ThemeFavicon } from '@/components/theme-favicon/theme-favicon';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
@@ -35,9 +37,12 @@ const RootLayout = async (props: LayoutProps<'/'>) => {
       <body className="min-h-screen">
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark', 'forest']}>
-            <AppSplash />
-            {children}
-            <Toaster />
+            <MotionProvider>
+              <ThemeFavicon />
+              <AppSplash />
+              {children}
+              <Toaster />
+            </MotionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

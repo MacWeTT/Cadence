@@ -49,3 +49,23 @@ test('Forest night is a dark theme of its own, and Paper brings the light one ba
   await expect(page.locator('html')).not.toHaveClass(/dark|forest/);
   await expect(page.locator('html')).not.toHaveClass(/theme-transition/);
 });
+
+test('the tab icon follows the theme: Paper, Slate and Forest night each have their own', async ({ page }) => {
+  const icon = page.locator('link[rel="icon"][type="image/svg+xml"]').first();
+
+  await page.goto('/login');
+  await expect(icon).toHaveAttribute('href', /icon-light\.svg/);
+
+  await chooseTheme(page, 'Slate');
+  await expect(icon).toHaveAttribute('href', /icon-dark\.svg/);
+
+  await chooseTheme(page, 'Forest night');
+  await expect(icon).toHaveAttribute('href', /icon-forest\.svg/);
+
+  await page.reload();
+  await expect(icon).toHaveAttribute('href', /icon-forest\.svg/);
+
+  for (const name of ['light', 'dark', 'forest']) {
+    expect((await page.request.get(`/brand/icon-${name}.svg`)).ok()).toBe(true);
+  }
+});

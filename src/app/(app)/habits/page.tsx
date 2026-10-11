@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
-import { Suspense } from 'react';
+import { PageTransition } from '@/components/page-transition/page-transition';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { listHabits } from '@/server/habits';
 import { HabitsClient } from './habits-client/habits-client';
@@ -10,9 +10,9 @@ const HabitsPage = () => {
   const t = useTranslations('habits');
 
   return (
-    <Suspense fallback={<ListSkeleton title={t('title')} />}>
+    <PageTransition fallback={<ListSkeleton title={t('title')} />}>
       <HabitsContent />
-    </Suspense>
+    </PageTransition>
   );
 };
 

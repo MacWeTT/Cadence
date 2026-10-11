@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import type { Alert, AlertTier } from '@/lib/alert';
@@ -58,7 +59,15 @@ export const AlertBanner = (props: AlertBannerProps) => {
       </div>
       {alert === null && <div className="alert-banner__placeholder" />}
       {alert && alert.tier !== 'none' && (
-        <div data-testid="banner" className={cn('alert-banner', `alert-banner--${alert.tier}`)}>
+        <motion.div
+          // A new tier is a new message: it eases in, where the old one was.
+          key={alert.tier}
+          data-testid="banner"
+          className={cn('alert-banner', `alert-banner--${alert.tier}`)}
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
+        >
           <span aria-hidden className={cn('alert-banner__icon', alert.tier === 'late' && 'alert-banner__icon--pulse')}>
             {ICONS[alert.tier]}
           </span>
@@ -73,7 +82,7 @@ export const AlertBanner = (props: AlertBannerProps) => {
               {tm(action.label)}
             </Link>
           )}
-        </div>
+        </motion.div>
       )}
     </>
   );

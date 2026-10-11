@@ -120,17 +120,20 @@ const wordSvg = colors => {
   );
 };
 
-// The favicon / app icon tile: the mark on a cream tile, 74% of the tile wide and centred.
+// The favicon / app icon tiles: the mark on a tile, 74% of the tile wide and centred. One per theme: the light one
+// (cream, the default), and the two dark ones (Slate and Forest night); the app swaps the tab icon with the theme.
 const scale = (512 * 0.74) / (markStop.cx + dotR - pad);
 const tileRing = ringShape;
-const tile = svg(
-  '0 0 512 512',
-  `<rect width="512" height="512" rx="112" fill="#f3e8d3"/>` +
-    `<g transform="translate(${round(256 - ((markStop.cx + dotR + pad) / 2) * scale)} ${round(256 - (base - xHeight / 2) * scale)}) scale(${round(scale * 1000) / 1000})">` +
-    ringPath(COLORS.light, tileRing) +
-    dotCircle(COLORS.light, markStop) +
-    `</g>`,
-);
+const tile = (fill, colors) => {
+  return svg(
+    '0 0 512 512',
+    `<rect width="512" height="512" rx="112" fill="${fill}"/>` +
+      `<g transform="translate(${round(256 - ((markStop.cx + dotR + pad) / 2) * scale)} ${round(256 - (base - xHeight / 2) * scale)}) scale(${round(scale * 1000) / 1000})">` +
+      ringPath(colors, tileRing) +
+      dotCircle(colors, markStop) +
+      `</g>`,
+  );
+};
 
 fs.mkdirSync('public/brand', { recursive: true });
 fs.rmSync('public/brand/logo-stacked.svg', { force: true });
@@ -139,7 +142,10 @@ fs.writeFileSync('public/brand/mark.svg', markSvg(COLORS.light));
 fs.writeFileSync('public/brand/mark-dark.svg', markSvg(COLORS.dark));
 fs.writeFileSync('public/brand/logo.svg', wordSvg(COLORS.light));
 fs.writeFileSync('public/brand/logo-dark.svg', wordSvg(COLORS.dark));
-fs.writeFileSync('src/app/icon.svg', tile);
+fs.writeFileSync('src/app/icon.svg', tile('#f3e8d3', COLORS.light));
+fs.writeFileSync('public/brand/icon-light.svg', tile('#f3e8d3', COLORS.light));
+fs.writeFileSync('public/brand/icon-dark.svg', tile('#23272c', COLORS.dark));
+fs.writeFileSync('public/brand/icon-forest.svg', tile('#1f2822', COLORS.dark));
 
 // What the app's logo component draws: the same shapes, coloured by the theme's CSS variables instead.
 fs.mkdirSync('src/components/logo', { recursive: true });

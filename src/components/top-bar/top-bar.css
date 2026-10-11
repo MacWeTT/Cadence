@@ -2,6 +2,7 @@
 
 .top-bar {
   @apply border-b border-line bg-topbar;
+  view-transition-name: site-header;
 }
 
 .top-bar__inner {

@@ -3,23 +3,21 @@ import { Skeleton } from '../skeleton/skeleton';
 import './list-skeleton.css';
 
 interface ListSkeletonProps {
+  /** Only read out for people using a screen reader; the title itself is not shown while loading. */
   title: string;
 }
 
-/** A page title with a stack of row-shaped placeholders under it (Today and Habits). */
+/** A stack of row-shaped placeholders (Today and Habits). The page, title and all, arrives in one piece. */
 export const ListSkeleton = (props: ListSkeletonProps) => {
   const { title } = props;
 
   const t = useTranslations('common.loading');
 
   return (
-    <div role="status" aria-busy="true" aria-label={t('list', { title })}>
-      <h1 className="list-skeleton__title">{title}</h1>
-      <div className="list-skeleton__rows">
-        {[0, 1, 2, 3].map(i => {
-          return <Skeleton key={i} shape="row" />;
-        })}
-      </div>
+    <div role="status" aria-busy="true" aria-label={t('list', { title })} className="list-skeleton__rows">
+      {[0, 1, 2, 3].map(i => {
+        return <Skeleton key={i} shape="row" />;
+      })}
     </div>
   );
 };
