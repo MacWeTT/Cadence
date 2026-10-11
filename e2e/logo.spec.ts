@@ -42,3 +42,30 @@ test.describe('with reduced motion', () => {
     await expect(page.getByRole('heading', { name: 'Cadence' }).locator('svg.logo')).toBeVisible();
   });
 });
+
+test.describe('login card', () => {
+  test.use({ reducedMotion: 'reduce', storageState: signedOut });
+
+  test('the logo and tagline are centred in the card, and the page hydrates cleanly', async ({ page }) => {
+    const errors: string[] = [];
+
+    page.on('pageerror', error => {
+      errors.push(error.message);
+    });
+
+    await page.goto('/login');
+    await expect(page.locator('svg.logo')).toBeVisible();
+
+    const card = await page.locator('.login__card').boundingBox();
+    const logo = await page.locator('.login__title svg').boundingBox();
+    const tagline = await page.locator('.login__tagline').boundingBox();
+
+    const middle = (box: { x: number; width: number }) => {
+      return box.x + box.width / 2;
+    };
+
+    expect(Math.abs(middle(logo!) - middle(card!))).toBeLessThan(2);
+    expect(Math.abs(middle(tagline!) - middle(card!))).toBeLessThan(2);
+    expect(errors).toEqual([]);
+  });
+});

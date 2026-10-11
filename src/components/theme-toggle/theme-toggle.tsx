@@ -1,10 +1,11 @@
 'use client';
 
 import { Moon, Sun } from 'lucide-react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './theme-toggle.css';
 
 const noopSubscribe = () => {
