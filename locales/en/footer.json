@@ -2,5 +2,6 @@
   "about": "About",
   "contact": "Contact",
   "developedBy": "Developed by",
-  "version": "Version {version}"
+  "version": "Version {version}",
+  "whatsNew": "What's new"
 }

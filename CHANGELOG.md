@@ -4,12 +4,24 @@ Cadence follows [semantic versioning](https://semver.org). Until 1.0 (the public
 
 ## Planned
 
-- **0.3.5** Motion: every page moves in smoothly and loading no longer pops; the splash shows the app's description; a What's new page.
 - **0.4** The cache-first data layer.
 - **0.5** Focus sessions: a timer for a habit, with a confirmation when you finish.
+- **0.6** Habit links: add one or many links to a habit, and open them all in one click.
 - **Later** The desktop app, desktop and email notifications, and starting on login.
 
-## 0.3.0
+## 0.3.5 (2026-10-11)
+
+Smoother, with a changelog.
+
+- Every page moves in smoothly: it arrives as one piece and loading no longer pops.
+- The Home ring, the alert banner and the habit rows move too: ticking a habit glides it from To do to Done.
+- The splash shows the app's description under the logo.
+- A What's new page (this one), linked from the footer.
+- The tab icon follows the theme.
+- Two dark themes, Slate and Forest night, and a theme menu.
+- Every page has the same width, whether or not it scrolls.
+
+## 0.3.0 (2026-10-11)
 
 The first numbered version.
 
