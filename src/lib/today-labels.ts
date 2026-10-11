@@ -12,6 +12,11 @@ export const weekMsg = ({ goalMet, done, target }: WeekProgress): Msg => {
   return goalMet ? msg('labels.week.goalMet') : msg('labels.week.progress', { done, target });
 };
 
+/** "12 times this year", for an optional habit. */
+export const yearMsg = (count: number): Msg => {
+  return msg('labels.year', { count });
+};
+
 /** A streak length on its own: "3 days", "1 week". */
 export const streakLengthMsg = ({ unit, count }: Streak): Msg => {
   return msg(unit === 'week' ? 'labels.streak.lengthWeeks' : 'labels.streak.lengthDays', { count });

@@ -34,6 +34,10 @@
     "color": "Color",
     "schedule": "Schedule",
     "everyDay": "Every day",
+    "certainDays": "Certain days",
+    "daysOfWeek": "Days of the week",
+    "whenever": "Whenever",
+    "wheneverHint": "Nothing is expected of it: no streak, no rate. It only counts how many times you do it this year.",
     "timesAWeek": "Times a week",
     "timesPerWeek": "Times per week",
     "perWeek": "per week"

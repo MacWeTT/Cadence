@@ -72,7 +72,7 @@ export const TodayClient = () => {
   }
 
   const { view, date, today, earliest } = data;
-  const { todo, done: finished, strip } = view;
+  const { todo, done: finished, optional, strip } = view;
 
   const onToggle = (row: TodayRow) => {
     toggle(row, date);
@@ -81,7 +81,7 @@ export const TodayClient = () => {
   const isToday = date === today;
   const todoCount = todo.length;
   const doneCount = finished.length;
-  const nothingListed = todoCount === 0 && doneCount === 0;
+  const nothingListed = todoCount === 0 && doneCount === 0 && optional.length === 0;
 
   return (
     <>
@@ -123,6 +123,13 @@ export const TodayClient = () => {
                   id="done-heading"
                   title={isToday ? t('doneToday') : t('done')}
                   rows={finished}
+                  saving={saving}
+                  onToggle={onToggle}
+                />
+                <CheckSection
+                  id="optional-heading"
+                  title={t('whenever')}
+                  rows={optional}
                   saving={saving}
                   onToggle={onToggle}
                 />

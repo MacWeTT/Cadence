@@ -121,8 +121,10 @@ export const seedHabit = async (o: {
   startDate: string;
   icon?: string;
   color?: string;
-  kind?: 'daily' | 'weekly_count';
+  kind?: 'daily' | 'weekdays' | 'weekly_count' | 'optional';
   timesPerWeek?: number;
+  /** For `weekdays`: 1 = Monday ... 7 = Sunday. */
+  weekdays?: number[];
 }): Promise<string> => {
   const admin = adminClient();
   const userId = await ensureE2EUser();
@@ -141,6 +143,7 @@ export const seedHabit = async (o: {
     habit_id: data.id,
     kind,
     times_per_week: kind === 'weekly_count' ? (o.timesPerWeek ?? 3) : null,
+    weekdays: kind === 'weekdays' ? (o.weekdays ?? [1, 3, 5]) : null,
     effective_from: o.startDate,
   });
 

@@ -210,6 +210,26 @@ describe('buildProgress', () => {
     ).toEqual(['b']);
     expect(one.rate).toEqual({ done: 1, expected: 7 });
   });
+  it('gives an optional habit its yearly count, and the others none', () => {
+    const optional = {
+      habit: row('o'),
+      data: makeHabit({
+        schedules: [{ kind: 'optional', effectiveFrom: '2026-10-01' }],
+        done: ['2026-10-02', '2026-10-03'],
+      }),
+    };
+    const view = buildProgress([...entries, optional], undefined, 7, ctx(TODAY));
+
+    expect(
+      view.habits.map(h => {
+        return [h.id, h.yearTicks];
+      }),
+    ).toEqual([
+      ['a', null],
+      ['b', null],
+      ['o', 2],
+    ]);
+  });
   it('treats an unknown habit as all habits', () => {
     expect(buildProgress(entries, 'nope', 7, ctx(TODAY)).selectedId).toBeNull();
   });

@@ -35,7 +35,8 @@ const signature = (s: Schedule | DesiredSchedule): string => {
   return s.kind;
 };
 
-const same = (s: Schedule, d: DesiredSchedule): boolean => {
+/** True when the habit's schedule already is the wanted one. */
+export const sameSchedule = (s: Schedule, d: DesiredSchedule): boolean => {
   return signature(s) === signature(d);
 };
 
@@ -69,7 +70,7 @@ export const planScheduleChange = (input: {
   if (!hasCompletions) {
     const only = schedules.length === 1 ? schedules[0] : undefined;
 
-    return only && only.effectiveFrom === startDate && same(only, desired)
+    return only && only.effectiveFrom === startDate && sameSchedule(only, desired)
       ? { action: 'none' }
       : { action: 'replace_all', schedule: build(desired, startDate) };
   }
@@ -82,11 +83,11 @@ export const planScheduleChange = (input: {
 
   const pendingCount = pending.length;
 
-  if (current && same(current, desired)) {
+  if (current && sameSchedule(current, desired)) {
     return pendingCount > 0 ? { action: 'delete_pending' } : { action: 'none' };
   }
 
-  if (pendingCount === 1 && pending[0].effectiveFrom === effective && same(pending[0], desired)) {
+  if (pendingCount === 1 && pending[0].effectiveFrom === effective && sameSchedule(pending[0], desired)) {
     return { action: 'none' };
   }
 

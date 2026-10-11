@@ -38,7 +38,7 @@ export const HomeClient = (props: HomeClientProps) => {
   const tm = useMsg();
   const now = useNow();
   const { saving, toggle } = useCachedToggle(view);
-  const { hasHabits, todo, done: finished, strip } = view;
+  const { hasHabits, todo, done: finished, optional, strip } = view;
 
   const opener = useRef<HTMLElement | null>(null);
   const refreshedFor = useRef<string | null>(null);
@@ -154,6 +154,13 @@ export const HomeClient = (props: HomeClientProps) => {
                 saving={saving}
                 onToggle={onToggle}
                 flush={todoCount === 0}
+              />
+              <CheckSection
+                id="optional-heading"
+                title={t('whenever')}
+                rows={optional}
+                saving={saving}
+                onToggle={onToggle}
               />
             </div>
             <div className="home__side">

@@ -3,6 +3,7 @@ import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
 import { addRates, completionRate, type Rate } from '@/domain/rates';
 import { scheduleFor } from '@/domain/schedule';
 import { isPaused } from '@/domain/status';
+import { yearTicks } from '@/domain/listing';
 import { isOffDay } from '@/domain/schedule';
 import { currentStreak, longestStreak, type Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
@@ -233,6 +234,8 @@ export interface ProgressHabit {
   current: Streak | null;
   longest: Streak;
   rate: Rate;
+  /** Ticks this year, for an optional habit only (it has no streak or rate). */
+  yearTicks: number | null;
 }
 
 export interface ProgressView {
@@ -254,6 +257,7 @@ export const buildProgress = (
   range: Range,
   ctx: Ctx,
 ): ProgressView => {
+  const { today } = ctx;
   const selected = entries.find(e => {
     return e.habit.id === habitParam;
   });
@@ -283,6 +287,7 @@ export const buildProgress = (
         current: current.count > 0 ? current : null,
         longest: longestStreak(h, ctx),
         rate: rangeRate([h], range, ctx),
+        yearTicks: scheduleFor(h, today)?.kind === 'optional' ? yearTicks(h, today) : null,
       };
     }),
     rate: rangeRate(data, range, ctx),

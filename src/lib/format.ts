@@ -12,13 +12,17 @@ export const formatCalendarDate = (
   return new Intl.DateTimeFormat('en-GB', { ...options, timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
 };
 
-/** Short names of weekdays (1 = Monday ... 7 = Sunday), in the order given: "Mon, Wed, Fri". */
+/** The name of a weekday (1 = Monday ... 7 = Sunday): "Mon" or "Monday". */
+export const weekdayLabel = (day: number, style: 'short' | 'long' = 'short'): string => {
+  // 1 Jan 2024 is a Monday
+  return new Intl.DateTimeFormat('en-GB', { weekday: style, timeZone: 'UTC' }).format(new Date(Date.UTC(2024, 0, day)));
+};
+
+/** Short names of weekdays, in the order given: "Mon, Wed, Fri". */
 export const weekdayNames = (days: Weekday[]): string => {
   return days
     .map(day => {
-      return new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' }).format(
-        new Date(Date.UTC(2024, 0, day)),
-      ); // 1 Jan 2024 is a Monday
+      return weekdayLabel(day);
     })
     .join(', ');
 };

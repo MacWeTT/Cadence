@@ -25,6 +25,7 @@
     "days": "{range}d",
     "archived": "archived",
     "noStreak": "No streak",
+    "optional": "Optional",
     "best": "Best {length}",
     "bestNone": "Best —"
   },
