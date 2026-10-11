@@ -1,5 +1,23 @@
 import { expect, test } from '@playwright/test';
 
+// A browser fetches the manifest, the worker and the offline page without the session cookie, so they must be public.
+test('the manifest, the worker and the offline page are served to a signed-out visitor, not redirected to login', async ({
+  playwright,
+}) => {
+  const visitor = await playwright.request.newContext({
+    baseURL: 'http://localhost:3000',
+    storageState: { cookies: [], origins: [] },
+  });
+
+  const manifest = await visitor.get('/manifest.webmanifest', { maxRedirects: 0 });
+
+  expect(manifest.status()).toBe(200);
+  expect(manifest.headers()['content-type']).toContain('manifest');
+  expect((await visitor.get('/sw.js', { maxRedirects: 0 })).status()).toBe(200);
+  expect((await visitor.get('/offline.html', { maxRedirects: 0 })).status()).toBe(200);
+  await visitor.dispose();
+});
+
 test('the manifest makes Cadence installable, with a maskable icon and shortcuts', async ({ request }) => {
   const response = await request.get('/manifest.webmanifest');
 
