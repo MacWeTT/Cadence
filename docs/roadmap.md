@@ -11,16 +11,15 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.3.6 | Appearance page, contact form, nav highlight |
 | 0.4.0 | Instant pages: the browser cache and optimistic changes |
 | 0.5.0 | Fixed-weekday schedules, optional habits, habit links |
+| 0.6.3 | Install Cadence as an app (PWA, offline page); every page fits phones and tablets; a new footer |
 
 ## Scheduled
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.6 | PWA: installable, app icon, offline page | built (PR #51); the service worker is shared with push later |
-| 0.6.3 | Responsive pass: every page fits phones and tablets (portrait and landscape), with touch-sized targets and no horizontal scroll | before the profile page (0.6.5), by decision on 2026-10-11 |
-| 0.6.5 | Full profile page | proposed contents: name, avatar, timezone, week start, data export, delete account |
+| 0.6.5 | Full profile page (not the priority now) | name, avatar, timezone and week start, delete account, and **export and import of all your data**: one file with habits, schedules, ticks, links and focus sessions, so a person can keep a backup or restore it after a loss. Replace-or-merge on import is to be designed with the page |
 | 0.7 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
-| 0.7 | Focus sessions: a timer per habit | timestamp-based; finishing asks "I did it" before ticking; open: one timer or 25/5 cycles, a target length per habit or chosen at start |
+| 0.7 | Focus sessions: a timer per habit (**next**) | free (count up) or pomodoro (presets Classic 25/5, Deep 50/10, Short 15/3, all editable, last numbers remembered per habit); a running bar on every page; "I did it" ticks the habit; minutes of focus on Progress. Design: `docs/superpowers/specs/2026-10-12-focus-sessions-design.md`. Later: a Focus page with recent sessions |
 | after 0.7 | Desktop app (Tauri) | native notifications, start on login; opens habit links without the popup limit |
 
 ## Before 1.0 (not yet versioned)
