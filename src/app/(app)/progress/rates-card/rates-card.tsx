@@ -1,10 +1,10 @@
 import { useTranslations } from 'next-intl';
 import { useMsg } from '@/lib/use-msg';
 import { RANGES, type ProgressView } from '@/server/progress-view';
-import { ChipLink } from '../chip-link/chip-link';
-import { ProgressCard } from '../progress-card/progress-card';
-import { percentMsg, progressHref } from '../progress-links';
-import { RatesRow } from '../rates-row/rates-row';
+import { ChipLink } from '@/app/(app)/progress/chip-link/chip-link';
+import { ProgressCard } from '@/app/(app)/progress/progress-card/progress-card';
+import { percentMsg, progressHref } from '@/app/(app)/progress/progress-links';
+import { RatesRow } from '@/app/(app)/progress/rates-row/rates-row';
 import './rates-card.css';
 
 interface RatesCardProps {

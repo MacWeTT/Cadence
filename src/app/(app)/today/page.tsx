@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/page-transition/page-transition';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { getTodayView } from '@/server/today';
-import { TodayClient } from './today-client/today-client';
+import { TodayClient } from '@/app/(app)/today/today-client/today-client';
 
 const TodayPage = (props: PageProps<'/today'>) => {
   const { searchParams } = props;

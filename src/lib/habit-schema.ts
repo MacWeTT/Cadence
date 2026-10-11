@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isCalendarDate, type CalendarDate } from '@/domain/dates';
-import type en from '../../locales/en';
-import { COLOR_KEYS } from './palette';
+import type en from '@locales/en';
+import { COLOR_KEYS } from '@/lib/palette';
 
 /** The name of a message in `locales/en/validation.json`. */
 export type ValidationCode = keyof typeof en.validation;

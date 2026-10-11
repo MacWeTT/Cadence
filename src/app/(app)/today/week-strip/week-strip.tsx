@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
 import type { DaySummary } from '@/server/today-view';
-import { DayCell } from '../day-cell/day-cell';
+import { DayCell } from '@/app/(app)/today/day-cell/day-cell';
 import './week-strip.css';
 
 interface WeekStripProps {

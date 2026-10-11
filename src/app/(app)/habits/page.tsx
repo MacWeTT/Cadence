@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/page-transition/page-transition';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { listHabits } from '@/server/habits';
-import { HabitsClient } from './habits-client/habits-client';
+import { HabitsClient } from '@/app/(app)/habits/habits-client/habits-client';
 
 const HabitsPage = () => {
   const t = useTranslations('habits');

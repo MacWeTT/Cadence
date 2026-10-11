@@ -2,10 +2,10 @@ import 'server-only';
 import { connection } from 'next/server';
 import type { Ctx, HabitData } from '@/domain/types';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { fetchAll } from './fetch-all';
-import type { HabitRow } from './habit-view';
-import { getProfile, type Profile } from './habits';
-import { toHabitData } from './today-view';
+import { fetchAll } from '@/server/fetch-all';
+import type { HabitRow } from '@/server/habit-view';
+import { getProfile, type Profile } from '@/server/habits';
+import { toHabitData } from '@/server/today-view';
 
 export interface HabitEntry {
   habit: HabitRow;

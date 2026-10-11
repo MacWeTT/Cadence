@@ -19,12 +19,12 @@ import type { WeekStart } from '@/domain/dates';
 import { nextEditDate } from '@/domain/schedule';
 import { formatCalendarDate } from '@/lib/format';
 import type { HabitListItem } from '@/server/habit-view';
-import { createHabitAction, updateHabitAction } from '../actions';
-import { ColorPicker } from '../color-picker/color-picker';
-import { EmojiField } from '../emoji-field/emoji-field';
-import { FieldError } from '../field-error/field-error';
-import { initialHabitForm, type HabitFormState } from '../habit-form';
-import { ScheduleField } from '../schedule-field/schedule-field';
+import { createHabitAction, updateHabitAction } from '@/app/(app)/habits/actions';
+import { ColorPicker } from '@/app/(app)/habits/color-picker/color-picker';
+import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
+import { FieldError } from '@/app/(app)/habits/field-error/field-error';
+import { initialHabitForm, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
 
 interface HabitDialogProps {

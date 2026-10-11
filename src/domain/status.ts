@@ -1,6 +1,6 @@
-import { addDays, type CalendarDate } from './dates';
-import { scheduleFor } from './schedule';
-import type { Ctx, HabitData } from './types';
+import { addDays, type CalendarDate } from '@/domain/dates';
+import { scheduleFor } from '@/domain/schedule';
+import type { Ctx, HabitData } from '@/domain/types';
 
 export type DayStatus = 'done' | 'missed' | 'pending' | 'inactive';
 

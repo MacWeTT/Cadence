@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { COLOR_KEYS, PALETTE, habitColor } from './palette';
+import { COLOR_KEYS, PALETTE, habitColor } from '@/lib/palette';
 
 const luminance = (hex: string) => {
   const [r, g, b] = [1, 3, 5]

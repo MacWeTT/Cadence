@@ -8,7 +8,7 @@ import {
   seedCompletion,
   seedHabit,
   setWeekStartForTests,
-} from './support/data';
+} from '@e2e/support/data';
 
 test.beforeEach(async () => {
   await resetUserData();

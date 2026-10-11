@@ -1,6 +1,6 @@
 import { createTranslator } from 'next-intl';
-import en from '../../locales/en';
-import { translateMsg, type Msg } from './message';
+import en from '@locales/en';
+import { translateMsg, type Msg } from '@/lib/message';
 
 const t = createTranslator({ locale: 'en', messages: en });
 

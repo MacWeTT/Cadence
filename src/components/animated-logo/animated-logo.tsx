@@ -4,8 +4,8 @@ import { stagger, useAnimate } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
-import { Logo } from '../logo/logo';
-import { WORDMARK } from '../logo/logo-shapes';
+import { Logo } from '@/components/logo/logo';
+import { WORDMARK } from '@/components/logo/logo-shapes';
 import './animated-logo.css';
 
 const EASE = [0.65, 0, 0.35, 1] as const;

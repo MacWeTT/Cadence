@@ -6,7 +6,7 @@ import { dayStatus } from '@/domain/status';
 import { currentStreak, type Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
-import { toColorKey, toSchedule, type HabitRow, type ScheduleRow } from './habit-view';
+import { toColorKey, toSchedule, type HabitRow, type ScheduleRow } from '@/server/habit-view';
 
 export interface PauseRow {
   habit_id: string;

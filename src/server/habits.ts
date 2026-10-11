@@ -5,9 +5,9 @@ import { planScheduleChange } from '@/domain/schedule-change';
 import { formatCalendarDate } from '@/lib/format';
 import { isValidTimeZone, type FieldIssue, type HabitInput } from '@/lib/habit-schema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import type en from '../../locales/en';
-import { fetchAll } from './fetch-all';
-import { toListItem, toSchedule, type HabitListItem } from './habit-view';
+import type en from '@locales/en';
+import { fetchAll } from '@/server/fetch-all';
+import { toListItem, toSchedule, type HabitListItem } from '@/server/habit-view';
 
 /** The name of a message in `locales/en/errors.json`. */
 export type ErrorCode = keyof typeof en.errors;

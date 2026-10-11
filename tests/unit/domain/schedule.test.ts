@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { nextEditDate, parseScheduleInput, scheduleFor, scheduleOn } from './schedule';
-import type { Schedule } from './types';
-import { makeHabit } from './test-helpers';
+import { nextEditDate, parseScheduleInput, scheduleFor, scheduleOn } from '@/domain/schedule';
+import type { Schedule } from '@/domain/types';
+import { makeHabit } from '@tests/support/habits';
 
 const daily = (effectiveFrom: string): Schedule => {
   return { kind: 'daily', effectiveFrom };

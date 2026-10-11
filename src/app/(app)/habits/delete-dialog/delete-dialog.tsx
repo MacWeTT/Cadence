@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import type { HabitListItem } from '@/server/habit-view';
-import { deleteHabitAction } from '../actions';
+import { deleteHabitAction } from '@/app/(app)/habits/actions';
 
 interface DeleteHabitDialogProps {
   habit: HabitListItem;

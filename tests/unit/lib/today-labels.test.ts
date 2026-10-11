@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { scheduleMsg } from './schedule-label';
-import { tr } from './test-translate';
-import { streakLengthMsg, streakMsg, weekMsg } from './today-labels';
+import { scheduleMsg } from '@/lib/schedule-label';
+import { tr } from '@tests/support/translate';
+import { streakLengthMsg, streakMsg, weekMsg } from '@/lib/today-labels';
 
 describe('streakMsg', () => {
   it('counts days for a daily habit', () => {

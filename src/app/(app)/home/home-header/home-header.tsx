@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
-import { ProgressRing } from '../progress-ring/progress-ring';
+import { ProgressRing } from '@/app/(app)/home/progress-ring/progress-ring';
 import './home-header.css';
 
 interface HomeHeaderProps {

@@ -1,5 +1,5 @@
 import type { MessageKeys, NestedKeyOf } from 'next-intl';
-import type en from '../../locales/en';
+import type en from '@locales/en';
 
 type Messages = typeof en;
 

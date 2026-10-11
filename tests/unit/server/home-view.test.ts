@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { ctx, makeHabit } from '@/domain/test-helpers';
+import { ctx, makeHabit } from '@tests/support/habits';
 import type { HabitData, Schedule } from '@/domain/types';
-import type { HabitRow } from './habit-view';
-import { buildHomeView, continuingStreaks } from './home-view';
-import { buildTodayView, type TodayRow } from './today-view';
+import type { HabitRow } from '@/server/habit-view';
+import { buildHomeView, continuingStreaks } from '@/server/home-view';
+import { buildTodayView, type TodayRow } from '@/server/today-view';
 
 const TODAY = '2026-10-09'; // a Friday: with Monday weeks, 3 days (Fri, Sat, Sun) are left
 

@@ -1,5 +1,5 @@
-import { addDays, isCalendarDate, weekStart, type CalendarDate, type WeekStart } from './dates';
-import type { HabitData, Schedule } from './types';
+import { addDays, isCalendarDate, weekStart, type CalendarDate, type WeekStart } from '@/domain/dates';
+import type { HabitData, Schedule } from '@/domain/types';
 
 /** The schedule in effect on `date`: the latest one whose `effectiveFrom` is on or before it. */
 export const scheduleOn = (schedules: Schedule[], date: CalendarDate): Schedule | undefined => {

@@ -51,6 +51,63 @@ const maxUseState = {
   },
 };
 
-const policies = { rules: { 'max-use-state': maxUseState } };
+/** A read like `row.week` (not a call, an assignment, a ref's `.current` or an optional chain) that destructuring could replace. */
+const isPlainRead = reference => {
+  const id = reference.identifier;
+  const member = id.parent;
+
+  if (member?.type !== 'MemberExpression' || member.object !== id || member.computed || member.optional) {
+    return false;
+  }
+
+  const parent = member.parent;
+
+  if (parent.type === 'CallExpression' && parent.callee === member) {
+    return false;
+  }
+
+  if (parent.type === 'AssignmentExpression' && parent.left === member) {
+    return false;
+  }
+
+  return parent.type !== 'UpdateExpression' && member.property.name !== 'current';
+};
+
+/** Reading properties off one object twice or more: destructure it once, `const { week, streak } = row`. */
+const destructureRepeatedReads = {
+  meta: {
+    type: 'suggestion',
+    schema: [],
+    messages: {
+      repeated: 'Properties of "{{name}}" are read {{count}} times. Destructure it once: const { a, b } = {{name}}.',
+    },
+  },
+  create: context => {
+    return {
+      'Program:exit': () => {
+        for (const scope of context.sourceCode.scopeManager.scopes) {
+          for (const variable of scope.variables) {
+            // Imports and globals are left alone: only objects made in this file.
+            if (variable.defs.length === 0 || variable.defs[0].type === 'ImportBinding') {
+              continue;
+            }
+
+            const reads = variable.references.filter(isPlainRead);
+
+            if (reads.length >= 2) {
+              context.report({
+                node: reads[1].identifier.parent,
+                messageId: 'repeated',
+                data: { name: variable.name, count: reads.length },
+              });
+            }
+          }
+        }
+      },
+    };
+  },
+};
+
+const policies = { rules: { 'max-use-state': maxUseState, 'destructure-repeated-reads': destructureRepeatedReads } };
 
 export default policies;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ctx, makeHabit } from '@/domain/test-helpers';
+import { ctx, makeHabit } from '@tests/support/habits';
 import type { HabitData, Schedule } from '@/domain/types';
-import type { HabitRow, ScheduleRow } from './habit-view';
+import type { HabitRow, ScheduleRow } from '@/server/habit-view';
 import {
   applyToggle,
   buildTodayView,
@@ -11,7 +11,7 @@ import {
   weekStrip,
   type TodayRow,
   type TodayView,
-} from './today-view';
+} from '@/server/today-view';
 
 const row = (id: string, over: Partial<HabitRow> = {}): HabitRow => {
   return {

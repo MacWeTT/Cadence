@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Arrive } from '../arrive/arrive';
+import { Arrive } from '@/components/arrive/arrive';
 import type { ChangelogEntry } from '@/lib/changelog';
 import { cn } from '@/lib/utils';
 import './changelog-entry.css';

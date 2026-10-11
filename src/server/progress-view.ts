@@ -6,7 +6,7 @@ import { isPaused } from '@/domain/status';
 import { currentStreak, longestStreak, type Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
-import { toColorKey, type HabitRow } from './habit-view';
+import { toColorKey, type HabitRow } from '@/server/habit-view';
 
 export type HeatLevel = 0 | 1 | 2 | 3 | 4;
 

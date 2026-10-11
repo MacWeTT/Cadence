@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Skeleton } from '../skeleton/skeleton';
+import { Skeleton } from '@/components/skeleton/skeleton';
 import './progress-skeleton.css';
 
 /** The Progress page's shape: filter chips, then two cards. */

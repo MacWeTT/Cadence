@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import en from '../../locales/en';
-import { habitInputSchema, isSingleEmoji, isValidTimeZone, toFieldErrors } from './habit-schema';
+import en from '@locales/en';
+import { habitInputSchema, isSingleEmoji, isValidTimeZone, toFieldErrors } from '@/lib/habit-schema';
 
 const today = '2026-10-09';
 const valid = { name: 'Read', icon: '📖', color: 'moss', kind: 'daily', startDate: '2026-10-01' };

@@ -1,4 +1,4 @@
-import { msg, type Msg } from './message';
+import { msg, type Msg } from '@/lib/message';
 
 export interface AtRiskHabit {
   id: string;

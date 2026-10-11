@@ -1,6 +1,6 @@
 import type { WeekProgress } from '@/domain/listing';
 import type { Streak } from '@/domain/streaks';
-import { msg, type Msg } from './message';
+import { msg, type Msg } from '@/lib/message';
 
 /** "🔥 3 days" for a daily habit, "4 week streak" for a weekly one. */
 export const streakMsg = (streak: Streak): Msg => {

@@ -1,7 +1,7 @@
 import 'server-only';
 import type { CalendarDate } from '@/domain/dates';
-import { loadHabitData } from './habit-data';
-import { buildTodayView, earliestDate, parseDateParam, type TodayView } from './today-view';
+import { loadHabitData } from '@/server/habit-data';
+import { buildTodayView, earliestDate, parseDateParam, type TodayView } from '@/server/today-view';
 
 export interface TodayData {
   view: TodayView;

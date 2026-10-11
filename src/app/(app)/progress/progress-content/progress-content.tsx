@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { formatCalendarDate } from '@/lib/format';
 import { loadHabitData } from '@/server/habit-data';
 import { buildProgress, parseRange } from '@/server/progress-view';
-import { BarsCard } from '../bars-card/bars-card';
-import { HabitFilter } from '../habit-filter/habit-filter';
-import { RatesCard } from '../rates-card/rates-card';
-import { YearCard } from '../year-card/year-card';
+import { BarsCard } from '@/app/(app)/progress/bars-card/bars-card';
+import { HabitFilter } from '@/app/(app)/progress/habit-filter/habit-filter';
+import { RatesCard } from '@/app/(app)/progress/rates-card/rates-card';
+import { YearCard } from '@/app/(app)/progress/year-card/year-card';
 import './progress-content.css';
 
 interface ProgressContentProps {

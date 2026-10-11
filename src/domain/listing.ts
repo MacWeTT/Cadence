@@ -1,7 +1,7 @@
-import { addDays, weekEnd, weekStart, type CalendarDate } from './dates';
-import { scheduleFor } from './schedule';
-import { isPaused } from './status';
-import type { Ctx, HabitData } from './types';
+import { addDays, weekEnd, weekStart, type CalendarDate } from '@/domain/dates';
+import { scheduleFor } from '@/domain/schedule';
+import { isPaused } from '@/domain/status';
+import type { Ctx, HabitData } from '@/domain/types';
 
 /**
  * Whether the Today page lists this habit on `date`: it has started, has a schedule in effect, is not archived

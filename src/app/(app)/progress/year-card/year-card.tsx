@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { ProgressView } from '@/server/progress-view';
-import { Heatmap } from '../heatmap/heatmap';
-import { ProgressCard } from '../progress-card/progress-card';
+import { Heatmap } from '@/app/(app)/progress/heatmap/heatmap';
+import { ProgressCard } from '@/app/(app)/progress/progress-card/progress-card';
 import './year-card.css';
 
 interface YearCardProps {

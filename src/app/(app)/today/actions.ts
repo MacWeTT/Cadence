@@ -8,7 +8,7 @@ import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
 import { msg, translateMsg, type Msg } from '@/lib/message';
 import { completionErrorMsg } from '@/server/completion-errors';
 import { getProfile } from '@/server/habits';
-import type { ActionResult } from '../habits/actions';
+import type { ActionResult } from '@/app/(app)/habits/actions';
 
 const input = z.object({ habitId: z.uuid(), date: z.string().refine(isCalendarDate), done: z.boolean() });
 

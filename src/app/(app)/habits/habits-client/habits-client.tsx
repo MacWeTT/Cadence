@@ -9,10 +9,10 @@ import { toCalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
 import type { HabitListItem } from '@/server/habit-view';
 import type { HabitsView } from '@/server/habits';
-import { archiveHabitAction, restoreHabitAction, type ActionResult } from '../actions';
-import { DeleteHabitDialog } from '../delete-dialog/delete-dialog';
-import { HabitDialog } from '../habit-dialog/habit-dialog';
-import { HabitRow, type HabitRowActions } from '../habit-row/habit-row';
+import { archiveHabitAction, restoreHabitAction, type ActionResult } from '@/app/(app)/habits/actions';
+import { DeleteHabitDialog } from '@/app/(app)/habits/delete-dialog/delete-dialog';
+import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
+import { HabitRow, type HabitRowActions } from '@/app/(app)/habits/habit-row/habit-row';
 import './habits-client.css';
 
 interface HabitsClientProps {

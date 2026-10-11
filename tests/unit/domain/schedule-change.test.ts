@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { planScheduleChange } from './schedule-change';
-import type { Schedule } from './types';
+import { planScheduleChange } from '@/domain/schedule-change';
+import type { Schedule } from '@/domain/types';
 
 const daily = (effectiveFrom: string): Schedule => {
   return { kind: 'daily', effectiveFrom };

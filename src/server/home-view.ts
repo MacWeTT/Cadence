@@ -3,8 +3,8 @@ import { diffDays, weekStart } from '@/domain/dates';
 import type { Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
-import type { HabitRow } from './habit-view';
-import { buildTodayView, type TodayRow, type TodayView } from './today-view';
+import type { HabitRow } from '@/server/habit-view';
+import { buildTodayView, type TodayRow, type TodayView } from '@/server/today-view';
 
 export interface AtRiskRow {
   id: string;

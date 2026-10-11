@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
-import { supabaseConfig } from './config';
+import { supabaseConfig } from '@/lib/supabase/config';
 
 export const createSupabaseBrowserClient = () => {
   const { url, key } = supabaseConfig();

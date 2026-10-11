@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ctx, makeHabit } from '@/domain/test-helpers';
+import { ctx, makeHabit } from '@tests/support/habits';
 import type { Schedule } from '@/domain/types';
-import type { HabitRow } from './habit-view';
+import type { HabitRow } from '@/server/habit-view';
 import {
   buildProgress,
   heatmap,
@@ -11,7 +11,7 @@ import {
   parseRange,
   rangeRate,
   weeklyTicks,
-} from './progress-view';
+} from '@/server/progress-view';
 
 const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => {
   return {

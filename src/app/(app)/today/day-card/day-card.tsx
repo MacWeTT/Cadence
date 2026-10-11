@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { CalendarDate } from '@/domain/dates';
 import type { DaySummary } from '@/server/today-view';
-import { WeekStrip } from '../week-strip/week-strip';
+import { WeekStrip } from '@/app/(app)/today/week-strip/week-strip';
 import './day-card.css';
 
 interface DayCardProps {

@@ -1,4 +1,4 @@
-import type { CalendarDate, WeekStart } from './dates';
+import type { CalendarDate, WeekStart } from '@/domain/dates';
 
 export type Schedule =
   | { kind: 'daily'; effectiveFrom: CalendarDate }

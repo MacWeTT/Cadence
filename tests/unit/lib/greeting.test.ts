@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { chooseGreeting, dayPart, firstName, pickGreeting, type GreetingContext } from './greeting';
-import { tr } from './test-translate';
+import { chooseGreeting, dayPart, firstName, pickGreeting, type GreetingContext } from '@/lib/greeting';
+import { tr } from '@tests/support/translate';
 
 const WEDNESDAY = 3;
 

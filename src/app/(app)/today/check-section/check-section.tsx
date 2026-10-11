@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import type { TodayRow } from '@/server/today-view';
-import { CheckRow } from '../check-row/check-row';
+import { CheckRow } from '@/app/(app)/today/check-row/check-row';
 import './check-section.css';
 
 interface CheckSectionProps {

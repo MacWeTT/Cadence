@@ -9,15 +9,15 @@ import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { alertFor, clockIn } from '@/lib/alert';
 import { useMsg } from '@/lib/use-msg';
 import { continuingStreaks, type HomeView } from '@/server/home-view';
-import { HabitDialog } from '../../habits/habit-dialog/habit-dialog';
-import { CheckSection } from '../../today/check-section/check-section';
-import { useToggleCompletion } from '../../today/use-toggle-completion';
-import { WeekStrip } from '../../today/week-strip/week-strip';
-import { AlertBanner } from '../alert-banner/alert-banner';
-import { HomeHeader } from '../home-header/home-header';
-import { StreaksCard } from '../streaks-card/streaks-card';
-import { useGreeting } from '../use-greeting';
-import { useNow } from '../use-now';
+import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
+import { CheckSection } from '@/app/(app)/today/check-section/check-section';
+import { useToggleCompletion } from '@/app/(app)/today/use-toggle-completion';
+import { WeekStrip } from '@/app/(app)/today/week-strip/week-strip';
+import { AlertBanner } from '@/app/(app)/home/alert-banner/alert-banner';
+import { HomeHeader } from '@/app/(app)/home/home-header/home-header';
+import { StreaksCard } from '@/app/(app)/home/streaks-card/streaks-card';
+import { useGreeting } from '@/app/(app)/home/use-greeting';
+import { useNow } from '@/app/(app)/home/use-now';
 import './home-client.css';
 
 interface HomeClientProps {

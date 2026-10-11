@@ -1,4 +1,4 @@
-import { msg, type MessageKey, type Msg } from './message';
+import { msg, type MessageKey, type Msg } from '@/lib/message';
 
 export type DayPart = 'morning' | 'afternoon' | 'evening' | 'night';
 

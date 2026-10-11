@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Footer } from '@/components/footer/footer';
 import { TopBar } from '@/components/top-bar/top-bar';
 import { UserMenu } from '@/components/user-menu/user-menu';
-import { TimezoneSync } from './timezone-sync/timezone-sync';
+import { TimezoneSync } from '@/app/(app)/timezone-sync/timezone-sync';
 import './layout.css';
 
 interface AppLayoutProps {

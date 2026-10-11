@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
 import type { TodayView } from '@/server/today-view';
-import { CheckSection } from '../check-section/check-section';
-import { DateNav } from '../date-nav/date-nav';
-import { DayCard } from '../day-card/day-card';
-import { useToggleCompletion } from '../use-toggle-completion';
+import { CheckSection } from '@/app/(app)/today/check-section/check-section';
+import { DateNav } from '@/app/(app)/today/date-nav/date-nav';
+import { DayCard } from '@/app/(app)/today/day-card/day-card';
+import { useToggleCompletion } from '@/app/(app)/today/use-toggle-completion';
 import './today-client.css';
 
 interface TodayClientProps {

@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Skeleton } from '../skeleton/skeleton';
+import { Skeleton } from '@/components/skeleton/skeleton';
 import './home-skeleton.css';
 
 /** The Home page's shape: header row, banner, then the two columns. */

@@ -3,8 +3,8 @@ import { createServerClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { connection } from 'next/server';
-import { supabaseConfig } from './config';
-import type { Database } from './database.types';
+import { supabaseConfig } from '@/lib/supabase/config';
+import type { Database } from '@/lib/supabase/database.types';
 
 export const createSupabaseServerClient = async () => {
   const { url, key } = supabaseConfig();

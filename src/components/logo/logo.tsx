@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { WORDMARK } from './logo-shapes';
+import { WORDMARK } from '@/components/logo/logo-shapes';
 import './logo.css';
 
 /** The full logo, "Cadence.": the ring is the C. Its height comes from `--logo-height` on the parent; its colours follow the theme. */

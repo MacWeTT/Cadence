@@ -3,7 +3,7 @@ import { useEffect, useOptimistic, useRef, useState, useTransition } from 'react
 import { toast } from 'sonner';
 import type { CalendarDate } from '@/domain/dates';
 import { applyToggle, type TodayRow, type TodayView } from '@/server/today-view';
-import { setCompletionAction } from './actions';
+import { setCompletionAction } from '@/app/(app)/today/actions';
 
 /**
  * Ticking for any page that shows a TodayView: instant (optimistic) moves between the lists, one request per row at a

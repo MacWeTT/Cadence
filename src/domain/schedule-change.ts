@@ -1,6 +1,6 @@
-import type { CalendarDate, WeekStart } from './dates';
-import { nextEditDate, scheduleOn } from './schedule';
-import type { Schedule } from './types';
+import type { CalendarDate, WeekStart } from '@/domain/dates';
+import { nextEditDate, scheduleOn } from '@/domain/schedule';
+import type { Schedule } from '@/domain/types';
 
 export type DesiredSchedule = { kind: 'daily' } | { kind: 'weekly_count'; timesPerWeek: number };
 

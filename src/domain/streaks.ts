@@ -1,7 +1,7 @@
-import { addDays, weekStart, type CalendarDate } from './dates';
-import { scheduleFor } from './schedule';
-import { dayStatus, isPaused, weekStatus } from './status';
-import type { Ctx, HabitData } from './types';
+import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
+import { scheduleFor } from '@/domain/schedule';
+import { dayStatus, isPaused, weekStatus } from '@/domain/status';
+import type { Ctx, HabitData } from '@/domain/types';
 
 export interface Streak {
   unit: 'day' | 'week';

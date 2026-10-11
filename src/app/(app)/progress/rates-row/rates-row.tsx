@@ -3,7 +3,7 @@ import { habitColor } from '@/lib/palette';
 import { streakLengthMsg, streakMsg } from '@/lib/today-labels';
 import { useMsg } from '@/lib/use-msg';
 import type { ProgressHabit } from '@/server/progress-view';
-import { percentMsg } from '../progress-links';
+import { percentMsg } from '@/app/(app)/progress/progress-links';
 import './rates-row.css';
 
 interface RatesRowProps {

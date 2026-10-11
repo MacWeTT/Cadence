@@ -1,6 +1,6 @@
-import { addDays, weekStart, type CalendarDate } from './dates';
-import { dayStatus, weekStatus } from './status';
-import type { Ctx, HabitData } from './types';
+import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
+import { dayStatus, weekStatus } from '@/domain/status';
+import type { Ctx, HabitData } from '@/domain/types';
 
 export interface Rate {
   done: number;

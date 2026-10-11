@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { currentStreak, longestStreak } from './streaks';
-import { ctx, makeHabit } from './test-helpers';
-import type { Schedule } from './types';
+import { currentStreak, longestStreak } from '@/domain/streaks';
+import { ctx, makeHabit } from '@tests/support/habits';
+import type { Schedule } from '@/domain/types';
 
 const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => {
   return {

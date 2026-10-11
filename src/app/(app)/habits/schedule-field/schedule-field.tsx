@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { FieldError } from '../field-error/field-error';
+import { FieldError } from '@/app/(app)/habits/field-error/field-error';
 import './schedule-field.css';
 
 export type ScheduleKind = 'daily' | 'weekly_count';

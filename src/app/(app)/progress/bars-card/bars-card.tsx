@@ -1,4 +1,4 @@
-import { ProgressCard } from '../progress-card/progress-card';
+import { ProgressCard } from '@/app/(app)/progress/progress-card/progress-card';
 import './bars-card.css';
 
 interface BarsCardProps {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shouldSyncTimezone, toListItem, type HabitRow, type ScheduleRow } from './habit-view';
+import { shouldSyncTimezone, toListItem, type HabitRow, type ScheduleRow } from '@/server/habit-view';
 
 const habit: HabitRow = {
   id: 'h1',

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseChangelog } from './changelog';
+import { parseChangelog } from '@/lib/changelog';
 
 const SOURCE = `# Changelog
 
