@@ -9,6 +9,11 @@
   @apply border-dashed bg-transparent;
 }
 
+/* Known problems wait for the next bugfix release; the card is marked with the clay colour. */
+.changelog-entry--known {
+  @apply border-clay/50 bg-clay/5;
+}
+
 .changelog-entry__head {
   @apply flex items-baseline justify-between gap-4 text-sm text-ink-muted;
 }

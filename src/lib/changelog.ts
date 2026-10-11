@@ -4,12 +4,12 @@ export interface Inline {
   text: string;
 }
 
-/** One `##` section of CHANGELOG.md: a release (with its date and note) or the Planned list. */
+/** One `##` section of CHANGELOG.md: a release (with its date and note), the Planned list or the Known issues list. */
 export interface ChangelogEntry {
   title: string;
   /** `YYYY-MM-DD`, from a heading like `## 0.3.5 (2026-10-11)`. */
   date: string | null;
-  planned: boolean;
+  kind: 'release' | 'planned' | 'known';
   /** A sentence or two between the heading and the bullets. */
   note: string | null;
   items: Inline[][];
@@ -37,6 +37,16 @@ const parseInline = (line: string): Inline[] => {
     });
 };
 
+const kindOf = (title: string): ChangelogEntry['kind'] => {
+  const name = title.toLowerCase();
+
+  if (name === 'planned') {
+    return 'planned';
+  }
+
+  return name === 'known issues' ? 'known' : 'release';
+};
+
 /** Reads CHANGELOG.md into its sections. Anything before the first `##` heading is ignored. */
 export const parseChangelog = (source: string): ChangelogEntry[] => {
   const entries: ChangelogEntry[] = [];
@@ -48,7 +58,7 @@ export const parseChangelog = (source: string): ChangelogEntry[] => {
     if (heading) {
       const [, title, date] = heading;
 
-      entries.push({ title, date: date ?? null, planned: title.toLowerCase() === 'planned', note: null, items: [] });
+      entries.push({ title, date: date ?? null, kind: kindOf(title), note: null, items: [] });
       continue;
     }
 
@@ -58,11 +68,11 @@ export const parseChangelog = (source: string): ChangelogEntry[] => {
       continue;
     }
 
-    const { items, planned, note } = current;
+    const { items, kind, note } = current;
 
     if (line.startsWith('- ')) {
       items.push(parseInline(line.slice(2)));
-    } else if (!planned && items.length === 0) {
+    } else if (kind === 'release' && items.length === 0) {
       current.note = note ? `${note} ${line}` : line;
     }
   }

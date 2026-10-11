@@ -10,6 +10,10 @@ Some words about versions that the page does not show.
 - **0.4** The cache-first data layer.
 - **Later** Notifications, and \`start on login\`.
 
+## Known issues
+
+- The theme flashes when a tab is restored.
+
 ## 0.3.5 (2026-10-11)
 
 Smooth pages.
@@ -30,18 +34,19 @@ describe('parseChangelog', () => {
       entries.map(e => {
         return e.title;
       }),
-    ).toEqual(['Planned', '0.3.5', '0.3.0']);
+    ).toEqual(['Planned', 'Known issues', '0.3.5', '0.3.0']);
   });
 
-  it('marks the Planned section, and reads the date and the note of a release', () => {
-    expect(entries[0]).toMatchObject({ planned: true, date: null, note: null });
-    expect(entries[1]).toMatchObject({ planned: false, date: '2026-10-11', note: 'Smooth pages.' });
-    expect(entries[2]).toMatchObject({ planned: false, date: null, note: null });
+  it('tells the Planned and Known issues sections from releases, and reads the date and note of a release', () => {
+    expect(entries[0]).toMatchObject({ kind: 'planned', date: null, note: null });
+    expect(entries[1]).toMatchObject({ kind: 'known', date: null, note: null });
+    expect(entries[2]).toMatchObject({ kind: 'release', date: '2026-10-11', note: 'Smooth pages.' });
+    expect(entries[3]).toMatchObject({ kind: 'release', date: null, note: null });
   });
 
   it('reads the bullets of a section', () => {
     expect(
-      entries[1].items.map(item => {
+      entries[2].items.map(item => {
         return item.map(part => {
           return part.text;
         });

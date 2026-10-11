@@ -1,6 +1,7 @@
 {
   "title": "What's new",
-  "intro": "What recent releases added, and what is coming next.",
+  "intro": "What recent releases added, what is coming next, and what we know is not right yet.",
   "comingSoon": "Coming soon",
+  "knownIssues": "Known issues",
   "version": "Version {version}"
 }
