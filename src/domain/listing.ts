@@ -1,11 +1,11 @@
 import { addDays, weekEnd, weekStart, type CalendarDate } from '@/domain/dates';
-import { scheduleFor } from '@/domain/schedule';
+import { isOffDay, scheduleFor } from '@/domain/schedule';
 import { isPaused } from '@/domain/status';
 import type { Ctx, HabitData } from '@/domain/types';
 
 /**
  * Whether the Today page lists this habit on `date`: it has started, has a schedule in effect, is not archived
- * right now, and is not paused on that day (unless it was ticked then).
+ * right now, and is not paused on that day or off a fixed-weekday habit's days (unless it was ticked then).
  */
 export const isListedOn = (h: HabitData, date: CalendarDate, ctx: Ctx): boolean => {
   const { today } = ctx;
@@ -23,7 +23,16 @@ export const isListedOn = (h: HabitData, date: CalendarDate, ctx: Ctx): boolean 
     return false;
   }
 
-  return !isPaused(h, date) || completions.has(date);
+  return (!isPaused(h, date) && !isOffDay(h, date)) || completions.has(date);
+};
+
+/** How many times a habit was ticked in the calendar year of `date`. */
+export const yearTicks = (h: HabitData, date: CalendarDate): number => {
+  const year = date.slice(0, 4);
+
+  return [...h.completions].filter(day => {
+    return day.startsWith(year);
+  }).length;
 };
 
 export interface WeekProgress {

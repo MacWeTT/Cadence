@@ -24,6 +24,11 @@ describe('habitInputSchema', () => {
     expect(parse({ kind: 'weekly_count', timesPerWeek: 3, description: 'Before bed' }).success).toBe(true);
   });
 
+  it('accepts fixed weekdays and an optional habit', () => {
+    expect(parse({ kind: 'weekdays', weekdays: [1, 3, 5] }).success).toBe(true);
+    expect(parse({ kind: 'optional' }).success).toBe(true);
+  });
+
   it('trims the name and the description', () => {
     const r = parse({ name: '  Read  ', description: '  note ' });
 
@@ -41,6 +46,15 @@ describe('habitInputSchema', () => {
     ['weekly with 7', { kind: 'weekly_count', timesPerWeek: 7 }],
     ['weekly with 2.5', { kind: 'weekly_count', timesPerWeek: 2.5 }],
     ['daily with a count', { kind: 'daily', timesPerWeek: 3 }],
+    ['fixed weekdays without days', { kind: 'weekdays' }],
+    ['fixed weekdays with no days', { kind: 'weekdays', weekdays: [] }],
+    ['fixed weekdays with all seven days', { kind: 'weekdays', weekdays: [1, 2, 3, 4, 5, 6, 7] }],
+    ['fixed weekdays with a repeated day', { kind: 'weekdays', weekdays: [2, 2] }],
+    ['fixed weekdays with a day out of range', { kind: 'weekdays', weekdays: [0, 3] }],
+    ['fixed weekdays with a weekly count', { kind: 'weekdays', weekdays: [1], timesPerWeek: 2 }],
+    ['days on a daily habit', { kind: 'daily', weekdays: [1] }],
+    ['days on an optional habit', { kind: 'optional', weekdays: [1] }],
+    ['a count on an optional habit', { kind: 'optional', timesPerWeek: 2 }],
     ['a start date in the future', { startDate: '2026-10-10' }],
     ['a start date before 2000', { startDate: '1999-12-31' }],
     ['an impossible start date', { startDate: '2026-02-30' }],

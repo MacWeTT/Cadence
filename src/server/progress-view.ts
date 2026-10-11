@@ -3,6 +3,7 @@ import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
 import { addRates, completionRate, type Rate } from '@/domain/rates';
 import { scheduleFor } from '@/domain/schedule';
 import { isPaused } from '@/domain/status';
+import { isOffDay } from '@/domain/schedule';
 import { currentStreak, longestStreak, type Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
@@ -20,6 +21,17 @@ export interface HeatCell {
 
 const WEEKS_SHOWN = 53;
 
+/** What a habit expects of a day, in ticks: 1 a day, a weekly habit's target over 7, nothing off a fixed-weekday habit's days or of an optional habit. */
+const expectedOn = (h: HabitData, day: CalendarDate): number => {
+  const schedule = day >= h.startDate && !isPaused(h, day) ? scheduleFor(h, day) : undefined;
+
+  if (!schedule || schedule.kind === 'optional' || isOffDay(h, day)) {
+    return 0;
+  }
+
+  return schedule.kind === 'weekly_count' ? schedule.timesPerWeek / 7 : 1;
+};
+
 const heatCell = (habits: HabitData[], single: boolean, day: CalendarDate, ctx: Ctx): HeatCell => {
   const blank: HeatCell = { date: day, level: null, done: 0, expected: 0 };
 
@@ -29,30 +41,26 @@ const heatCell = (habits: HabitData[], single: boolean, day: CalendarDate, ctx: 
 
   if (single) {
     const h = habits[0];
-    const { completions, startDate } = h;
+    const { completions } = h;
 
     if (completions.has(day)) {
       return { date: day, level: 4, done: 1, expected: 1 };
     }
 
-    return h && day >= startDate && !isPaused(h, day) ? { date: day, level: 0, done: 0, expected: 1 } : blank;
+    return expectedOn(h, day) > 0 ? { date: day, level: 0, done: 0, expected: 1 } : blank;
   }
 
   let done = 0;
   let expected = 0;
 
   for (const h of habits) {
-    const { completions, startDate } = h;
+    const { completions } = h;
 
     if (completions.has(day)) {
       done++;
     } // a tick is always honoured
 
-    const schedule = day >= startDate && !isPaused(h, day) ? scheduleFor(h, day) : undefined;
-
-    if (schedule) {
-      expected += schedule.kind === 'weekly_count' ? schedule.timesPerWeek / 7 : 1;
-    }
+    expected += expectedOn(h, day);
   }
 
   if (done === 0 && expected === 0) {

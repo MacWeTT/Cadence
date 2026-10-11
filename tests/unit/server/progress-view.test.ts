@@ -85,6 +85,41 @@ describe('heatmap, single habit', () => {
   });
 });
 
+describe('heatmap, fixed weekdays and optional habits', () => {
+  const mwf = makeHabit({
+    schedules: [{ kind: 'weekdays', days: [1, 3, 5], effectiveFrom: '2026-10-01' }],
+    done: ['2026-10-05', '2026-10-06'],
+  });
+  const optional = makeHabit({
+    schedules: [{ kind: 'optional', effectiveFrom: '2026-10-01' }],
+    done: ['2026-10-06'],
+  });
+
+  it('expects a fixed-weekday habit only on its days', () => {
+    const weeks = heatmap([mwf], false, ctx(TODAY));
+
+    expect(cell(weeks, '2026-10-07')).toMatchObject({ level: 0, expected: 1 }); // Wednesday, missed
+    expect(cell(weeks, '2026-10-08')).toMatchObject({ level: null, expected: 0 }); // Thursday, not a day of it
+    expect(cell(weeks, '2026-10-06')).toMatchObject({ done: 1, expected: 0 }); // a Tuesday tick is honoured
+  });
+
+  it('for a single fixed-weekday habit, leaves the other days blank unless ticked', () => {
+    const weeks = heatmap([mwf], true, ctx(TODAY));
+
+    expect(cell(weeks, '2026-10-08').level).toBeNull();
+    expect(cell(weeks, '2026-10-07').level).toBe(0);
+    expect(cell(weeks, '2026-10-06').level).toBe(4);
+  });
+
+  it('expects nothing of an optional habit, but shows its ticks', () => {
+    const weeks = heatmap([optional], false, ctx(TODAY));
+
+    expect(cell(weeks, '2026-10-07').level).toBeNull();
+    expect(cell(weeks, '2026-10-06')).toMatchObject({ level: 4, done: 1, expected: 0 });
+    expect(cell(heatmap([optional], true, ctx(TODAY)), '2026-10-07').level).toBeNull();
+  });
+});
+
 describe('rangeRate', () => {
   it('counts closed days only over the last N days, never 0% for nothing', () => {
     const habit = makeHabit({ done: ['2026-10-08', '2026-10-07', '2026-10-05'] });

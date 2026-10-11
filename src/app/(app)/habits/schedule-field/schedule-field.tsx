@@ -5,7 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { FieldError } from '@/app/(app)/habits/field-error/field-error';
 import './schedule-field.css';
 
-export type ScheduleKind = 'daily' | 'weekly_count';
+export type ScheduleKind = 'daily' | 'weekdays' | 'weekly_count' | 'optional';
 
 interface ScheduleFieldProps {
   kind: ScheduleKind;
