@@ -119,7 +119,6 @@ export const HomeClient = (props: HomeClientProps) => {
         greeting={greeting ? tm(greeting.message) : null}
         onNewHabit={openDialog}
       />
-
       {!home.view.hasHabits ? (
         <EmptyState
           title={tc('title')}

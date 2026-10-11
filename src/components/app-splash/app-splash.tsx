@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
@@ -8,6 +9,7 @@ import { AnimatedLogo } from '../animated-logo/animated-logo';
 import './app-splash.css';
 
 const KEY = 'cadence:splash';
+const DESCRIPTION_MS = 1500; // how long the description stays once it is there
 
 const noopSubscribe = () => {
   return () => {};
@@ -29,20 +31,24 @@ const shouldPlay = () => {
 };
 
 interface SplashState {
+  /** True once the logo is whole and the description fades in under it. */
+  described: boolean;
   leaving: boolean;
   finished: boolean;
 }
 
 /**
- * The first app page of a browser session opens with the logo animation over the page, then it fades away. The login
+ * The first app page of a browser session opens with the logo animation over the page, then the app's description fades
+ * in under it, and then the whole splash fades away. The login
  * page has its own logo animation, so it counts as the splash having been seen and skips this one.
  */
 export const AppSplash = () => {
-  const [state, setState] = useState<SplashState>({ leaving: false, finished: false });
+  const [state, setState] = useState<SplashState>({ described: false, leaving: false, finished: false });
 
   const play = useSyncExternalStore(noopSubscribe, shouldPlay, () => {
     return false;
   });
+  const t = useTranslations('common');
   const reduceMotion = useReducedMotion();
   const onLogin = usePathname() === '/login';
 
@@ -56,14 +62,35 @@ export const AppSplash = () => {
     }
   }, [play]);
 
-  const onTransitionEnd = () => {
-    if (state.leaving) {
-      setState({ leaving: true, finished: true });
+  // Let the description be read for a moment, then the splash goes.
+  useEffect(() => {
+    if (!state.described) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setState(current => {
+        return { ...current, leaving: true };
+      });
+    }, DESCRIPTION_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [state.described]);
+
+  const onTransitionEnd = (event: React.TransitionEvent) => {
+    if (state.leaving && event.target === event.currentTarget) {
+      setState(current => {
+        return { ...current, finished: true };
+      });
     }
   };
 
   const onLogoComplete = () => {
-    setState({ leaving: true, finished: false });
+    setState(current => {
+      return { ...current, described: true };
+    });
   };
 
   if (!play || onLogin || reduceMotion || state.finished) {
@@ -77,6 +104,7 @@ export const AppSplash = () => {
       onTransitionEnd={onTransitionEnd}
     >
       <AnimatedLogo onComplete={onLogoComplete} />
+      <p className={cn('app-splash__tagline', state.described && 'app-splash__tagline--shown')}>{t('tagline')}</p>
     </div>
   );
 };

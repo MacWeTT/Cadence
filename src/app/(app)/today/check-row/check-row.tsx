@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
@@ -27,7 +28,13 @@ export const CheckRow = (props: CheckRowProps) => {
   };
 
   return (
-    <li className="check-row">
+    // layoutId: the row glides between To do and Done, and the rows around it slide into the gap.
+    <motion.li
+      layout="position"
+      layoutId={row.id}
+      transition={{ type: 'spring', stiffness: 500, damping: 42 }}
+      className="check-row"
+    >
       <button
         type="button"
         role="checkbox"
@@ -54,6 +61,6 @@ export const CheckRow = (props: CheckRowProps) => {
         {row.week && row.streak && <span aria-hidden>{'·'}</span>}
         {row.streak && <span>{tm(streakMsg(row.streak))}</span>}
       </div>
-    </li>
+    </motion.li>
   );
 };

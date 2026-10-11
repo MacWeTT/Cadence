@@ -14,21 +14,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { isThemeName, type ThemeName } from '@/lib/themes';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './theme-toggle.css';
 
-/** One light theme and two dark ones. "dark" is Slate: it keeps the name next-themes (and saved choices) already use. */
-const THEMES = ['light', 'dark', 'forest'] as const;
-
-type ThemeName = (typeof THEMES)[number];
-
 const ICONS = { light: Sun, dark: Moon, forest: TreePine } as const;
-
-const isThemeName = (value: string | undefined): value is ThemeName => {
-  return THEMES.some(name => {
-    return name === value;
-  });
-};
 
 const noopSubscribe = () => {
   return () => {};

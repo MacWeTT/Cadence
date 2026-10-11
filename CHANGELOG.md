@@ -4,8 +4,10 @@ Cadence follows [semantic versioning](https://semver.org). Until 1.0 (the public
 
 ## Planned
 
-- **0.3.5** Motion: smooth loading and transitions with Framer Motion.
+- **0.3.5** Motion: every page moves in smoothly and loading no longer pops; the splash shows the app's description; a What's new page.
 - **0.4** The cache-first data layer.
+- **0.5** Focus sessions: a timer for a habit, with a confirmation when you finish.
+- **Later** The desktop app, desktop and email notifications, and starting on login.
 
 ## 0.3.0
 

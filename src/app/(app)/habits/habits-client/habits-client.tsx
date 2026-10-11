@@ -116,7 +116,6 @@ export const HabitsClient = (props: HabitsClientProps) => {
         <h1 className="habits__title">{t('title')}</h1>
         <Button onClick={onNewHabit}>{ta('newHabit')}</Button>
       </div>
-
       {active.length === 0 ? (
         <EmptyState
           flush
