@@ -107,22 +107,49 @@ export const HabitDialog = (props: HabitDialogProps) => {
     });
   };
 
+  const onOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
+  // Focus the name field here (not with autoFocus) so Radix remembers the opener and returns focus to it on close.
+  const onOpenAutoFocus = (event: Event) => {
+    event.preventDefault();
+    nameRef.current?.focus();
+  };
+
+  const onIconChange = (icon: HabitFormState['icon']) => {
+    setField('icon', icon);
+  };
+
+  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setField('name', event.target.value);
+  };
+
+  const onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setField('description', event.target.value);
+  };
+
+  const onColorChange = (color: HabitFormState['color']) => {
+    setField('color', color);
+  };
+
+  const onKindChange = (kind: HabitFormState['kind']) => {
+    setField('kind', kind);
+  };
+
+  const onTimesPerWeekChange = (times: HabitFormState['timesPerWeek']) => {
+    setField('timesPerWeek', times);
+  };
+
+  const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setField('startDate', event.target.value);
+  };
+
   return (
-    <Dialog
-      open
-      onOpenChange={open => {
-        return !open && onClose();
-      }}
-    >
-      <DialogContent
-        className="habit-dialog"
-        onCloseAutoFocus={onCloseAutoFocus}
-        // Focus the name field here (not with autoFocus) so Radix remembers the opener and returns focus to it on close.
-        onOpenAutoFocus={e => {
-          e.preventDefault();
-          nameRef.current?.focus();
-        }}
-      >
+    <Dialog open onOpenChange={onOpenChange}>
+      <DialogContent className="habit-dialog" onCloseAutoFocus={onCloseAutoFocus} onOpenAutoFocus={onOpenAutoFocus}>
         <DialogHeader>
           <DialogTitle className="habit-dialog__title">
             {habit ? t('dialog.editTitle') : t('dialog.newTitle')}
@@ -131,12 +158,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
         </DialogHeader>
         <form onSubmit={submit} className="habit-dialog__form" noValidate>
           <div className="habit-dialog__top">
-            <EmojiField
-              value={form.icon}
-              onChange={icon => {
-                return setField('icon', icon);
-              }}
-            />
+            <EmojiField value={form.icon} onChange={onIconChange} />
             <div className="habit-dialog__name">
               <Label htmlFor="habit-name" className="sr-only">
                 {t('dialog.name')}
@@ -146,9 +168,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
                 aria-label={t('dialog.name')}
                 placeholder={t('dialog.namePlaceholder')}
                 value={form.name}
-                onChange={e => {
-                  return setField('name', e.target.value);
-                }}
+                onChange={onNameChange}
                 aria-invalid={Boolean(form.fieldErrors.name)}
                 aria-describedby={form.fieldErrors.name ? 'error-name' : undefined}
                 ref={nameRef}
@@ -166,9 +186,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
             <Textarea
               id="habit-description"
               value={form.description}
-              onChange={e => {
-                return setField('description', e.target.value);
-              }}
+              onChange={onDescriptionChange}
               aria-invalid={Boolean(form.fieldErrors.description)}
               rows={2}
             />
@@ -176,24 +194,15 @@ export const HabitDialog = (props: HabitDialogProps) => {
           </div>
 
           <div>
-            <ColorPicker
-              value={form.color}
-              onChange={color => {
-                return setField('color', color);
-              }}
-            />
+            <ColorPicker value={form.color} onChange={onColorChange} />
             <FieldError field="color" message={form.fieldErrors.color} />
           </div>
 
           <ScheduleField
             kind={form.kind}
             timesPerWeek={form.timesPerWeek}
-            onKindChange={kind => {
-              return setField('kind', kind);
-            }}
-            onTimesPerWeekChange={times => {
-              return setField('timesPerWeek', times);
-            }}
+            onKindChange={onKindChange}
+            onTimesPerWeekChange={onTimesPerWeekChange}
             error={form.fieldErrors.timesPerWeek}
             note={effectiveNote}
           />
@@ -208,9 +217,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
               max={today}
               min="2000-01-01"
               value={form.startDate}
-              onChange={e => {
-                return setField('startDate', e.target.value);
-              }}
+              onChange={onStartDateChange}
               aria-invalid={Boolean(form.fieldErrors.startDate)}
               className="habit-dialog__date"
             />

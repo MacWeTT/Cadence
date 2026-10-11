@@ -23,6 +23,16 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
 
   const t = useTranslations('habits.dialog');
 
+  const onValueChange = (value: string) => {
+    if (value) {
+      onKindChange(value as ScheduleKind);
+    }
+  };
+
+  const onTimesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onTimesPerWeekChange(event.target.value);
+  };
+
   return (
     <div>
       <p className="schedule-field__label" id="schedule-label">
@@ -33,9 +43,7 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
           type="single"
           variant="outline"
           value={kind}
-          onValueChange={value => {
-            return value && onKindChange(value as ScheduleKind);
-          }}
+          onValueChange={onValueChange}
           aria-labelledby="schedule-label"
         >
           <ToggleGroupItem value="daily" className="schedule-field__option">
@@ -56,9 +64,7 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
               min={1}
               max={6}
               value={timesPerWeek}
-              onChange={e => {
-                return onTimesPerWeekChange(e.target.value);
-              }}
+              onChange={onTimesChange}
               aria-invalid={Boolean(error)}
               className="schedule-field__times-input"
             />

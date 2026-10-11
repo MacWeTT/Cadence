@@ -18,6 +18,7 @@ Run everything with `npm run verify` before opening a PR.
 | 7 | **Regular class names in JSX, styles in CSS files with `@apply`.** A `className` holds names, not a pile of utilities. Dynamic values (a habit's colour, a ring angle) stay in `style`. | ESLint `no-restricted-syntax` (more than 3 utility classes) |
 | 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
 | 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `locales/<language>/<area>.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
+| 9 | **No anonymous functions as props.** A handler passed to a component or element is a named `const` declared above the `return` (`onHabitClose`, `onNameChange`), never an inline `() => {...}`. Pass it by name. (Callbacks for `.map`, `.filter` and hooks stay inline.) | ESLint `no-restricted-syntax` |
 
 ```tsx
 // check-row/check-row.tsx: a component the way these rules want it.

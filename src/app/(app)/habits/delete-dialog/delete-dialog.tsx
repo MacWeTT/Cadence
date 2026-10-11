@@ -52,13 +52,20 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
     setBusy(false);
   };
 
+  const onOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
+  // Keep the dialog open until the server has answered.
+  const onConfirmClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    void confirm();
+  };
+
   return (
-    <AlertDialog
-      open
-      onOpenChange={open => {
-        return !open && onClose();
-      }}
-    >
+    <AlertDialog open onOpenChange={onOpenChange}>
       <AlertDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <AlertDialogHeader>
           <AlertDialogTitle>{t('delete.title', { name: habit.name })}</AlertDialogTitle>
@@ -66,13 +73,7 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{ta('cancel')}</AlertDialogCancel>
-          <AlertDialogAction
-            disabled={busy}
-            onClick={e => {
-              e.preventDefault(); // keep the dialog open until the server has answered
-              void confirm();
-            }}
-          >
+          <AlertDialogAction disabled={busy} onClick={onConfirmClick}>
             {ta('delete')}
           </AlertDialogAction>
         </AlertDialogFooter>

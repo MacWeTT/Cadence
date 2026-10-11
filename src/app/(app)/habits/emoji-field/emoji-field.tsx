@@ -54,6 +54,11 @@ export const EmojiField = (props: EmojiFieldProps) => {
 
   const t = useTranslations('habits.emoji');
 
+  const onEmojiSelect = ({ emoji }: { emoji: string }) => {
+    onChange(emoji);
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -62,13 +67,7 @@ export const EmojiField = (props: EmojiFieldProps) => {
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="emoji-field__popover">
-        <EmojiPicker.Root
-          className="emoji-field__root"
-          onEmojiSelect={({ emoji }) => {
-            onChange(emoji);
-            setOpen(false);
-          }}
-        >
+        <EmojiPicker.Root className="emoji-field__root" onEmojiSelect={onEmojiSelect}>
           <EmojiPicker.Search
             placeholder={t('search')}
             aria-label={t('search')}

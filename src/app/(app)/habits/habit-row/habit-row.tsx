@@ -43,6 +43,22 @@ export const HabitRow = (props: HabitRowProps) => {
   const pending = habit.pendingSchedule;
   const archived = archivedOn !== undefined;
 
+  const onRestore = () => {
+    actions.onRestore(habit);
+  };
+
+  const onDelete = () => {
+    actions.onDelete(habit, menuButton.current);
+  };
+
+  const onEdit = () => {
+    actions.onEdit(habit, menuButton.current);
+  };
+
+  const onArchive = () => {
+    actions.onArchive(habit);
+  };
+
   return (
     <li className={cn('habit-row', archived && 'habit-row--archived')}>
       <span
@@ -85,38 +101,15 @@ export const HabitRow = (props: HabitRowProps) => {
         <DropdownMenuContent align="end">
           {archived ? (
             <>
-              <DropdownMenuItem
-                onSelect={() => {
-                  return actions.onRestore(habit);
-                }}
-              >
-                {ta('restore')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="habit-row__delete"
-                onSelect={() => {
-                  return actions.onDelete(habit, menuButton.current);
-                }}
-              >
+              <DropdownMenuItem onSelect={onRestore}>{ta('restore')}</DropdownMenuItem>
+              <DropdownMenuItem className="habit-row__delete" onSelect={onDelete}>
                 {ta('delete')}
               </DropdownMenuItem>
             </>
           ) : (
             <>
-              <DropdownMenuItem
-                onSelect={() => {
-                  return actions.onEdit(habit, menuButton.current);
-                }}
-              >
-                {ta('edit')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => {
-                  return actions.onArchive(habit);
-                }}
-              >
-                {ta('archive')}
-              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onEdit}>{ta('edit')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onArchive}>{ta('archive')}</DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
