@@ -9,7 +9,7 @@ test('every app page ends with a footer: about, contact and who built it', async
   await expect(footer.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/contact');
   await expect(footer.getByRole('link', { name: 'MacWeTT' })).toBeVisible();
   await expect(footer).toContainText('Developed by MacWeTT');
-  await expect(footer).toContainText('Version 0.3.5');
+  await expect(footer).toContainText('Version 0.3.6');
 });
 
 test('the About link opens the about page', async ({ page }) => {
