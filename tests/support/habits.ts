@@ -1,5 +1,5 @@
-import type { CalendarDate, WeekStart } from './dates';
-import type { Ctx, HabitData } from './types';
+import type { CalendarDate, WeekStart } from '@/domain/dates';
+import type { Ctx, HabitData } from '@/domain/types';
 
 /** A daily habit starting 2026-10-01 by default. `done` is shorthand for `completions`. */
 export const makeHabit = (over: Partial<HabitData> & { done?: CalendarDate[] } = {}): HabitData => {

@@ -1,12 +1,14 @@
-import { addDays, isCalendarDate, weekStart, type CalendarDate, type WeekStart } from './dates';
-import type { HabitData, Schedule } from './types';
+import { addDays, isCalendarDate, weekStart, type CalendarDate, type WeekStart } from '@/domain/dates';
+import type { HabitData, Schedule } from '@/domain/types';
 
 /** The schedule in effect on `date`: the latest one whose `effectiveFrom` is on or before it. */
 export const scheduleOn = (schedules: Schedule[], date: CalendarDate): Schedule | undefined => {
   let found: Schedule | undefined;
 
   for (const s of schedules) {
-    if (s.effectiveFrom <= date && (!found || s.effectiveFrom > found.effectiveFrom)) {
+    const { effectiveFrom } = s;
+
+    if (effectiveFrom <= date && (!found || effectiveFrom > found.effectiveFrom)) {
       found = s;
     }
   }
@@ -20,15 +22,17 @@ export const scheduleOn = (schedules: Schedule[], date: CalendarDate): Schedule 
  * earlier needs no data rewrite.
  */
 export const scheduleFor = (h: HabitData, date: CalendarDate): Schedule | undefined => {
-  if (date < h.startDate || h.schedules.length === 0) {
+  const { startDate, schedules } = h;
+
+  if (date < startDate || schedules.length === 0) {
     return undefined;
   }
 
-  const earliest = h.schedules.reduce((a, b) => {
+  const earliest = schedules.reduce((a, b) => {
     return b.effectiveFrom < a.effectiveFrom ? b : a;
   });
 
-  return scheduleOn(h.schedules, date) ?? earliest;
+  return scheduleOn(schedules, date) ?? earliest;
 };
 
 export type ScheduleParseResult = { ok: true; value: Schedule } | { ok: false; error: string };

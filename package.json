@@ -12,8 +12,8 @@
     "db:start": "supabase start -x imgproxy,vector,logflare,edge-runtime,supavisor,mailpit",
     "db:test": "supabase test db",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"e2e/**/*.ts\" \"*.{ts,mts,mjs,json}\" \"eslint-rules/*.mjs\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"e2e/**/*.ts\" \"*.{ts,mts,mjs,json}\" \"eslint-rules/*.mjs\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"e2e/**/*.ts\" \"tests/**/*.ts\" \"*.{ts,mts,mjs,json}\" \"eslint-rules/*.mjs\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"e2e/**/*.ts\" \"tests/**/*.ts\" \"*.{ts,mts,mjs,json}\" \"eslint-rules/*.mjs\"",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build",
     "verify:full": "npm run verify && npm run db:test && npx playwright test"
   },

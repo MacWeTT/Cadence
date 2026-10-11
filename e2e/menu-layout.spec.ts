@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { daysAgo, resetUserData, seedHabit } from './support/data';
+import { daysAgo, resetUserData, seedHabit } from '@e2e/support/data';
 
 // Classic scrollbars (headless Chromium hides them by default), which is what makes the page shift.
 test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] }, viewport: { width: 1000, height: 600 } });

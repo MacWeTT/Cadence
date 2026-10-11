@@ -4,8 +4,8 @@ import { stagger, useAnimate } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
-import { Logo } from '../logo/logo';
-import { WORDMARK } from '../logo/logo-shapes';
+import { Logo } from '@/components/logo/logo';
+import { WORDMARK } from '@/components/logo/logo-shapes';
 import './animated-logo.css';
 
 const EASE = [0.65, 0, 0.35, 1] as const;
@@ -28,8 +28,10 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
   const reduceMotion = useReducedMotion();
 
   const { viewBox, letters, stop, markStop, ring, ringLeft } = WORDMARK;
+  const { cx: dotX, cy: dotY, r: dotR } = markStop;
+  const { d: ringPath, strokeWidth } = ring;
   const width = Number(viewBox.split(' ')[2]);
-  const startX = width / 2 - (ringLeft + markStop.cx + markStop.r) / 2; // "C." starts in the middle, then the word grows out of it
+  const startX = width / 2 - (ringLeft + dotX + dotR) / 2; // "C." starts in the middle, then the word grows out of it
 
   useEffect(() => {
     if (reduceMotion) {
@@ -64,7 +66,7 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
           { opacity: [0, 1], x: [-16, 0] },
           { duration: 0.5, delay: stagger(0.07, { startDelay: 0.3 }) },
         ),
-        animate('.animated-logo__dot', { x: stop.cx - markStop.cx }, { duration: 0.95, ease: EASE }),
+        animate('.animated-logo__dot', { x: stop.cx - dotX }, { duration: 0.95, ease: EASE }),
       ]);
 
       if (!cancelled) {
@@ -89,11 +91,11 @@ export const AnimatedLogo = (props: AnimatedLogoProps) => {
   return (
     <svg ref={scope} role="img" aria-label={t('brand')} viewBox={viewBox} className="animated-logo">
       <g className="animated-logo__stage">
-        <path d={ring.d} strokeWidth={ring.strokeWidth} className="animated-logo__ring" />
+        <path d={ringPath} strokeWidth={strokeWidth} className="animated-logo__ring" />
         {letters.map(({ char, d }, i) => {
           return <path key={`${char}-${i}`} d={d} className="animated-logo__letter" />;
         })}
-        <circle cx={markStop.cx} cy={markStop.cy} r={markStop.r} className="animated-logo__dot" />
+        <circle cx={dotX} cy={dotY} r={dotR} className="animated-logo__dot" />
       </g>
     </svg>
   );

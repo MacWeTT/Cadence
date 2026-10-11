@@ -22,10 +22,10 @@ export interface HabitListItem {
   hasCompletions: boolean;
 }
 
-export const toSchedule = (row: ScheduleRow): Schedule => {
-  return row.kind === 'weekly_count'
-    ? { kind: 'weekly_count', timesPerWeek: row.times_per_week ?? 1, effectiveFrom: row.effective_from }
-    : { kind: 'daily', effectiveFrom: row.effective_from };
+export const toSchedule = ({ kind, times_per_week, effective_from }: ScheduleRow): Schedule => {
+  return kind === 'weekly_count'
+    ? { kind: 'weekly_count', timesPerWeek: times_per_week ?? 1, effectiveFrom: effective_from }
+    : { kind: 'daily', effectiveFrom: effective_from };
 };
 
 /** A stored color, or a known one if the stored value is unexpected. */
@@ -42,16 +42,16 @@ export const toListItem = (
   const schedules = scheduleRows.map(toSchedule).sort((a, b) => {
     return a.effectiveFrom.localeCompare(b.effectiveFrom);
   });
-  const color = toColorKey(habit.color);
+  const { id, name, description, icon, color: storedColor, start_date, archived_at } = habit;
 
   return {
-    id: habit.id,
-    name: habit.name,
-    description: habit.description,
-    icon: habit.icon,
-    color,
-    startDate: habit.start_date,
-    archivedAt: habit.archived_at,
+    id,
+    name,
+    description,
+    icon,
+    color: toColorKey(storedColor),
+    startDate: start_date,
+    archivedAt: archived_at,
     // A start date moved before every row is covered by the earliest schedule (see scheduleFor in the domain).
     schedule: scheduleOn(schedules, today) ?? schedules[0],
     pendingSchedule:

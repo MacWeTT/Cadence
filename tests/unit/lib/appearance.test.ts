@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { BTN_TEXT, contrastRatio } from './accent-color';
+import { BTN_TEXT, contrastRatio } from '@/lib/accent-color';
 import {
   ACCENTS,
   ACCENT_PRESETS,
@@ -16,8 +16,8 @@ import {
   restoreChoices,
   writeChoice,
   writeCustomAccent,
-} from './appearance';
-import { COLOR_KEYS, PALETTE } from './palette';
+} from '@/lib/appearance';
+import { COLOR_KEYS, PALETTE } from '@/lib/palette';
 
 const makeRoot = (initial: Record<string, string> = {}) => {
   const attrs = new Map(Object.entries(initial));

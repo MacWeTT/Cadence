@@ -1,4 +1,4 @@
-import { deriveAccent, parseHex } from './accent-color';
+import { deriveAccent, parseHex } from '@/lib/accent-color';
 
 /**
  * The look of the app besides light/dark: a theme (the page and surface colours) and an accent (the button colour,
@@ -147,11 +147,13 @@ const readStoredCustom = (storage: StorageLike): CustomAccent | null => {
 };
 
 const applyCustomVars = (custom: CustomAccent | null, root: RootLike) => {
+  const { style } = root;
+
   for (const key of ['hex', 'light', 'dark'] as const) {
     if (custom) {
-      root.style.setProperty(CUSTOM_VARS[key], custom[key]);
+      style.setProperty(CUSTOM_VARS[key], custom[key]);
     } else {
-      root.style.removeProperty(CUSTOM_VARS[key]);
+      style.removeProperty(CUSTOM_VARS[key]);
     }
   }
 };
@@ -250,7 +252,9 @@ export const restoreChoices = (root: RootLike, storage: StorageLike) => {
  * The same as `restoreChoices`, as plain JavaScript for a <script> in <head>, so the saved look is on <html> before
  * the first paint and the page never flashes the stock colours. Kept in sync with the code above by a test.
  */
+const { palette: paletteConfig, accent: accentConfig } = CONFIG;
+
 export const BOOT_SCRIPT = `(function(){var r=document.documentElement;var c=${JSON.stringify({
-  palette: { ...CONFIG.palette, key: storageKey('palette') },
-  accent: { ...CONFIG.accent, key: storageKey('accent') },
+  palette: { ...paletteConfig, key: storageKey('palette') },
+  accent: { ...accentConfig, key: storageKey('accent') },
 })};var v=${JSON.stringify(CUSTOM_VARS)};var h=/^#[0-9a-f]{6}$/;for(var k in c){try{var s=localStorage.getItem(c[k].key);if(!s||s===c[k].fallback||c[k].options.indexOf(s)<0)continue;if(s==='custom'){var d=JSON.parse(localStorage.getItem(${JSON.stringify(CUSTOM_KEY)}));if(!d||!h.test(d.hex)||!h.test(d.light)||!h.test(d.dark))continue;r.style.setProperty(v.hex,d.hex);r.style.setProperty(v.light,d.light);r.style.setProperty(v.dark,d.dark);}r.setAttribute(c[k].attr,s);}catch(e){}}})();`;

@@ -9,15 +9,15 @@ import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { alertFor, clockIn } from '@/lib/alert';
 import { useMsg } from '@/lib/use-msg';
 import { continuingStreaks, type HomeView } from '@/server/home-view';
-import { HabitDialog } from '../../habits/habit-dialog/habit-dialog';
-import { CheckSection } from '../../today/check-section/check-section';
-import { useToggleCompletion } from '../../today/use-toggle-completion';
-import { WeekStrip } from '../../today/week-strip/week-strip';
-import { AlertBanner } from '../alert-banner/alert-banner';
-import { HomeHeader } from '../home-header/home-header';
-import { StreaksCard } from '../streaks-card/streaks-card';
-import { useGreeting } from '../use-greeting';
-import { useNow } from '../use-now';
+import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
+import { CheckSection } from '@/app/(app)/today/check-section/check-section';
+import { useToggleCompletion } from '@/app/(app)/today/use-toggle-completion';
+import { WeekStrip } from '@/app/(app)/today/week-strip/week-strip';
+import { AlertBanner } from '@/app/(app)/home/alert-banner/alert-banner';
+import { HomeHeader } from '@/app/(app)/home/home-header/home-header';
+import { StreaksCard } from '@/app/(app)/home/streaks-card/streaks-card';
+import { useGreeting } from '@/app/(app)/home/use-greeting';
+import { useNow } from '@/app/(app)/home/use-now';
 import './home-client.css';
 
 interface HomeClientProps {
@@ -38,28 +38,32 @@ export const HomeClient = (props: HomeClientProps) => {
   const tc = useTranslations('common.emptyHabits');
   const tm = useMsg();
   const now = useNow();
-  const { shown, saving, toggle } = useToggleCompletion(home.view, today);
+  const { view: homeView, atRisk: atRiskRows } = home;
+  const { shown, saving, toggle } = useToggleCompletion(homeView, today);
+  const { hasHabits, todo: homeTodo } = homeView;
+  const { todo, done: finished } = shown;
 
   const opener = useRef<HTMLElement | null>(null);
   const refreshedFor = useRef<string | null>(null);
 
   const clock = now && clockIn(timezone, now);
-  const total = shown.todo.length + shown.done.length;
-  const done = shown.done.length;
+  const date = clock?.date;
+  const todoCount = todo.length;
+  const done = finished.length;
+  const total = todoCount + done;
 
   const openIds = new Set(
-    shown.todo.map(r => {
-      return r.id;
+    todo.map(row => {
+      return row.id;
     }),
   );
-  const atRisk = home.atRisk.filter(r => {
-    return openIds.has(r.id);
+  const atRisk = atRiskRows.filter(row => {
+    return openIds.has(row.id);
   });
 
   const greeting = useGreeting(
     clock && {
-      hour: clock.hour,
-      weekday: clock.weekday,
+      ...clock,
       name,
       allDone: total > 0 && done === total,
       noneDone: total > 0 && done === 0,
@@ -69,20 +73,19 @@ export const HomeClient = (props: HomeClientProps) => {
   const alert =
     clock &&
     alertFor({
-      hour: clock.hour,
-      minutesToMidnight: clock.minutesToMidnight,
+      ...clock,
       total,
-      open: shown.todo.map(r => {
-        return { id: r.id, name: r.name };
+      open: todo.map(({ id, name }) => {
+        return { id, name };
       }),
-      atRisk: atRisk.map(r => {
-        return { id: r.id, name: r.name, count: r.streak.count, unit: r.streak.unit };
+      atRisk: atRisk.map(({ id, name, streak: { count, unit } }) => {
+        return { id, name, count, unit };
       }),
       continuing: continuingStreaks(
-        shown.done,
+        finished,
         new Set(
-          home.view.todo.map(r => {
-            return r.id;
+          homeTodo.map(row => {
+            return row.id;
           }),
         ),
       ),
@@ -90,11 +93,11 @@ export const HomeClient = (props: HomeClientProps) => {
 
   // A tab left open past local midnight: the lists are yesterday's, so fetch today's once.
   useEffect(() => {
-    if (clock && clock.date !== today && refreshedFor.current !== clock.date) {
-      refreshedFor.current = clock.date;
+    if (date && date !== today && refreshedFor.current !== date) {
+      refreshedFor.current = date;
       router.refresh();
     }
-  }, [clock, today, router]);
+  }, [date, today, router]);
 
   const openDialog = () => {
     opener.current = document.activeElement as HTMLElement | null;
@@ -119,7 +122,7 @@ export const HomeClient = (props: HomeClientProps) => {
         greeting={greeting ? tm(greeting.message) : null}
         onNewHabit={openDialog}
       />
-      {!home.view.hasHabits ? (
+      {!hasHabits ? (
         <EmptyState
           title={tc('title')}
           text={tc('text')}
@@ -133,8 +136,8 @@ export const HomeClient = (props: HomeClientProps) => {
               {total === 0 && <p className="home__note">{t('noneToday')}</p>}
               <CheckSection
                 id="next-heading"
-                title={t('nextUp', { count: shown.todo.length })}
-                rows={shown.todo}
+                title={t('nextUp', { count: todoCount })}
+                rows={todo}
                 saving={saving}
                 onToggle={toggle}
                 flush
@@ -142,10 +145,10 @@ export const HomeClient = (props: HomeClientProps) => {
               <CheckSection
                 id="done-heading"
                 title={t('doneToday', { count: done })}
-                rows={shown.done}
+                rows={finished}
                 saving={saving}
                 onToggle={toggle}
-                flush={shown.todo.length === 0}
+                flush={todoCount === 0}
               />
             </div>
             <div className="home__side">

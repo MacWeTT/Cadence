@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { DEVELOPER, VERSION } from '@/lib/site';
-import { WhatsNewLink } from '../whats-new-link/whats-new-link';
+import { WhatsNewLink } from '@/components/whats-new-link/whats-new-link';
 import './footer.css';
 
 /** The foot of every app page: where to read about Cadence, how to get in touch, and who builds it. */

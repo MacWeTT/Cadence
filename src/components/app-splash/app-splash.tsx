@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { cn } from '@/lib/utils';
-import { AnimatedLogo } from '../animated-logo/animated-logo';
+import { AnimatedLogo } from '@/components/animated-logo/animated-logo';
 import './app-splash.css';
 
 const KEY = 'cadence:splash';
@@ -52,6 +52,8 @@ export const AppSplash = () => {
   const reduceMotion = useReducedMotion();
   const onLogin = usePathname() === '/login';
 
+  const { described, leaving, finished } = state;
+
   useEffect(() => {
     if (play) {
       try {
@@ -64,7 +66,7 @@ export const AppSplash = () => {
 
   // Let the description be read for a moment, then the splash goes.
   useEffect(() => {
-    if (!state.described) {
+    if (!described) {
       return;
     }
 
@@ -77,10 +79,12 @@ export const AppSplash = () => {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [state.described]);
+  }, [described]);
 
   const onTransitionEnd = (event: React.TransitionEvent) => {
-    if (state.leaving && event.target === event.currentTarget) {
+    const { target, currentTarget } = event;
+
+    if (leaving && target === currentTarget) {
       setState(current => {
         return { ...current, finished: true };
       });
@@ -93,18 +97,14 @@ export const AppSplash = () => {
     });
   };
 
-  if (!play || onLogin || reduceMotion || state.finished) {
+  if (!play || onLogin || reduceMotion || finished) {
     return null;
   }
 
   return (
-    <div
-      aria-hidden
-      className={cn('app-splash', state.leaving && 'app-splash--leaving')}
-      onTransitionEnd={onTransitionEnd}
-    >
+    <div aria-hidden className={cn('app-splash', leaving && 'app-splash--leaving')} onTransitionEnd={onTransitionEnd}>
       <AnimatedLogo onComplete={onLogoComplete} />
-      <p className={cn('app-splash__tagline', state.described && 'app-splash__tagline--shown')}>{t('tagline')}</p>
+      <p className={cn('app-splash__tagline', described && 'app-splash__tagline--shown')}>{t('tagline')}</p>
     </div>
   );
 };

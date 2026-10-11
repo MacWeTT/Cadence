@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../../src/lib/supabase/database.types';
+import type { Database } from '@/lib/supabase/database.types';
 
 export const E2E_USER = { email: 'e2e@cadence.test', password: 'e2e-password-123!' };
 

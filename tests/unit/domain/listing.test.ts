@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { isListedOn, weekProgress } from './listing';
-import { ctx, makeHabit } from './test-helpers';
-import type { Schedule } from './types';
+import { isListedOn, weekProgress } from '@/domain/listing';
+import { ctx, makeHabit } from '@tests/support/habits';
+import type { Schedule } from '@/domain/types';
 
 const weekly = (timesPerWeek: number, effectiveFrom: string): Schedule => {
   return {

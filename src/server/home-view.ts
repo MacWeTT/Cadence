@@ -3,8 +3,8 @@ import { diffDays, weekStart } from '@/domain/dates';
 import type { Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
-import type { HabitRow } from './habit-view';
-import { buildTodayView, type TodayRow, type TodayView } from './today-view';
+import type { HabitRow } from '@/server/habit-view';
+import { buildTodayView, type TodayRow, type TodayView } from '@/server/today-view';
 
 export interface AtRiskRow {
   id: string;
@@ -25,33 +25,34 @@ export interface HomeView {
 }
 
 export const buildHomeView = (entries: { habit: HabitRow; data: HabitData }[], ctx: Ctx): HomeView => {
-  const view = buildTodayView(entries, ctx.today, ctx);
-  const daysLeft = 7 - diffDays(weekStart(ctx.today, ctx.weekStartsOn), ctx.today);
+  const { today, weekStartsOn } = ctx;
+  const view = buildTodayView(entries, today, ctx);
+  const daysLeft = 7 - diffDays(weekStart(today, weekStartsOn), today);
 
   const atRisk: AtRiskRow[] = [];
 
-  for (const r of view.todo) {
-    if (!r.streak) {
+  for (const row of view.todo) {
+    const { id, name, icon, color, streak, week } = row;
+
+    if (!streak) {
       continue;
     } // only today's rows carry a streak, and only above 0
 
-    const needed = r.week ? r.week.target - r.week.done : null;
+    let needed: number | null = null;
 
-    // A weekly goal is in danger when every remaining day is needed. Fewer needed is comfortable, more is already lost
-    // (one tick a day), and a met goal is safe.
-    if (r.week && (r.week.goalMet || needed !== daysLeft)) {
-      continue;
+    if (week) {
+      const { target, done, goalMet } = week;
+
+      needed = target - done;
+
+      // A weekly goal is in danger when every remaining day is needed. Fewer needed is comfortable, more is already
+      // lost (one tick a day), and a met goal is safe.
+      if (goalMet || needed !== daysLeft) {
+        continue;
+      }
     }
 
-    atRisk.push({
-      id: r.id,
-      name: r.name,
-      icon: r.icon,
-      color: r.color,
-      streak: r.streak,
-      needed,
-      daysLeft: r.week ? daysLeft : null,
-    });
+    atRisk.push({ id, name, icon, color, streak, needed, daysLeft: week ? daysLeft : null });
   }
 
   atRisk.sort((a, b) => {
@@ -74,8 +75,8 @@ export const continuingStreaks = (
     .filter(r => {
       return !r.week;
     })
-    .map(r => {
-      return { name: r.name, count: (r.streak?.count ?? 0) + (wasOpen.has(r.id) ? 1 : 0) };
+    .map(({ id, name, streak }) => {
+      return { name, count: (streak?.count ?? 0) + (wasOpen.has(id) ? 1 : 0) };
     })
     .filter(c => {
       return c.count > 0;

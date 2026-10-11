@@ -4,8 +4,8 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Logo } from '../logo/logo';
-import { ThemeToggle } from '../theme-toggle/theme-toggle';
+import { Logo } from '@/components/logo/logo';
+import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
 import './top-bar.css';
 
 const links = [

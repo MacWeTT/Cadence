@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, diffDays, toCalendarDate, todayIn, weekEnd, weekStart } from './dates';
+import { addDays, diffDays, toCalendarDate, todayIn, weekEnd, weekStart } from '@/domain/dates';
 
 describe('todayIn', () => {
   it('rolls over at local midnight in Kolkata', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { tr } from '@/lib/test-translate';
-import { completionErrorMsg } from './completion-errors';
+import { tr } from '@tests/support/translate';
+import { completionErrorMsg } from '@/server/completion-errors';
 
 describe('completionErrorMsg', () => {
   const known = ['habit_not_found', 'habit_archived', 'date_in_future', 'before_start'];

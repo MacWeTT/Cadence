@@ -7,15 +7,17 @@ import type { DaySummary } from '@/server/today-view';
 import './day-cell.css';
 
 const cellState = (d: DaySummary) => {
-  if (d.future || d.total === 0) {
+  const { future, total, done } = d;
+
+  if (future || total === 0) {
     return 'quiet';
   }
 
-  if (d.done === d.total) {
+  if (done === total) {
     return 'full';
   }
 
-  return d.done > 0 ? 'partial' : 'empty';
+  return done > 0 ? 'partial' : 'empty';
 };
 
 interface DayCellProps {
@@ -30,26 +32,28 @@ export const DayCell = (props: DayCellProps) => {
 
   const t = useTranslations('today.cell');
 
-  const className = cn('day-cell', `day-cell--${cellState(d)}`, viewed && 'day-cell--viewed');
-  const day = formatCalendarDate(d.date, { weekday: 'long', day: 'numeric', month: 'short' });
-  const label = d.future
-    ? t('notYet', { day })
-    : d.total === 0
-      ? t('nothingPlanned', { day })
-      : t('done', { day, done: d.done, total: d.total });
+  const { date, future, total, done } = d;
 
-  if (d.future) {
+  const className = cn('day-cell', `day-cell--${cellState(d)}`, viewed && 'day-cell--viewed');
+  const day = formatCalendarDate(date, { weekday: 'long', day: 'numeric', month: 'short' });
+  const label = future
+    ? t('notYet', { day })
+    : total === 0
+      ? t('nothingPlanned', { day })
+      : t('done', { day, done: done, total: total });
+
+  if (future) {
     return <span role="img" aria-label={label} className={className} />;
   }
 
   return (
     <Link
-      href={d.date === today ? '/today' : `/today?date=${d.date}`}
+      href={date === today ? '/today' : `/today?date=${date}`}
       aria-label={label}
       aria-current={viewed ? 'date' : undefined}
       className={className}
     >
-      {d.total > 0 ? d.done : ''}
+      {total > 0 ? done : ''}
     </Link>
   );
 };

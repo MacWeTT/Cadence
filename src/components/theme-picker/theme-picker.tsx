@@ -34,14 +34,14 @@ export const ThemePicker = () => {
               />
               <span className="theme-picker__card">
                 <span aria-hidden className="theme-picker__preview">
-                  {[light, dark].map((half, index) => {
+                  {[light, dark].map(({ bg, surface, ink }, index) => {
                     return (
-                      <span key={index} className="theme-picker__half" style={{ backgroundColor: half.bg }}>
-                        <span className="theme-picker__sample" style={{ backgroundColor: half.surface }}>
-                          <span className="theme-picker__line" style={{ backgroundColor: half.ink }} />
+                      <span key={index} className="theme-picker__half" style={{ backgroundColor: bg }}>
+                        <span className="theme-picker__sample" style={{ backgroundColor: surface }}>
+                          <span className="theme-picker__line" style={{ backgroundColor: ink }} />
                           <span
                             className="theme-picker__line theme-picker__line--short"
-                            style={{ backgroundColor: half.ink }}
+                            style={{ backgroundColor: ink }}
                           />
                         </span>
                       </span>

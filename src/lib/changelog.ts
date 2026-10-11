@@ -58,10 +58,12 @@ export const parseChangelog = (source: string): ChangelogEntry[] => {
       continue;
     }
 
+    const { items, planned, note } = current;
+
     if (line.startsWith('- ')) {
-      current.items.push(parseInline(line.slice(2)));
-    } else if (!current.planned && current.items.length === 0) {
-      current.note = current.note ? `${current.note} ${line}` : line;
+      items.push(parseInline(line.slice(2)));
+    } else if (!planned && items.length === 0) {
+      current.note = note ? `${note} ${line}` : line;
     }
   }
 

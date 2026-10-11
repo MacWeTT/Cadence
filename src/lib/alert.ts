@@ -1,4 +1,4 @@
-import { msg, type Msg } from './message';
+import { msg, type Msg } from '@/lib/message';
 
 export interface AtRiskHabit {
   id: string;
@@ -54,14 +54,15 @@ export const alertFor = (input: AlertInput): Alert => {
 
   const left = timeLeft(minutesToMidnight);
   const top = atRisk[0];
+  const openCount = open.length;
 
   if (total === 0) {
     return { tier: 'none', message: null, action: null };
   }
 
-  if (open.length === 0) {
-    const next = continuing.slice(0, 2).map(c => {
-      return `${c.name} ${c.count + 1}`;
+  if (openCount === 0) {
+    const next = continuing.slice(0, 2).map(({ name, count }) => {
+      return `${name} ${count + 1}`;
     });
 
     // shortcut: the streak list is joined with commas, not through Intl.ListFormat; use it when a second language arrives.
@@ -71,36 +72,31 @@ export const alertFor = (input: AlertInput): Alert => {
   }
 
   if (minutesToMidnight <= 180 && top) {
-    const more = atRisk.length > 1 ? msg('alert.moreAtRisk', { count: atRisk.length - 1 }) : '';
+    const { unit, count, name, id } = top;
+    const others = atRisk.length - 1;
+    const more = others > 0 ? msg('alert.moreAtRisk', { count: others }) : '';
 
     return {
       tier: 'late',
-      message: msg(top.unit === 'week' ? 'alert.lateWeek' : 'alert.lateDay', {
-        left,
-        count: top.count,
-        name: top.name,
-        more,
-      }),
-      action: doNow(top.name, top.id),
+      message: msg(unit === 'week' ? 'alert.lateWeek' : 'alert.lateDay', { left, count, name, more }),
+      action: doNow(name, id),
     };
   }
 
   if (minutesToMidnight <= 360) {
     if (top) {
+      const { unit, count, name, id } = top;
+
       return {
         tier: 'evening',
-        message: msg(top.unit === 'week' ? 'alert.eveningWeek' : 'alert.eveningDay', {
-          left,
-          name: top.name,
-          count: top.count,
-        }),
-        action: doNow(top.name, top.id),
+        message: msg(unit === 'week' ? 'alert.eveningWeek' : 'alert.eveningDay', { left, name, count }),
+        action: doNow(name, id),
       };
     }
 
     return {
       tier: 'evening',
-      message: msg('alert.eveningOpen', { left, count: open.length }),
+      message: msg('alert.eveningOpen', { left, count: openCount }),
       action: doNow(open[0].name, open[0].id),
     };
   }
@@ -108,7 +104,7 @@ export const alertFor = (input: AlertInput): Alert => {
   if (hour >= 12) {
     return {
       tier: 'afternoon',
-      message: msg('alert.afternoon', { count: open.length, left }),
+      message: msg('alert.afternoon', { count: openCount, left }),
       action: { kind: 'link', href: '/today', label: msg('alert.openToday') },
     };
   }
@@ -143,12 +139,13 @@ export const clockIn = (
         return [p.type, p.value];
       }),
   );
-  const hour = Number(parts.hour);
+  const { year, month, day, weekday, hour: hourText, minute } = parts;
+  const hour = Number(hourText);
 
   return {
-    date: `${parts.year}-${parts.month}-${parts.day}`,
+    date: `${year}-${month}-${day}`,
     hour,
-    weekday: WEEKDAYS.indexOf(parts.weekday),
-    minutesToMidnight: 1440 - (hour * 60 + Number(parts.minute)),
+    weekday: WEEKDAYS.indexOf(weekday),
+    minutesToMidnight: 1440 - (hour * 60 + Number(minute)),
   };
 };

@@ -1,8 +1,8 @@
-export * from './dates';
-export * from './schedule';
-export * from './schedule-change';
-export * from './listing';
-export * from './status';
-export * from './streaks';
-export * from './rates';
-export type { Schedule, Pause, HabitData, Ctx } from './types';
+export * from '@/domain/dates';
+export * from '@/domain/schedule';
+export * from '@/domain/schedule-change';
+export * from '@/domain/listing';
+export * from '@/domain/status';
+export * from '@/domain/streaks';
+export * from '@/domain/rates';
+export type { Schedule, Pause, HabitData, Ctx } from '@/domain/types';

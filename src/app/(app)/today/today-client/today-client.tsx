@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import type { CalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
 import type { TodayView } from '@/server/today-view';
-import { CheckSection } from '../check-section/check-section';
-import { DateNav } from '../date-nav/date-nav';
-import { DayCard } from '../day-card/day-card';
-import { useToggleCompletion } from '../use-toggle-completion';
+import { CheckSection } from '@/app/(app)/today/check-section/check-section';
+import { DateNav } from '@/app/(app)/today/date-nav/date-nav';
+import { DayCard } from '@/app/(app)/today/day-card/day-card';
+import { useToggleCompletion } from '@/app/(app)/today/use-toggle-completion';
 import './today-client.css';
 
 interface TodayClientProps {
@@ -26,9 +26,12 @@ export const TodayClient = (props: TodayClientProps) => {
   const t = useTranslations('today');
   const tc = useTranslations('common.emptyHabits');
   const { shown, saving, toggle } = useToggleCompletion(view, date);
+  const { todo, done: finished, strip } = shown;
 
   const isToday = date === today;
-  const nothingListed = shown.todo.length === 0 && shown.done.length === 0;
+  const todoCount = todo.length;
+  const doneCount = finished.length;
+  const nothingListed = todoCount === 0 && doneCount === 0;
 
   return (
     <>
@@ -62,14 +65,14 @@ export const TodayClient = (props: TodayClientProps) => {
               <p className="today__note">{t('noneThisDay')}</p>
             ) : (
               <>
-                {shown.todo.length === 0 && (
+                {todoCount === 0 && (
                   <p className="today__note">{isToday ? t('nothingLeftToday') : t('nothingLeftThisDay')}</p>
                 )}
-                <CheckSection id="todo-heading" title={t('todo')} rows={shown.todo} saving={saving} onToggle={toggle} />
+                <CheckSection id="todo-heading" title={t('todo')} rows={todo} saving={saving} onToggle={toggle} />
                 <CheckSection
                   id="done-heading"
                   title={isToday ? t('doneToday') : t('done')}
-                  rows={shown.done}
+                  rows={finished}
                   saving={saving}
                   onToggle={toggle}
                 />
@@ -77,13 +80,7 @@ export const TodayClient = (props: TodayClientProps) => {
             )}
           </div>
           <div className="today__side">
-            <DayCard
-              done={shown.done.length}
-              total={shown.done.length + shown.todo.length}
-              strip={shown.strip}
-              date={date}
-              today={today}
-            />
+            <DayCard done={doneCount} total={doneCount + todoCount} strip={strip} date={date} today={today} />
           </div>
         </div>
       )}

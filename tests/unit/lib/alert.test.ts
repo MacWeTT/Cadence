@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { alertFor, clockIn, timeLeft, type Alert, type AlertInput } from './alert';
-import { tr } from './test-translate';
+import { alertFor, clockIn, timeLeft, type Alert, type AlertInput } from '@/lib/alert';
+import { tr } from '@tests/support/translate';
 
 const read = { id: 'read', name: 'Read' };
 const run = { id: 'run', name: 'Run' };

@@ -12,7 +12,8 @@ const FIRST_X = 40;
 const HEIGHTS = [60, 86, 78, 118, 134, 160, 196];
 const SUN = { x: 279, y: 52 };
 const TREND = 'M53 196Q110 130 170 120T279 60';
-const TODAY = HEIGHTS.length - 1;
+const DAYS = HEIGHTS.length;
+const TODAY = DAYS - 1;
 const FIRST_BAR = 0.4; // seconds before the first bar starts to grow
 const BAR_GAP = 0.12;
 
@@ -31,7 +32,8 @@ const barTone = (day: number) => {
 export const AboutIllustration = () => {
   const reduceMotion = useReducedMotion();
 
-  const barsDone = FIRST_BAR + HEIGHTS.length * BAR_GAP + 0.5;
+  const { x: sunX, y: sunY } = SUN;
+  const barsDone = FIRST_BAR + DAYS * BAR_GAP + 0.5;
 
   return (
     <svg aria-hidden viewBox="0 0 320 320" className="about-illustration">
@@ -63,11 +65,11 @@ export const AboutIllustration = () => {
       </clipPath>
       <path d={TREND} clipPath="url(#about-trend-reveal)" className="about-illustration__trend" />
       <motion.circle
-        cx={SUN.x}
-        cy={SUN.y}
+        cx={sunX}
+        cy={sunY}
         r={14}
         className="about-illustration__sun"
-        style={{ transformOrigin: `${SUN.x}px ${SUN.y}px` }}
+        style={{ transformOrigin: `${sunX}px ${sunY}px` }}
         initial={reduceMotion ? false : { scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 220, damping: 11, delay: barsDone + 0.9 }}

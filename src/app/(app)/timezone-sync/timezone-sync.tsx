@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { syncTimezoneAction } from '../timezone-actions';
+import { syncTimezoneAction } from '@/app/(app)/timezone-actions';
 
 const FLAG = 'timezone-synced';
 

@@ -1,5 +1,5 @@
 import type { Schedule } from '@/domain/types';
-import { msg, type Msg } from './message';
+import { msg, type Msg } from '@/lib/message';
 
 /** "Every day" or "3× a week". */
 export const scheduleMsg = (schedule: Schedule): Msg => {

@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { HabitRow } from '@/server/habit-view';
-import { ChipLink } from '../chip-link/chip-link';
-import { progressHref } from '../progress-links';
+import { ChipLink } from '@/app/(app)/progress/chip-link/chip-link';
+import { progressHref } from '@/app/(app)/progress/progress-links';
 import './habit-filter.css';
 
 interface HabitFilterProps {
@@ -21,11 +21,11 @@ export const HabitFilter = (props: HabitFilterProps) => {
       <ChipLink href={progressHref(null, range)} active={selectedId === null}>
         {t('all')}
       </ChipLink>
-      {habits.map(h => {
+      {habits.map(({ id, icon, name }) => {
         return (
-          <ChipLink key={h.id} href={progressHref(h.id, range)} active={selectedId === h.id}>
-            <span aria-hidden>{h.icon}</span>
-            {h.name}
+          <ChipLink key={id} href={progressHref(id, range)} active={selectedId === id}>
+            <span aria-hidden>{icon}</span>
+            {name}
           </ChipLink>
         );
       })}

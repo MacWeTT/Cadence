@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { translateMsg, type Msg } from './message';
+import { translateMsg, type Msg } from '@/lib/message';
 
 /** In components: `const tm = useMsg();` then `tm(someMessage)` gives its text. Not for async server components. */
 export const useMsg = () => {

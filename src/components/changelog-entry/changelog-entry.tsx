@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Arrive } from '../arrive/arrive';
+import { Arrive } from '@/components/arrive/arrive';
 import type { ChangelogEntry } from '@/lib/changelog';
 import { cn } from '@/lib/utils';
 import './changelog-entry.css';
@@ -35,19 +35,21 @@ export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
             return (
               <li key={i} className="changelog-entry__item">
                 {item.map((part, j) => {
-                  if (part.kind === 'bold') {
-                    return <strong key={j}>{part.text}</strong>;
+                  const { kind, text } = part;
+
+                  if (kind === 'bold') {
+                    return <strong key={j}>{text}</strong>;
                   }
 
-                  if (part.kind === 'code') {
+                  if (kind === 'code') {
                     return (
                       <code key={j} className="changelog-entry__code">
-                        {part.text}
+                        {text}
                       </code>
                     );
                   }
 
-                  return <span key={j}>{part.text}</span>;
+                  return <span key={j}>{text}</span>;
                 })}
               </li>
             );

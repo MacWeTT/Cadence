@@ -21,8 +21,12 @@ export const UserMenu = async () => {
 
   const t = await getTranslations('common.account');
 
-  const name: string = user.user_metadata.full_name ?? user.email ?? t('fallbackName');
-  const avatarUrl: string | undefined = user.user_metadata.avatar_url;
+  const {
+    user_metadata: { full_name: fullName, avatar_url },
+    email,
+  } = user;
+  const name: string = fullName ?? email ?? t('fallbackName');
+  const avatarUrl: string | undefined = avatar_url;
 
   return (
     <DropdownMenu>

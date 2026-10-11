@@ -15,7 +15,7 @@ const eslintConfig = defineConfig([
 
   {
     name: 'cadence/code-style',
-    files: ['src/**/*.{ts,tsx}', 'e2e/**/*.ts'],
+    files: ['src/**/*.{ts,tsx}', 'e2e/**/*.ts', 'tests/**/*.ts'],
     ignores: vendorFiles,
     plugins: { cadence: policies },
     rules: {
@@ -60,6 +60,12 @@ const eslintConfig = defineConfig([
           message: 'Give the props type a name (interface XProps) instead of an inline type.',
         },
         {
+          // 10: imports are absolute (@/..., @tests/..., @e2e/...); only a component's own stylesheet stays relative.
+          selector:
+            ':matches(ImportDeclaration, ExportAllDeclaration, ExportNamedDeclaration, ImportExpression)[source.value=/^\\./]:not([source.value=/\\.css$/])',
+          message: 'Use an absolute import (@/..., @tests/..., @e2e/...), not a relative one.',
+        },
+        {
           // 9: a function passed as a prop has a name (onHabitClose), declared above the return.
           selector: 'JSXAttribute > JSXExpressionContainer > :matches(ArrowFunctionExpression, FunctionExpression)',
           message: 'Name this handler (const onHabitClose = () => {...}) and pass it by name.',
@@ -81,6 +87,17 @@ const eslintConfig = defineConfig([
       ],
       // 8: no text typed straight into JSX.
       'react/jsx-no-literals': [STYLE, { noStrings: false, ignoreProps: true }],
+    },
+  },
+
+  {
+    name: 'cadence/destructure',
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: vendorFiles,
+    plugins: { cadence: policies },
+    rules: {
+      // 11: read an object's properties once, by destructuring.
+      'cadence/destructure-repeated-reads': STYLE,
     },
   },
 

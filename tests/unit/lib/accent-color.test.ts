@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BTN_TEXT, contrastRatio, deriveAccent, parseHex } from './accent-color';
+import { BTN_TEXT, contrastRatio, deriveAccent, parseHex } from '@/lib/accent-color';
 
 describe('parseHex', () => {
   it('normalises to lower-case #rrggbb', () => {

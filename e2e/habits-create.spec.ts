@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { getHabits, resetUserData } from './support/data';
+import { getHabits, resetUserData } from '@e2e/support/data';
 
 test.beforeEach(async () => {
   await resetUserData();

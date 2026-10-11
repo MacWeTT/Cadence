@@ -1,7 +1,7 @@
-import { addDays, weekStart, type CalendarDate } from './dates';
-import { scheduleFor } from './schedule';
-import { dayStatus, isPaused, weekStatus } from './status';
-import type { Ctx, HabitData } from './types';
+import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
+import { scheduleFor } from '@/domain/schedule';
+import { dayStatus, isPaused, weekStatus } from '@/domain/status';
+import type { Ctx, HabitData } from '@/domain/types';
 
 export interface Streak {
   unit: 'day' | 'week';
@@ -19,12 +19,14 @@ const unitNow = (h: HabitData, ctx: Ctx): Streak['unit'] => {
  */
 export const currentStreak = (h: HabitData, ctx: Ctx): Streak => {
   const unit = unitNow(h, ctx);
+  const { today, weekStartsOn } = ctx;
+  const { startDate, pauses } = h;
 
   if (
-    h.pauses.some(p => {
-      return p.to === null;
+    pauses.some(({ to }) => {
+      return to === null;
     }) ||
-    !scheduleFor(h, ctx.today)
+    !scheduleFor(h, today)
   ) {
     return { unit, count: 0 };
   }
@@ -32,9 +34,9 @@ export const currentStreak = (h: HabitData, ctx: Ctx): Streak => {
   let count = 0;
 
   if (unit === 'day') {
-    let d: CalendarDate = dayStatus(h, ctx.today, ctx) === 'done' ? ctx.today : addDays(ctx.today, -1);
+    let d: CalendarDate = dayStatus(h, today, ctx) === 'done' ? today : addDays(today, -1);
 
-    for (; d >= h.startDate; d = addDays(d, -1)) {
+    for (; d >= startDate; d = addDays(d, -1)) {
       if (dayStatus(h, d, ctx) === 'done') {
         count++;
       } else if (!isPaused(h, d)) {
@@ -42,10 +44,10 @@ export const currentStreak = (h: HabitData, ctx: Ctx): Streak => {
       }
     }
   } else {
-    const thisWeek = weekStart(ctx.today, ctx.weekStartsOn);
+    const thisWeek = weekStart(today, weekStartsOn);
     let w: CalendarDate = weekStatus(h, thisWeek, ctx).status === 'met' ? thisWeek : addDays(thisWeek, -7);
 
-    for (; addDays(w, 6) >= h.startDate; w = addDays(w, -7)) {
+    for (; addDays(w, 6) >= startDate; w = addDays(w, -7)) {
       const { status } = weekStatus(h, w, ctx);
 
       if (status === 'met') {
@@ -61,17 +63,21 @@ export const currentStreak = (h: HabitData, ctx: Ctx): Streak => {
 
 /** The longest run of done days or met weeks anywhere in the history; on equal counts the most recent run wins. */
 export const longestStreak = (h: HabitData, ctx: Ctx): Streak => {
-  let best = { unit: unitNow(h, ctx), count: 0, end: h.startDate };
+  const { today, weekStartsOn } = ctx;
+  const { startDate } = h;
+  let best = { unit: unitNow(h, ctx), count: 0, end: startDate };
 
   const consider = (unit: Streak['unit'], count: number, end: CalendarDate) => {
-    if (count > best.count || (count === best.count && end > best.end)) {
+    const { count: bestCount, end: bestEnd } = best;
+
+    if (count > bestCount || (count === bestCount && end > bestEnd)) {
       best = { unit, count, end };
     }
   };
 
   let run = 0;
 
-  for (let d = h.startDate; d <= ctx.today; d = addDays(d, 1)) {
+  for (let d = startDate; d <= today; d = addDays(d, 1)) {
     if (dayStatus(h, d, ctx) === 'done') {
       consider('day', ++run, d);
     } else if (!isPaused(h, d)) {
@@ -81,7 +87,7 @@ export const longestStreak = (h: HabitData, ctx: Ctx): Streak => {
 
   run = 0;
 
-  for (let w = weekStart(h.startDate, ctx.weekStartsOn); w <= ctx.today; w = addDays(w, 7)) {
+  for (let w = weekStart(startDate, weekStartsOn); w <= today; w = addDays(w, 7)) {
     const { status } = weekStatus(h, w, ctx);
 
     if (status === 'met') {
@@ -91,5 +97,7 @@ export const longestStreak = (h: HabitData, ctx: Ctx): Streak => {
     }
   }
 
-  return { unit: best.unit, count: best.count };
+  const { unit, count } = best;
+
+  return { unit, count };
 };

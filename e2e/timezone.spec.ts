@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { getProfileTimezone, resetUserData, setProfileTimezone } from './support/data';
+import { getProfileTimezone, resetUserData, setProfileTimezone } from '@e2e/support/data';
 
 const localDate = (timeZone: string) => {
   return new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date());

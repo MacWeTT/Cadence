@@ -19,12 +19,12 @@ import type { WeekStart } from '@/domain/dates';
 import { nextEditDate } from '@/domain/schedule';
 import { formatCalendarDate } from '@/lib/format';
 import type { HabitListItem } from '@/server/habit-view';
-import { createHabitAction, updateHabitAction } from '../actions';
-import { ColorPicker } from '../color-picker/color-picker';
-import { EmojiField } from '../emoji-field/emoji-field';
-import { FieldError } from '../field-error/field-error';
-import { initialHabitForm, type HabitFormState } from '../habit-form';
-import { ScheduleField } from '../schedule-field/schedule-field';
+import { createHabitAction, updateHabitAction } from '@/app/(app)/habits/actions';
+import { ColorPicker } from '@/app/(app)/habits/color-picker/color-picker';
+import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
+import { FieldError } from '@/app/(app)/habits/field-error/field-error';
+import { initialHabitForm, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
 
 interface HabitDialogProps {
@@ -49,6 +49,16 @@ export const HabitDialog = (props: HabitDialogProps) => {
   const nameRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false); // guards against a double-click before React re-renders the disabled button
 
+  const { name, description, icon, color, kind, timesPerWeek, startDate, fieldErrors, formError } = form;
+  const {
+    name: nameError,
+    icon: iconError,
+    description: descriptionError,
+    color: colorError,
+    timesPerWeek: timesError,
+    startDate: startDateError,
+  } = fieldErrors;
+
   const setField = <K extends keyof HabitFormState>(field: K, value: HabitFormState[K]) => {
     setForm(current => {
       return { ...current, [field]: value };
@@ -59,8 +69,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
   const current = habit?.schedule;
   const scheduleChanged =
     current !== undefined &&
-    (form.kind !== current.kind ||
-      (current.kind === 'weekly_count' && Number(form.timesPerWeek) !== current.timesPerWeek));
+    (kind !== current.kind || (current.kind === 'weekly_count' && Number(timesPerWeek) !== current.timesPerWeek));
   const effectiveDate = formatCalendarDate(nextEditDate(today, weekStartsOn), { dateStyle: 'full' });
   const effectiveNote =
     habit?.hasCompletions && scheduleChanged ? t('dialog.effectiveNote', { date: effectiveDate }) : null;
@@ -79,13 +88,13 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
     startTransition(async () => {
       const input = {
-        name: form.name,
-        description: form.description || undefined,
-        icon: form.icon,
-        color: form.color,
-        kind: form.kind,
-        timesPerWeek: form.kind === 'weekly_count' ? Number(form.timesPerWeek) : undefined,
-        startDate: form.startDate,
+        name: name,
+        description: description || undefined,
+        icon: icon,
+        color: color,
+        kind: kind,
+        timesPerWeek: kind === 'weekly_count' ? Number(timesPerWeek) : undefined,
+        startDate: startDate,
       };
       const result = habit ? await updateHabitAction(habit.id, input) : await createHabitAction(input);
 
@@ -96,12 +105,14 @@ export const HabitDialog = (props: HabitDialogProps) => {
         return;
       }
 
+      const { fieldErrors: serverErrors, error } = result;
+
       submitting.current = false;
       setForm(state => {
         return {
           ...state,
-          fieldErrors: result.fieldErrors ?? {},
-          formError: result.fieldErrors ? null : result.error,
+          fieldErrors: serverErrors ?? {},
+          formError: serverErrors ? null : error,
         };
       });
     });
@@ -158,7 +169,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
         </DialogHeader>
         <form onSubmit={submit} className="habit-dialog__form" noValidate>
           <div className="habit-dialog__top">
-            <EmojiField value={form.icon} onChange={onIconChange} />
+            <EmojiField value={icon} onChange={onIconChange} />
             <div className="habit-dialog__name">
               <Label htmlFor="habit-name" className="sr-only">
                 {t('dialog.name')}
@@ -167,15 +178,15 @@ export const HabitDialog = (props: HabitDialogProps) => {
                 id="habit-name"
                 aria-label={t('dialog.name')}
                 placeholder={t('dialog.namePlaceholder')}
-                value={form.name}
+                value={name}
                 onChange={onNameChange}
-                aria-invalid={Boolean(form.fieldErrors.name)}
-                aria-describedby={form.fieldErrors.name ? 'error-name' : undefined}
+                aria-invalid={Boolean(nameError)}
+                aria-describedby={nameError ? 'error-name' : undefined}
                 ref={nameRef}
                 className="habit-dialog__name-input"
               />
-              <FieldError field="name" message={form.fieldErrors.name} />
-              <FieldError field="icon" message={form.fieldErrors.icon} />
+              <FieldError field="name" message={nameError} />
+              <FieldError field="icon" message={iconError} />
             </div>
           </div>
 
@@ -185,25 +196,25 @@ export const HabitDialog = (props: HabitDialogProps) => {
             </Label>
             <Textarea
               id="habit-description"
-              value={form.description}
+              value={description}
               onChange={onDescriptionChange}
-              aria-invalid={Boolean(form.fieldErrors.description)}
+              aria-invalid={Boolean(descriptionError)}
               rows={2}
             />
-            <FieldError field="description" message={form.fieldErrors.description} />
+            <FieldError field="description" message={descriptionError} />
           </div>
 
           <div>
-            <ColorPicker value={form.color} onChange={onColorChange} />
-            <FieldError field="color" message={form.fieldErrors.color} />
+            <ColorPicker value={color} onChange={onColorChange} />
+            <FieldError field="color" message={colorError} />
           </div>
 
           <ScheduleField
-            kind={form.kind}
-            timesPerWeek={form.timesPerWeek}
+            kind={kind}
+            timesPerWeek={timesPerWeek}
             onKindChange={onKindChange}
             onTimesPerWeekChange={onTimesPerWeekChange}
-            error={form.fieldErrors.timesPerWeek}
+            error={timesError}
             note={effectiveNote}
           />
 
@@ -216,17 +227,17 @@ export const HabitDialog = (props: HabitDialogProps) => {
               type="date"
               max={today}
               min="2000-01-01"
-              value={form.startDate}
+              value={startDate}
               onChange={onStartDateChange}
-              aria-invalid={Boolean(form.fieldErrors.startDate)}
+              aria-invalid={Boolean(startDateError)}
               className="habit-dialog__date"
             />
-            <FieldError field="startDate" message={form.fieldErrors.startDate} />
+            <FieldError field="startDate" message={startDateError} />
           </div>
 
-          {form.formError && (
+          {formError && (
             <p role="alert" className="habit-dialog__error">
-              {form.formError}
+              {formError}
             </p>
           )}
 

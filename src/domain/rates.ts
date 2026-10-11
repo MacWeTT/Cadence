@@ -1,6 +1,6 @@
-import { addDays, weekStart, type CalendarDate } from './dates';
-import { dayStatus, weekStatus } from './status';
-import type { Ctx, HabitData } from './types';
+import { addDays, weekStart, type CalendarDate } from '@/domain/dates';
+import { dayStatus, weekStatus } from '@/domain/status';
+import type { Ctx, HabitData } from '@/domain/types';
 
 export interface Rate {
   done: number;
@@ -14,8 +14,9 @@ export interface Rate {
  */
 export const completionRate = (h: HabitData, from: CalendarDate, to: CalendarDate, ctx: Ctx): Rate => {
   const rate: Rate = { done: 0, expected: 0 };
+  const { today, weekStartsOn } = ctx;
 
-  const lastDay = to < ctx.today ? to : addDays(ctx.today, -1);
+  const lastDay = to < today ? to : addDays(today, -1);
 
   for (let d = from; d <= lastDay; d = addDays(d, 1)) {
     const status = dayStatus(h, d, ctx);
@@ -29,21 +30,21 @@ export const completionRate = (h: HabitData, from: CalendarDate, to: CalendarDat
     }
   }
 
-  let w = weekStart(from, ctx.weekStartsOn);
+  let w = weekStart(from, weekStartsOn);
 
   if (w < from) {
     w = addDays(w, 7);
   }
 
-  for (; addDays(w, 6) <= to && addDays(w, 6) < ctx.today; w = addDays(w, 7)) {
-    const week = weekStatus(h, w, ctx);
+  for (; addDays(w, 6) <= to && addDays(w, 6) < today; w = addDays(w, 7)) {
+    const { status: weekState, done, target } = weekStatus(h, w, ctx);
 
-    if (week.status !== 'met' && week.status !== 'missed') {
+    if (weekState !== 'met' && weekState !== 'missed') {
       continue;
     }
 
-    rate.done += Math.min(week.done, week.target);
-    rate.expected += week.target;
+    rate.done += Math.min(done, target);
+    rate.expected += target;
   }
 
   return rate;
@@ -51,8 +52,8 @@ export const completionRate = (h: HabitData, from: CalendarDate, to: CalendarDat
 
 export const addRates = (rates: Rate[]): Rate => {
   return rates.reduce(
-    (a, r) => {
-      return { done: a.done + r.done, expected: a.expected + r.expected };
+    ({ done: doneSoFar, expected: expectedSoFar }, { done, expected }) => {
+      return { done: doneSoFar + done, expected: expectedSoFar + expected };
     },
     {
       done: 0,
@@ -62,6 +63,6 @@ export const addRates = (rates: Rate[]): Rate => {
 };
 
 /** done ÷ expected, or null when nothing was expected (never 0%). */
-export const ratio = (r: Rate): number | null => {
-  return r.expected === 0 ? null : r.done / r.expected;
+export const ratio = ({ done, expected }: Rate): number | null => {
+  return expected === 0 ? null : done / expected;
 };

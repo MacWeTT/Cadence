@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fetchAll } from './fetch-all';
+import { fetchAll } from '@/server/fetch-all';
 
 const source = (n: number) => {
   return async (from: number, to: number) => {

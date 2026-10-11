@@ -133,9 +133,11 @@ export const deriveAccent = (value: string): { hex: string; light: string; dark:
     return null;
   }
 
+  const { light: lightText, dark: darkText } = BTN_TEXT;
+
   return {
     hex,
-    light: settle(hex, BTN_TEXT.light, -1),
-    dark: settle(hex, BTN_TEXT.dark, 1),
+    light: settle(hex, lightText, -1),
+    dark: settle(hex, darkText, 1),
   };
 };

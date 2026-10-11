@@ -6,7 +6,7 @@ import { dayStatus } from '@/domain/status';
 import { currentStreak, type Streak } from '@/domain/streaks';
 import type { Ctx, HabitData } from '@/domain/types';
 import type { ColorKey } from '@/lib/palette';
-import { toColorKey, toSchedule, type HabitRow, type ScheduleRow } from './habit-view';
+import { toColorKey, toSchedule, type HabitRow, type ScheduleRow } from '@/server/habit-view';
 
 export interface PauseRow {
   habit_id: string;
@@ -23,8 +23,8 @@ export const toHabitData = (
   return {
     startDate: habit.start_date,
     schedules: schedules.map(toSchedule),
-    pauses: pauses.map(p => {
-      return { from: p.archived_on, to: p.restored_on };
+    pauses: pauses.map(({ archived_on, restored_on }) => {
+      return { from: archived_on, to: restored_on };
     }),
     completions: new Set(completionDates),
   };
@@ -71,9 +71,11 @@ export const buildTodayView = (
   date: CalendarDate,
   ctx: Ctx,
 ): TodayView => {
+  const todo: TodayRow[] = [];
+  const done: TodayRow[] = [];
   const view: TodayView = {
-    todo: [],
-    done: [],
+    todo,
+    done,
     strip: weekStrip(
       habits.map(h => {
         return h.data;
@@ -94,11 +96,13 @@ export const buildTodayView = (
     const ticked = data.completions.has(date);
     const streak = date === ctx.today ? currentStreak(data, ctx) : null;
 
-    (ticked ? view.done : view.todo).push({
-      id: habit.id,
-      name: habit.name,
-      icon: habit.icon,
-      color: toColorKey(habit.color),
+    const { id, name, icon, color } = habit;
+
+    (ticked ? done : todo).push({
+      id,
+      name,
+      icon,
+      color: toColorKey(color),
       ticked,
       streak: streak && streak.count > 0 ? streak : null,
       week: weekProgress(data, date, ctx),
@@ -113,7 +117,8 @@ export const buildTodayView = (
  * only counts on the days it was ticked, because no particular day is expected of it.
  */
 export const weekStrip = (habits: HabitData[], date: CalendarDate, ctx: Ctx): DaySummary[] => {
-  const first = weekStart(date, ctx.weekStartsOn);
+  const { today, weekStartsOn } = ctx;
+  const first = weekStart(date, weekStartsOn);
 
   return Array.from({ length: 7 }, (_, i) => {
     const day = addDays(first, i);
@@ -133,7 +138,7 @@ export const weekStrip = (habits: HabitData[], date: CalendarDate, ctx: Ctx): Da
       }
     }
 
-    return { date: day, done, total, future: day > ctx.today };
+    return { date: day, done, total, future: day > today };
   });
 };
 
@@ -164,7 +169,8 @@ export const earliestDate = (habits: { data: HabitData }[], today: CalendarDate)
  * adjusts weekly progress. Streaks are left alone; the server refresh brings the real ones.
  */
 export const applyToggle = (view: TodayView, id: string, ticked: boolean): TodayView => {
-  const row = [...view.todo, ...view.done].find(r => {
+  const { todo, done } = view;
+  const row = [...todo, ...done].find(r => {
     return r.id === id;
   });
 
@@ -172,11 +178,17 @@ export const applyToggle = (view: TodayView, id: string, ticked: boolean): Today
     return view;
   }
 
-  const week = row.week && {
-    ...row.week,
-    done: Math.max(0, row.week.done + (ticked ? 1 : -1)),
-  };
-  const next: TodayRow = { ...row, ticked, week: week && { ...week, goalMet: week.done >= week.target } };
+  const { week: weekBefore } = row;
+  let week = weekBefore;
+
+  if (weekBefore) {
+    const { done: doneBefore, target } = weekBefore;
+    const doneNow = Math.max(0, doneBefore + (ticked ? 1 : -1));
+
+    week = { ...weekBefore, done: doneNow, goalMet: doneNow >= target };
+  }
+
+  const next: TodayRow = { ...row, ticked, week };
 
   const rest = (rows: TodayRow[]) => {
     return rows.filter(r => {
@@ -186,7 +198,7 @@ export const applyToggle = (view: TodayView, id: string, ticked: boolean): Today
 
   return {
     ...view,
-    todo: ticked ? rest(view.todo) : [...rest(view.todo), next],
-    done: ticked ? [...rest(view.done), next] : rest(view.done),
+    todo: ticked ? rest(todo) : [...rest(todo), next],
+    done: ticked ? [...rest(done), next] : rest(done),
   };
 };

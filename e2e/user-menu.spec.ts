@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { E2E_USER } from './support/data';
-import { signInState } from './support/session';
+import { E2E_USER } from '@e2e/support/data';
+import { signInState } from '@e2e/support/session';
 
 // Each test gets its own session, so signing out never invalidates the shared one.
 test.beforeEach(async ({ context }) => {

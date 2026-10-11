@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { daysAgo, resetUserData, seedHabit } from './support/data';
+import { daysAgo, resetUserData, seedHabit } from '@e2e/support/data';
 
 test('the footer is at the bottom of the window on a short page and after the content on a long one, never over it', async ({
   page,

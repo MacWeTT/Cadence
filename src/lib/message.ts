@@ -1,5 +1,5 @@
 import type { MessageKeys, NestedKeyOf } from 'next-intl';
-import type en from '../../locales/en';
+import type en from '@locales/en';
 
 type Messages = typeof en;
 
@@ -27,11 +27,12 @@ type Translator = (key: never, values?: never) => string;
 
 /** Turns a message into text, translating any messages nested in its values first. */
 export const translateMsg = (t: Translator, m: Msg): string => {
+  const { key, values: nested } = m;
   const values: Record<string, string | number> = {};
 
-  for (const [name, value] of Object.entries(m.values ?? {})) {
+  for (const [name, value] of Object.entries(nested ?? {})) {
     values[name] = typeof value === 'object' ? translateMsg(t, value) : value;
   }
 
-  return (t as unknown as (key: string, values?: Record<string, string | number>) => string)(m.key, values);
+  return (t as unknown as (key: string, values?: Record<string, string | number>) => string)(key, values);
 };

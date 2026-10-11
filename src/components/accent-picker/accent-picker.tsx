@@ -25,16 +25,21 @@ export const AccentPicker = () => {
   const { accent, customHex, setAccent, setCustomAccent } = useAppearance();
 
   const isCustom = accent === 'custom';
-  const shown = state.draft ?? customHex ?? '';
-  const invalid = state.draft !== null && state.draft !== '' && parseHex(state.draft) === null;
+  const { draft } = state;
+  const shown = draft ?? customHex ?? '';
+  const invalid = draft !== null && draft !== '' && parseHex(draft) === null;
   const derived = isCustom && customHex ? deriveAccent(customHex) : null;
 
   let adjustedFor: 'light' | 'dark' | null = null;
 
-  if (derived && derived.light !== derived.hex) {
-    adjustedFor = 'light';
-  } else if (derived && derived.dark !== derived.hex) {
-    adjustedFor = 'dark';
+  if (derived) {
+    const { hex, light, dark } = derived;
+
+    if (light !== hex) {
+      adjustedFor = 'light';
+    } else if (dark !== hex) {
+      adjustedFor = 'dark';
+    }
   }
 
   const onPresetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,12 +53,13 @@ export const AccentPicker = () => {
 
   const onHexChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
+    const { length } = value;
     const parsed = parseHex(value);
 
     setState({ draft: value });
 
     // Only apply a complete code, so typing "#3" does not flash through "#333333".
-    if (parsed && (value.length === 4 || value.length === 7)) {
+    if (parsed && (length === 4 || length === 7)) {
       setCustomAccent(parsed);
     }
   };

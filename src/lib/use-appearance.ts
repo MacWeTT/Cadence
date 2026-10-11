@@ -12,7 +12,7 @@ import {
   type Accent,
   type Kind,
   type Palette,
-} from './appearance';
+} from '@/lib/appearance';
 
 const listeners = new Set<() => void>();
 

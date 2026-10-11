@@ -1,6 +1,6 @@
-import { addDays, type CalendarDate } from './dates';
-import { scheduleFor } from './schedule';
-import type { Ctx, HabitData } from './types';
+import { addDays, type CalendarDate } from '@/domain/dates';
+import { scheduleFor } from '@/domain/schedule';
+import type { Ctx, HabitData } from '@/domain/types';
 
 export type DayStatus = 'done' | 'missed' | 'pending' | 'inactive';
 
@@ -12,14 +12,14 @@ export interface WeekStatus {
 
 /** True if `date` falls inside one of the habit's archive pauses (`to` is exclusive; a zero-length pause covers nothing). */
 export const isPaused = (h: HabitData, date: CalendarDate): boolean => {
-  return h.pauses.some(p => {
-    return p.from <= date && (p.to === null || date < p.to);
+  return h.pauses.some(({ from, to }) => {
+    return from <= date && (to === null || date < to);
   });
 };
 
 const overlapsPause = (h: HabitData, a: CalendarDate, b: CalendarDate): boolean => {
-  return h.pauses.some(p => {
-    return p.from <= b && (p.to === null || (p.from < p.to && a < p.to));
+  return h.pauses.some(({ from, to }) => {
+    return from <= b && (to === null || (from < to && a < to));
   });
 };
 
@@ -31,7 +31,9 @@ export const dayStatus = (h: HabitData, date: CalendarDate, ctx: Ctx): DayStatus
     return 'inactive';
   }
 
-  if (date > ctx.today) {
+  const { today } = ctx;
+
+  if (date > today) {
     return 'inactive';
   }
 
@@ -43,7 +45,7 @@ export const dayStatus = (h: HabitData, date: CalendarDate, ctx: Ctx): DayStatus
     return 'inactive';
   }
 
-  return date === ctx.today ? 'pending' : 'missed';
+  return date === today ? 'pending' : 'missed';
 };
 
 /**
@@ -55,12 +57,14 @@ export const dayStatus = (h: HabitData, date: CalendarDate, ctx: Ctx): DayStatus
 export const weekStatus = (h: HabitData, weekStartDate: CalendarDate, ctx: Ctx): WeekStatus => {
   const inactive: WeekStatus = { status: 'inactive', done: 0, target: 0 };
   const end = addDays(weekStartDate, 6);
+  const { today } = ctx;
+  const { startDate, completions } = h;
 
-  if (end < h.startDate || weekStartDate > ctx.today) {
+  if (end < startDate || weekStartDate > today) {
     return inactive;
   }
 
-  const from = weekStartDate < h.startDate ? h.startDate : weekStartDate;
+  const from = weekStartDate < startDate ? startDate : weekStartDate;
   const first = scheduleFor(h, from);
   const last = scheduleFor(h, end);
   const schedule = first?.kind === 'weekly_count' ? first : last?.kind === 'weekly_count' ? last : undefined;
@@ -74,8 +78,8 @@ export const weekStatus = (h: HabitData, weekStartDate: CalendarDate, ctx: Ctx):
 
   let done = 0;
 
-  for (let d = from; d <= end && d <= ctx.today; d = addDays(d, 1)) {
-    if (h.completions.has(d)) {
+  for (let d = from; d <= end && d <= today; d = addDays(d, 1)) {
+    if (completions.has(d)) {
       done++;
     }
   }
@@ -86,7 +90,7 @@ export const weekStatus = (h: HabitData, weekStartDate: CalendarDate, ctx: Ctx):
     return { status: 'paused', done, target };
   }
 
-  if (weekStartDate < h.startDate || straddlesTypeChange) {
+  if (weekStartDate < startDate || straddlesTypeChange) {
     return { status: 'excluded', done, target };
   }
 
@@ -94,5 +98,5 @@ export const weekStatus = (h: HabitData, weekStartDate: CalendarDate, ctx: Ctx):
     return { status: 'met', done, target };
   }
 
-  return { status: end >= ctx.today ? 'in_progress' : 'missed', done, target };
+  return { status: end >= today ? 'in_progress' : 'missed', done, target };
 };
