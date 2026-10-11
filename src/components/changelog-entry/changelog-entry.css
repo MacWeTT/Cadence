@@ -1,0 +1,34 @@
+@reference '../../app/globals.css';
+
+.changelog-entry {
+  @apply rounded-2xl border border-line bg-surface p-6;
+}
+
+/* What is coming is drawn lighter than what has shipped. */
+.changelog-entry--planned {
+  @apply border-dashed bg-transparent;
+}
+
+.changelog-entry__head {
+  @apply flex items-baseline justify-between gap-4 text-sm text-ink-muted;
+}
+
+.changelog-entry__title {
+  @apply font-display text-2xl text-ink;
+}
+
+.changelog-entry__note {
+  @apply mt-2 text-ink-muted;
+}
+
+.changelog-entry__items {
+  @apply mt-3 space-y-2;
+}
+
+.changelog-entry__item {
+  @apply relative pl-5 before:absolute before:top-2.5 before:left-0 before:size-1.5 before:rounded-full before:bg-moss;
+}
+
+.changelog-entry__code {
+  @apply rounded-sm bg-line px-1 py-0.5 text-sm;
+}

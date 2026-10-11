@@ -1,0 +1,9 @@
+@reference '../../app/globals.css';
+
+.whats-new-link {
+  @apply inline-flex items-center gap-1.5 rounded-sm underline-offset-4 hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.whats-new-link__dot {
+  @apply size-2 rounded-full bg-clay;
+}
