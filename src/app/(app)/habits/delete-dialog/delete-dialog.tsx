@@ -1,8 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useRef, useState } from 'react';
-import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import type { HabitListItem } from '@/server/habit-view';
-import { deleteHabitAction } from '@/app/(app)/habits/actions';
+import { useDeleteHabit } from '@/app/(app)/habits/use-habits';
 
 interface DeleteHabitDialogProps {
   habit: HabitListItem;
@@ -25,34 +23,11 @@ interface DeleteHabitDialogProps {
 export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
   const { habit, onClose, onCloseAutoFocus } = props;
 
-  const [busy, setBusy] = useState(false);
-
   const t = useTranslations('habits');
   const ta = useTranslations('common.actions');
-  const deleting = useRef(false);
+  const remove = useDeleteHabit();
 
   const { id, name } = habit;
-
-  const confirm = async () => {
-    if (deleting.current) {
-      return;
-    }
-
-    deleting.current = true;
-    setBusy(true);
-    const result = await deleteHabitAction(id);
-
-    if (result.ok) {
-      toast.success(t('toasts.deleted'));
-      onClose();
-
-      return;
-    }
-
-    toast.error(result.error);
-    deleting.current = false;
-    setBusy(false);
-  };
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
@@ -60,10 +35,10 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
     }
   };
 
-  // Keep the dialog open until the server has answered.
-  const onConfirmClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    void confirm();
+  // The habit leaves the list at once; if the server refuses, it comes back and a toast says why.
+  const onConfirmClick = () => {
+    remove.mutate(id);
+    onClose();
   };
 
   return (
@@ -75,9 +50,7 @@ export const DeleteHabitDialog = (props: DeleteHabitDialogProps) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{ta('cancel')}</AlertDialogCancel>
-          <AlertDialogAction disabled={busy} onClick={onConfirmClick}>
-            {ta('delete')}
-          </AlertDialogAction>
+          <AlertDialogAction onClick={onConfirmClick}>{ta('delete')}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

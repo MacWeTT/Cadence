@@ -1,17 +1,13 @@
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/page-transition/page-transition';
-import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
-import { listHabits } from '@/server/habits';
 import { HabitsClient } from '@/app/(app)/habits/habits-client/habits-client';
 
+/** The page is only a frame: its data comes from the browser's cache (see use-habits.ts), so it opens at once. */
 const HabitsPage = () => {
-  const t = useTranslations('habits');
-
   return (
-    <PageTransition fallback={<ListSkeleton title={t('title')} />}>
-      <HabitsContent />
+    <PageTransition>
+      <HabitsClient />
     </PageTransition>
   );
 };
@@ -23,9 +19,3 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 export default HabitsPage;
-
-const HabitsContent = async () => {
-  const view = await listHabits();
-
-  return <HabitsClient view={view} />;
-};

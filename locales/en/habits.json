@@ -43,5 +43,8 @@
     "search": "Search emoji",
     "loading": "Loading…",
     "none": "No emoji found."
-  }
+  },
+  "loadFailedTitle": "Couldn't load your habits",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again"
 }

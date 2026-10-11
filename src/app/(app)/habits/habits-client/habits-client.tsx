@@ -1,23 +1,18 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useRef, useState, useTransition } from 'react';
-import { toast } from 'sonner';
+import { useRef, useState } from 'react';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
 import { toCalendarDate } from '@/domain/dates';
 import { formatCalendarDate } from '@/lib/format';
 import type { HabitListItem } from '@/server/habit-view';
-import type { HabitsView } from '@/server/habits';
-import { archiveHabitAction, restoreHabitAction, type ActionResult } from '@/app/(app)/habits/actions';
+import { useArchiveHabit, useHabitsView, useRestoreHabit } from '@/app/(app)/habits/use-habits';
+import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { DeleteHabitDialog } from '@/app/(app)/habits/delete-dialog/delete-dialog';
 import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
 import { HabitRow, type HabitRowActions } from '@/app/(app)/habits/habit-row/habit-row';
 import './habits-client.css';
-
-interface HabitsClientProps {
-  view: HabitsView;
-}
 
 interface HabitsState {
   /** `null` when closed, `{}` to create, `{ habit }` to edit. */
@@ -26,24 +21,18 @@ interface HabitsState {
   showArchived: boolean;
 }
 
-export const HabitsClient = (props: HabitsClientProps) => {
-  const { view } = props;
-
+export const HabitsClient = () => {
   const [state, setState] = useState<HabitsState>({ dialog: null, deleting: null, showArchived: false });
 
   const t = useTranslations('habits');
   const ta = useTranslations('common.actions');
-  const [, startTransition] = useTransition();
+  const { data: view, isError, refetch } = useHabitsView();
+  const archive = useArchiveHabit();
+  const restore = useRestoreHabit();
   const opener = useRef<HTMLElement | null>(null);
 
-  const {
-    active,
-    archived,
-    profile: { today, weekStartsOn, timezone },
-  } = view;
   const { dialog, deleting, showArchived } = state;
   const editing = dialog?.habit;
-  const archivedCount = archived.length;
 
   const setField = <K extends keyof HabitsState>(field: K, value: HabitsState[K]) => {
     setState(current => {
@@ -56,18 +45,6 @@ export const HabitsClient = (props: HabitsClientProps) => {
     setField('dialog', { habit });
   };
 
-  const run = (action: () => Promise<ActionResult>, success: string) => {
-    startTransition(async () => {
-      const result = await action();
-
-      if (result.ok) {
-        toast.success(success);
-      } else {
-        toast.error(result.error);
-      }
-    });
-  };
-
   const restoreFocus = (event: Event) => {
     event.preventDefault();
     opener.current?.focus();
@@ -78,15 +55,11 @@ export const HabitsClient = (props: HabitsClientProps) => {
   };
 
   const onHabitArchive = (habit: HabitListItem) => {
-    run(() => {
-      return archiveHabitAction(habit.id);
-    }, t('toasts.archived'));
+    archive.mutate(habit.id);
   };
 
   const onHabitRestore = (habit: HabitListItem) => {
-    run(() => {
-      return restoreHabitAction(habit.id);
-    }, t('toasts.restored'));
+    restore.mutate(habit.id);
   };
 
   const onHabitDelete = (habit: HabitListItem, from: HTMLElement | null) => {
@@ -116,6 +89,30 @@ export const HabitsClient = (props: HabitsClientProps) => {
     onRestore: onHabitRestore,
     onDelete: onHabitDelete,
   };
+
+  const onRetry = () => {
+    void refetch();
+  };
+
+  if (!view) {
+    return isError ? (
+      <EmptyState
+        flush
+        title={t('loadFailedTitle')}
+        text={t('loadFailedText')}
+        action={<Button onClick={onRetry}>{t('retry')}</Button>}
+      />
+    ) : (
+      <ListSkeleton title={t('title')} />
+    );
+  }
+
+  const {
+    active,
+    archived,
+    profile: { today, weekStartsOn, timezone },
+  } = view;
+  const archivedCount = archived.length;
 
   return (
     <>

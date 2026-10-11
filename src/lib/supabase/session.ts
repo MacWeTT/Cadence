@@ -32,6 +32,9 @@ export const updateSession = async (request: NextRequest): Promise<NextResponse>
   const { pathname } = nextUrl;
   const isPublic = PUBLIC_PATHS.some((p) => {return pathname === p || pathname.startsWith(`${p}/`)});
 
+  // The browser's cache reads from /api: it gets a plain 401 to act on, not a redirect to the login page's HTML.
+  if (!signedIn && pathname.startsWith('/api/')) {return NextResponse.json({ error: 'signIn' }, { status: 401 });}
+
   if (!signedIn && !isPublic) {return redirectTo(request, '/login');}
 
   if (signedIn && pathname === '/login') {return redirectTo(request, '/');}
