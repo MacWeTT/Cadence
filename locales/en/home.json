@@ -8,5 +8,8 @@
     "none": "No streaks at risk right now.",
     "endsAtMidnight": "{length} · ends at midnight",
     "moreBy": "{length} · {needed} more by {day}"
-  }
+  },
+  "loadFailedTitle": "Couldn't load your day",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again"
 }
