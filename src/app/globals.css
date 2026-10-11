@@ -518,3 +518,12 @@
 html {
   scrollbar-gutter: stable;
 }
+
+/*
+ * Menus and dialogs (Radix) lock the page's scroll: they hide the scrollbar and add a margin the width of it to the body
+ * so the page does not move. The room for it is already kept above, so that margin would shrink the page by a scrollbar
+ * each time one opens (the top bar jumps). Cancel it.
+ */
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
