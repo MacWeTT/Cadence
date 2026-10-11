@@ -8,7 +8,18 @@ import { deriveAccent, parseHex } from './accent-color';
  * A custom accent is the accent `custom` plus three CSS variables on <html>: the picked colour and the button colour
  * worked out for each theme mode (see accent-color.ts). They are stored together so the boot script can apply them.
  */
-export const PALETTES = ['cadence', 'ocean', 'meadow', 'dusk', 'sunset', 'blossom', 'steel', 'graphite'] as const;
+export const PALETTES = [
+  'paper',
+  'ocean',
+  'meadow',
+  'dusk',
+  'sunset',
+  'blossom',
+  'steel',
+  'graphite',
+  'slate',
+  'forest-night',
+] as const;
 export const ACCENT_PRESETS = ['moss', 'clay', 'sky', 'plum', 'teal'] as const;
 export const ACCENTS = [...ACCENT_PRESETS, 'custom'] as const;
 
@@ -17,7 +28,7 @@ export type AccentPreset = (typeof ACCENT_PRESETS)[number];
 export type Accent = (typeof ACCENTS)[number];
 export type Kind = 'palette' | 'accent';
 
-export const DEFAULT_PALETTE: Palette = 'cadence';
+export const DEFAULT_PALETTE: Palette = 'paper';
 export const DEFAULT_ACCENT: Accent = 'moss';
 
 /** What each preset accent looks like in the picker. Must match `--btn` in the light blocks of globals.css (tested). */
@@ -37,7 +48,7 @@ interface Preview {
 
 /** Each theme's page, surface and text colours in both modes, for its card in the picker. Must match globals.css. */
 export const PALETTE_PREVIEW: Record<Palette, { light: Preview; dark: Preview }> = {
-  cadence: {
+  paper: {
     light: { bg: '#f3e8d3', surface: '#faf2e1', ink: '#3b2f24' },
     dark: { bg: '#1a1d21', surface: '#23272c', ink: '#e8e6e1' },
   },
@@ -68,6 +79,14 @@ export const PALETTE_PREVIEW: Record<Palette, { light: Preview; dark: Preview }>
   graphite: {
     light: { bg: '#ececec', surface: '#f7f7f7', ink: '#222222' },
     dark: { bg: '#161616', surface: '#202020', ink: '#ededed' },
+  },
+  slate: {
+    light: { bg: '#e6e9ec', surface: '#f2f4f6', ink: '#1a1d21' },
+    dark: { bg: '#1a1d21', surface: '#23272c', ink: '#e8e6e1' },
+  },
+  'forest-night': {
+    light: { bg: '#e1e8de', surface: '#eef3ec', ink: '#161d18' },
+    dark: { bg: '#161d18', surface: '#1f2822', ink: '#e8e8dc' },
   },
 };
 

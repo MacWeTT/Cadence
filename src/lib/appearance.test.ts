@@ -204,9 +204,9 @@ const block = (selector: string) => {
   return '';
 };
 
-/** The three themes of the app's mode: Paper is the page itself, Slate is `.dark`, Forest night is `.forest`. */
-const MODES = ['light', 'dark', 'forest'] as const;
-const BASE = { light: ':root', dark: '.dark', forest: '.forest' } as const;
+/** The two modes of the app: the page itself is light, and `.dark` is dark. Everything else is a colour theme. */
+const MODES = ['light', 'dark'] as const;
+const BASE = { light: ':root', dark: '.dark' } as const;
 
 const tokenIn = (text: string, name: string) => {
   return text.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6});`))?.[1];
@@ -229,10 +229,18 @@ const resolve = (mode: (typeof MODES)[number], palette: string, accent: string, 
 };
 
 describe('themes and accents in globals.css', () => {
-  it('names no colour theme after one of the three modes', () => {
+  it('names no colour theme after a mode', () => {
     for (const palette of PALETTES) {
-      expect(['light', 'dark', 'forest', 'paper', 'slate'], palette).not.toContain(palette);
+      expect(['light', 'dark', 'system'], palette).not.toContain(palette);
     }
+  });
+
+  it('offers Paper, Slate and Forest night among the colour themes, and no extra theme class', () => {
+    for (const name of ['paper', 'slate', 'forest-night']) {
+      expect(PALETTES, name).toContain(name);
+    }
+
+    expect(css).not.toContain('.forest');
   });
 
   it('lists the stock theme and accent first', () => {
@@ -323,8 +331,7 @@ describe('themes and accents in globals.css', () => {
   it.each(MODES)('wires a custom accent to its own %s button colour', mode => {
     const selector = `${BASE[mode]}[data-accent='custom']`;
 
-    // Both dark themes share the custom accent's dark button colour.
-    expect(block(selector)).toContain(`--btn: var(--accent-custom-${mode === 'light' ? 'light' : 'dark'});`);
+    expect(block(selector)).toContain(`--btn: var(--accent-custom-${mode});`);
   });
 });
 

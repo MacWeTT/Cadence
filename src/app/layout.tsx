@@ -41,7 +41,7 @@ const RootLayout = async (props: LayoutProps<'/'>) => {
       </head>
       <body className="min-h-screen">
         <NextIntlClientProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark', 'forest']}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark']}>
             <MotionProvider>
               <ThemeFavicon />
               <AppSplash />

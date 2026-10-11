@@ -1,17 +1,15 @@
 'use client';
 
-import { Monitor, Moon, Sun, TreePine } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
 import { isThemeName } from '@/lib/themes';
 import './mode-picker.css';
 
-/** The app's three base themes (Paper, Slate, Forest night), plus following the device. */
 const MODES = [
   { value: 'light', Icon: Sun },
   { value: 'dark', Icon: Moon },
-  { value: 'forest', Icon: TreePine },
   { value: 'system', Icon: Monitor },
 ] as const;
 
@@ -19,7 +17,7 @@ const noopSubscribe = () => {
   return () => {};
 };
 
-/** Which base theme to use. The colour themes and the accent work on top of every one of them. */
+/** Light, dark, or follow the device. The colour themes and the accent work in every mode. */
 export const ModePicker = () => {
   const { theme, setTheme } = useTheme();
   const t = useTranslations('appearance.mode');
