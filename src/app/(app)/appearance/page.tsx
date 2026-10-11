@@ -21,6 +21,7 @@ const AppearancePage = () => {
       <header>
         <h1 className="appearance__title">{t('title')}</h1>
         <p className="appearance__intro">{t('intro')}</p>
+        <p className="appearance__note">{t('note')}</p>
       </header>
       <div className="appearance__layout">
         <div className="appearance__settings">

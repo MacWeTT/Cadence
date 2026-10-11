@@ -12,6 +12,10 @@
   @apply mt-2 max-w-xl text-ink-muted;
 }
 
+.appearance__note {
+  @apply mt-4 max-w-xl border-l-2 border-line pl-4 font-display text-lg italic text-ink;
+}
+
 .appearance__layout {
   @apply grid items-start gap-8 lg:grid-cols-[1fr_20rem];
 }
