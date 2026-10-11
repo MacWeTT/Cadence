@@ -1,7 +1,7 @@
 @reference '../../../globals.css';
 
 .alert-banner {
-  @apply mt-6 flex items-center gap-4 rounded-2xl border px-5 py-3;
+  @apply mt-6 flex items-center gap-4 rounded-2xl border px-5 py-3 max-sm:flex-wrap max-sm:gap-x-3 max-sm:px-4;
 }
 
 .alert-banner--morning {
@@ -41,5 +41,5 @@
 }
 
 .alert-banner__action {
-  @apply shrink-0 rounded-full border border-current px-4 py-1.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+  @apply shrink-0 rounded-full border border-current px-4 py-1.5 text-sm font-medium max-sm:min-h-11 max-sm:w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
 }

@@ -57,6 +57,7 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
           value={kind}
           onValueChange={onValueChange}
           aria-labelledby="schedule-label"
+          className="schedule-field__kinds"
         >
           <ToggleGroupItem value="daily" className="schedule-field__option">
             {t('everyDay')}

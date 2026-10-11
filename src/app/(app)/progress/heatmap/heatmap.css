@@ -1,7 +1,12 @@
 @reference '../../../globals.css';
 
+/* Row-reversed, so a scrolled phone starts at the right-hand end: the latest weeks. */
+.heatmap-scroll {
+  @apply max-sm:flex max-sm:flex-row-reverse max-sm:overflow-x-auto max-sm:pb-1;
+}
+
 .heatmap {
-  @apply grid gap-x-0.5 gap-y-0.5;
+  @apply grid gap-x-0.5 gap-y-0.5 max-sm:min-w-136 max-sm:shrink-0;
 }
 
 .heatmap__cell {

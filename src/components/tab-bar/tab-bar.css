@@ -1,0 +1,23 @@
+@reference '../../app/globals.css';
+
+/* Phones only; from the `sm` width up the links are in the top bar. */
+.tab-bar {
+  @apply fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-topbar pb-[env(safe-area-inset-bottom)] sm:hidden;
+}
+
+.tab-bar__link {
+  @apply min-h-14 flex-1 justify-center rounded-none text-xs font-medium;
+}
+
+.tab-bar__link .nav-link__label {
+  @apply flex-col gap-0.5;
+}
+
+/* The highlight sits behind the icon, as a pill, not behind the whole tab. */
+.tab-bar__link .nav-link__blob {
+  @apply inset-x-1/2 top-2 bottom-auto h-8 w-16 -translate-x-1/2;
+}
+
+.tab-bar__icon {
+  @apply size-5;
+}

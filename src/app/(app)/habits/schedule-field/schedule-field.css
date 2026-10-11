@@ -9,7 +9,11 @@
 }
 
 .schedule-field__option {
-  @apply data-[state=on]:bg-primary data-[state=on]:text-primary-foreground;
+  @apply max-sm:min-h-10 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground;
+}
+
+.schedule-field__kinds {
+  @apply flex-wrap;
 }
 
 .schedule-field__days {

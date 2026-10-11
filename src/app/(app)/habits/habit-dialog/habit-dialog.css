@@ -1,7 +1,7 @@
 @reference '../../../globals.css';
 
 .habit-dialog {
-  @apply max-w-lg;
+  @apply max-w-[min(32rem,calc(100%-2rem))];
 }
 
 .habit-dialog__title {

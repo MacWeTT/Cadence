@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Footer } from '@/components/footer/footer';
 import { QueryProvider } from '@/components/query-provider/query-provider';
+import { TabBar } from '@/components/tab-bar/tab-bar';
 import { TopBar } from '@/components/top-bar/top-bar';
 import { UserMenu } from '@/components/user-menu/user-menu';
 import { TimezoneSync } from '@/app/(app)/timezone-sync/timezone-sync';
@@ -27,6 +28,7 @@ const AppLayout = (props: AppLayoutProps) => {
         <TimezoneSync />
         <main className="app-layout__main">{children}</main>
         <Footer />
+        <TabBar />
       </div>
     </QueryProvider>
   );
