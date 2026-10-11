@@ -1,0 +1,45 @@
+@reference '../../app/globals.css';
+
+.theme-picker__legend {
+  @apply mb-3 font-display text-lg;
+}
+
+.theme-picker__options {
+  @apply grid grid-cols-2 gap-3 sm:grid-cols-4;
+}
+
+.theme-picker__option {
+  @apply cursor-pointer;
+}
+
+.theme-picker__input {
+  @apply sr-only;
+}
+
+.theme-picker__card {
+  @apply flex flex-col gap-2 rounded-xl border border-line bg-surface p-2 transition-colors hover:border-ink-muted peer-checked:border-ink peer-checked:ring-1 peer-checked:ring-ink peer-focus-visible:outline-2 peer-focus-visible:outline-clay;
+}
+
+.theme-picker__preview {
+  @apply flex h-16 overflow-hidden rounded-lg border border-line;
+}
+
+.theme-picker__half {
+  @apply flex flex-1 items-center justify-center p-2;
+}
+
+.theme-picker__sample {
+  @apply flex w-full flex-col gap-1 rounded-md p-1.5;
+}
+
+.theme-picker__line {
+  @apply block h-1 w-full rounded-full opacity-70;
+}
+
+.theme-picker__line--short {
+  @apply w-2/3 opacity-40;
+}
+
+.theme-picker__name {
+  @apply px-1 text-sm;
+}

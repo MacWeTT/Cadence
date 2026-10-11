@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { BTN_TEXT, contrastRatio } from './accent-color';
 import {
   ACCENTS,
+  ACCENT_PRESETS,
   ACCENT_SWATCH,
   BOOT_SCRIPT,
   DEFAULT_ACCENT,
@@ -10,16 +12,31 @@ import {
   PALETTE_PREVIEW,
   parseChoice,
   readChoice,
+  readCustomHex,
   restoreChoices,
   writeChoice,
+  writeCustomAccent,
 } from './appearance';
 import { COLOR_KEYS, PALETTE } from './palette';
 
 const makeRoot = (initial: Record<string, string> = {}) => {
   const attrs = new Map(Object.entries(initial));
+  const vars = new Map<string, string>();
 
   return {
     attrs,
+    vars,
+    style: {
+      getPropertyValue: (name: string) => {
+        return vars.get(name) ?? '';
+      },
+      setProperty: (name: string, value: string) => {
+        vars.set(name, value);
+      },
+      removeProperty: (name: string) => {
+        vars.delete(name);
+      },
+    },
     getAttribute: (name: string) => {
       return attrs.get(name) ?? null;
     },
@@ -218,7 +235,7 @@ describe('themes and accents in globals.css', () => {
       }
     }
 
-    for (const accent of ACCENTS.filter(a => {
+    for (const accent of ACCENT_PRESETS.filter(a => {
       return a !== DEFAULT_ACCENT;
     })) {
       const selector = mode === 'light' ? `:root[data-accent='${accent}']` : `.dark[data-accent='${accent}']`;
@@ -259,7 +276,7 @@ describe('themes and accents in globals.css', () => {
   });
 
   it.each(['light', 'dark'] as const)('keeps button text readable (AA 4.5:1) on every %s accent', mode => {
-    for (const accent of ACCENTS) {
+    for (const accent of ACCENT_PRESETS) {
       const btn = resolve(mode, DEFAULT_PALETTE, accent, 'btn');
       const text = resolve(mode, DEFAULT_PALETTE, accent, 'btn-text');
 
@@ -267,16 +284,122 @@ describe('themes and accents in globals.css', () => {
     }
   });
 
-  it('shows each accent with the colour its light button really has', () => {
-    for (const accent of ACCENTS) {
+  it('shows each preset accent with the colour its light button really has', () => {
+    for (const accent of ACCENT_PRESETS) {
       expect(ACCENT_SWATCH[accent], accent).toBe(resolve('light', DEFAULT_PALETTE, accent, 'btn'));
     }
   });
 
-  it('previews each theme with its real light page and surface colours', () => {
+  it.each(['light', 'dark'] as const)('previews each theme with its real %s page, surface and text colours', mode => {
     for (const palette of PALETTES) {
-      expect(PALETTE_PREVIEW[palette].bg, palette).toBe(resolve('light', palette, DEFAULT_ACCENT, 'bg'));
-      expect(PALETTE_PREVIEW[palette].surface, palette).toBe(resolve('light', palette, DEFAULT_ACCENT, 'surface'));
+      for (const [field, token] of [
+        ['bg', 'bg'],
+        ['surface', 'surface'],
+        ['ink', 'ink'],
+      ] as const) {
+        expect(PALETTE_PREVIEW[palette][mode][field], `${palette} ${mode} ${field}`).toBe(
+          resolve(mode, palette, DEFAULT_ACCENT, token),
+        );
+      }
     }
+  });
+
+  it.each(['light', 'dark'] as const)('wires a custom accent to its own %s button colour', mode => {
+    const selector = mode === 'light' ? ":root[data-accent='custom']" : ".dark[data-accent='custom']";
+
+    expect(block(selector)).toContain(`--btn: var(--accent-custom-${mode});`);
+  });
+});
+
+describe('custom accent', () => {
+  it('applies a picked colour, with a readable button colour for each mode, and remembers it', () => {
+    const root = makeRoot();
+    const storage = makeStorage();
+
+    expect(writeCustomAccent('#FFE08A', root, storage)).toBe(true);
+
+    expect(root.attrs.get('data-accent')).toBe('custom');
+    expect(readCustomHex(root)).toBe('#ffe08a');
+    expect(contrastRatio(BTN_TEXT.light, root.vars.get('--accent-custom-light')!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(BTN_TEXT.dark, root.vars.get('--accent-custom-dark')!)).toBeGreaterThanOrEqual(4.5);
+    expect(storage.items.get('cadence-accent')).toBe('custom');
+  });
+
+  it('refuses something that is not a colour and changes nothing', () => {
+    const root = makeRoot({ 'data-accent': 'sky' });
+    const storage = makeStorage();
+
+    expect(writeCustomAccent('purple', root, storage)).toBe(false);
+    expect(root.attrs.get('data-accent')).toBe('sky');
+    expect(storage.items.size).toBe(0);
+  });
+
+  it('is replaced by a preset, which clears the custom variables', () => {
+    const root = makeRoot();
+    const storage = makeStorage();
+
+    writeCustomAccent('#336699', root, storage);
+    writeChoice('accent', 'teal', root, storage);
+
+    expect(root.attrs.get('data-accent')).toBe('teal');
+    expect(root.vars.size).toBe(0);
+  });
+
+  it('comes back when custom is chosen again, using the colour picked last', () => {
+    const root = makeRoot();
+    const storage = makeStorage();
+
+    writeCustomAccent('#336699', root, storage);
+    writeChoice('accent', 'teal', root, storage);
+    writeChoice('accent', 'custom', root, storage);
+
+    expect(root.attrs.get('data-accent')).toBe('custom');
+    expect(readCustomHex(root)).toBe('#336699');
+  });
+
+  it('does nothing when custom is chosen but no colour was ever picked', () => {
+    const root = makeRoot();
+
+    writeChoice('accent', 'custom', root, makeStorage());
+
+    expect(root.attrs.has('data-accent')).toBe(false);
+  });
+
+  it('is restored on load, by the code and by the boot script alike', () => {
+    const picked = makeRoot();
+    const storage = makeStorage();
+
+    writeCustomAccent('#c2185b', picked, storage);
+
+    const viaCode = makeRoot();
+    const viaScript = makeRoot();
+
+    restoreChoices(viaCode, storage);
+    new Function('document', 'localStorage', BOOT_SCRIPT)({ documentElement: viaScript }, storage);
+
+    expect(viaCode.attrs.get('data-accent')).toBe('custom');
+    expect(viaScript.attrs).toEqual(viaCode.attrs);
+    expect(viaScript.vars).toEqual(viaCode.vars);
+    expect(viaScript.vars.get('--accent-custom')).toBe('#c2185b');
+  });
+
+  it('falls back to the stock accent when the stored colour is damaged', () => {
+    const storage = makeStorage({
+      'cadence-accent': 'custom',
+      'cadence-accent-custom': JSON.stringify({ hex: '#c2185b', light: 'oops', dark: '#ffffff' }),
+    });
+    const viaCode = makeRoot();
+    const viaScript = makeRoot();
+
+    restoreChoices(viaCode, storage);
+    new Function('document', 'localStorage', BOOT_SCRIPT)({ documentElement: viaScript }, storage);
+
+    expect(viaCode.attrs.has('data-accent')).toBe(false);
+    expect(viaScript.attrs.has('data-accent')).toBe(false);
+    expect(viaScript.vars.size).toBe(0);
+  });
+
+  it('lists custom last among the accents', () => {
+    expect(ACCENTS[ACCENTS.length - 1]).toBe('custom');
   });
 });

@@ -5,8 +5,10 @@ import {
   DEFAULT_ACCENT,
   DEFAULT_PALETTE,
   readChoice,
+  readCustomHex,
   restoreChoices,
   writeChoice,
+  writeCustomAccent,
   type Accent,
   type Kind,
   type Palette,
@@ -61,6 +63,14 @@ const getAccent = () => {
   return readChoice('accent', document.documentElement);
 };
 
+const getCustomHex = () => {
+  return readCustomHex(document.documentElement);
+};
+
+const serverCustomHex = () => {
+  return null;
+};
+
 const serverPalette = () => {
   return DEFAULT_PALETTE;
 };
@@ -74,10 +84,19 @@ const choose = (kind: Kind, value: string) => {
   notify();
 };
 
+const chooseCustom = (hex: string): boolean => {
+  const applied = writeCustomAccent(hex, document.documentElement, getStorage());
+
+  notify();
+
+  return applied;
+};
+
 /** The current theme and accent, and setters for them. The page itself is restyled by the attributes on <html>. */
 export const useAppearance = () => {
   const palette: Palette = useSyncExternalStore(subscribe, getPalette, serverPalette);
   const accent: Accent = useSyncExternalStore(subscribe, getAccent, serverAccent);
+  const customHex: string | null = useSyncExternalStore(subscribe, getCustomHex, serverCustomHex);
 
   const setPalette = (value: Palette) => {
     choose('palette', value);
@@ -87,5 +106,10 @@ export const useAppearance = () => {
     choose('accent', value);
   };
 
-  return { palette, accent, setPalette, setAccent };
+  /** Makes any colour the accent; false (and no change) when the text is not a colour. */
+  const setCustomAccent = (hex: string) => {
+    return chooseCustom(hex);
+  };
+
+  return { palette, accent, customHex, setPalette, setAccent, setCustomAccent };
 };

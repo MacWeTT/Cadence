@@ -1,0 +1,48 @@
+{
+  "pageTitle": "Appearance",
+  "title": "Appearance",
+  "intro": "Choose how Cadence looks. Your choices are saved in this browser and apply everywhere in the app.",
+  "mode": {
+    "title": "Mode",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Match my device"
+  },
+  "theme": {
+    "title": "Theme",
+    "names": {
+      "cadence": "Cadence",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "dusk": "Dusk",
+      "sunset": "Sunset",
+      "blossom": "Blossom",
+      "slate": "Slate",
+      "graphite": "Graphite"
+    }
+  },
+  "accent": {
+    "title": "Accent colour",
+    "hint": "Used for buttons, the logo and your heatmap.",
+    "names": {
+      "moss": "Moss",
+      "clay": "Clay",
+      "sky": "Sky",
+      "plum": "Plum",
+      "teal": "Teal",
+      "custom": "Custom"
+    },
+    "customTitle": "Your own colour",
+    "pick": "Pick a custom colour",
+    "hex": "Colour code, such as #3f6f98",
+    "invalid": "Use a colour code like #3f6f98.",
+    "adjusted": "{mode, select, light {In light mode, buttons use a slightly deeper shade of your colour} other {In dark mode, buttons use a slightly brighter shade of your colour}} so their text stays easy to read."
+  },
+  "preview": {
+    "title": "Preview",
+    "button": "Save habit",
+    "error": "Something needs attention",
+    "heat": "Heatmap",
+    "reset": "Reset theme and accent"
+  }
+}

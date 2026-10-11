@@ -1,0 +1,25 @@
+@reference '../../globals.css';
+
+.appearance {
+  @apply flex flex-col gap-8;
+}
+
+.appearance__title {
+  @apply font-display text-3xl;
+}
+
+.appearance__intro {
+  @apply mt-2 max-w-xl text-ink-muted;
+}
+
+.appearance__layout {
+  @apply grid items-start gap-8 lg:grid-cols-[1fr_20rem];
+}
+
+.appearance__settings {
+  @apply flex flex-col gap-8;
+}
+
+.appearance__aside {
+  @apply lg:sticky lg:top-6;
+}

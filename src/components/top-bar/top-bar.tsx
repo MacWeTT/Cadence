@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { AppearanceMenu } from '../appearance-menu/appearance-menu';
 import { Logo } from '../logo/logo';
 import { ThemeToggle } from '../theme-toggle/theme-toggle';
 import './top-bar.css';
@@ -52,7 +51,6 @@ export const TopBar = (props: TopBarProps) => {
           })}
         </nav>
         <div className="top-bar__actions">
-          <AppearanceMenu />
           <ThemeToggle />
           {menu}
         </div>
