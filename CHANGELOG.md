@@ -1,6 +1,6 @@
 # Changelog
 
-This file is shown on the app's What's new page, so it is for people using Cadence: features only, nothing internal or sensitive, and no version numbers on what is coming (what ships next is decided internally). The version lives in `package.json` and shows in the app's footer.
+This file is shown on the app's What's new page, so it is for people using Cadence: features only, nothing internal or sensitive, and no version numbers on what is coming (what ships next is decided internally). Under Known issues, a plain line for each problem people can run into; it is removed when the bugfix release that fixes it ships. The version lives in `package.json` and shows in the app's footer.
 
 ## Planned
 
@@ -10,6 +10,8 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - Optional habits: habits with no fixed days, tracked only by how many times you do them each year.
 - Reminders: push notifications in your browser and by email.
 - A desktop app, with native notifications and an option to start on login.
+
+## Known issues
 
 ## 0.3.6 (2026-10-11)
 

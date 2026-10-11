@@ -21,7 +21,7 @@ export const Footer = () => {
           <p className="footer__version">{t('version', { version: VERSION })}</p>
         </div>
         <nav className="footer__nav">
-          <WhatsNewLink />
+          <WhatsNewLink version={VERSION} />
           <NavLink href="/about" group="footer-nav">
             {t('about')}
           </NavLink>

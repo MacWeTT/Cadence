@@ -13,6 +13,7 @@ test("the footer's What's new link opens the changelog: what each release added 
   const coming = page.getByRole('region', { name: 'Coming soon' });
 
   await expect(coming).toContainText('Pages open instantly with your latest data');
+  await expect(page.getByRole('region', { name: 'Known issues' })).toHaveCount(0); // none listed: the card is hidden
 
   await expect(page.getByRole('region', { name: 'Version 0.3.6' })).toContainText('A contact form');
 

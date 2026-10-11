@@ -56,6 +56,10 @@ The contact page saves every message in the `contact_messages` table (Supabase d
 - Put them in `.env.local` and in Vercel (Project settings, Environment Variables, Production). Never commit them or paste them in chat.
 - An anonymous message is stored with no name, email or account, and the email says it is anonymous.
 
+## Known issues and bugfix releases
+
+Bugs are not fixed one by one. When we hit one, it becomes a GitHub issue with the **known-issue** label (the `Known issue` template). If people using Cadence can run into it, add a plain line to **Known issues** in `CHANGELOG.md` (it shows on the What's new page; features-style wording, nothing internal). Later a **bugfix release** (a patch version, such as 0.4.1) fixes everything with the label: each fix is a PR that says `Fixes #n`, the release removes the matching lines from Known issues, lists the fixes under its version, and closes the issues. Exceptions that are fixed at once: anything that loses or exposes data, and security problems.
+
 ## What is not verified
 
 This pipeline has never run, because it needs the accounts above. The first run may need a small adjustment (for example a Supabase CLI flag). Check the **Migrate** step's dry-run output on the first deploy before trusting it.

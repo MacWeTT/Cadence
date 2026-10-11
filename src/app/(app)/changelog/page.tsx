@@ -19,7 +19,11 @@ const ChangelogPage = () => {
   const t = useTranslations('changelog');
 
   // Read when the page is built, so the file is not needed while the app runs.
-  const entries = parseChangelog(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf8'));
+  const entries = parseChangelog(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf8')).filter(
+    ({ kind, items }) => {
+      return kind === 'release' || items.length > 0;
+    },
+  );
 
   return (
     <PageTransition>

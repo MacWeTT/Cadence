@@ -16,13 +16,15 @@ export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
 
   const t = useTranslations('changelog');
 
-  const { title, date, planned, note, items } = entry;
-  const heading = planned ? t('comingSoon') : t('version', { version: title });
+  const { title, date, kind, note, items } = entry;
+  const heading = { planned: t('comingSoon'), known: t('knownIssues'), release: t('version', { version: title }) }[
+    kind
+  ];
   const id = `changelog-${title}`;
 
   return (
     <Arrive index={index}>
-      <section aria-labelledby={id} className={cn('changelog-entry', planned && 'changelog-entry--planned')}>
+      <section aria-labelledby={id} className={cn('changelog-entry', kind !== 'release' && `changelog-entry--${kind}`)}>
         <div className="changelog-entry__head">
           <h2 id={id} className="changelog-entry__title">
             {heading}
