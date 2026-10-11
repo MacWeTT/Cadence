@@ -101,6 +101,15 @@ export const HomeClient = (props: HomeClientProps) => {
     setCreating(true);
   };
 
+  const onHabitClose = () => {
+    setCreating(false);
+  };
+
+  const onHabitCloseAutoFocus = (event: Event) => {
+    event.preventDefault();
+    opener.current?.focus();
+  };
+
   return (
     <>
       <HomeHeader
@@ -154,13 +163,8 @@ export const HomeClient = (props: HomeClientProps) => {
         <HabitDialog
           today={today}
           weekStartsOn={weekStartsOn}
-          onClose={() => {
-            return setCreating(false);
-          }}
-          onCloseAutoFocus={e => {
-            e.preventDefault();
-            opener.current?.focus();
-          }}
+          onClose={onHabitClose}
+          onCloseAutoFocus={onHabitCloseAutoFocus}
         />
       )}
     </>

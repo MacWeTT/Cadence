@@ -45,6 +45,12 @@ export const AlertBanner = (props: AlertBannerProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately keyed to `spokenKey`, not to the message
   }, [spokenKey]);
 
+  const onFocusClick = () => {
+    if (action?.kind === 'focus') {
+      focusHabit(action.id);
+    }
+  };
+
   return (
     <>
       <div role="status" aria-live="polite" className="sr-only">
@@ -58,13 +64,7 @@ export const AlertBanner = (props: AlertBannerProps) => {
           </span>
           <p className="alert-banner__message">{message}</p>
           {action?.kind === 'focus' && (
-            <button
-              type="button"
-              onClick={() => {
-                return focusHabit(action.id);
-              }}
-              className="alert-banner__action"
-            >
+            <button type="button" onClick={onFocusClick} className="alert-banner__action">
               {tm(action.label)}
             </button>
           )}
