@@ -4,10 +4,13 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Planned
 
-- Focus sessions: a timer for a habit, with a confirmation when you finish.
-- Habit links: add one or many links to a habit and open them all in one click.
+- Habits on fixed days of the week, such as Monday, Wednesday and Friday.
 - Optional habits: habits with no fixed days, tracked only by how many times you do them each year.
+- Habit links: add one or many links to a habit and open them all in one click.
+- Install Cadence on your phone or computer like an app.
+- A full profile page.
 - Reminders: push notifications in your browser and by email.
+- Focus sessions: a timer for a habit, with a confirmation when you finish.
 - A desktop app, with native notifications and an option to start on login.
 
 ## Known issues
