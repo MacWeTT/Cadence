@@ -1,17 +1,40 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, TreePine } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './theme-toggle.css';
+
+/** One light theme and two dark ones. "dark" is Slate: it keeps the name next-themes (and saved choices) already use. */
+const THEMES = ['light', 'dark', 'forest'] as const;
+
+type ThemeName = (typeof THEMES)[number];
+
+const ICONS = { light: Sun, dark: Moon, forest: TreePine } as const;
+
+const isThemeName = (value: string | undefined): value is ThemeName => {
+  return THEMES.some(name => {
+    return name === value;
+  });
+};
 
 const noopSubscribe = () => {
   return () => {};
 };
 
+/** The button in the top bar that opens the theme menu: the light theme, and the two dark ones. */
 export const ThemeToggle = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const reduceMotion = useReducedMotion();
@@ -28,38 +51,54 @@ export const ThemeToggle = () => {
     },
   );
 
-  const isDark = mounted && resolvedTheme === 'dark';
-  const label = !mounted ? t('toggle') : isDark ? t('toLight') : t('toDark');
+  const current: ThemeName = mounted && isThemeName(resolvedTheme) ? resolvedTheme : 'light';
+  const Icon = mounted ? ICONS[current] : Moon;
 
-  const toggle = () => {
-    // Colours glide between the two themes instead of snapping: the class turns on a short transition (see globals.css)
+  const onThemeChange = (value: string) => {
+    if (!isThemeName(value)) {
+      return;
+    }
+
+    // Colours glide between the themes instead of snapping: the class turns on a short transition (see globals.css)
     // for just the moment of the switch, so it never slows down ordinary hover effects.
     const root = document.documentElement;
 
     root.classList.add('theme-transition');
-    setTheme(isDark ? 'light' : 'dark');
+    setTheme(value);
     window.setTimeout(() => {
       return root.classList.remove('theme-transition');
     }, 400);
   };
 
-  const Icon = isDark ? Sun : Moon;
-
   return (
-    <button type="button" aria-label={label} disabled={!mounted} onClick={toggle} className="theme-toggle">
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={isDark ? 'sun' : 'moon'}
-          aria-hidden
-          className="theme-toggle__glyph"
-          initial={reduceMotion ? false : { rotate: -90, scale: 0.5, opacity: 0 }}
-          animate={{ rotate: 0, scale: 1, opacity: 1 }}
-          exit={reduceMotion ? undefined : { rotate: 90, scale: 0.5, opacity: 0 }}
-          transition={{ duration: 0.18, ease: 'easeOut' }}
-        >
-          <Icon className="theme-toggle__icon" />
-        </motion.span>
-      </AnimatePresence>
-    </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button type="button" aria-label={t('choose')} disabled={!mounted} className="theme-toggle">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={current}
+              aria-hidden
+              className="theme-toggle__glyph"
+              initial={reduceMotion ? false : { rotate: -90, scale: 0.5, opacity: 0 }}
+              animate={{ rotate: 0, scale: 1, opacity: 1 }}
+              exit={reduceMotion ? undefined : { rotate: 90, scale: 0.5, opacity: 0 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+            >
+              <Icon className="theme-toggle__icon" />
+            </motion.span>
+          </AnimatePresence>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup value={current} onValueChange={onThemeChange}>
+          <DropdownMenuLabel>{t('light')}</DropdownMenuLabel>
+          <DropdownMenuRadioItem value="light">{t('names.light')}</DropdownMenuRadioItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>{t('dark')}</DropdownMenuLabel>
+          <DropdownMenuRadioItem value="dark">{t('names.dark')}</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="forest">{t('names.forest')}</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

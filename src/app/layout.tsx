@@ -21,7 +21,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f3e8d3' },
-    { media: '(prefers-color-scheme: dark)', color: '#1f1812' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1d21' },
   ],
 };
 
@@ -34,7 +34,7 @@ const RootLayout = async (props: LayoutProps<'/'>) => {
     <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen">
         <NextIntlClientProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark', 'forest']}>
             <AppSplash />
             {children}
             <Toaster />
