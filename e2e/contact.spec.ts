@@ -148,8 +148,10 @@ test.describe('with motion, arriving from another page', () => {
     await page.getByRole('contentinfo').getByRole('link', { name: 'Contact' }).click();
     await expect(page.locator('#contact-message')).toBeVisible();
 
-    expect(await page.evaluate(() => {return (window as unknown as { __titleWithoutForm: boolean }).__titleWithoutForm})).toBe(
-      false,
-    );
+    expect(
+      await page.evaluate(() => {
+        return (window as unknown as { __titleWithoutForm: boolean }).__titleWithoutForm;
+      }),
+    ).toBe(false);
   });
 });
