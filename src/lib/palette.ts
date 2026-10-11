@@ -13,8 +13,8 @@ const DARK: Record<ColorKey, string> = {
   slate: '#a8a39b',
 };
 
-/** The themes are light and two dark ones: "dark" is slate, "forest" is forest night. Both dark ones share the colors. */
-export const PALETTE: Record<'light' | 'dark' | 'forest', Record<ColorKey, string>> = {
+/** The habit colors of the two modes. The colour themes (Paper, Slate, ...) share them. */
+export const PALETTE: Record<'light' | 'dark', Record<ColorKey, string>> = {
   light: {
     moss: '#6c7d45',
     clay: '#b8643c',
@@ -26,7 +26,6 @@ export const PALETTE: Record<'light' | 'dark' | 'forest', Record<ColorKey, strin
     slate: '#6f6a63',
   },
   dark: DARK,
-  forest: DARK,
 };
 
 export const habitColor = (key: ColorKey): string => {
