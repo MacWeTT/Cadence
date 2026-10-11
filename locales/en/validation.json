@@ -10,6 +10,6 @@
   "startRange": "The start date can be any day up to today",
   "startAfterFirstTick": "The start date can't be after your first check-in on {date}.",
   "messageRequired": "Write a message first",
-  "messageTooLong": "Keep the message to 2000 characters or fewer",
+  "messageTooLong": "Keep the message to 1000 characters or fewer",
   "emailInvalid": "Enter a valid email address, or leave it empty"
 }

@@ -3,15 +3,15 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
+import { MESSAGE_LIMIT } from '@/lib/contact-schema';
 import { sendContactAction } from '@/app/(app)/contact/actions';
+import { CharacterLimit } from '@/components/character-limit/character-limit';
 import { AnimatedError } from '@/components/animated-error/animated-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import './contact-form.css';
-
-const MAX_LENGTH = 2000;
 
 interface ContactFormProps {
   /** The signed-in user's name and email, offered as the answer address; they can change or remove them. */
@@ -59,7 +59,7 @@ export const ContactForm = (props: ContactFormProps) => {
   };
 
   const onMessageChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setField('message', event.target.value);
+    setField('message', event.target.value.slice(0, MESSAGE_LIMIT));
   };
 
   const onAnonymousChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,17 +139,21 @@ export const ContactForm = (props: ContactFormProps) => {
         >
           <div>
             <Label htmlFor="contact-message">{t('message')}</Label>
-            <Textarea
-              id="contact-message"
-              value={message}
-              onChange={onMessageChange}
-              rows={6}
-              maxLength={MAX_LENGTH + 500}
-              aria-invalid={Boolean(messageError)}
-              aria-describedby={messageError ? 'contact-message-error' : undefined}
-              className="contact-form__message"
-            />
-            <p className="contact-form__hint">{t('messageHint', { count: message.length })}</p>
+            <div className="contact-form__box">
+              <Textarea
+                id="contact-message"
+                value={message}
+                onChange={onMessageChange}
+                rows={6}
+                maxLength={MESSAGE_LIMIT}
+                aria-invalid={Boolean(messageError)}
+                aria-describedby={messageError ? 'contact-message-error' : undefined}
+                className="contact-form__message"
+              />
+              <div className="contact-form__limit">
+                <CharacterLimit count={message.length} limit={MESSAGE_LIMIT} />
+              </div>
+            </div>
             <AnimatedError id="contact-message-error" message={messageError} />
           </div>
 

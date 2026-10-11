@@ -1,9 +1,12 @@
 import { z } from 'zod';
 
+/** The longest message, in characters. */
+export const MESSAGE_LIMIT = 1000;
+
 /** The contact form. An anonymous message never carries a name or an email, whatever was sent. */
 export const contactInputSchema = z
   .object({
-    message: z.string().trim().min(1, 'messageRequired').max(2000, 'messageTooLong'),
+    message: z.string().trim().min(1, 'messageRequired').max(MESSAGE_LIMIT, 'messageTooLong'),
     anonymous: z.boolean(),
     name: z.string().trim().max(80, 'nameTooLong').optional(),
     email: z

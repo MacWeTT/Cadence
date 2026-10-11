@@ -4,8 +4,13 @@
   @apply space-y-5;
 }
 
+.contact-form__box {
+  @apply relative mt-1;
+}
+
+/* Room at the bottom for the counter, which sits in the corner of the box like a tweet's. */
 .contact-form__message {
-  @apply mt-1 h-40;
+  @apply h-44 pb-11;
 }
 
 .contact-form__hint {
@@ -47,4 +52,8 @@
 
 .contact-form__thanks-text {
   @apply mt-2 mb-5 text-ink-muted;
+}
+
+.contact-form__limit {
+  @apply absolute right-3 bottom-2.5 rounded-full bg-bg/80 px-1.5 py-0.5;
 }
