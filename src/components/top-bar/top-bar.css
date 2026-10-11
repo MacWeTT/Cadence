@@ -9,24 +9,11 @@
 }
 
 .top-bar__logo {
-  @apply inline-block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay;
   --logo-height: 1.6rem;
 }
 
-.top-bar__logo--current {
-  @apply rounded-none border-b-2 border-ink pb-1;
-}
-
 .top-bar__nav {
-  @apply flex gap-6;
-}
-
-.top-bar__link {
-  @apply text-ink-muted hover:text-ink;
-}
-
-.top-bar__link--active {
-  @apply font-semibold text-ink;
+  @apply flex gap-1;
 }
 
 .top-bar__actions {

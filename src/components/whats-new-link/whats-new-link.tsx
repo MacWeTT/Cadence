@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
+import { NavLink } from '@/components/nav-link/nav-link';
 import { VERSION } from '@/lib/site';
 import './whats-new-link.css';
 
@@ -53,9 +53,9 @@ export const WhatsNewLink = () => {
   }, [onChangelog]);
 
   return (
-    <Link href="/changelog" className="whats-new-link">
+    <NavLink href="/changelog" group="footer-nav">
       {t('whatsNew')}
       {unseen && !onChangelog && <span aria-hidden className="whats-new-link__dot" />}
-    </Link>
+    </NavLink>
   );
 };

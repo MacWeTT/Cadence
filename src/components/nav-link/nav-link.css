@@ -1,0 +1,17 @@
+@reference '../../app/globals.css';
+
+.nav-link {
+  @apply relative inline-flex items-center rounded-full px-3 py-1.5 text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.nav-link--active {
+  @apply text-ink;
+}
+
+.nav-link__blob {
+  @apply absolute inset-0 bg-primary/15;
+}
+
+.nav-link__label {
+  @apply relative inline-flex items-center gap-1.5;
+}

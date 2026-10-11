@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { DEVELOPER, VERSION } from '@/lib/site';
+import { NavLink } from '@/components/nav-link/nav-link';
 import { WhatsNewLink } from '@/components/whats-new-link/whats-new-link';
 import './footer.css';
 
@@ -22,10 +22,10 @@ export const Footer = () => {
         </div>
         <nav className="footer__nav">
           <WhatsNewLink />
-          <Link href="/about" className="footer__link">
+          <NavLink href="/about" group="footer-nav">
             {t('about')}
-          </Link>
-          <a href={DEVELOPER.url} target="_blank" rel="noreferrer" className="footer__link">
+          </NavLink>
+          <a href={DEVELOPER.url} target="_blank" rel="noreferrer" className="footer__link footer__contact">
             {t('contact')}
           </a>
         </nav>
