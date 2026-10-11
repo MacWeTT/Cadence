@@ -26,8 +26,8 @@ const ChangelogPage = () => {
       <div className="changelog">
         <h1 className="changelog__title">{t('title')}</h1>
         <p className="changelog__intro">{t('intro')}</p>
-        {entries.map(entry => {
-          return <ChangelogEntryCard key={entry.title} entry={entry} />;
+        {entries.map((entry, index) => {
+          return <ChangelogEntryCard key={entry.title} entry={entry} index={index} />;
         })}
       </div>
     </PageTransition>

@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import type { ChangelogEntry } from '@/lib/changelog';
 import { cn } from '@/lib/utils';
@@ -5,11 +8,13 @@ import './changelog-entry.css';
 
 interface ChangelogEntryCardProps {
   entry: ChangelogEntry;
+  /** Its place in the list: later cards come in a little after earlier ones. */
+  index: number;
 }
 
 /** One section of the changelog: a release with its date and what it added, or what is coming soon. */
 export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
-  const { entry } = props;
+  const { entry, index } = props;
 
   const t = useTranslations('changelog');
 
@@ -18,7 +23,13 @@ export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
   const id = `changelog-${title}`;
 
   return (
-    <section aria-labelledby={id} className={cn('changelog-entry', planned && 'changelog-entry--planned')}>
+    <motion.section
+      aria-labelledby={id}
+      className={cn('changelog-entry', planned && 'changelog-entry--planned')}
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 + index * 0.15, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="changelog-entry__head">
         <h2 id={id} className="changelog-entry__title">
           {heading}
@@ -49,6 +60,6 @@ export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
           );
         })}
       </ul>
-    </section>
+    </motion.section>
   );
 };
