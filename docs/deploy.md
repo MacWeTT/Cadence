@@ -1,13 +1,13 @@
 # Deploying Cadence
 
-Every merge into `develop` is deployed. The workflow in `.github/workflows/deploy.yml` runs these steps in order, and stops at the first one that fails:
+Every merge into `master` (a release) is deployed; merges into `develop` are not. The workflow in `.github/workflows/deploy.yml` runs these steps in order, and stops at the first one that fails:
 
 1. **CI**: format, lint, types, unit tests, build, then the database tests and Playwright (the same jobs as a pull request).
 2. **Migrate**: `supabase db push` applies any new files from `supabase/migrations/` to the hosted database (a dry run is printed first).
 3. **Deploy**: `vercel deploy --prod` builds the app on Vercel and publishes it.
 4. **Check**: the login page must answer (needs `APP_URL`).
 
-Nothing runs until the repository variable `DEPLOY_ENABLED` is `true`, so the workflow is safe to merge before the accounts below exist. `main` is not used.
+Nothing runs until the repository variable `DEPLOY_ENABLED` is `true`, so the workflow is safe to merge before the accounts below exist.
 
 ## One-time setup
 
@@ -24,7 +24,7 @@ You do these once. Nothing here can be done from the repository.
 - Reset the client secret you pasted into chat earlier and use the new one in the step above.
 
 **3. Vercel** (vercel.com, import this GitHub repository)
-- Framework: Next.js. Production branch: `develop` (Settings → Git).
+- Framework: Next.js. Production branch: `master` (Settings → Git).
 - Turn **off** the automatic Git deployments (Settings → Git → "Ignored Build Step" set to `exit 0`, or disconnect the Git integration after importing). The GitHub workflow deploys, so the migrations always go first.
 - Environment variables (Production): `NEXT_PUBLIC_SUPABASE_URL` (the project's API URL) and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (its publishable key). Do not add the service role key.
 - Create a **token** (Account Settings → Tokens). Note the **Org ID** and **Project ID** (Project Settings, or `.vercel/project.json` after `npx vercel link`).
@@ -36,17 +36,18 @@ You do these once. Nothing here can be done from the repository.
 
 ## Day to day
 
-- Merge a PR into `develop`. The **Deploy** workflow starts; watch it under the Actions tab. A failed CI or migration step stops everything before the app changes.
+- Features and fixes go by PR into `develop` (protected: a PR with passing checks, no force-push). Nothing deploys. To release, see below; merging the release into `master` starts the **Deploy** workflow; watch it under the Actions tab. A failed CI or migration step stops everything before the app changes.
 - A new database change is a new file in `supabase/migrations/` (never edit a file that has been merged). Migrations only go forwards, so write them to be safe for the **previous** version of the app too: add a column before the app uses it, and remove a column only after the app stopped using it.
 - To go back after a bad deploy, use Vercel's "Instant Rollback" (Deployments → the previous one → Promote). The database is not rolled back; fix it with a new migration.
 - To redeploy without a code change, run the **Deploy** workflow by hand (Actions → Deploy → Run workflow).
 
 ## Releases and going back
 
-Until 1.0 Cadence is in beta: `develop` deploys on every merge, and a version is a **tag** on a `develop` commit, with a GitHub pre-release. After 1.0 the plan is to decide again (a separate `main` branch for what is live).
+Two long-lived branches, both protected (changes only by PR with the CI checks passing; no force-push, no deletion): `develop` is where work lands, `master` is what is live. A version is a **tag** on a `master` commit, with a GitHub pre-release (until 1.0).
 
-- To cut a release: bump `version` in `package.json`, add a heading for it in `CHANGELOG.md` (`## 0.3.6 (2026-10-11)`) with the features it added and remove those lines from *Planned*, merge that PR, then tag the merge commit and publish a release: `git tag -a v0.3.6 <merge-sha> -m "..." && git push origin v0.3.6`, then `gh release create v0.3.6 --prerelease`. The changelog is public (the What's new page): features only, nothing internal or sensitive, and no version numbers on *Planned* items.
-- To go back to a release in a hurry, use Instant Rollback (above). To go back in the code, open a PR into `develop` that reverts the bad merge: `git revert -m 1 <merge-sha>`. Compare with the last tag to see what changed: `git diff v0.3.0..develop`.
+- To cut a release: open a PR into `develop` that bumps `version` in `package.json` (and the lockfile) and adds a heading for it in `CHANGELOG.md` (`## 0.4.0 (2026-10-11)`) with the features it added, removing those lines from *Planned*. Merge it. Then open a PR from `develop` into `master` and merge it with a **merge commit** (not squash, so the two branches stay in step). That starts the **Deploy** workflow. When it is green, tag the merge commit and publish a release: `git tag -a v0.4.0 <master-merge-sha> -m "..." && git push origin v0.4.0`, then `gh release create v0.4.0 --prerelease`. The changelog is public (the What's new page): features only, nothing internal or sensitive, and no version numbers on *Planned* items.
+- A fix that cannot wait for the next release (data loss, security) goes the same way: PR into `develop`, then a patch release into `master`.
+- To go back to a release in a hurry, use Instant Rollback (above). To go back in the code, open a PR into `develop` that reverts the bad merge: `git revert -m 1 <merge-sha>`, and release it. Compare with the last tag to see what changed: `git diff v0.4.0..develop`.
 
 ## Contact form
 

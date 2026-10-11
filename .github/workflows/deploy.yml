@@ -1,10 +1,10 @@
 name: Deploy
 
-# Every push to develop (a merged PR): run the full CI, apply the new database migrations, deploy the app, check it
+# Every push to master (a release merged from develop): run the full CI, apply the new database migrations, deploy the app, check it
 # answers. Nothing happens until the repository variable DEPLOY_ENABLED is "true" (see docs/deploy.md).
 on:
   push:
-    branches: [develop]
+    branches: [master]
   workflow_dispatch:
 
 # One deploy at a time, in order. A newer push waits for the running one instead of cancelling it half-way.
