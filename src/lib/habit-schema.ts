@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { isCalendarDate, type CalendarDate } from '@/domain/dates';
+import { isWeekdaySet } from '@/domain/schedule';
 import type en from '@locales/en';
 import { COLOR_KEYS } from '@/lib/palette';
 
@@ -22,6 +23,17 @@ export const isSingleEmoji = (value: string): boolean => {
   return /\p{Extended_Pictographic}|\p{Regional_Indicator}|⃣/u.test(value);
 };
 
+/** True for an http or https address with no spaces. */
+export const isWebLink = (value: string): boolean => {
+  try {
+    const { protocol } = new URL(value);
+
+    return (protocol === 'http:' || protocol === 'https:') && !/\s/.test(value);
+  } catch {
+    return false;
+  }
+};
+
 export const isValidTimeZone = (timeZone: string): boolean => {
   try {
     new Intl.DateTimeFormat('en', { timeZone });
@@ -40,8 +52,15 @@ export const habitInputSchema = (today: CalendarDate) => {
       description: z.string().trim().max(280, 'descriptionTooLong').optional(),
       icon: z.string().refine(isSingleEmoji, 'iconInvalid'),
       color: z.enum(COLOR_KEYS, 'colorInvalid'),
-      kind: z.enum(['daily', 'weekly_count']),
+      kind: z.enum(['daily', 'weekdays', 'weekly_count', 'optional']),
       timesPerWeek: z.number().int().min(1, 'timesRange').max(6, 'timesRange').optional(),
+      /** Fixed weekdays only: 1 = Monday ... 7 = Sunday. */
+      weekdays: z.array(z.number().int().min(1, 'weekdaysRange').max(7, 'weekdaysRange')).optional(),
+      /** Up to ten web addresses, opened together from the habit's row. */
+      links: z
+        .array(z.string().trim().max(2048, 'linkInvalid').refine(isWebLink, 'linkInvalid'))
+        .max(10, 'linksTooMany')
+        .default([]),
       startDate: z
         .string()
         .refine(isCalendarDate, 'dateInvalid')
@@ -50,14 +69,24 @@ export const habitInputSchema = (today: CalendarDate) => {
         }, 'startRange'),
     })
     .superRefine((v, ctx) => {
-      const { kind, timesPerWeek } = v;
+      const { kind, timesPerWeek, weekdays } = v;
 
       if (kind === 'weekly_count' && timesPerWeek === undefined) {
         ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'timesRange' });
       }
 
-      if (kind === 'daily' && timesPerWeek !== undefined) {
+      if (kind !== 'weekly_count' && timesPerWeek !== undefined) {
         ctx.addIssue({ code: 'custom', path: ['timesPerWeek'], message: 'timesOnDaily' });
+      }
+
+      const wanted = kind === 'weekdays';
+
+      if (wanted && !isWeekdaySet(weekdays)) {
+        ctx.addIssue({ code: 'custom', path: ['weekdays'], message: 'weekdaysRange' });
+      }
+
+      if (!wanted && weekdays !== undefined) {
+        ctx.addIssue({ code: 'custom', path: ['weekdays'], message: 'daysOnlyWeekdays' });
       }
     });
 };

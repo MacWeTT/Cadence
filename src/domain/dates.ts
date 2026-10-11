@@ -44,6 +44,11 @@ export const diffDays = (a: CalendarDate, b: CalendarDate): number => {
   return Math.round((toUtcMs(b) - toUtcMs(a)) / DAY_MS);
 };
 
+/** The day of the week of a date: 1 = Monday ... 7 = Sunday. */
+export const weekdayOf = (d: CalendarDate): number => {
+  return new Date(toUtcMs(d)).getUTCDay() || 7;
+};
+
 export const weekStart = (d: CalendarDate, weekStartsOn: WeekStart): CalendarDate => {
   const dow = new Date(toUtcMs(d)).getUTCDay(); // 0 = Sunday
   const offset = weekStartsOn === 1 ? (dow + 6) % 7 : dow;

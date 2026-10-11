@@ -1,8 +1,9 @@
 // Pure helpers for the server layer. Kept free of `server-only` imports so they can be unit-tested.
 import type { CalendarDate } from '@/domain/dates';
 import { scheduleOn } from '@/domain/schedule';
-import type { Schedule } from '@/domain/types';
-import { isValidTimeZone } from '@/lib/habit-schema';
+import type { DesiredSchedule } from '@/domain/schedule-change';
+import type { Schedule, Weekday } from '@/domain/types';
+import { isValidTimeZone, type HabitInput } from '@/lib/habit-schema';
 import { COLOR_KEYS, type ColorKey } from '@/lib/palette';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -20,12 +21,52 @@ export interface HabitListItem {
   schedule: Schedule;
   pendingSchedule: Schedule | null;
   hasCompletions: boolean;
+  /** Web addresses opened together from the habit's row. */
+  links: string[];
 }
 
-export const toSchedule = ({ kind, times_per_week, effective_from }: ScheduleRow): Schedule => {
-  return kind === 'weekly_count'
-    ? { kind: 'weekly_count', timesPerWeek: times_per_week ?? 1, effectiveFrom: effective_from }
-    : { kind: 'daily', effectiveFrom: effective_from };
+export const toSchedule = ({ kind, times_per_week, weekdays, effective_from }: ScheduleRow): Schedule => {
+  switch (kind) {
+    case 'weekly_count':
+      return { kind, timesPerWeek: times_per_week ?? 1, effectiveFrom: effective_from };
+    case 'weekdays':
+      return { kind, days: [...(weekdays ?? [])].sort() as Weekday[], effectiveFrom: effective_from };
+    case 'optional':
+      return { kind, effectiveFrom: effective_from };
+    default:
+      return { kind: 'daily', effectiveFrom: effective_from };
+  }
+};
+
+/** The schedule a habit form asks for. */
+export const toDesired = ({
+  kind,
+  timesPerWeek,
+  weekdays,
+}: Pick<HabitInput, 'kind' | 'timesPerWeek' | 'weekdays'>): DesiredSchedule => {
+  switch (kind) {
+    case 'weekly_count':
+      return { kind, timesPerWeek: timesPerWeek ?? 1 };
+    case 'weekdays':
+      return { kind, days: [...(weekdays ?? [])].sort() as Weekday[] };
+    default:
+      return { kind };
+  }
+};
+
+/**
+ * A schedule as the arguments of the database functions, `null` for the parts it does not use. The generated argument
+ * types are non-null, but the functions accept null, hence the cast.
+ */
+export const scheduleArgs = (schedule: Schedule | null) => {
+  const times = schedule?.kind === 'weekly_count' ? schedule : null;
+  const days = schedule?.kind === 'weekdays' ? schedule : null;
+
+  return {
+    p_kind: schedule?.kind ?? null,
+    p_times_per_week: times?.timesPerWeek ?? null,
+    p_weekdays: days?.days ?? null,
+  } as { p_kind: string; p_times_per_week: number; p_weekdays: number[] };
 };
 
 /** A stored color, or a known one if the stored value is unexpected. */
@@ -42,7 +83,7 @@ export const toListItem = (
   const schedules = scheduleRows.map(toSchedule).sort((a, b) => {
     return a.effectiveFrom.localeCompare(b.effectiveFrom);
   });
-  const { id, name, description, icon, color: storedColor, start_date, archived_at } = habit;
+  const { id, name, description, icon, color: storedColor, start_date, archived_at, links } = habit;
 
   return {
     id,
@@ -59,6 +100,7 @@ export const toListItem = (
         return s.effectiveFrom > today;
       }) ?? null,
     hasCompletions,
+    links,
   };
 };
 

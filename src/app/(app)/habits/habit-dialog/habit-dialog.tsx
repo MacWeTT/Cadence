@@ -24,7 +24,8 @@ import { createHabitAction, updateHabitAction } from '@/app/(app)/habits/actions
 import { ColorPicker } from '@/app/(app)/habits/color-picker/color-picker';
 import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
 import { FieldError } from '@/app/(app)/habits/field-error/field-error';
-import { initialHabitForm, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { habitInput, initialHabitForm, scheduleChanged, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { LinksField } from '@/app/(app)/habits/links-field/links-field';
 import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
 
@@ -51,13 +52,16 @@ export const HabitDialog = (props: HabitDialogProps) => {
   const nameRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false); // guards against a double-click before React re-renders the disabled button
 
-  const { name, description, icon, color, kind, timesPerWeek, startDate, fieldErrors, formError } = form;
+  const { name, description, icon, color, kind, timesPerWeek, weekdays, links, startDate, fieldErrors, formError } =
+    form;
   const {
     name: nameError,
     icon: iconError,
     description: descriptionError,
     color: colorError,
     timesPerWeek: timesError,
+    weekdays: daysError,
+    links: linksError,
     startDate: startDateError,
   } = fieldErrors;
 
@@ -68,13 +72,9 @@ export const HabitDialog = (props: HabitDialogProps) => {
   };
 
   // A habit with ticks keeps its history, so a schedule change only applies from next week.
-  const current = habit?.schedule;
-  const scheduleChanged =
-    current !== undefined &&
-    (kind !== current.kind || (current.kind === 'weekly_count' && Number(timesPerWeek) !== current.timesPerWeek));
   const effectiveDate = formatCalendarDate(nextEditDate(today, weekStartsOn), { dateStyle: 'full' });
   const effectiveNote =
-    habit?.hasCompletions && scheduleChanged ? t('dialog.effectiveNote', { date: effectiveDate }) : null;
+    habit?.hasCompletions && scheduleChanged(habit, form) ? t('dialog.effectiveNote', { date: effectiveDate }) : null;
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -89,15 +89,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
     });
 
     startTransition(async () => {
-      const input = {
-        name: name,
-        description: description || undefined,
-        icon: icon,
-        color: color,
-        kind: kind,
-        timesPerWeek: kind === 'weekly_count' ? Number(timesPerWeek) : undefined,
-        startDate: startDate,
-      };
+      const input = habitInput(form);
       const result = habit ? await updateHabitAction(habit.id, input) : await createHabitAction(input);
 
       if (result.ok) {
@@ -155,6 +147,14 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
   const onTimesPerWeekChange = (times: HabitFormState['timesPerWeek']) => {
     setField('timesPerWeek', times);
+  };
+
+  const onWeekdaysChange = (days: HabitFormState['weekdays']) => {
+    setField('weekdays', days);
+  };
+
+  const onLinksChange = (links: HabitFormState['links']) => {
+    setField('links', links);
   };
 
   const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -215,11 +215,16 @@ export const HabitDialog = (props: HabitDialogProps) => {
           <ScheduleField
             kind={kind}
             timesPerWeek={timesPerWeek}
+            weekdays={weekdays}
             onKindChange={onKindChange}
             onTimesPerWeekChange={onTimesPerWeekChange}
+            onWeekdaysChange={onWeekdaysChange}
             error={timesError}
+            daysError={daysError}
             note={effectiveNote}
           />
+
+          <LinksField links={links} onChange={onLinksChange} error={linksError} />
 
           <div>
             <Label htmlFor="habit-start" className="habit-dialog__label">

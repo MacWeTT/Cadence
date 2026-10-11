@@ -9,16 +9,18 @@ How Cadence decides what counts. Every rule here is computed in one place, `src/
 - "**Today**" is today in your own timezone, not the server's.
 - A **week** runs Monday to Sunday by default, or Sunday to Saturday if you choose.
 
-## Two kinds of schedule
+## Four kinds of schedule
 - **Daily:** every day is expected. Each day is *done*, *missed* (past, not ticked) or *pending* (today, not ticked yet).
+- **Fixed days** (one to six weekdays, such as Monday, Wednesday and Friday; all seven would be daily): those days are judged like a daily habit. The other days expect nothing: they are never missed, never break a streak and are skipped by it. A tick on one of the other days is kept and shown as done, but counts toward no rate, and does not extend a streak.
 - **N per week** (1 to 6, any days): each week is *met* (N or more ticks), *missed* (the week ended with fewer), or *in progress* (this week, not met yet). Ticks beyond N are shown as bonus but never push a rate past 100%.
 - A habit's first week is **left out** of streaks and rates when you start partway through it. It is still shown as progress.
 - A week in which the schedule kind changes partway (possible if you change your week start later) is left out the same way, so no tick is counted twice.
+- **Optional:** nothing is expected, ever. No streak, no rate, never "at risk", not in the Home ring or banner. Only the number of ticks in the calendar year is kept. Optional habits are listed apart from the others on Today and Home, ticked or not.
 
 ## Streaks
-- A **daily** streak counts consecutive done days. A **weekly** streak counts consecutive met weeks.
+- A **daily** or **fixed-days** streak counts consecutive done days (for fixed days, consecutive expected days; the other days are skipped). A **weekly** streak counts consecutive met weeks.
 - Today, or the current week still in progress, **never breaks** a streak. A streak breaks only when a day or week ends unmet.
-- Changing a schedule within the same kind keeps the streak. Switching between daily and N per week **restarts the current streak**. The longest streak and all history are kept.
+- Changing a schedule within the same kind keeps the streak. Switching between kinds (for example daily and N per week) **restarts the current streak**. The longest streak and all history are kept.
 
 ## Completion rate
 - Rate = done ÷ expected over a time window, counting **closed** days and weeks only. Missed ones stay in the denominator, so an ignored habit doesn't vanish from your stats.
