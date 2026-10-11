@@ -4,7 +4,6 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Planned
 
-- Pages open instantly with your latest data, then refresh quietly in the background.
 - Focus sessions: a timer for a habit, with a confirmation when you finish.
 - Habit links: add one or many links to a habit and open them all in one click.
 - Optional habits: habits with no fixed days, tracked only by how many times you do them each year.
@@ -12,6 +11,14 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - A desktop app, with native notifications and an option to start on login.
 
 ## Known issues
+
+## 0.4.0 (2026-10-11)
+
+Instant pages.
+
+- Pages open instantly with your latest data, then refresh quietly in the background.
+- Ticking, archiving, restoring and deleting a habit answer at once; if something goes wrong, it goes back and tells you.
+- A tick on Home or Today shows on every page right away.
 
 ## 0.3.6 (2026-10-11)
 
