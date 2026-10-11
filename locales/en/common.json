@@ -6,9 +6,14 @@
     "progress": "Progress"
   },
   "theme": {
-    "toggle": "Toggle theme",
-    "toLight": "Switch to light theme",
-    "toDark": "Switch to dark theme"
+    "choose": "Choose theme",
+    "light": "Light",
+    "dark": "Dark",
+    "names": {
+      "light": "Paper",
+      "dark": "Slate",
+      "forest": "Forest night"
+    }
   },
   "account": {
     "fallbackName": "Account",

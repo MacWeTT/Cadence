@@ -2,9 +2,9 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *, .forest, .forest *));
 
-/* Project tokens (light). The .dark block below overrides them; the shadcn names further down alias to these. */
+/* Project tokens (light). The .dark and .forest blocks below (the two dark themes) override them; the shadcn names further down alias to these. */
 :root {
   --bg: #f3e8d3;
   --surface: #faf2e1;
@@ -58,24 +58,56 @@
   --radius: 0.625rem;
 }
 
+/* Dark, "Slate": the dark theme next-themes calls "dark". */
 .dark {
-  --bg: #1f1812;
-  --surface: #2a2118;
-  --topbar: #18120d;
-  --ink: #f0e4d0;
-  --ink-muted: #a38f76;
-  --line: #3b2e21;
+  --bg: #1a1d21;
+  --surface: #23272c;
+  --topbar: #14171a;
+  --ink: #e8e6e1;
+  --ink-muted: #8f979f;
+  --line: #333a41;
   --moss: #9bb06a;
   --clay: #e0905f;
   --missed: #7a5340;
-  --heat-0: #2f251a;
+  --heat-0: #272c32;
   --heat-1: #414a2b;
   --heat-2: #5d6e3a;
   --heat-3: #80954a;
   --heat-4: #a6be66;
 
   --btn: #9bb06a;
-  --btn-text: #1f1812;
+  --btn-text: #1a1d21;
+  --danger: #e0905f;
+
+  --habit-moss: #9bb06a;
+  --habit-clay: #e0905f;
+  --habit-ochre: #d9b25a;
+  --habit-rose: #d98aa0;
+  --habit-plum: #b99ad0;
+  --habit-teal: #6fb5ac;
+  --habit-sky: #86b0d6;
+  --habit-slate: #a8a39b;
+}
+
+/* Dark, "Forest night": a second dark theme. */
+.forest {
+  --bg: #161d18;
+  --surface: #1f2822;
+  --topbar: #101612;
+  --ink: #e8e8dc;
+  --ink-muted: #94a094;
+  --line: #2f3b33;
+  --moss: #9bb06a;
+  --clay: #e0905f;
+  --missed: #7a5340;
+  --heat-0: #222c25;
+  --heat-1: #414a2b;
+  --heat-2: #5d6e3a;
+  --heat-3: #80954a;
+  --heat-4: #a6be66;
+
+  --btn: #9bb06a;
+  --btn-text: #161d18;
   --danger: #e0905f;
 
   --habit-moss: #9bb06a;

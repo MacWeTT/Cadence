@@ -22,14 +22,16 @@ const contrast = (a: string, b: string) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-const SURFACE = { light: '#faf2e1', dark: '#2a2118' };
+// The themes: light, and two dark ones (slate is "dark", the class next-themes sets; forest night is "forest").
+const SURFACE = { light: '#faf2e1', dark: '#23272c', forest: '#1f2822' };
+const SELECTOR = { light: ':root {', dark: '.dark {', forest: '.forest {' } as const;
 
 describe('palette', () => {
   it('has the eight spec colors', () => {
     expect([...COLOR_KEYS]).toEqual(['moss', 'clay', 'ochre', 'rose', 'plum', 'teal', 'sky', 'slate']);
   });
 
-  it.each(['light', 'dark'] as const)('keeps every %s color at 3:1 against its surface', theme => {
+  it.each(['light', 'dark', 'forest'] as const)('keeps every %s color at 3:1 against its surface', theme => {
     for (const key of COLOR_KEYS) {
       expect(contrast(PALETTE[theme][key], SURFACE[theme]), `${theme} ${key}`).toBeGreaterThanOrEqual(3);
     }
@@ -42,10 +44,9 @@ describe('palette', () => {
       return css.slice(css.indexOf(selector), css.indexOf('}', css.indexOf(selector)));
     };
 
-    for (const [theme, selector] of [
-      ['light', ':root {'],
-      ['dark', '.dark {'],
-    ] as const) {
+    for (const theme of ['light', 'dark', 'forest'] as const) {
+      const selector = SELECTOR[theme];
+
       for (const key of COLOR_KEYS) {
         expect(block(selector), `${theme} ${key}`).toContain(`--habit-${key}: ${PALETTE[theme][key]};`);
       }
@@ -71,6 +72,7 @@ describe('text contrast (WCAG AA, 4.5:1)', () => {
   it.each([
     ['light', ':root {'],
     ['dark', '.dark {'],
+    ['forest', '.forest {'],
   ] as const)('%s: button text, and error text on the surface and the page', (_theme, selector) => {
     const b = block(selector);
 
