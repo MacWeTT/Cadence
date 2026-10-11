@@ -33,6 +33,7 @@
   },
   "links": {
     "open": "Open links for {name}",
+    "tooltip": "{count, plural, one {Open the link} other {Open all # links}}",
     "blocked": "Your browser blocked some of the tabs. Allow pop-ups for this site to open them all."
   },
   "emptyHabits": {

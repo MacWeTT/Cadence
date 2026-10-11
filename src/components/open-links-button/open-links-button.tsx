@@ -3,6 +3,7 @@
 import { ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { openLinks } from '@/lib/open-links';
 import './open-links-button.css';
 
@@ -17,22 +18,22 @@ export const OpenLinksButton = (props: OpenLinksButtonProps) => {
   const { links, name } = props;
 
   const t = useTranslations('common.links');
+  const { length: count } = links;
 
   const onClick = () => {
-    if (openLinks(links) < links.length) {
+    if (openLinks(links) < count) {
       toast.error(t('blocked'));
     }
   };
 
   return (
-    <button
-      type="button"
-      aria-label={t('open', { name })}
-      title={t('open', { name })}
-      onClick={onClick}
-      className="open-links-button"
-    >
-      <ExternalLink className="open-links-button__icon" aria-hidden />
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button type="button" aria-label={t('open', { name })} onClick={onClick} className="open-links-button">
+          <ExternalLink className="open-links-button__icon" aria-hidden />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{t('tooltip', { count })}</TooltipContent>
+    </Tooltip>
   );
 };

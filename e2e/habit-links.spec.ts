@@ -70,3 +70,19 @@ test('a link can be added while creating a habit', async ({ page }) => {
   await expect(page.getByText('Habit created')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Open links for LeetCode' })).toBeVisible();
 });
+
+test('hovering the open-links button says what it does', async ({ page }) => {
+  await seedHabit({ name: 'LeetCode', startDate: daysAgo(3) });
+  await page.goto('/habits');
+  await page.getByRole('button', { name: 'Actions for LeetCode' }).click();
+  await page.getByRole('menuitem', { name: 'Edit' }).click();
+  await page.getByRole('button', { name: 'Add a link' }).click();
+  await page.getByRole('textbox', { name: 'Link 1', exact: true }).fill('https://example.com/one');
+  await page.getByRole('button', { name: 'Add a link' }).click();
+  await page.getByRole('textbox', { name: 'Link 2', exact: true }).fill('https://example.com/two');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Habit saved')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Open links for LeetCode' }).hover();
+  await expect(page.getByRole('tooltip')).toContainText('Open all 2 links');
+});
