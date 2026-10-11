@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { habitInputSchema, toFieldErrors, type FieldIssue } from '@/lib/habit-schema';
 import { getUser } from '@/lib/supabase/server';
@@ -43,8 +42,6 @@ const run = async (work: () => Promise<void>): Promise<ActionResult> => {
 
   try {
     await work();
-    revalidatePath('/habits');
-    revalidatePath('/');
 
     return { ok: true };
   } catch (e) {
