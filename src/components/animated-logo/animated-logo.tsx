@@ -1,8 +1,9 @@
 'use client';
 
-import { stagger, useAnimate, useReducedMotion } from 'motion/react';
+import { stagger, useAnimate } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Logo } from '../logo/logo';
 import { WORDMARK } from '../logo/logo-shapes';
 import './animated-logo.css';

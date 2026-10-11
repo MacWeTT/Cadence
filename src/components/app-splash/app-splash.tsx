@@ -1,8 +1,8 @@
 'use client';
 
-import { useReducedMotion } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { cn } from '@/lib/utils';
 import { AnimatedLogo } from '../animated-logo/animated-logo';
 import './app-splash.css';
@@ -56,6 +56,16 @@ export const AppSplash = () => {
     }
   }, [play]);
 
+  const onTransitionEnd = () => {
+    if (state.leaving) {
+      setState({ leaving: true, finished: true });
+    }
+  };
+
+  const onLogoComplete = () => {
+    setState({ leaving: true, finished: false });
+  };
+
   if (!play || onLogin || reduceMotion || state.finished) {
     return null;
   }
@@ -64,15 +74,9 @@ export const AppSplash = () => {
     <div
       aria-hidden
       className={cn('app-splash', state.leaving && 'app-splash--leaving')}
-      onTransitionEnd={() => {
-        return state.leaving && setState({ leaving: true, finished: true });
-      }}
+      onTransitionEnd={onTransitionEnd}
     >
-      <AnimatedLogo
-        onComplete={() => {
-          return setState({ leaving: true, finished: false });
-        }}
-      />
+      <AnimatedLogo onComplete={onLogoComplete} />
     </div>
   );
 };

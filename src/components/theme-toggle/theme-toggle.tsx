@@ -1,7 +1,7 @@
 'use client';
 
 import { Moon, Sun, TreePine } from 'lucide-react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './theme-toggle.css';
 
 /** One light theme and two dark ones. "dark" is Slate: it keeps the name next-themes (and saved choices) already use. */

@@ -60,6 +60,11 @@ const eslintConfig = defineConfig([
           message: 'Give the props type a name (interface XProps) instead of an inline type.',
         },
         {
+          // 9: a function passed as a prop has a name (onHabitClose), declared above the return.
+          selector: 'JSXAttribute > JSXExpressionContainer > :matches(ArrowFunctionExpression, FunctionExpression)',
+          message: 'Name this handler (const onHabitClose = () => {...}) and pass it by name.',
+        },
+        {
           // 8: user-facing text comes from the message files (locales/en/*.json).
           selector: 'JSXAttribute[name.name=/^(aria-label|placeholder|title|alt)$/] > Literal[value!=""]',
           message: 'User-facing text must come from the message files (t(...)).',

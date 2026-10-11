@@ -9,10 +9,11 @@
 }
 
 .login__card {
-  @apply w-full max-w-sm rounded-2xl border border-line bg-surface p-8;
+  @apply w-full max-w-sm rounded-2xl border border-line bg-surface p-8 text-center;
 }
 
 .login__title {
+  @apply flex justify-center;
   --logo-height: 3.5rem;
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './about-illustration.css';
 
 const BASE = 280; // where the bars stand
