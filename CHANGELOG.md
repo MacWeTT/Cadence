@@ -4,9 +4,9 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Planned
 
-- A full profile page.
+- A full profile page, with export and import of all your data, so you can keep a backup or restore it if it is ever lost.
 - Reminders: push notifications in your browser and by email.
-- Focus sessions: a timer for a habit, with a confirmation when you finish.
+- Focus sessions: start a timer on a habit (free or pomodoro-style), see the time you spend on Progress, and confirm the habit when you finish.
 - A desktop app, with native notifications and an option to start on login.
 
 ## Known issues
