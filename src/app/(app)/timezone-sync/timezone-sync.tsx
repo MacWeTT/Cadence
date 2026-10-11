@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { syncTimezoneAction } from '@/app/(app)/timezone-actions';
+import { whenVisible } from '@/lib/when-visible';
 
 const FLAG = 'timezone-synced';
 
@@ -30,7 +31,9 @@ export const TimezoneSync = () => {
         } catch {}
 
         if (saved) {
-          router.refresh();
+          whenVisible(() => {
+            router.refresh();
+          });
         }
       })
       .catch(() => {});

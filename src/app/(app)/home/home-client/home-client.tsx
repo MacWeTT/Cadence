@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { alertFor, clockIn } from '@/lib/alert';
 import { useMsg } from '@/lib/use-msg';
+import { whenVisible } from '@/lib/when-visible';
 import { continuingStreaks, type HomeView } from '@/server/home-view';
 import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
 import { CheckSection } from '@/app/(app)/today/check-section/check-section';
@@ -93,10 +94,14 @@ export const HomeClient = (props: HomeClientProps) => {
 
   // A tab left open past local midnight: the lists are yesterday's, so fetch today's once.
   useEffect(() => {
-    if (date && date !== today && refreshedFor.current !== date) {
+    if (!date || date === today || refreshedFor.current === date) {
+      return;
+    }
+
+    return whenVisible(() => {
       refreshedFor.current = date;
       router.refresh();
-    }
+    });
   }, [date, today, router]);
 
   const openDialog = () => {
