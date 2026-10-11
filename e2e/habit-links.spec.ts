@@ -55,3 +55,18 @@ test('a link that is not a web address is refused, and removing a link takes it 
   await expect(page.getByText('Habit saved')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Open links for LeetCode' })).toHaveCount(0);
 });
+
+test('a link can be added while creating a habit', async ({ page }) => {
+  await page.goto('/habits');
+  await page.getByRole('button', { name: 'New habit' }).first().click();
+
+  const dialog = page.getByRole('dialog', { name: 'New habit' });
+
+  await dialog.getByLabel('Name').fill('LeetCode');
+  await dialog.getByRole('button', { name: 'Add a link' }).click();
+  await dialog.getByRole('textbox', { name: 'Link 1', exact: true }).fill('https://leetcode.com/MacWeTT/');
+  await dialog.getByRole('button', { name: 'Save habit' }).click();
+
+  await expect(page.getByText('Habit created')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open links for LeetCode' })).toBeVisible();
+});
