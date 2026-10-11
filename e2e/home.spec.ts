@@ -182,14 +182,14 @@ test('the page refreshing itself does not pull focus back to a ticked row', asyn
   ).toBe(true);
 });
 
-test('a clock past local midnight refreshes the lists once, and does not loop', async ({ page }) => {
+test('a clock past local midnight refetches the lists once, and does not loop', async ({ page }) => {
   await seedHabit({ name: 'Read', startDate: daysAgo(5) });
   const refreshes: string[] = [];
 
   page.on('request', r => {
     const u = new URL(r.url());
 
-    if (u.pathname === '/' && u.searchParams.has('_rsc')) {
+    if (u.pathname === '/api/home') {
       refreshes.push(u.href);
     }
   });
@@ -199,9 +199,9 @@ test('a clock past local midnight refreshes the lists once, and does not loop', 
     .poll(() => {
       return refreshes.length;
     })
-    .toBeGreaterThan(0);
+    .toBeGreaterThan(1); // the first load, then the refetch at midnight
   await page.waitForTimeout(1500);
-  expect(refreshes.length).toBeLessThanOrEqual(2);
+  expect(refreshes.length).toBeLessThanOrEqual(3);
 });
 
 test('a save that finishes after you click away does not pull focus back to the row', async ({ page }) => {

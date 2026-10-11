@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 import { isCalendarDate } from '@/domain/dates';
@@ -49,9 +48,5 @@ export const setCompletionAction = async (habitId: string, date: string, done: b
     console.error(e);
 
     return fail(msg('errors.saveFailed'));
-  } finally {
-    // also after a failure, so the pages show what the server really has
-    revalidatePath('/today');
-    revalidatePath('/');
   }
 };

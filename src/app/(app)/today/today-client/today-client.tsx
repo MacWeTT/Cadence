@@ -1,32 +1,82 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
-import type { CalendarDate } from '@/domain/dates';
+import { addDays } from '@/domain/dates';
+import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
+import { fetchJson } from '@/lib/query/fetch-json';
+import { queryKeys } from '@/lib/query/keys';
+import type { TodayData } from '@/server/today';
+import type { TodayRow } from '@/server/today-view';
 import { formatCalendarDate } from '@/lib/format';
-import type { TodayView } from '@/server/today-view';
 import { CheckSection } from '@/app/(app)/today/check-section/check-section';
 import { DateNav } from '@/app/(app)/today/date-nav/date-nav';
 import { DayCard } from '@/app/(app)/today/day-card/day-card';
-import { useToggleCompletion } from '@/app/(app)/today/use-toggle-completion';
+import { useCachedToggle } from '@/app/(app)/today/use-cached-toggle';
+import { useTodayData } from '@/app/(app)/today/use-today';
 import './today-client.css';
 
-interface TodayClientProps {
-  view: TodayView;
-  date: CalendarDate;
-  today: CalendarDate;
-  earliest: CalendarDate;
-}
-
-export const TodayClient = (props: TodayClientProps) => {
-  const { view, date, today, earliest } = props;
+/** The Today page: the day in the URL (`?date=`), read from the browser's cache at once when it is there. */
+export const TodayClient = () => {
+  const dateParam = useSearchParams().get('date') ?? undefined;
 
   const t = useTranslations('today');
   const tc = useTranslations('common.emptyHabits');
-  const { shown, saving, toggle } = useToggleCompletion(view, date);
-  const { todo, done: finished, strip } = shown;
+  const queryClient = useQueryClient();
+  const { data, isError, refetch } = useTodayData(dateParam);
+  const { saving, toggle } = useCachedToggle(data?.view);
+
+  const day = data?.date;
+  const first = data?.earliest;
+  const todayDate = data?.today;
+
+  // Fetch the days either side while this one is read, so the arrows open the next day at once.
+  useEffect(() => {
+    if (!day || !first || !todayDate) {
+      return;
+    }
+
+    [addDays(day, -1), addDays(day, 1)]
+      .filter(neighbour => {
+        return neighbour >= first && neighbour <= todayDate;
+      })
+      .forEach(neighbour => {
+        void queryClient.prefetchQuery({
+          queryKey: queryKeys.today(neighbour === todayDate ? undefined : neighbour),
+          queryFn: () => {
+            return fetchJson<TodayData>(neighbour === todayDate ? '/api/today' : `/api/today?date=${neighbour}`);
+          },
+        });
+      });
+  }, [day, first, todayDate, queryClient]);
+
+  const onRetry = () => {
+    void refetch();
+  };
+
+  if (!data) {
+    return isError ? (
+      <EmptyState
+        title={t('loadFailedTitle')}
+        text={t('loadFailedText')}
+        action={<Button onClick={onRetry}>{t('retry')}</Button>}
+      />
+    ) : (
+      <ListSkeleton title={t('title')} />
+    );
+  }
+
+  const { view, date, today, earliest } = data;
+  const { todo, done: finished, strip } = view;
+
+  const onToggle = (row: TodayRow) => {
+    toggle(row, date);
+  };
 
   const isToday = date === today;
   const todoCount = todo.length;
@@ -68,13 +118,13 @@ export const TodayClient = (props: TodayClientProps) => {
                 {todoCount === 0 && (
                   <p className="today__note">{isToday ? t('nothingLeftToday') : t('nothingLeftThisDay')}</p>
                 )}
-                <CheckSection id="todo-heading" title={t('todo')} rows={todo} saving={saving} onToggle={toggle} />
+                <CheckSection id="todo-heading" title={t('todo')} rows={todo} saving={saving} onToggle={onToggle} />
                 <CheckSection
                   id="done-heading"
                   title={isToday ? t('doneToday') : t('done')}
                   rows={finished}
                   saving={saving}
-                  onToggle={toggle}
+                  onToggle={onToggle}
                 />
               </>
             )}

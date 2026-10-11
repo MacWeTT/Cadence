@@ -1,18 +1,19 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
-import type { CalendarDate, WeekStart } from '@/domain/dates';
 import { alertFor, clockIn } from '@/lib/alert';
 import { useMsg } from '@/lib/use-msg';
 import { whenVisible } from '@/lib/when-visible';
-import { continuingStreaks, type HomeView } from '@/server/home-view';
+import type { HomeData } from '@/server/home';
+import { continuingStreaks } from '@/server/home-view';
+import type { TodayRow } from '@/server/today-view';
 import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
 import { CheckSection } from '@/app/(app)/today/check-section/check-section';
-import { useToggleCompletion } from '@/app/(app)/today/use-toggle-completion';
+import { useCachedToggle } from '@/app/(app)/today/use-cached-toggle';
 import { WeekStrip } from '@/app/(app)/today/week-strip/week-strip';
 import { AlertBanner } from '@/app/(app)/home/alert-banner/alert-banner';
 import { HomeHeader } from '@/app/(app)/home/home-header/home-header';
@@ -22,27 +23,22 @@ import { useNow } from '@/app/(app)/home/use-now';
 import './home-client.css';
 
 interface HomeClientProps {
-  home: HomeView;
-  today: CalendarDate;
-  name: string | null;
-  timezone: string;
-  weekStartsOn: WeekStart;
+  data: HomeData;
 }
 
 export const HomeClient = (props: HomeClientProps) => {
-  const { home, today, name, timezone, weekStartsOn } = props;
+  const { data } = props;
+  const { view, atRisk: atRiskRows, today, name, timezone, weekStartsOn } = data;
 
   const [creating, setCreating] = useState(false);
 
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const t = useTranslations('home');
   const tc = useTranslations('common.emptyHabits');
   const tm = useMsg();
   const now = useNow();
-  const { view: homeView, atRisk: atRiskRows } = home;
-  const { shown, saving, toggle } = useToggleCompletion(homeView, today);
-  const { hasHabits, todo: homeTodo } = homeView;
-  const { todo, done: finished } = shown;
+  const { saving, toggle } = useCachedToggle(view);
+  const { hasHabits, todo, done: finished, strip } = view;
 
   const opener = useRef<HTMLElement | null>(null);
   const refreshedFor = useRef<string | null>(null);
@@ -85,7 +81,7 @@ export const HomeClient = (props: HomeClientProps) => {
       continuing: continuingStreaks(
         finished,
         new Set(
-          homeTodo.map(row => {
+          todo.map(row => {
             return row.id;
           }),
         ),
@@ -100,9 +96,13 @@ export const HomeClient = (props: HomeClientProps) => {
 
     return whenVisible(() => {
       refreshedFor.current = date;
-      router.refresh();
+      void queryClient.invalidateQueries();
     });
-  }, [date, today, router]);
+  }, [date, today, queryClient]);
+
+  const onToggle = (row: TodayRow) => {
+    toggle(row, today);
+  };
 
   const openDialog = () => {
     opener.current = document.activeElement as HTMLElement | null;
@@ -144,7 +144,7 @@ export const HomeClient = (props: HomeClientProps) => {
                 title={t('nextUp', { count: todoCount })}
                 rows={todo}
                 saving={saving}
-                onToggle={toggle}
+                onToggle={onToggle}
                 flush
               />
               <CheckSection
@@ -152,14 +152,14 @@ export const HomeClient = (props: HomeClientProps) => {
                 title={t('doneToday', { count: done })}
                 rows={finished}
                 saving={saving}
-                onToggle={toggle}
+                onToggle={onToggle}
                 flush={todoCount === 0}
               />
             </div>
             <div className="home__side">
               <StreaksCard rows={atRisk} today={today} weekStartsOn={weekStartsOn} />
               <section className="home__week">
-                <WeekStrip strip={shown.strip} date={today} today={today} />
+                <WeekStrip strip={strip} date={today} today={today} />
               </section>
             </div>
           </div>

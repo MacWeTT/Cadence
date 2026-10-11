@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { syncTimezoneAction } from '@/app/(app)/timezone-actions';
 import { whenVisible } from '@/lib/when-visible';
@@ -9,10 +9,10 @@ const FLAG = 'timezone-synced';
 
 /**
  * Once per browser session, offers the browser's timezone to the server (which only saves it over the UTC default).
- * When it is saved the page refreshes, so "today" is computed in the user's own timezone from then on.
+ * When it is saved the cached pages are refetched, so "today" is computed in the user's own timezone from then on.
  */
 export const TimezoneSync = () => {
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     try {
@@ -32,12 +32,12 @@ export const TimezoneSync = () => {
 
         if (saved) {
           whenVisible(() => {
-            router.refresh();
+            void queryClient.invalidateQueries();
           });
         }
       })
       .catch(() => {});
-  }, [router]);
+  }, [queryClient]);
 
   return null;
 };

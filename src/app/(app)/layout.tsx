@@ -14,21 +14,21 @@ const AppLayout = (props: AppLayoutProps) => {
   const { children } = props;
 
   return (
-    <div className="app-layout">
-      {/* The session read streams in behind the boundary so the rest of the page isn't blocked. */}
-      <TopBar
-        menu={
-          <Suspense fallback={<span className="app-layout__avatar-fallback" />}>
-            <UserMenu />
-          </Suspense>
-        }
-      />
-      <TimezoneSync />
-      <main className="app-layout__main">
-        <QueryProvider>{children}</QueryProvider>
-      </main>
-      <Footer />
-    </div>
+    <QueryProvider>
+      <div className="app-layout">
+        {/* The session read streams in behind the boundary so the rest of the page isn't blocked. */}
+        <TopBar
+          menu={
+            <Suspense fallback={<span className="app-layout__avatar-fallback" />}>
+              <UserMenu />
+            </Suspense>
+          }
+        />
+        <TimezoneSync />
+        <main className="app-layout__main">{children}</main>
+        <Footer />
+      </div>
+    </QueryProvider>
   );
 };
 

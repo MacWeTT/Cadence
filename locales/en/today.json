@@ -26,5 +26,8 @@
   "row": {
     "markDone": "Mark {name} done",
     "markNotDone": "Mark {name} not done"
-  }
+  },
+  "loadFailedTitle": "Couldn't load this day",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again"
 }
