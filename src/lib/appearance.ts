@@ -8,7 +8,7 @@ import { deriveAccent, parseHex } from './accent-color';
  * A custom accent is the accent `custom` plus three CSS variables on <html>: the picked colour and the button colour
  * worked out for each theme mode (see accent-color.ts). They are stored together so the boot script can apply them.
  */
-export const PALETTES = ['cadence', 'ocean', 'forest', 'dusk', 'sunset', 'blossom', 'slate', 'graphite'] as const;
+export const PALETTES = ['cadence', 'ocean', 'meadow', 'dusk', 'sunset', 'blossom', 'steel', 'graphite'] as const;
 export const ACCENT_PRESETS = ['moss', 'clay', 'sky', 'plum', 'teal'] as const;
 export const ACCENTS = [...ACCENT_PRESETS, 'custom'] as const;
 
@@ -39,13 +39,13 @@ interface Preview {
 export const PALETTE_PREVIEW: Record<Palette, { light: Preview; dark: Preview }> = {
   cadence: {
     light: { bg: '#f3e8d3', surface: '#faf2e1', ink: '#3b2f24' },
-    dark: { bg: '#1f1812', surface: '#2a2118', ink: '#f0e4d0' },
+    dark: { bg: '#1a1d21', surface: '#23272c', ink: '#e8e6e1' },
   },
   ocean: {
     light: { bg: '#e6eef2', surface: '#f2f7f9', ink: '#1f2f3a' },
     dark: { bg: '#101a21', surface: '#172530', ink: '#e3eef4' },
   },
-  forest: {
+  meadow: {
     light: { bg: '#e4ebe0', surface: '#f0f5ed', ink: '#1e2b1f' },
     dark: { bg: '#121a14', surface: '#19231b', ink: '#e2eee3' },
   },
@@ -61,7 +61,7 @@ export const PALETTE_PREVIEW: Record<Palette, { light: Preview; dark: Preview }>
     light: { bg: '#f6e6ea', surface: '#fcf1f4', ink: '#3a2630' },
     dark: { bg: '#1d1519', surface: '#281c22', ink: '#f4e3e8' },
   },
-  slate: {
+  steel: {
     light: { bg: '#e8ebf0', surface: '#f4f6f9', ink: '#1b2230' },
     dark: { bg: '#0b0d12', surface: '#12151c', ink: '#e6e9f0' },
   },

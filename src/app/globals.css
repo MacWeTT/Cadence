@@ -137,7 +137,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='ocean'] {
+.dark[data-palette='ocean'],
+.forest[data-palette='ocean'] {
   --bg: #101a21;
   --surface: #172530;
   --topbar: #0c141a;
@@ -161,7 +162,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='graphite'] {
+.dark[data-palette='graphite'],
+.forest[data-palette='graphite'] {
   --bg: #161616;
   --surface: #202020;
   --topbar: #101010;
@@ -185,7 +187,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='blossom'] {
+.dark[data-palette='blossom'],
+.forest[data-palette='blossom'] {
   --bg: #1d1519;
   --surface: #281c22;
   --topbar: #150f12;
@@ -197,7 +200,7 @@
   --danger: #e0905f;
 }
 
-:root[data-palette='forest'] {
+:root[data-palette='meadow'] {
   --bg: #e4ebe0;
   --surface: #f0f5ed;
   --topbar: #d5e0d0;
@@ -209,7 +212,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='forest'] {
+.dark[data-palette='meadow'],
+.forest[data-palette='meadow'] {
   --bg: #121a14;
   --surface: #19231b;
   --topbar: #0d140f;
@@ -233,7 +237,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='dusk'] {
+.dark[data-palette='dusk'],
+.forest[data-palette='dusk'] {
   --bg: #15131f;
   --surface: #1d1b2b;
   --topbar: #100e18;
@@ -257,7 +262,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='sunset'] {
+.dark[data-palette='sunset'],
+.forest[data-palette='sunset'] {
   --bg: #1e1410;
   --surface: #2a1c16;
   --topbar: #160e0b;
@@ -269,7 +275,7 @@
   --danger: #e0905f;
 }
 
-:root[data-palette='slate'] {
+:root[data-palette='steel'] {
   --bg: #e8ebf0;
   --surface: #f4f6f9;
   --topbar: #dadee6;
@@ -281,7 +287,8 @@
   --danger: #9a4f2b;
 }
 
-.dark[data-palette='slate'] {
+.dark[data-palette='steel'],
+.forest[data-palette='steel'] {
   --bg: #0b0d12;
   --surface: #12151c;
   --topbar: #07080b;
@@ -303,7 +310,8 @@
   --btn: #a8512b;
 }
 
-.dark[data-accent='clay'] {
+.dark[data-accent='clay'],
+.forest[data-accent='clay'] {
   --btn: #e0905f;
 }
 
@@ -311,7 +319,8 @@
   --btn: #3f6f98;
 }
 
-.dark[data-accent='sky'] {
+.dark[data-accent='sky'],
+.forest[data-accent='sky'] {
   --btn: #86b0d6;
 }
 
@@ -319,7 +328,8 @@
   --btn: #7d5a8c;
 }
 
-.dark[data-accent='plum'] {
+.dark[data-accent='plum'],
+.forest[data-accent='plum'] {
   --btn: #b99ad0;
 }
 
@@ -327,7 +337,8 @@
   --btn: #2f6f69;
 }
 
-.dark[data-accent='teal'] {
+.dark[data-accent='teal'],
+.forest[data-accent='teal'] {
   --btn: #6fb5ac;
 }
 
@@ -335,13 +346,15 @@
   --btn: var(--accent-custom-light);
 }
 
-.dark[data-accent='custom'] {
+.dark[data-accent='custom'],
+.forest[data-accent='custom'] {
   --btn: var(--accent-custom-dark);
 }
 
 /* Any non-stock accent: the heatmap steps from the page's empty cell up to the accent itself. */
 :root[data-accent],
-.dark[data-accent] {
+.dark[data-accent],
+.forest[data-accent] {
   --moss: var(--btn);
   --heat-1: color-mix(in srgb, var(--btn) 25%, var(--heat-0));
   --heat-2: color-mix(in srgb, var(--btn) 50%, var(--heat-0));

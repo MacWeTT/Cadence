@@ -5,8 +5,9 @@
   "note": "Cadence is built around your habits and your growth, so it should feel like yours. Pick the theme and the colour that make you want to come back each day.",
   "mode": {
     "title": "Mode",
-    "light": "Light",
-    "dark": "Dark",
+    "light": "Paper",
+    "dark": "Slate",
+    "forest": "Forest night",
     "system": "Match my device"
   },
   "theme": {
@@ -14,11 +15,11 @@
     "names": {
       "cadence": "Cadence",
       "ocean": "Ocean",
-      "forest": "Forest",
+      "meadow": "Meadow",
       "dusk": "Dusk",
       "sunset": "Sunset",
       "blossom": "Blossom",
-      "slate": "Slate",
+      "steel": "Steel",
       "graphite": "Graphite"
     }
   },

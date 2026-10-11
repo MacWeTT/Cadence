@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { deriveAccent, parseHex } from '@/lib/accent-color';
-import { ACCENT_PRESETS, ACCENT_SWATCH } from '@/lib/appearance';
+import { ACCENT_PRESETS, ACCENT_SWATCH, parseChoice } from '@/lib/appearance';
 import { useAppearance } from '@/lib/use-appearance';
 import { cn } from '@/lib/utils';
 import './accent-picker.css';
@@ -36,15 +36,29 @@ export const AccentPicker = () => {
     adjustedFor = 'dark';
   }
 
-  const handleText = (value: string) => {
-    setState({ draft: value });
+  const onPresetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAccent(parseChoice('accent', event.target.value));
+  };
 
+  const onColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ draft: null });
+    setCustomAccent(event.target.value);
+  };
+
+  const onHexChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
     const parsed = parseHex(value);
+
+    setState({ draft: value });
 
     // Only apply a complete code, so typing "#3" does not flash through "#333333".
     if (parsed && (value.length === 4 || value.length === 7)) {
       setCustomAccent(parsed);
     }
+  };
+
+  const onHexBlur = () => {
+    setState({ draft: null });
   };
 
   return (
@@ -60,9 +74,7 @@ export const AccentPicker = () => {
                 name="accent"
                 value={key}
                 checked={accent === key}
-                onChange={() => {
-                  return setAccent(key);
-                }}
+                onChange={onPresetChange}
                 className="accent-picker__input peer"
               />
               <span aria-hidden className="accent-picker__swatch" style={{ backgroundColor: ACCENT_SWATCH[key] }} />
@@ -78,10 +90,7 @@ export const AccentPicker = () => {
             type="color"
             aria-label={t('pick')}
             value={customHex ?? FALLBACK_HEX}
-            onChange={event => {
-              setState({ draft: null });
-              setCustomAccent(event.target.value);
-            }}
+            onChange={onColorChange}
             className={cn('accent-picker__color', isCustom && 'accent-picker__color--active')}
           />
           <input
@@ -93,12 +102,8 @@ export const AccentPicker = () => {
             spellCheck={false}
             autoComplete="off"
             placeholder={FALLBACK_HEX}
-            onChange={event => {
-              handleText(event.target.value);
-            }}
-            onBlur={() => {
-              setState({ draft: null });
-            }}
+            onChange={onHexChange}
+            onBlur={onHexBlur}
             className={cn('accent-picker__hex', invalid && 'accent-picker__hex--invalid')}
           />
         </div>

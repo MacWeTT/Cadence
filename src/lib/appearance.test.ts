@@ -186,28 +186,38 @@ const contrast = (a: string, b: string) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-const css = readFileSync('src/app/globals.css', 'utf8');
+const css = readFileSync('src/app/globals.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
+/** The declarations of the first rule whose selector list contains `selector` (a rule may list several). */
 const block = (selector: string) => {
-  const start = css.indexOf(`${selector} {`);
+  for (const [, selectors, body] of css.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    // At-rules such as `@import ...;` and `@custom-variant ...;` sit in front of the first selector.
+    const list = (selectors.split(';').pop() ?? '').split(',').map(part => {
+      return part.trim();
+    });
 
-  if (start === -1) {
-    return '';
+    if (list.includes(selector)) {
+      return body;
+    }
   }
 
-  return css.slice(start, css.indexOf('}', start));
+  return '';
 };
+
+/** The three themes of the app's mode: Paper is the page itself, Slate is `.dark`, Forest night is `.forest`. */
+const MODES = ['light', 'dark', 'forest'] as const;
+const BASE = { light: ':root', dark: '.dark', forest: '.forest' } as const;
 
 const tokenIn = (text: string, name: string) => {
   return text.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6});`))?.[1];
 };
 
 /** The value a token has for a mode, theme and accent: the base block, then the theme's, then the accent's. */
-const resolve = (mode: 'light' | 'dark', palette: string, accent: string, name: string) => {
-  const base = mode === 'light' ? ':root' : '.dark';
+const resolve = (mode: (typeof MODES)[number], palette: string, accent: string, name: string) => {
+  const base = BASE[mode];
 
   const withMode = (attr: string) => {
-    return mode === 'light' ? `:root[${attr}]` : `.dark[${attr}]`;
+    return `${base}[${attr}]`;
   };
 
   return (
@@ -219,16 +229,22 @@ const resolve = (mode: 'light' | 'dark', palette: string, accent: string, name: 
 };
 
 describe('themes and accents in globals.css', () => {
+  it('names no colour theme after one of the three modes', () => {
+    for (const palette of PALETTES) {
+      expect(['light', 'dark', 'forest', 'paper', 'slate'], palette).not.toContain(palette);
+    }
+  });
+
   it('lists the stock theme and accent first', () => {
     expect(PALETTES[0]).toBe(DEFAULT_PALETTE);
     expect(ACCENTS[0]).toBe(DEFAULT_ACCENT);
   });
 
-  it.each(['light', 'dark'] as const)('defines every %s theme and accent', mode => {
+  it.each(MODES)('defines every %s theme and accent', mode => {
     for (const palette of PALETTES.filter(p => {
       return p !== DEFAULT_PALETTE;
     })) {
-      const selector = mode === 'light' ? `:root[data-palette='${palette}']` : `.dark[data-palette='${palette}']`;
+      const selector = `${BASE[mode]}[data-palette='${palette}']`;
 
       for (const name of ['bg', 'surface', 'topbar', 'ink', 'ink-muted', 'line', 'missed', 'heat-0', 'danger']) {
         expect(tokenIn(block(selector), name), `${mode} ${palette} --${name}`).toBeDefined();
@@ -238,13 +254,13 @@ describe('themes and accents in globals.css', () => {
     for (const accent of ACCENT_PRESETS.filter(a => {
       return a !== DEFAULT_ACCENT;
     })) {
-      const selector = mode === 'light' ? `:root[data-accent='${accent}']` : `.dark[data-accent='${accent}']`;
+      const selector = `${BASE[mode]}[data-accent='${accent}']`;
 
       expect(tokenIn(block(selector), 'btn'), `${mode} ${accent} --btn`).toBeDefined();
     }
   });
 
-  it.each(['light', 'dark'] as const)('keeps text readable (AA 4.5:1) in every %s theme', mode => {
+  it.each(MODES)('keeps text readable (AA 4.5:1) in every %s theme', mode => {
     for (const palette of PALETTES) {
       const get = (name: string) => {
         return resolve(mode, palette, DEFAULT_ACCENT, name);
@@ -265,7 +281,7 @@ describe('themes and accents in globals.css', () => {
     }
   });
 
-  it.each(['light', 'dark'] as const)('keeps every habit colour at 3:1 on every %s theme surface', mode => {
+  it.each(MODES)('keeps every habit colour at 3:1 on every %s theme surface', mode => {
     for (const palette of PALETTES) {
       const surface = resolve(mode, palette, DEFAULT_ACCENT, 'surface');
 
@@ -275,7 +291,7 @@ describe('themes and accents in globals.css', () => {
     }
   });
 
-  it.each(['light', 'dark'] as const)('keeps button text readable (AA 4.5:1) on every %s accent', mode => {
+  it.each(MODES)('keeps button text readable (AA 4.5:1) on every %s accent', mode => {
     for (const accent of ACCENT_PRESETS) {
       const btn = resolve(mode, DEFAULT_PALETTE, accent, 'btn');
       const text = resolve(mode, DEFAULT_PALETTE, accent, 'btn-text');
@@ -304,10 +320,11 @@ describe('themes and accents in globals.css', () => {
     }
   });
 
-  it.each(['light', 'dark'] as const)('wires a custom accent to its own %s button colour', mode => {
-    const selector = mode === 'light' ? ":root[data-accent='custom']" : ".dark[data-accent='custom']";
+  it.each(MODES)('wires a custom accent to its own %s button colour', mode => {
+    const selector = `${BASE[mode]}[data-accent='custom']`;
 
-    expect(block(selector)).toContain(`--btn: var(--accent-custom-${mode});`);
+    // Both dark themes share the custom accent's dark button colour.
+    expect(block(selector)).toContain(`--btn: var(--accent-custom-${mode === 'light' ? 'light' : 'dark'});`);
   });
 });
 

@@ -3,7 +3,7 @@
  * The stock button text colours are fixed (see `--btn-text` in globals.css), so the picked colour is moved along its
  * lightness, keeping its hue and saturation, until the pair reaches WCAG AA (4.5:1).
  */
-export const BTN_TEXT = { light: '#faf2e1', dark: '#1f1812' } as const;
+export const BTN_TEXT = { light: '#faf2e1', dark: '#1a1d21' } as const;
 
 const AA = 4.5;
 const STEP = 0.005;

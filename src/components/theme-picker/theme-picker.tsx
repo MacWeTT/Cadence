@@ -1,15 +1,19 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { PALETTES, PALETTE_PREVIEW } from '@/lib/appearance';
+import { PALETTES, PALETTE_PREVIEW, parseChoice } from '@/lib/appearance';
 import { useAppearance } from '@/lib/use-appearance';
 import './theme-picker.css';
 
-/** One card per theme, each showing the page and a card in its light and dark versions. */
+/** One card per colour theme, each showing the page and a card in its light and dark versions. */
 export const ThemePicker = () => {
   const t = useTranslations('appearance.theme');
 
   const { palette, setPalette } = useAppearance();
+
+  const onThemeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPalette(parseChoice('palette', event.target.value));
+  };
 
   return (
     <fieldset className="theme-picker">
@@ -25,9 +29,7 @@ export const ThemePicker = () => {
                 name="theme"
                 value={key}
                 checked={palette === key}
-                onChange={() => {
-                  return setPalette(key);
-                }}
+                onChange={onThemeChange}
                 className="theme-picker__input peer"
               />
               <span className="theme-picker__card">
