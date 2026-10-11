@@ -15,6 +15,7 @@ test("the footer's What's new link opens the changelog: what each release added 
   await expect(coming).toContainText('Focus sessions');
   await expect(page.getByRole('region', { name: 'Known issues' })).toHaveCount(0); // none listed: the card is hidden
 
+  await expect(page.getByRole('region', { name: 'Version 0.6.3' })).toContainText('Install Cadence');
   await expect(page.getByRole('region', { name: 'Version 0.5.0' })).toContainText('Links on a habit');
   await expect(page.getByRole('region', { name: 'Version 0.4.0' })).toContainText('Pages open instantly');
   await expect(page.getByRole('region', { name: 'Version 0.3.6' })).toContainText('A contact form');

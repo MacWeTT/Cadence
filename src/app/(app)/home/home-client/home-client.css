@@ -1,7 +1,7 @@
 @reference '../../../globals.css';
 
 .home__columns {
-  @apply mt-6 grid items-start gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8;
+  @apply mt-6 grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8;
 }
 
 .home__main {
@@ -13,7 +13,7 @@
 }
 
 .home__side {
-  @apply space-y-6;
+  @apply min-w-0 space-y-6;
 }
 
 .home__week {

@@ -1,11 +1,11 @@
 @reference '../../../globals.css';
 
 .home-header {
-  @apply flex items-center gap-5;
+  @apply flex items-center gap-5 max-sm:flex-wrap max-sm:gap-4;
 }
 
 .home-header__titles {
-  @apply min-w-0;
+  @apply min-w-0 max-sm:flex-1;
 }
 
 .home-header__date {
@@ -13,9 +13,9 @@
 }
 
 .home-header__greeting {
-  @apply min-h-[1.15em] font-display text-4xl leading-tight wrap-break-word;
+  @apply min-h-[1.15em] font-display text-3xl leading-tight sm:text-4xl wrap-break-word;
 }
 
 .home-header__button {
-  @apply ml-auto shrink-0;
+  @apply ml-auto shrink-0 max-sm:h-11 max-sm:w-full;
 }

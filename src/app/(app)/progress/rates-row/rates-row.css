@@ -9,7 +9,7 @@
 }
 
 .rates-row__name {
-  @apply min-w-0 flex-1 truncate font-semibold;
+  @apply min-w-0 flex-1 truncate font-semibold max-sm:basis-[calc(100%-3.25rem)] max-sm:whitespace-normal max-sm:wrap-break-word;
 }
 
 .rates-row__archived {
@@ -17,13 +17,13 @@
 }
 
 .rates-row__streak {
-  @apply w-28 text-sm text-ink-muted;
+  @apply w-28 text-sm text-ink-muted max-sm:ml-13 max-sm:w-auto;
 }
 
 .rates-row__best {
-  @apply w-24 text-sm text-ink-muted;
+  @apply w-24 text-sm text-ink-muted max-sm:w-auto;
 }
 
 .rates-row__rate {
-  @apply w-24 text-right font-semibold;
+  @apply w-24 text-right font-semibold max-sm:ml-auto max-sm:w-auto;
 }

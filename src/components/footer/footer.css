@@ -1,25 +1,37 @@
 @reference '../../app/globals.css';
 
+/* From the `sm` width up: a bar that mirrors the top bar (same width, height, logo and links). On a phone: a card. */
 .footer {
-  @apply border-t border-line bg-topbar;
+  @apply border-t border-line bg-topbar max-sm:border-t-0 max-sm:bg-transparent max-sm:px-4 max-sm:pb-5;
 }
 
 .footer__inner {
-  @apply mx-auto flex h-16 w-full max-w-295 items-center justify-between gap-4 px-8 text-sm text-ink-muted;
+  @apply mx-auto flex h-16 w-full max-w-295 items-center gap-8 px-8 text-sm text-ink-muted max-sm:grid max-sm:h-auto max-sm:gap-4 max-sm:rounded-2xl max-sm:border max-sm:border-line max-sm:bg-surface max-sm:p-5;
 }
 
+.footer__brand {
+  --logo-height: 1.6rem;
+
+  @apply flex items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-1.5 sm:text-ink;
+}
+
+.footer__tagline {
+  @apply sm:hidden;
+}
+
+/* The links follow the logo on a phone (in a grid), and sit at the right of the bar on larger screens. */
 .footer__nav {
-  @apply flex items-center gap-1;
+  @apply flex items-center gap-1 sm:order-last sm:ml-auto max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-4 max-sm:[&_a]:min-h-11 max-sm:[&_a]:rounded-none max-sm:[&_a]:border-t max-sm:[&_a]:border-line;
+}
+
+.footer__legal {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1 max-sm:text-xs;
 }
 
 .footer__link {
   @apply rounded-sm underline-offset-4 hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-clay;
 }
 
-.footer__about {
-  @apply flex items-center gap-4;
-}
-
 .footer__version {
-  @apply rounded-full border border-line px-2.5 py-0.5 text-xs;
+  @apply before:mr-2 before:content-['·'];
 }

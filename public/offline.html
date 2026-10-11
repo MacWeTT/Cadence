@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Offline · Cadence</title>
+    <!--
+      Shown by the service worker (sw.js) when a page cannot be reached. It is a plain file on purpose: it must work with
+      nothing else loaded. shortcut: English only; change this file and bump VERSION in sw.js together.
+    -->
+    <style>
+      :root {
+        --bg: #f3e8d3;
+        --ink: #3b2f24;
+        --muted: #6f5e4a;
+        --primary: #5f7036;
+        --primary-ink: #faf2e1;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1a1d21;
+          --ink: #ece6d8;
+          --muted: #a79f90;
+          --primary: #8fa062;
+          --primary-ink: #1a1d21;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        text-align: center;
+      }
+      main {
+        max-width: 24rem;
+      }
+      svg {
+        width: 4.5rem;
+        height: auto;
+      }
+      h1 {
+        margin: 1rem 0 0.5rem;
+        font-size: 1.5rem;
+      }
+      p {
+        margin: 0 0 1.5rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      a {
+        display: inline-block;
+        padding: 0.6rem 1.25rem;
+        border-radius: 0.5rem;
+        background: var(--primary);
+        color: var(--primary-ink);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      a:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 99.44 96" aria-hidden="true">
+        <path
+          d="M54.82 45.21A21.84 21.84 0 1 0 54.82 73.29"
+          fill="none"
+          stroke="#6c7d45"
+          stroke-width="12.5"
+          stroke-linecap="round"
+        />
+        <circle cx="81.31" cy="77.87" r="8.13" fill="#b8643c" />
+      </svg>
+      <h1>You're offline</h1>
+      <p>Cadence needs a connection to show your habits. Check your network and try again.</p>
+      <a href="/">Try again</a>
+    </main>
+  </body>
+</html>

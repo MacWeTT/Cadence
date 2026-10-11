@@ -1,6 +1,8 @@
 {
   "brand": "Cadence",
   "nav": {
+    "label": "Main",
+    "home": "Home",
     "today": "Today",
     "habits": "Habits",
     "progress": "Progress"
@@ -30,6 +32,11 @@
     "restore": "Restore",
     "save": "Save",
     "newHabit": "New habit"
+  },
+  "install": {
+    "app": "Install app",
+    "ios": "Add to Home Screen",
+    "iosHelp": "In Safari, tap the Share button, then \"Add to Home Screen\"."
   },
   "links": {
     "open": "Open links for {name}",
