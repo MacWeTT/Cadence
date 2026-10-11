@@ -103,7 +103,7 @@ const CheckRow = (props: CheckRowProps) => {
 - Tests assert behaviour a user could see, not implementation details. A flaky test is fixed or deleted, never retried until green.
 
 ## Process
-- Every change lands through a pull request into `develop`. Nothing is merged to `main` directly.
+- Every change lands through a pull request into `develop`. Only a release (develop → master) goes to `master`.
 - A PR has **What**, **Verified** and **Not done** sections, and reports anything skipped or unchecked.
 - Commit messages are short and imperative, prefixed `feat`, `fix`, `refactor`, `docs`, `test` or `chore`.
 - Shortcuts with a known limit are marked in the code as `shortcut: <the limit>, <when to upgrade>`.
