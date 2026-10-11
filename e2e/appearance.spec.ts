@@ -55,3 +55,26 @@ test('a code that is not a colour is flagged and changes nothing', async ({ page
   await expect(page.getByText('Use a colour code like #3f6f98.')).toBeVisible();
   await expect(page.locator('html')).not.toHaveAttribute('data-accent', /.+/);
 });
+
+test('the custom colour swatch stays a round 36px circle once a custom accent is chosen, and the hex box keeps its look when invalid', async ({
+  page,
+}) => {
+  await page.goto('/appearance');
+
+  const swatch = page.getByLabel('Pick a custom colour');
+  const hex = page.getByLabel(/Colour code/);
+
+  await hex.fill('#50494e');
+  await expect(page.locator('html')).toHaveAttribute('data-accent', 'custom');
+  await expect(swatch).toHaveClass(/(^|\s)accent-picker__color(\s|$)/);
+  await expect(swatch).toHaveClass(/accent-picker__color--active/);
+
+  const box = await swatch.boundingBox();
+
+  expect([Math.round(box!.width), Math.round(box!.height)]).toEqual([36, 36]);
+  await expect(swatch).toHaveCSS('border-radius', /^(3\.35544e\+07|[1-9]\d{3,})px$/);
+
+  await hex.fill('#50');
+  await expect(hex).toHaveClass(/(^|\s)accent-picker__hex(\s|$)/);
+  await expect(hex).toHaveClass(/accent-picker__hex--invalid/);
+});

@@ -1,11 +1,11 @@
 'use client';
 
+import clsx from 'clsx';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { deriveAccent, parseHex } from '@/lib/accent-color';
 import { ACCENT_PRESETS, ACCENT_SWATCH, parseChoice } from '@/lib/appearance';
 import { useAppearance } from '@/lib/use-appearance';
-import { cn } from '@/lib/utils';
 import './accent-picker.css';
 
 const FALLBACK_HEX = '#5a6b3d';
@@ -15,6 +15,7 @@ interface AccentPickerState {
   draft: string | null;
 }
 
+// clsx, not cn: the house cn (tailwind-merge) reads every `accent-*` class as the Tailwind accent-color utility and drops all but one.
 /** The preset accents, and any colour of your own. The picked colour is adjusted so button text stays readable. */
 export const AccentPicker = () => {
   const [state, setState] = useState<AccentPickerState>({ draft: null });
@@ -97,7 +98,7 @@ export const AccentPicker = () => {
             aria-label={t('pick')}
             value={customHex ?? FALLBACK_HEX}
             onChange={onColorChange}
-            className={cn('accent-picker__color', isCustom && 'accent-picker__color--active')}
+            className={clsx('accent-picker__color', isCustom && 'accent-picker__color--active')}
           />
           <input
             type="text"
@@ -110,7 +111,7 @@ export const AccentPicker = () => {
             placeholder={FALLBACK_HEX}
             onChange={onHexChange}
             onBlur={onHexBlur}
-            className={cn('accent-picker__hex', invalid && 'accent-picker__hex--invalid')}
+            className={clsx('accent-picker__hex', invalid && 'accent-picker__hex--invalid')}
           />
         </div>
         {invalid && <p className="accent-picker__error">{t('invalid')}</p>}
