@@ -28,8 +28,8 @@
       "text": "You sign in with Google and only you can see your habits."
     },
     "theme": {
-      "title": "Light and dark",
-      "text": "A warm paper-like light theme and a coffee-dark one. The moon icon in the top bar switches between them."
+      "title": "Light and dark themes",
+      "text": "A paper-like light theme and two dark ones, Slate and Forest night. Pick one from the theme button in the top bar."
     }
   }
 }

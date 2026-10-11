@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { ThemeProvider } from 'next-themes';
 import { AppSplash } from '@/components/app-splash/app-splash';
+import { MotionProvider } from '@/components/motion-provider/motion-provider';
+import { ThemeFavicon } from '@/components/theme-favicon/theme-favicon';
 import { Toaster } from '@/components/ui/sonner';
 import { BOOT_SCRIPT } from '@/lib/appearance';
 import './globals.css';
@@ -22,7 +24,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f3e8d3' },
-    { media: '(prefers-color-scheme: dark)', color: '#1f1812' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1d21' },
   ],
 };
 
@@ -39,10 +41,13 @@ const RootLayout = async (props: LayoutProps<'/'>) => {
       </head>
       <body className="min-h-screen">
         <NextIntlClientProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <AppSplash />
-            {children}
-            <Toaster />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark', 'forest']}>
+            <MotionProvider>
+              <ThemeFavicon />
+              <AppSplash />
+              {children}
+              <Toaster />
+            </MotionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

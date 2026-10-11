@@ -66,53 +66,62 @@ export const HabitsClient = (props: HabitsClientProps) => {
     opener.current?.focus();
   };
 
+  const onHabitEdit = (habit: HabitListItem, from: HTMLElement | null) => {
+    openDialog(habit, from);
+  };
+
+  const onHabitArchive = (habit: HabitListItem) => {
+    run(() => {
+      return archiveHabitAction(habit.id);
+    }, t('toasts.archived'));
+  };
+
+  const onHabitRestore = (habit: HabitListItem) => {
+    run(() => {
+      return restoreHabitAction(habit.id);
+    }, t('toasts.restored'));
+  };
+
+  const onHabitDelete = (habit: HabitListItem, from: HTMLElement | null) => {
+    opener.current = from;
+    setField('deleting', habit);
+  };
+
+  const onNewHabit = () => {
+    openDialog();
+  };
+
+  const onArchivedToggle = () => {
+    setField('showArchived', !state.showArchived);
+  };
+
+  const onDialogClose = () => {
+    setField('dialog', null);
+  };
+
+  const onDeleteClose = () => {
+    setField('deleting', null);
+  };
+
   const actions: HabitRowActions = {
-    onEdit: (habit, from) => {
-      return openDialog(habit, from);
-    },
-    onArchive: habit => {
-      return run(() => {
-        return archiveHabitAction(habit.id);
-      }, t('toasts.archived'));
-    },
-    onRestore: habit => {
-      return run(() => {
-        return restoreHabitAction(habit.id);
-      }, t('toasts.restored'));
-    },
-    onDelete: (habit, from) => {
-      opener.current = from;
-      setField('deleting', habit);
-    },
+    onEdit: onHabitEdit,
+    onArchive: onHabitArchive,
+    onRestore: onHabitRestore,
+    onDelete: onHabitDelete,
   };
 
   return (
     <>
       <div className="habits__header">
         <h1 className="habits__title">{t('title')}</h1>
-        <Button
-          onClick={() => {
-            return openDialog();
-          }}
-        >
-          {ta('newHabit')}
-        </Button>
+        <Button onClick={onNewHabit}>{ta('newHabit')}</Button>
       </div>
-
       {active.length === 0 ? (
         <EmptyState
           flush
           title={t('emptyTitle')}
           text={t('emptyText')}
-          action={
-            <Button
-              onClick={() => {
-                return openDialog();
-              }}
-            >
-              {ta('newHabit')}
-            </Button>
-          }
+          action={<Button onClick={onNewHabit}>{ta('newHabit')}</Button>}
         />
       ) : (
         <ul aria-label={t('listLabel')}>
@@ -127,9 +136,7 @@ export const HabitsClient = (props: HabitsClientProps) => {
           <button
             type="button"
             aria-expanded={state.showArchived}
-            onClick={() => {
-              return setField('showArchived', !state.showArchived);
-            }}
+            onClick={onArchivedToggle}
             className="habits__toggle"
           >
             <span aria-hidden>{state.showArchived ? '▾' : '▸'}</span>
@@ -159,20 +166,12 @@ export const HabitsClient = (props: HabitsClientProps) => {
           habit={state.dialog.habit}
           today={profile.today}
           weekStartsOn={profile.weekStartsOn}
-          onClose={() => {
-            return setField('dialog', null);
-          }}
+          onClose={onDialogClose}
           onCloseAutoFocus={restoreFocus}
         />
       )}
       {state.deleting && (
-        <DeleteHabitDialog
-          habit={state.deleting}
-          onClose={() => {
-            return setField('deleting', null);
-          }}
-          onCloseAutoFocus={restoreFocus}
-        />
+        <DeleteHabitDialog habit={state.deleting} onClose={onDeleteClose} onCloseAutoFocus={restoreFocus} />
       )}
     </>
   );

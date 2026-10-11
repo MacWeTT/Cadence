@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
@@ -13,7 +14,7 @@ interface CheckRowProps {
   row: TodayRow;
   /** True while a save for this row is in flight, so a double tap sends one request. */
   disabled: boolean;
-  onToggle: () => void;
+  onToggle: (row: TodayRow) => void;
 }
 
 export const CheckRow = (props: CheckRowProps) => {
@@ -22,8 +23,18 @@ export const CheckRow = (props: CheckRowProps) => {
   const t = useTranslations('today.row');
   const tm = useMsg();
 
+  const onClick = () => {
+    onToggle(row);
+  };
+
   return (
-    <li className="check-row">
+    // layoutId: the row glides between To do and Done, and the rows around it slide into the gap.
+    <motion.li
+      layout="position"
+      layoutId={row.id}
+      transition={{ type: 'spring', stiffness: 500, damping: 42 }}
+      className="check-row"
+    >
       <button
         type="button"
         role="checkbox"
@@ -32,7 +43,7 @@ export const CheckRow = (props: CheckRowProps) => {
         aria-label={row.ticked ? t('markNotDone', { name: row.name }) : t('markDone', { name: row.name })}
         // aria-disabled, not disabled: a disabled button drops keyboard focus; the toggle ignores taps while saving.
         aria-disabled={disabled}
-        onClick={onToggle}
+        onClick={onClick}
         className={cn('check-row__box', row.ticked && 'check-row__box--done')}
       >
         {row.ticked && <Check className="check-row__check" aria-hidden />}
@@ -50,6 +61,6 @@ export const CheckRow = (props: CheckRowProps) => {
         {row.week && row.streak && <span aria-hidden>{'·'}</span>}
         {row.streak && <span>{tm(streakMsg(row.streak))}</span>}
       </div>
-    </li>
+    </motion.li>
   );
 };

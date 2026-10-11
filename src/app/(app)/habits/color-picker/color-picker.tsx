@@ -14,6 +14,10 @@ export const ColorPicker = (props: ColorPickerProps) => {
   const t = useTranslations('habits.dialog');
   const tc = useTranslations('common.colors');
 
+  const onSwatchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(event.target.value as ColorKey);
+  };
+
   return (
     <fieldset>
       <legend className="color-picker__legend">{t('color')}</legend>
@@ -26,9 +30,7 @@ export const ColorPicker = (props: ColorPickerProps) => {
                 name="color"
                 value={key}
                 checked={value === key}
-                onChange={() => {
-                  return onChange(key);
-                }}
+                onChange={onSwatchChange}
                 className="color-picker__input peer"
               />
               <span aria-hidden className="color-picker__swatch" style={{ backgroundColor: habitColor(key) }} />

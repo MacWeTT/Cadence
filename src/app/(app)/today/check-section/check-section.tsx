@@ -28,16 +28,7 @@ export const CheckSection = (props: CheckSectionProps) => {
       </h2>
       <ul aria-labelledby={id}>
         {rows.map(row => {
-          return (
-            <CheckRow
-              key={row.id}
-              row={row}
-              disabled={saving.has(row.id)}
-              onToggle={() => {
-                return onToggle(row);
-              }}
-            />
-          );
+          return <CheckRow key={row.id} row={row} disabled={saving.has(row.id)} onToggle={onToggle} />;
         })}
       </ul>
     </section>

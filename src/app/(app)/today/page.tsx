@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
-import { Suspense } from 'react';
+import { PageTransition } from '@/components/page-transition/page-transition';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { getTodayView } from '@/server/today';
 import { TodayClient } from './today-client/today-client';
@@ -12,9 +12,9 @@ const TodayPage = (props: PageProps<'/today'>) => {
   const t = useTranslations('today');
 
   return (
-    <Suspense fallback={<ListSkeleton title={t('title')} />}>
+    <PageTransition fallback={<ListSkeleton title={t('title')} />}>
       <TodayContent searchParams={searchParams} />
-    </Suspense>
+    </PageTransition>
   );
 };
 

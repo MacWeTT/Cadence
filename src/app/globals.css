@@ -2,9 +2,9 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *, .forest, .forest *));
 
-/* Project tokens (light). The .dark block below overrides them; the shadcn names further down alias to these. */
+/* Project tokens (light). The .dark and .forest blocks below (the two dark themes) override them; the shadcn names further down alias to these. */
 :root {
   --bg: #f3e8d3;
   --surface: #faf2e1;
@@ -58,24 +58,56 @@
   --radius: 0.625rem;
 }
 
+/* Dark, "Slate": the dark theme next-themes calls "dark". */
 .dark {
-  --bg: #1f1812;
-  --surface: #2a2118;
-  --topbar: #18120d;
-  --ink: #f0e4d0;
-  --ink-muted: #a38f76;
-  --line: #3b2e21;
+  --bg: #1a1d21;
+  --surface: #23272c;
+  --topbar: #14171a;
+  --ink: #e8e6e1;
+  --ink-muted: #8f979f;
+  --line: #333a41;
   --moss: #9bb06a;
   --clay: #e0905f;
   --missed: #7a5340;
-  --heat-0: #2f251a;
+  --heat-0: #272c32;
   --heat-1: #414a2b;
   --heat-2: #5d6e3a;
   --heat-3: #80954a;
   --heat-4: #a6be66;
 
   --btn: #9bb06a;
-  --btn-text: #1f1812;
+  --btn-text: #1a1d21;
+  --danger: #e0905f;
+
+  --habit-moss: #9bb06a;
+  --habit-clay: #e0905f;
+  --habit-ochre: #d9b25a;
+  --habit-rose: #d98aa0;
+  --habit-plum: #b99ad0;
+  --habit-teal: #6fb5ac;
+  --habit-sky: #86b0d6;
+  --habit-slate: #a8a39b;
+}
+
+/* Dark, "Forest night": a second dark theme. */
+.forest {
+  --bg: #161d18;
+  --surface: #1f2822;
+  --topbar: #101612;
+  --ink: #e8e8dc;
+  --ink-muted: #94a094;
+  --line: #2f3b33;
+  --moss: #9bb06a;
+  --clay: #e0905f;
+  --missed: #7a5340;
+  --heat-0: #222c25;
+  --heat-1: #414a2b;
+  --heat-2: #5d6e3a;
+  --heat-3: #80954a;
+  --heat-4: #a6be66;
+
+  --btn: #9bb06a;
+  --btn-text: #161d18;
   --danger: #e0905f;
 
   --habit-moss: #9bb06a;
@@ -394,4 +426,97 @@
   .theme-transition *::after {
     transition: none !important;
   }
+}
+
+/*
+ * Page motion (see PageTransition). The old page fades out fast; the new content waits for that, then fades and slides
+ * up slowly. The top bar and footer stay put. Pointer events pass through, so a click is never lost to the animation.
+ */
+:root {
+  --page-exit: 100ms;
+  --page-enter: 800ms;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+/* The old page leaves at once: fading it would show its title ghosting under the new one, at a different height. */
+::view-transition-old(.page-out) {
+  display: none;
+}
+
+::view-transition-old(.slide-down) {
+  animation: var(--page-exit) ease-out both vt-fade reverse;
+}
+
+/* The skeleton shows quickly. */
+::view-transition-new(.fade-in) {
+  animation: var(--page-exit) ease-out both vt-fade;
+}
+
+::view-transition-new(.slide-up) {
+  animation:
+    var(--page-enter) ease-out var(--page-exit) both vt-fade,
+    var(--page-enter) cubic-bezier(0.22, 1, 0.36, 1) var(--page-exit) both vt-slide;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vt-slide {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/*
+ * The top bar and the footer are layers of their own, above the moving content: it slides under them, never over
+ * them. They do not animate. The rest of the page (the root) does not crossfade either: only the named content moves.
+ */
+::view-transition-group(site-header),
+::view-transition-group(site-footer) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(site-footer) {
+  display: none;
+}
+
+::view-transition-new(site-header),
+::view-transition-new(site-footer) {
+  animation: none;
+}
+
+::view-transition-old(root) {
+  display: none;
+}
+
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* The scrollbar's room is always kept, so pages line up whether or not they scroll and nothing shifts sideways when it appears. */
+html {
+  scrollbar-gutter: stable;
 }

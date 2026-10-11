@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { PageTransition } from '@/components/page-transition/page-transition';
 import { HomeSkeleton } from '@/components/home-skeleton/home-skeleton';
 import { loadHabitData } from '@/server/habit-data';
 import { buildHomeView } from '@/server/home-view';
@@ -6,9 +6,9 @@ import { HomeClient } from './home/home-client/home-client';
 
 const HomePage = () => {
   return (
-    <Suspense fallback={<HomeSkeleton />}>
+    <PageTransition fallback={<HomeSkeleton />}>
       <HomeContent />
-    </Suspense>
+    </PageTransition>
   );
 };
 

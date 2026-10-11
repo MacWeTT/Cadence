@@ -10,6 +10,9 @@ test.describe('with motion', () => {
   }) => {
     await page.goto('/today');
     await expect(page.locator('.app-splash')).toBeVisible();
+    // once the word is whole, the app's description fades in under it
+    await expect(page.locator('.app-splash__tagline')).toHaveText('A calm personal habit tracker.');
+    await expect(page.locator('.app-splash__tagline')).toHaveCSS('opacity', '1', { timeout: 10_000 });
     await expect(page.locator('.app-splash')).toHaveCount(0, { timeout: 10_000 });
 
     await page.goto('/habits');
@@ -40,5 +43,32 @@ test.describe('with reduced motion', () => {
     await page.goto('/login');
     await expect(page.locator('.app-splash')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Cadence' }).locator('svg.logo')).toBeVisible();
+  });
+});
+
+test.describe('login card', () => {
+  test.use({ reducedMotion: 'reduce', storageState: signedOut });
+
+  test('the logo and tagline are centred in the card, and the page hydrates cleanly', async ({ page }) => {
+    const errors: string[] = [];
+
+    page.on('pageerror', error => {
+      errors.push(error.message);
+    });
+
+    await page.goto('/login');
+    await expect(page.locator('svg.logo')).toBeVisible();
+
+    const card = await page.locator('.login__card').boundingBox();
+    const logo = await page.locator('.login__title svg').boundingBox();
+    const tagline = await page.locator('.login__tagline').boundingBox();
+
+    const middle = (box: { x: number; width: number }) => {
+      return box.x + box.width / 2;
+    };
+
+    expect(Math.abs(middle(logo!) - middle(card!))).toBeLessThan(2);
+    expect(Math.abs(middle(tagline!) - middle(card!))).toBeLessThan(2);
+    expect(errors).toEqual([]);
   });
 });
