@@ -21,7 +21,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 |---|---|---|
 | 0.8 | Full profile page (**next**) | name, avatar, timezone and week start, delete account, **sound settings (the chime choice synced to the account, and custom chime uploads: short audio, size and type limits, stored privately)**, and **the install control moves here from the account menu: one Install button with two options, Web app (today's install prompt) and Installer (the desktop app, disabled with a "Coming soon" tooltip until it exists)**, and **export and import of all your data**: one file with habits, schedules, ticks, links and focus sessions, so a person can keep a backup or restore it after a loss. Replace-or-merge on import is to be designed with the page. Notification toggles are shown greyed out with a "Coming soon" tooltip and keep no code behind them; they are enabled, with storage, when notifications ship |
 | 0.9 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
-| after 0.7 | Desktop app (Tauri) | native notifications, start on login; opens habit links without the popup limit |
+| after 0.9 | Desktop app (Tauri) | native notifications, start on login; opens habit links without the popup limit |
 
 ## Before 1.0 (not yet versioned)
 
