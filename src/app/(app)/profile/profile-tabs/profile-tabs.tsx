@@ -10,6 +10,7 @@ const TABS = [
   { href: '/profile', key: 'overview' },
   { href: '/profile/appearance', key: 'appearance' },
   { href: '/profile/notifications', key: 'notifications' },
+  { href: '/profile/account', key: 'account' },
 ] as const;
 
 /** The profile's sections. Each is its own page, so a tab can be linked to and the back button works. */

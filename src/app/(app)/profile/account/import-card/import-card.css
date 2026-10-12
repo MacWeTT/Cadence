@@ -1,0 +1,21 @@
+@reference '../../../../globals.css';
+
+.import-card__limits {
+  @apply text-xs text-ink-muted;
+}
+
+.import-card__choose {
+  @apply flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-line px-3 py-3 text-left hover:bg-line/40;
+}
+
+.import-card__icon {
+  @apply size-5 shrink-0;
+}
+
+.import-card__warning {
+  @apply rounded-lg border border-danger/40 bg-danger/10 p-3 text-sm;
+}
+
+.import-card__understand {
+  @apply flex cursor-pointer items-center gap-3 text-sm;
+}

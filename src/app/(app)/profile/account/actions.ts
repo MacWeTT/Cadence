@@ -1,6 +1,7 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
+import { backupErrorText } from '@/lib/backup-error-text';
 import { BACKUP_LIMITS, type BackupError, type BackupSummary } from '@/lib/backup-types';
 import { getUser } from '@/lib/supabase/server';
 import { BackupRefused, deleteAccount, importBackup } from '@/server/backup';
@@ -10,15 +11,7 @@ import { ProfileError } from '@/server/profile-storage';
 export type AccountActionResult = { ok: true; summary?: BackupSummary } | { ok: false; error: string };
 
 const words = async (error: BackupError): Promise<string> => {
-  const t = await getTranslations('account.import');
-  const { code, values = {} } = error;
-  const { reason, ...rest } = values;
-
-  // A reason from the file's checks is a code of its own: shown as words, not as the code.
-  const shown =
-    typeof reason === 'string' ? { ...rest, reason: t(`reasons.${reason}` as 'reasons.dateInvalid') } : values;
-
-  return t(`errors.${code}`, shown);
+  return backupErrorText(await getTranslations('account.import'), error);
 };
 
 const fail = async (error: unknown): Promise<AccountActionResult> => {

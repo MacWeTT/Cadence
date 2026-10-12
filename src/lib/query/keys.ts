@@ -8,6 +8,8 @@ export const queryKeys = {
     return ['today', date ?? 'now'] as const;
   },
   home: ['home'] as const,
+  /** How much the account holds (habits, check-ins, focus sessions), for the Account tab. */
+  account: ['account'] as const,
   /** The person's profile: name, avatar, timezone, week start, sound and custom sounds. */
   profile: ['profile'] as const,
   /** The running focus session and the last-used numbers per habit. */
