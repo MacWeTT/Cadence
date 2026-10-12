@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // A profile photo can be 2 MB (the default for an action is 1 MB); a sound is at most 500 KB.
+  experimental: { serverActions: { bodySizeLimit: '3mb' } },
   // The service worker must always be fetched fresh, or a fix to it could take a day to reach anyone.
   headers: async () => {
     return [
