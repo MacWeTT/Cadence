@@ -7,6 +7,7 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - A photo cropper for your avatar.
 - Signing in with GitHub, and signing up with an email address and a password.
 - A tag of your own, like @yourname, on your profile.
+- Link Google or GitHub to an account made with an email, and change your password from the Account tab.
 - Reminders: push notifications in your browser and by email.
 - A pause button on the focus timer, so you can pause and carry on, or stop.
 - A desktop app, with native notifications and an option to start on login.
