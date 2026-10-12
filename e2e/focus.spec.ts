@@ -169,7 +169,12 @@ test('the bar follows you to other pages, and tapping it reopens the panel', asy
   // in the background the tab carries the time; coming back (or the session ending) gives the open page's title back
   const setHidden = async (hidden: boolean) => {
     await page.evaluate(value => {
-      Object.defineProperty(document, 'hidden', { configurable: true, get: () => {return value} });
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => {
+          return value;
+        },
+      });
       document.dispatchEvent(new Event('visibilitychange'));
     }, hidden);
   };
