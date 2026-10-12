@@ -49,6 +49,15 @@ Two long-lived branches, both protected (changes only by PR with the CI checks p
 - A fix that cannot wait for the next release (data loss, security) goes the same way: PR into `develop`, then a patch release into `master`.
 - To go back to a release in a hurry, use Instant Rollback (above). To go back in the code, open a PR into `develop` that reverts the bad merge: `git revert -m 1 <merge-sha>`, and release it. Compare with the last tag to see what changed: `git diff v0.4.0..develop`.
 
+## Sign-in mail (Gmail SMTP)
+
+Sign-up confirmation and password reset are 6-digit codes sent by Supabase Auth. Supabase's own mailer reaches only team addresses (about 2 an hour), so production sends through a dedicated Gmail account, which costs nothing and needs no domain.
+
+- Make a Gmail account only for this, turn on 2-step verification, and create an **app password**. Put it in the Supabase dashboard (Authentication, SMTP settings) and nowhere else: never in the repo or in chat.
+- In the dashboard also: "Confirm email" on, manual linking on, and edit the confirmation and recovery email templates to show `{{ .Token }}` (the code) instead of a link.
+- Limits: about 500 mails a day, and Google may throttle or flag automated mail. Before inviting anyone, sign up, confirm and reset a password with an address outside the team, and check the spam folder. If Gmail proves unreliable, the fallback is a domain and Resend.
+- Locally nothing changes: the codes appear in Supabase's mail catcher (Inbucket, port 54324).
+
 ## Contact form
 
 The contact page saves every message in the `contact_messages` table (Supabase dashboard: Table Editor; only the dashboard and the service key can read it, the app and the sender cannot) and emails it to you with [Resend](https://resend.com). The email is optional: without the three variables below the message is still saved.
