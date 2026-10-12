@@ -17,7 +17,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.6.5 | Full profile page (not the priority now) | name, avatar, timezone and week start, delete account, and **export and import of all your data**: one file with habits, schedules, ticks, links and focus sessions, so a person can keep a backup or restore it after a loss. Replace-or-merge on import is to be designed with the page |
+| 0.6.5 | Full profile page (not the priority now) | name, avatar, timezone and week start, delete account, **sound settings (the chime choice synced to the account, and custom chime uploads: short audio, size and type limits, stored privately)**, and **export and import of all your data**: one file with habits, schedules, ticks, links and focus sessions, so a person can keep a backup or restore it after a loss. Replace-or-merge on import is to be designed with the page |
 | 0.7 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
 | 0.7 | Focus sessions: a timer per habit (**next**) | free (count up) or pomodoro (presets Classic 25/5, Deep 50/10, Short 15/3, all editable, last numbers remembered per habit); a running bar on every page; "I did it" ticks the habit; minutes of focus on Progress. Design: `docs/superpowers/specs/2026-10-12-focus-sessions-design.md`. Later: a Focus page with recent sessions |
 | after 0.7 | Desktop app (Tauri) | native notifications, start on login; opens habit links without the popup limit |
