@@ -1,26 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { CONTRIBUTORS } from '@/lib/contributors';
+import { CONTRIBUTORS, githubUrl } from '@/lib/contributors';
 
 describe('CONTRIBUTORS', () => {
   it('lists at least the primary contributor, first', () => {
     expect(CONTRIBUTORS.length).toBeGreaterThanOrEqual(1);
-    expect(CONTRIBUTORS[0].name).toBe('MacWeTT');
+    expect(CONTRIBUTORS[0]).toBe('MacWeTT');
   });
 
-  it('gives everyone a name and a GitHub link, and nobody twice', () => {
-    for (const { name, url } of CONTRIBUTORS) {
-      expect(name.trim()).not.toBe('');
-      expect(url).toMatch(/^https:\/\/github\.com\/[A-Za-z0-9-]+$/);
+  it('holds valid GitHub usernames, and nobody twice', () => {
+    for (const username of CONTRIBUTORS) {
+      expect(username).toMatch(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$/);
     }
 
-    const names = CONTRIBUTORS.map(({ name }) => {
-      return name.toLowerCase();
-    });
-    const urls = CONTRIBUTORS.map(({ url }) => {
-      return url.toLowerCase();
+    const lower = CONTRIBUTORS.map(username => {
+      return username.toLowerCase();
     });
 
-    expect(new Set(names).size).toBe(names.length);
-    expect(new Set(urls).size).toBe(urls.length);
+    expect(new Set(lower).size).toBe(lower.length);
+  });
+});
+
+describe('githubUrl', () => {
+  it('points at the GitHub page of a username', () => {
+    expect(githubUrl('MacWeTT')).toBe('https://github.com/MacWeTT');
   });
 });
