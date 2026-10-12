@@ -84,7 +84,8 @@ test('the two fields line up, and the message box cannot be resized', async ({ p
   await page.goto('/contact');
   await expect(page.getByLabel('Your name (optional)')).toBeVisible();
 
-  // Measure once the fonts are in and the layout has settled: a late font swap moves the second row by a few pixels.
+  // A block of the page starts 14px low and eases into place once the page has hydrated, so a measurement taken before
+  // that is offset. Measure both fields together, again and again, until they agree (they do once the page has settled).
   await page.evaluate(() => {
     return document.fonts.ready;
   });
@@ -97,9 +98,11 @@ test('the two fields line up, and the message box cannot be resized', async ({ p
 
   await expect
     .poll(async () => {
-      return await box('Your name (optional)');
+      const [name, email] = [await box('Your name (optional)'), await box('Your email (optional)')];
+
+      return name.y === email.y && name.height === email.height;
     })
-    .toEqual(await box('Your email (optional)'));
+    .toBe(true);
   await expect(page.getByLabel('Your message')).toHaveCSS('resize', 'none');
 });
 
