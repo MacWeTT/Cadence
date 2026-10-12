@@ -1,6 +1,6 @@
 # Profile page, design
 
-Status: proposed, for review. Mockups: the Profile screens of the visual companion (`.superpowers/brainstorm`, not committed). Version: 0.6.5.
+Status: proposed, for review. Mockups: the Profile screens of the visual companion (`.superpowers/brainstorm`, not committed). Version: 0.8.0.
 
 ## Purpose
 
@@ -82,6 +82,21 @@ Out of scope: real push and email reminders (0.7; here only disabled toggles), a
 3. **Cleanup and release:** the redrawn Alien and Mage, anything left from review, the version bump, the changelog entry and the roadmap update (this belongs in the feature's last PR).
 
 If PR 1 is too big to review, the sound modal and its upload move to PR 3, and the Overview shows the six built-in sounds only.
+
+## Tasks (PR 1; tests first in each)
+
+1. Migration: `profiles` columns, `custom_sounds` and its trigger, the `avatars` and `sounds` buckets and policies; pgTAP tests.
+2. Pure code in `src/domain` and `src/lib`: zone labels and search, validators (name, week start, zone, colour, photo and sound files), avatar and sound models, the chime fallback.
+3. Server: `src/server/profile.ts`, `GET /api/profile`, the server actions.
+4. Browser cache: the `profile` query; `useChimeChoice` reads from it, with the local value as a fallback.
+5. Routes: `/profile` layout, tabs, skeletons; move Appearance, the redirect, and the account menu and top bar links; move its e2e spec.
+6. `SettingRow` and `SettingModal`, then the Name, Week start and Timezone modals, with toasts.
+7. The six avatar SVGs, `AvatarModal`, photo crop and upload.
+8. `SoundModal`, the browser length check, custom sounds (add, play, remove, the six cap).
+9. Get the app dropdown (replacing `InstallMenuItem`) and the Notifications tab.
+10. e2e specs, then lint, types and the changed tests.
+
+PR 2 and PR 3 get their own task lists when they start.
 
 ## Edge cases
 
