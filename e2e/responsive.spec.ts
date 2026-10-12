@@ -88,3 +88,22 @@ test('the habit dialog fits a phone, also on its side', async ({ page }) => {
     await page.keyboard.press('Escape');
   }
 });
+
+test('the loading skeletons fit a small phone too', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+
+  // Hold the page data back so the skeleton stays on screen long enough to measure.
+  await page.route(/\/api\/(progress|home)/, async route => {
+    await new Promise(resolve => {
+      setTimeout(resolve, 2500);
+    });
+    await route.continue();
+  });
+
+  for (const path of ['/progress', '/']) {
+    await page.goto(path);
+    await expect(page.locator('[aria-busy="true"]')).toBeVisible();
+
+    expect(await sidewaysScroll(page), `${path} while loading`).toBeLessThanOrEqual(0);
+  }
+});
