@@ -13,17 +13,17 @@ select ok(not public.valid_tag('has space'), 'a space is not allowed');
 select ok(not public.valid_tag('admin'), 'a reserved word cannot be a tag');
 
 -- default tags, made when an account is created
-insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a1', 'manasbajpai18@gmail.com');
-select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a1'), 'manasbajpai18', 'the default is the part of the email before the @');
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a1', 'zqmanas18@gmail.com');
+select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a1'), 'zqmanas18', 'the default is the part of the email before the @');
 
-insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a2', 'ManasBajpai18@example.com');
-select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a2'), 'manasbajpai18_2', 'a taken default gets a number, whatever the case');
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a2', 'ZQManas18@example.com');
+select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a2'), 'zqmanas18_2', 'a taken default gets a number, whatever the case');
 
-insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a3', 'John.Doe-Smith@example.com');
-select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a3'), 'john_doe_smith', 'dots and dashes become underscores, capitals become lowercase');
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a3', 'ZQJohn.Doe-Smith@example.com');
+select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a3'), 'zqjohn_doe_smith', 'dots and dashes become underscores, capitals become lowercase');
 
-insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000a4', 'octo@example.com', '{"user_name": "Octo-Cat"}');
-select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a4'), 'octo_cat', 'a GitHub account takes its GitHub username');
+insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000a4', 'octo@example.com', '{"user_name": "ZQOcto-Cat"}');
+select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a4'), 'zqocto_cat', 'a GitHub account takes its GitHub username');
 
 insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a5', 'ab@example.com');
 select is((select tag from public.profiles where user_id = '00000000-0000-0000-0000-0000000000a5'), 'userab', 'a short default is padded');
@@ -46,9 +46,9 @@ select is((select tag from public.profiles where user_id = '00000000-0000-0000-0
 select is((select count(*)::int from public.profiles where tag is null), 0, 'every account has a tag');
 
 -- changing a tag
-select lives_ok($$update public.profiles set tag = 'manas' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'a free valid tag can be taken');
-select throws_ok($$update public.profiles set tag = 'MANAS' where user_id = '00000000-0000-0000-0000-0000000000a2'$$, '23514', null, 'capitals are refused by the check');
-select throws_ok($$update public.profiles set tag = 'manas' where user_id = '00000000-0000-0000-0000-0000000000a2'$$, '23505', null, 'a tag in use cannot be taken');
+select lives_ok($$update public.profiles set tag = 'zq_manas_new' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'a free valid tag can be taken');
+select throws_ok($$update public.profiles set tag = 'ZQ_MANAS_NEW' where user_id = '00000000-0000-0000-0000-0000000000a2'$$, '23514', null, 'capitals are refused by the check');
+select throws_ok($$update public.profiles set tag = 'zq_manas_new' where user_id = '00000000-0000-0000-0000-0000000000a2'$$, '23505', null, 'a tag in use cannot be taken');
 select throws_ok($$update public.profiles set tag = 'admin' where user_id = '00000000-0000-0000-0000-0000000000a2'$$, '23514', null, 'a reserved word cannot be taken');
 
 select * from finish();
