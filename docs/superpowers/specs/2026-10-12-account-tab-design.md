@@ -12,8 +12,8 @@ Out of scope: merging an import into existing data (an import replaces), importi
 
 The Account tab (`/profile/account`, added to the tab bar) has three cards:
 
-1. **Export your data.** Three buttons: **JSON** (everything, for backups and other tools), **CSV** (everything, one file, opens in a spreadsheet) and **PDF** (a report for reading and sharing; it cannot be imported). Each downloads at once, named `cadence-2026-10-12.json` and so on.
-2. **Import your data.** A file picker for `.json` or `.csv`. When a file is chosen it is read and checked in the browser, and a confirmation modal shows what is in it ("12 habits, 1,204 check-ins, 38 focus sessions") with a warning: **this replaces all your current habits and history, and cannot be undone**. The Import button in the modal is disabled until the person ticks "I understand". A file that is not a Cadence backup, is damaged, or has a check-in after today is refused with a toast saying why (and nothing changes).
+1. **Export your data.** Three buttons: **JSON** (everything, for backups and other tools), **CSV** (everything, one file, opens in a spreadsheet) and **PDF** (a report for reading and sharing; it cannot be imported). Each downloads at once, named `cadence-2026-10-12.json` and so on. The card says how much you have ("12 habits, 1,204 check-ins, 38 focus sessions"). An export is never cut short, but **if you have more than an import accepts** (the limits below), the card shows a warning before you download: "This is more than Cadence can import back (500 habits, 200,000 check-ins, 50,000 focus sessions). The export is complete; restoring it here would be refused."
+2. **Import your data.** A file picker for `.json` or `.csv`, with the limits stated under it ("Up to 5 MB, 500 habits, 200,000 check-ins and 50,000 focus sessions."). When a file is chosen it is read and checked in the browser, and a confirmation modal shows what is in it ("12 habits, 1,204 check-ins, 38 focus sessions") with a warning: **this replaces all your current habits and history, and cannot be undone**. The Import button in the modal is disabled until the person ticks "I understand". A file that is not a Cadence backup, is damaged, has a check-in after today, or is over a limit is refused with a toast that names the limit and the file's own number ("This file has 640 habits; the limit is 500") and nothing changes.
 3. **Delete your account** (a red card). A modal: what is deleted (habits, history, focus sessions, uploaded files, your sign-in), and a box to type your email address to confirm. Then the account is deleted and the person lands on the login page with a toast.
 
 Every action uses the profile's modal and toast pattern.
@@ -45,6 +45,10 @@ Server action `importBackupAction(formData)`: signed in, size checked, parsed, v
 
 `GET /api/export?format=json|csv|pdf` (a route handler, 401 when signed out, 400 for another format) returns the file as an attachment with the right type. It reads through the signed-in client, so it can only ever return the caller's own rows. It is a download link from the Account card, not a client fetch, so large files stream to the browser's own download.
 
+## Counts and limits
+
+`GET /api/account` returns the account's counts (habits, check-ins, focus sessions) for the Account tab's cache (`account` query), so the export card can show them and warn when they pass the import limits. The limits live in one place (`BACKUP_LIMITS` in `src/lib/backup.ts`), used by the parser, the server check and the warning, so the three never disagree.
+
 ## Delete account
 
 A Postgres function `delete_my_account()` (security definer, `search_path` empty, execute granted to signed-in users only) deletes the caller's non-anonymous contact messages (they hold a name and an email) and then the caller's row in `auth.users`, which cascades to the profile, habits, schedules, ticks, pauses, focus sessions and custom sounds. Doing it in the database means production needs no service key in the web app's environment.
@@ -67,7 +71,7 @@ The server action first removes the person's files from the `avatars` and `sound
 
 ## Tests
 
-- Unit: JSON and CSV round trips (a rich account in, the same account out, including quotes, commas, line breaks, emoji and the spreadsheet apostrophe), parse refusals (wrong app, wrong version, bad date, a tick before the start or in the future, a duplicate tick, too many habits, a file over the cap, a spreadsheet-mangled date, a stray extra column), the caps, the count summary, the PDF builder's page and card layout (it returns bytes that start with `%PDF` and one page per card group, for an empty account and a full one), the file names.
+- Unit: JSON and CSV round trips (a rich account in, the same account out, including quotes, commas, line breaks, emoji and the spreadsheet apostrophe), parse refusals (wrong app, wrong version, bad date, a tick before the start or in the future, a duplicate tick, too many habits, a file over each cap (the message names the limit and the file's number), the over-the-limit warning for an export, a spreadsheet-mangled date, a stray extra column), the caps, the count summary, the PDF builder's page and card layout (it returns bytes that start with `%PDF` and one page per card group, for an empty account and a full one), the file names.
 - Database (pgTAP): `replace_my_data` replaces, is atomic (a bad row leaves the old data), cannot touch another person's rows, honours the tick and schedule rules, archives last; `delete_my_account` removes the account and everything under it, anonymous contact messages stay, and it cannot be run signed out.
 - e2e: export downloads for each format and the file content is right (JSON parses, CSV has the header and the rows, PDF starts with `%PDF`); import a JSON file with the confirmation and warning, the data appears and the old habits are gone; the same from CSV; a bad file is refused and nothing changes; "I understand" gates the button; delete account needs the typed email, lands on login and the same sign-in then starts a fresh empty account; the new tab title.
 
@@ -75,7 +79,7 @@ The server action first removes the person's files from the `avatars` and `sound
 
 1. Migration: `replace_my_data` and `delete_my_account`; pgTAP tests.
 2. `src/lib/backup.ts`: the `Backup` type, JSON and CSV writing and reading, `parseBackup`, summary counts, file names; unit tests.
-3. Server: `getBackup()`, the `/api/export` route (JSON and CSV), `importBackupAction`, `deleteAccountAction`.
+3. Server: `getBackup()`, the `/api/export` route (JSON and CSV), `GET /api/account` (the counts), `importBackupAction`, `deleteAccountAction`.
 4. The PDF builder (`pdf-lib`) and the `pdf` format on the route; unit tests, then look at the file once.
 5. The Account tab: route, tab link, export card, import card with the confirmation modal, delete card with the typed-email modal; all text in `locales/en/account.json`.
 6. The page title tweak.
