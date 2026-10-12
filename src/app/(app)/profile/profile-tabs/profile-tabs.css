@@ -1,7 +1,7 @@
 @reference '../../../globals.css';
 
 .profile-tabs {
-  @apply flex gap-6 overflow-x-auto border-b border-line;
+  @apply flex gap-6 overflow-x-auto overflow-y-hidden border-b border-line;
 }
 
 .profile-tabs__tab {

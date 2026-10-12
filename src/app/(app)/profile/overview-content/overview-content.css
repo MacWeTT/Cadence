@@ -9,9 +9,5 @@
 }
 
 .overview-content__sign-out {
-  @apply flex w-full items-center justify-center gap-2 rounded-xl border border-line px-4 py-3 text-ink-muted transition-colors hover:bg-line/40 hover:text-ink;
-}
-
-.overview-content__sign-out-icon {
-  @apply size-4;
+  @apply flex justify-end;
 }

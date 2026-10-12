@@ -107,11 +107,11 @@ export const OverviewContent = () => {
         </SettingRow>
       </div>
 
-      <form action={signOut}>
-        <button type="submit" className="overview-content__sign-out">
-          <LogOut aria-hidden className="overview-content__sign-out-icon" />
+      <form action={signOut} className="overview-content__sign-out">
+        <Button type="submit" variant="destructive">
+          <LogOut aria-hidden />
           {ta('signOut')}
-        </button>
+        </Button>
       </form>
 
       {open === 'photo' && <AvatarModal avatar={avatar} name={shownName} onClose={onClose} />}
