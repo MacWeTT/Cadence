@@ -11,8 +11,23 @@ import './focus-panel.css';
 /** A bottom sheet on phones and a centred dialog from 640px up: the ending, the running view or the setup. */
 export const FocusPanel = () => {
   const t = useTranslations('focus');
-  const { panelOpen, closePanel, session, view, target, result, plans, pending, error, start, stop, skip, confirm } =
-    useFocusApi();
+  const {
+    panelOpen,
+    closePanel,
+    session,
+    view,
+    target,
+    result,
+    plans,
+    pending,
+    error,
+    didIt,
+    setDidIt,
+    start,
+    stop,
+    skip,
+    confirm,
+  } = useFocusApi();
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
@@ -32,7 +47,7 @@ export const FocusPanel = () => {
       <DialogContent className="focus-panel">
         <DialogTitle className="focus-panel__title">{title}</DialogTitle>
         <DialogDescription className="focus-panel__description">{name}</DialogDescription>
-        {result && <FocusEnding result={result} onConfirm={confirm} />}
+        {result && <FocusEnding result={result} didIt={didIt} onDidItChange={setDidIt} onDone={confirm} />}
         {!result && session && view && (
           <FocusRunning
             view={view}

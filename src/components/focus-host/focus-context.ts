@@ -28,13 +28,17 @@ export interface FocusApi {
   result: (FocusResult & { name: string; ticked: boolean }) | null;
   pending: boolean;
   error: string | null;
+  /** The "I did it" box on the ending panel: ticked unless the person unticks it. */
+  didIt: boolean;
+  setDidIt: (didIt: boolean) => void;
   openFor: (target: FocusTarget) => void;
   openRunning: () => void;
   closePanel: () => void;
   start: (input: StartInput) => void;
   stop: () => void;
   skip: () => void;
-  confirm: (didIt: boolean) => void;
+  /** Closes the ending panel, ticking the habit when "I did it" is ticked. */
+  confirm: () => void;
 }
 
 export const FocusContext = createContext<FocusApi | null>(null);

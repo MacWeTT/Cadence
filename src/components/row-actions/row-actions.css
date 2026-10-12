@@ -1,0 +1,10 @@
+@reference '../../app/globals.css';
+
+/* On phones the row is a grid: the buttons take the last column, across both lines. */
+.row-actions {
+  @apply flex items-center gap-1 max-sm:col-start-4 max-sm:row-span-2 max-sm:row-start-1;
+}
+
+.row-actions > * {
+  @apply max-sm:size-11;
+}

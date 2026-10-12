@@ -40,6 +40,7 @@ test('a Free session stopped under a minute leaves no record and asks nothing', 
   await dialog.getByRole('button', { name: 'Stop' }).click();
 
   await expect(dialog).toBeHidden();
+  await expect(page.getByText('Under a minute, so nothing was saved.')).toBeVisible();
   await expect(bar(page)).toBeHidden();
   expect(await getFocusSessions(id)).toEqual([]);
 });
@@ -54,7 +55,8 @@ test('stopping a session asks "I did it", and yes ticks the habit for the day it
   const dialog = page.getByRole('dialog', { name: 'Session finished' });
 
   await expect(dialog.getByText('You focused for 10 minutes.')).toBeVisible();
-  await dialog.getByRole('button', { name: 'I did it' }).click();
+  await expect(dialog.getByRole('checkbox', { name: /I did it/ })).toBeChecked(); // ticked by default
+  await dialog.getByRole('button', { name: 'Done' }).click();
 
   await expect(dialog).toBeHidden();
   await expect
@@ -67,17 +69,35 @@ test('stopping a session asks "I did it", and yes ticks the habit for the day it
   expect(await getFocusSessions(id)).toHaveLength(1);
 });
 
-test('"Not this time" keeps the focus minutes and ticks nothing', async ({ page }) => {
+test('unticking "I did it" keeps the focus minutes and ticks nothing', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
 
   await seedFocusSession({ habitId: id, startedMinutesAgo: 5 });
   await page.goto('/habits');
   await bar(page).getByRole('button', { name: 'Stop' }).click();
-  await page.getByRole('button', { name: 'Not this time' }).click();
+  await page.getByRole('checkbox', { name: /I did it/ }).uncheck();
+  await page.getByRole('button', { name: 'Done' }).click();
 
   await expect(bar(page)).toBeHidden();
   expect(await getCompletions(id)).toEqual([]);
   expect((await getFocusSessions(id))[0].focus_seconds).toBeGreaterThanOrEqual(300);
+});
+
+test('closing the ending panel applies the ticked box, so the habit is ticked', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+  await expect(page.getByRole('dialog', { name: 'Session finished' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await expect(page.getByRole('dialog')).toBeHidden();
+  await expect
+    .poll(async () => {
+      return (await getCompletions(id)).length;
+    })
+    .toBe(1);
 });
 
 test('a habit that is already ticked only shows the minutes', async ({ page }) => {
@@ -91,7 +111,7 @@ test('a habit that is already ticked only shows the minutes', async ({ page }) =
   const dialog = page.getByRole('dialog', { name: 'Session finished' });
 
   await expect(dialog.getByText('Read is already ticked for that day.')).toBeVisible();
-  await expect(dialog.getByRole('button', { name: 'I did it' })).toHaveCount(0);
+  await expect(dialog.getByRole('checkbox')).toHaveCount(0);
   await dialog.getByRole('button', { name: 'Close' }).first().click();
   await expect(dialog).toBeHidden();
 });
@@ -138,18 +158,35 @@ test('the bar follows you to other pages, and tapping it reopens the panel', asy
   await seedFocusSession({ habitId: id, startedMinutesAgo: 3 });
   await page.goto('/progress');
   await expect(bar(page)).toContainText('Read');
-  await expect(page).toHaveTitle(/^\d+:\d{2} · Read$/);
+  await expect(page).toHaveTitle('Progress · Cadence'); // in the foreground the page keeps its own title
 
   await page.getByRole('link', { name: 'Habits' }).first().click();
   await expect(bar(page)).toBeVisible();
-  await expect(page).toHaveTitle(/^\d+:\d{2} · Read$/);
+  await expect(page).toHaveTitle('Habits · Cadence');
   await bar(page).getByRole('button', { name: 'Open the focus session on Read' }).click();
   await expect(page.getByRole('dialog').getByRole('timer')).toBeVisible();
 
-  // when the session ends the tab shows the page that is open now, not the one the session started on
+  // in the background the tab carries the time; coming back (or the session ending) gives the open page's title back
+  const setHidden = async (hidden: boolean) => {
+    await page.evaluate(value => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => {return value} });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, hidden);
+  };
+
+  await page.keyboard.press('Escape');
+  await setHidden(true);
+  await expect(page).toHaveTitle(/^\d+:\d{2} · Read$/);
+  await setHidden(false);
+  await expect(page).toHaveTitle('Habits · Cadence');
+
+  await setHidden(true);
+  await expect(page).toHaveTitle(/ · Read$/);
+  await setHidden(false);
+  await page.getByRole('button', { name: 'Open the focus session on Read' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Stop' }).click();
-  await page.getByRole('button', { name: 'Not this time' }).click();
-  await expect(page).toHaveTitle(/Habits/);
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(page).toHaveTitle('Habits · Cadence');
 });
 
 test('starting a second session is refused and names the one that is running', async ({ page }) => {

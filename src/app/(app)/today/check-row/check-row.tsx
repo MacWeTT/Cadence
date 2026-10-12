@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { FocusButton } from '@/components/focus-button/focus-button';
+import { RowActions } from '@/components/row-actions/row-actions';
 import { OpenLinksButton } from '@/components/open-links-button/open-links-button';
 import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
@@ -69,10 +70,10 @@ export const CheckRow = (props: CheckRowProps) => {
         {year !== undefined && <span>{tm(yearMsg(year))}</span>}
       </div>
       {(canFocus || links) && (
-        <div className="check-row__actions">
+        <RowActions>
           {links && <OpenLinksButton links={links} name={name} />}
           {canFocus && <FocusButton habit={{ id, name, icon, color }} />}
-        </div>
+        </RowActions>
       )}
     </motion.li>
   );

@@ -53,11 +53,12 @@
   "ending": {
     "title": "Session finished",
     "focused": "You focused for {minutes, plural, one {# minute} other {# minutes}}.",
-    "ask": "Did you do it?",
     "yes": "I did it",
-    "no": "Not this time",
     "close": "Close",
-    "alreadyTicked": "{name} is already ticked for that day."
+    "alreadyTicked": "{name} is already ticked for that day.",
+    "hint": "Ticks {name} for the day you started.",
+    "done": "Done",
+    "tooShort": "Under a minute, so nothing was saved."
   },
   "notify": {
     "focusDone": "Focus round done. Time for a break.",

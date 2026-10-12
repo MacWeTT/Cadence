@@ -5,18 +5,16 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { FocusContext, type FocusApi, type FocusTarget } from '@/components/focus-host/focus-context';
+import { useTabTitle } from '@/components/focus-host/use-tab-title';
 import { useFocusActions, useFocusState, useServerNow, type StartInput } from '@/components/focus-host/use-focus';
 import { FocusPanel } from '@/components/focus-panel/focus-panel';
 import { playChime, unlockAudio } from '@/lib/chimes';
-import { sessionView, tabTitle } from '@/lib/focus-clock';
+import { sessionView } from '@/lib/focus-clock';
 import { queryKeys } from '@/lib/query/keys';
 import { useChimeChoice } from '@/lib/use-chime-choice';
 import type { FocusResult } from '@/server/focus';
 import { setCompletionAction } from '@/app/(app)/today/actions';
 import type { TodayRow, TodayView } from '@/server/today-view';
-
-/** What the tab title looks like while the countdown is in it: "16:42 · Read". */
-const COUNTDOWN_TITLE = /^\d+:\d{2}(:\d{2})? · /;
 
 interface FocusHostProps {
   children: React.ReactNode;
@@ -27,6 +25,7 @@ interface HostState {
   target: FocusTarget | null;
   result: FocusApi['result'];
   error: string | null;
+  didIt: boolean;
 }
 
 /** Whether the cache already shows the habit ticked on that day (a tick is idempotent, so a miss is harmless). */
@@ -49,7 +48,13 @@ const tickedIn = (views: [unknown, unknown][], habitId: string): boolean => {
 export const FocusHost = (props: FocusHostProps) => {
   const { children } = props;
 
-  const [state, setState] = useState<HostState>({ panelOpen: false, target: null, result: null, error: null });
+  const [state, setState] = useState<HostState>({
+    panelOpen: false,
+    target: null,
+    result: null,
+    error: null,
+    didIt: true,
+  });
 
   const queryClient = useQueryClient();
   const t = useTranslations('focus');
@@ -61,13 +66,11 @@ export const FocusHost = (props: FocusHostProps) => {
   const stopping = useRef(false);
   /** Set when the person skips a break, so the jump to the next round is not announced as a phase that ended. */
   const quiet = useRef(false);
-  /** The page's own title, kept while the countdown is shown in the tab. */
-  const baseTitle = useRef('');
 
   const session = data?.running ?? null;
   const now = useServerNow(data, dataUpdatedAt, session !== null);
   const view = session ? sessionView(session, now) : null;
-  const { panelOpen, target, result, error } = state;
+  const { panelOpen, target, result, error, didIt } = state;
   const pending = start.isPending || stop.isPending || skip.isPending;
 
   const phase = view?.phase;
@@ -76,29 +79,7 @@ export const FocusHost = (props: FocusHostProps) => {
   const phaseKey = session && phase ? `${session.id}:${phase}:${round}` : null;
   const name = session?.habit.name;
 
-  // The tab title carries the time, so a session in another tab can be read at a glance. A title that is not ours is
-  // the page's (Next changes it on navigation), so that one is kept to put back when the session ends.
-  useEffect(() => {
-    if (!name || clock === undefined) {
-      return;
-    }
-
-    if (!COUNTDOWN_TITLE.test(document.title)) {
-      baseTitle.current = document.title;
-    }
-
-    document.title = tabTitle(clock, name);
-  }, [name, clock]);
-
-  useEffect(() => {
-    if (!name) {
-      return;
-    }
-
-    return () => {
-      document.title = baseTitle.current;
-    };
-  }, [name]);
+  useTabTitle(name, clock);
 
   // Browsers only play sound after a touch, and a reloaded page has had none yet: the first touch unlocks audio.
   useEffect(() => {
@@ -148,6 +129,10 @@ export const FocusHost = (props: FocusHostProps) => {
   }, [phaseKey, phase, name, choice, t]);
 
   const finish = (finished: FocusResult | null, habitName: string) => {
+    if (finished && !finished.saved) {
+      toast.message(t('ending.tooShort'));
+    }
+
     if (!finished?.saved) {
       setState(current => {
         return { ...current, panelOpen: false, result: null };
@@ -168,7 +153,7 @@ export const FocusHost = (props: FocusHostProps) => {
     );
 
     setState(current => {
-      return { ...current, panelOpen: true, result: { ...finished, name: habitName, ticked } };
+      return { ...current, panelOpen: true, didIt: true, result: { ...finished, name: habitName, ticked } };
     });
   };
 
@@ -200,6 +185,28 @@ export const FocusHost = (props: FocusHostProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
 
+  // Closing the ending panel, by Done, the X or Escape, applies "I did it" as it stands.
+  const confirm = async () => {
+    if (didIt && result && !result.ticked) {
+      const { habitId, date } = result;
+      const response = await setCompletionAction(habitId, date, true);
+
+      if (!response.ok) {
+        toast.error(response.error);
+
+        return;
+      }
+
+      void queryClient.invalidateQueries({ queryKey: queryKeys.todayAll });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.home });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.progressAll });
+    }
+
+    setState(current => {
+      return { ...current, panelOpen: false, result: null };
+    });
+  };
+
   const api: FocusApi = {
     session,
     view,
@@ -209,6 +216,12 @@ export const FocusHost = (props: FocusHostProps) => {
     result,
     pending,
     error,
+    didIt,
+    setDidIt: (value: boolean) => {
+      setState(current => {
+        return { ...current, didIt: value };
+      });
+    },
     openFor: habit => {
       setState(current => {
         return { ...current, panelOpen: true, target: habit, error: null };
@@ -220,6 +233,12 @@ export const FocusHost = (props: FocusHostProps) => {
       });
     },
     closePanel: () => {
+      if (result) {
+        void confirm();
+
+        return;
+      }
+
       setState(current => {
         return { ...current, panelOpen: false, result: null, error: null };
       });
@@ -249,26 +268,7 @@ export const FocusHost = (props: FocusHostProps) => {
         },
       });
     },
-    confirm: async (didIt: boolean) => {
-      if (didIt && result) {
-        const { habitId, date } = result;
-        const response = await setCompletionAction(habitId, date, true);
-
-        if (!response.ok) {
-          toast.error(response.error);
-
-          return;
-        }
-
-        void queryClient.invalidateQueries({ queryKey: queryKeys.todayAll });
-        void queryClient.invalidateQueries({ queryKey: queryKeys.home });
-        void queryClient.invalidateQueries({ queryKey: queryKeys.progressAll });
-      }
-
-      setState(current => {
-        return { ...current, panelOpen: false, result: null };
-      });
-    },
+    confirm,
   };
 
   return (
