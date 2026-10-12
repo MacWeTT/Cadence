@@ -6,7 +6,7 @@ Status: proposed, for review. Mockups: the Focus sessions screen of the visual c
 
 Start a timer on a habit, stop it when done, and keep how long you focused on each habit. Two kinds of session: **Free** (counts up, stop when you like) and **Pomodoro** (rounds of focus and break). When a session ends, the person confirms "I did it" and the habit is ticked for that day.
 
-Out of scope now: pausing a session, a Focus page with recent sessions (a later option), push alerts when the app is closed (they arrive with reminders), and the desktop app's native alerts.
+Out of scope now: custom chime uploads (with the profile page), pausing a session, a Focus page with recent sessions (a later option), push alerts when the app is closed (they arrive with reminders), and the desktop app's native alerts.
 
 ## What the person sees
 
@@ -14,9 +14,17 @@ Out of scope now: pausing a session, a Focus page with recent sessions (a later 
 - **Setup panel** (a bottom sheet on phones, a centred dialog from 640 px up): a Pomodoro / Free switch. Pomodoro opens on **Classic**; chips for **Deep** and **Short**; the four numbers (focus, break, long break, rounds) are editable. It remembers the last numbers used on that habit. A line says the total and the focus minutes ("About 2 hours, 100 minutes of focus"). Free hides the numbers: Start only.
 - **Running panel:** a ring and a large countdown, the phase ("Focus, round 2 of 4" or "Break, next: round 3"), round dots, **Stop**, and **Skip break** during a break. Free counts up with Stop only.
 - **Running bar:** a slim bar on every page while a session runs (under the top bar; above the tab bar on phones): habit icon and name, phase, time, Stop. Tapping it reopens the panel. The tab title shows the time ("16:42 · Read").
-- **Phase changes:** a chime (Web Audio, no asset) and, if the person has allowed it, a browser notification (asked once, on first start, and optional). Phases roll on by themselves; a break ends and the next focus round begins.
+- **Phase changes:** a chime (see **Chimes** below) and, if the person has allowed it, a browser notification (asked once, on first start, and optional). Phases roll on by themselves; a break ends and the next focus round begins.
 - **Ending:** after the last round, or on Stop, the panel shows the focused minutes and asks **I did it** (ticks the habit) or **Not this time**. If the habit is already ticked that day it only shows the minutes with Close. Under one full minute of focus, nothing is saved and nothing is asked.
 - **Progress:** a "Focus time" card: the total and minutes per habit over the page's existing period chips (7, 30, 90 days, year) and habit filter.
+
+## Chimes
+
+- **Built in, no files:** a few chimes generated with the Web Audio API, so there are no sound files to ship or license: **Bell** (default), **Marimba**, **Wood block**, **Soft beep** and **Rising**, plus **Silent**. Each is a small recipe in `src/lib/chimes.ts` (oscillators and a gain envelope, under about 1.5 seconds).
+- **Two cues from one chime:** the end of a focus round plays the chosen chime; the end of a break plays the same chime a little higher and shorter, so the two sound different without choosing twice.
+- **Choosing:** a Sound row in the focus setup panel, with a Preview button beside each option and a volume control. Until the profile page exists the choice is kept on the device (local storage, like the appearance settings); when the profile page arrives the choice moves there and is saved to the account, so it follows the person to a new phone.
+- **Browsers only play sound after the person has touched the page.** Starting a session is that touch; the audio context is unlocked then. A sound can still be blocked on some phones while the screen is locked: the notification and the tab title are the fallback.
+- **Custom chimes (later, with the profile page):** the person uploads their own short sound. Planned limits: audio files only (mp3, wav, ogg, m4a), at most 5 seconds and 300 KB, a few per account, stored privately per user (a storage bucket with row-level security), validated by type and size on the server before saving, and played through a plain audio element. Not built now; it needs the storage bucket and the profile page's settings area.
 
 ## Rules (pure domain, `src/domain/focus.ts`, tests first)
 
@@ -39,6 +47,7 @@ Time comes from the server, never from the browser: `start` stores `now()`, `sto
 - Server actions for start, stop and skip (the app's mutation path); `GET /api/focus` for the state (401 when signed out, like the other endpoints). Progress's data adds the focus totals for its range.
 - Browser cache: a `focus` query (refetched on tab focus, so other devices catch up); start, stop and skip update it at once and invalidate `progress`. A clock hook counts locally from the server time (it corrects for clock skew) and re-reads the server at phase boundaries.
 - Components: `FocusButton` (a row pill), `FocusPanel` (sheet or dialog), `FocusBar` (in the app layout), `FocusSetup` and `FocusRunning` inside the panel, and the Progress `FocusCard`. All text in `locales/en/focus.json`. The panel, ring and bar follow the existing styling and the 44 px touch rule.
+- Sound: the chime recipes are plain data and a small player, kept apart from the panel so they can be tried on their own.
 - Accessibility: the countdown is a `timer` that is not announced every second; phase changes are announced politely; motion respects reduced-motion (no ring animation, a plain bar).
 
 ## Edge cases
