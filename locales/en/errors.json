@@ -15,6 +15,5 @@
   "focusRunning": "A focus session is already running. Stop it first.",
   "focusPlanInvalid": "Check the focus numbers.",
   "emailMismatch": "That doesn't match your email address.",
-  "focusSoundInvalid": "That sound isn't available any more. Choose another.",
-  "tagTaken": "That tag is taken. Try another."
+  "focusSoundInvalid": "That sound isn't available any more. Choose another."
 }

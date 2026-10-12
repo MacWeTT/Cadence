@@ -96,7 +96,7 @@ test('the profile header shows the tag, made from the email', async ({ page }) =
   await page.goto('/profile');
 
   await expect(page.getByRole('heading', { level: 1, name: 'E2E User' })).toBeVisible();
-  await expect(page.getByText('@e2e', { exact: true })).toBeVisible();
+  await expect(page.locator('.profile-header').getByText('@e2e', { exact: true })).toBeVisible();
 });
 
 test('changing the tag forgives the @ and capitals, shows at once, and saves it', async ({ page }) => {
