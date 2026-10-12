@@ -1,0 +1,9 @@
+@reference '../../app/globals.css';
+
+.setting-modal {
+  @apply sm:max-w-md;
+}
+
+.setting-modal__title {
+  @apply font-display text-lg;
+}

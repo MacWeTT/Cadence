@@ -3,7 +3,7 @@
 import { Volume2, VolumeX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CHIME_IDS, playChime, unlockAudio, type ChimeId } from '@/lib/chimes';
-import { useChimeChoice } from '@/lib/use-chime-choice';
+import { useChimeChoice } from '@/components/focus-host/use-chime-choice';
 import { cn } from '@/lib/utils';
 import './focus-sound.css';
 

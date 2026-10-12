@@ -1,0 +1,49 @@
+@reference '../../../globals.css';
+
+.timezone-modal__search {
+  @apply relative;
+}
+
+.timezone-modal__search-icon {
+  @apply pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-ink-muted;
+}
+
+.timezone-modal__input {
+  @apply pl-8;
+}
+
+.timezone-modal__list {
+  @apply flex max-h-64 flex-col overflow-y-auto rounded-lg border border-line;
+}
+
+.timezone-modal__none {
+  @apply p-4 text-center text-ink-muted;
+}
+
+.timezone-modal__zone {
+  @apply flex items-baseline justify-between gap-3 px-3 py-2 text-left hover:bg-line/40;
+}
+
+.timezone-modal__zone--active {
+  @apply bg-line/70 font-medium;
+}
+
+.timezone-modal__city {
+  @apply block;
+}
+
+.timezone-modal__region {
+  @apply block text-xs font-normal text-ink-muted;
+}
+
+.timezone-modal__offset {
+  @apply shrink-0 text-xs font-normal text-ink-muted;
+}
+
+.timezone-modal__warning {
+  @apply flex gap-3 rounded-lg border border-amber-500/50 bg-amber-500/15 p-3 text-sm;
+}
+
+.timezone-modal__warning-icon {
+  @apply mt-0.5 size-5 shrink-0 text-amber-600;
+}

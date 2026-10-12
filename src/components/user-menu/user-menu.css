@@ -4,10 +4,6 @@
   @apply flex size-9 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-clay text-sm font-semibold text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
 }
 
-.user-menu__avatar {
-  @apply size-full object-cover;
-}
-
 .user-menu__content {
   @apply w-56;
 }

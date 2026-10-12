@@ -8,7 +8,18 @@ const SIZES = [
   { name: 'a tablet', width: 768, height: 1024 },
 ];
 
-const PAGES = ['/', '/today', '/habits', '/progress', '/appearance', '/about', '/contact', '/changelog'];
+const PAGES = [
+  '/',
+  '/today',
+  '/habits',
+  '/progress',
+  '/profile',
+  '/profile/appearance',
+  '/profile/notifications',
+  '/about',
+  '/contact',
+  '/changelog',
+];
 
 const sidewaysScroll = (page: Page) => {
   return page.evaluate(() => {

@@ -15,13 +15,14 @@
   "account": {
     "fallbackName": "Account",
     "menu": "Account menu",
-    "appearance": "Appearance",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "profile": "Profile"
   },
   "loading": {
     "list": "Loading {title}",
     "progress": "Loading progress",
-    "home": "Loading home"
+    "home": "Loading home",
+    "profile": "Loading your profile"
   },
   "actions": {
     "cancel": "Cancel",
@@ -34,8 +35,6 @@
     "newHabit": "New habit"
   },
   "install": {
-    "app": "Install app",
-    "ios": "Add to Home Screen",
     "iosHelp": "In Safari, tap the Share button, then \"Add to Home Screen\"."
   },
   "links": {

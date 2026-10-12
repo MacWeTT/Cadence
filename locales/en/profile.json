@@ -1,0 +1,114 @@
+{
+  "pageTitle": "Profile",
+  "title": "Profile",
+  "loadFailedTitle": "Couldn't load your profile",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again",
+  "loading": "Loading your profile",
+  "tabs": {
+    "label": "Profile sections",
+    "overview": "Overview",
+    "appearance": "Appearance",
+    "notifications": "Notifications"
+  },
+  "header": {
+    "fallbackName": "Account"
+  },
+  "app": {
+    "button": "Get the app",
+    "webApp": "Web app",
+    "webAppHint": "Add Cadence to your home screen",
+    "installer": "Installer",
+    "installerHint": "Desktop app",
+    "comingSoon": "Coming soon",
+    "unavailable": "Not available in this browser"
+  },
+  "rows": {
+    "photo": "Photo",
+    "name": "Name",
+    "timezone": "Timezone",
+    "weekStart": "Week starts on",
+    "sound": "Focus sound",
+    "change": "Change"
+  },
+  "weekdays": {
+    "monday": "Monday",
+    "sunday": "Sunday"
+  },
+  "modal": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "name": {
+    "title": "Your name",
+    "label": "Name"
+  },
+  "weekStart": {
+    "title": "Week starts on"
+  },
+  "timezone": {
+    "title": "Timezone",
+    "search": "Search cities",
+    "detected": "Detected",
+    "none": "No city matches that.",
+    "warningTitle": "Changing your timezone changes what “today” means.",
+    "warning": "If the new zone is behind, ticks from a later date show again when that date arrives, and a habit that started today starts tomorrow. Nothing is deleted."
+  },
+  "avatar": {
+    "title": "Your avatar",
+    "current": "Current",
+    "characters": "Characters",
+    "colour": "Colour",
+    "customColour": "Your own colour",
+    "hex": "Colour code",
+    "emoji": "Emoji",
+    "photo": "Your own photo",
+    "upload": "Upload a photo",
+    "photoHint": "JPEG, PNG or WebP, up to 2 MB, cropped to a square",
+    "preview": "Preview of your avatar",
+    "characterNames": {
+      "alien": "Alien",
+      "robot": "Robot",
+      "cyclops": "Cyclops",
+      "ghost": "Ghost",
+      "punk": "Punk",
+      "mage": "Mage"
+    }
+  },
+  "sound": {
+    "title": "Focus sound",
+    "current": "Current: {name}",
+    "sounds": "Sounds",
+    "volume": "Volume",
+    "yours": "Your own sounds",
+    "upload": "Upload a sound",
+    "uploadHint": "MP3, WAV or OGG, up to 5 seconds and 500 KB. You can keep 6.",
+    "limit": "You have 6 sounds. Remove one to add another.",
+    "play": "Play {name}",
+    "remove": "Remove {name}",
+    "names": {
+      "bell": "Bell",
+      "marimba": "Marimba",
+      "wood": "Wood",
+      "beep": "Beep",
+      "rising": "Rising",
+      "silent": "Silent"
+    },
+    "unreadable": "That file couldn't be read as a sound."
+  },
+  "notifications": {
+    "push": "Push notifications",
+    "email": "Email reminders",
+    "comingSoon": "Coming soon",
+    "intro": "Reminders arrive in a later version."
+  },
+  "toasts": {
+    "name": "Name updated",
+    "weekStart": "Week now starts on {day}",
+    "timezone": "Timezone set to {city}",
+    "avatar": "Avatar updated",
+    "sound": "Focus sound set to {name}",
+    "soundAdded": "{name} added",
+    "soundRemoved": "{name} removed"
+  }
+}

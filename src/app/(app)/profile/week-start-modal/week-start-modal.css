@@ -1,0 +1,13 @@
+@reference '../../../globals.css';
+
+.week-start-modal {
+  @apply flex flex-col gap-2;
+}
+
+.week-start-modal__option {
+  @apply flex cursor-pointer items-center gap-3 rounded-lg border border-line px-3 py-3 has-checked:border-btn has-checked:bg-line/40;
+}
+
+.week-start-modal__input {
+  @apply size-4 accent-(--btn);
+}

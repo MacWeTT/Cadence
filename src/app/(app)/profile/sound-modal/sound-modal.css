@@ -1,0 +1,73 @@
+@reference '../../../globals.css';
+
+.sound-modal__current {
+  @apply flex flex-col items-center gap-2;
+}
+
+.sound-modal__current-tile {
+  @apply flex size-24 items-center justify-center rounded-3xl bg-line/70 text-btn ring-2 ring-btn ring-offset-2 ring-offset-popover;
+}
+
+.sound-modal__current-tile svg {
+  @apply size-10;
+}
+
+.sound-modal__caption {
+  @apply text-sm text-ink-muted;
+}
+
+.sound-modal__heading {
+  @apply mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted;
+}
+
+.sound-modal__grid {
+  @apply mb-3 grid grid-cols-2 gap-2;
+}
+
+.sound-modal__sound {
+  @apply flex items-center gap-2 rounded-xl border border-line px-2.5 py-2 text-left hover:bg-line/40;
+}
+
+.sound-modal__sound--active {
+  @apply border-btn bg-line/60 ring-1 ring-btn;
+}
+
+.sound-modal__pick {
+  @apply flex min-w-0 flex-1 items-center gap-2 text-left;
+}
+
+.sound-modal__name {
+  @apply truncate;
+}
+
+.sound-modal__play {
+  @apply flex size-7 shrink-0 items-center justify-center rounded-full bg-btn text-btn-text;
+}
+
+.sound-modal__play svg {
+  @apply size-3.5;
+}
+
+.sound-modal__remove {
+  @apply flex size-6 shrink-0 items-center justify-center rounded-full text-ink-muted hover:bg-line hover:text-ink;
+}
+
+.sound-modal__remove svg {
+  @apply size-3.5;
+}
+
+.sound-modal__volume {
+  @apply w-full accent-(--btn);
+}
+
+.sound-modal__upload {
+  @apply flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-line px-3 py-3 text-left hover:bg-line/40 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.sound-modal__upload-icon {
+  @apply size-5 shrink-0;
+}
+
+.sound-modal__hint {
+  @apply block text-xs text-ink-muted;
+}

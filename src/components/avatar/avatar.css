@@ -1,0 +1,33 @@
+@reference '../../app/globals.css';
+
+.avatar {
+  @apply inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-line font-display text-ink;
+}
+
+.avatar--tint {
+  background: color-mix(in srgb, var(--avatar-color) 28%, white);
+}
+
+.avatar--sm {
+  @apply size-8 text-sm;
+}
+
+.avatar--md {
+  @apply size-11 text-base;
+}
+
+.avatar--lg {
+  @apply size-16 text-xl;
+}
+
+.avatar--xl {
+  @apply size-30 text-4xl;
+}
+
+.avatar__image {
+  @apply size-full object-cover;
+}
+
+.avatar__emoji {
+  @apply text-[1.9em] leading-none;
+}

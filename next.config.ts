@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   // A profile photo can be 2 MB (the default for an action is 1 MB); a sound is at most 500 KB.
   experimental: { serverActions: { bodySizeLimit: '3mb' } },
+  // Appearance moved into the profile; old links and bookmarks still work.
+  redirects: async () => {
+    return [{ source: '/appearance', destination: '/profile/appearance', permanent: false }];
+  },
   // The service worker must always be fetched fresh, or a fix to it could take a day to reach anyone.
   headers: async () => {
     return [

@@ -1,0 +1,25 @@
+@reference '../../../globals.css';
+
+.profile-header {
+  @apply flex items-center gap-4;
+}
+
+.profile-header__who {
+  @apply min-w-0 flex-1;
+}
+
+.profile-header__name {
+  @apply truncate font-display text-3xl;
+}
+
+.profile-header__email {
+  @apply truncate text-ink-muted;
+}
+
+.profile-header__avatar-skeleton {
+  @apply size-16 animate-pulse rounded-full bg-line/60 motion-reduce:animate-none;
+}
+
+.profile-header__text-skeleton {
+  @apply h-9 w-56 animate-pulse rounded-xl bg-line/60 motion-reduce:animate-none;
+}

@@ -8,6 +8,8 @@ export const queryKeys = {
     return ['today', date ?? 'now'] as const;
   },
   home: ['home'] as const,
+  /** The person's profile: name, avatar, timezone, week start, sound and custom sounds. */
+  profile: ['profile'] as const,
   /** The running focus session and the last-used numbers per habit. */
   focus: ['focus'] as const,
   progressAll: ['progress'] as const,
