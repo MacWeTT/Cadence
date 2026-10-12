@@ -5,8 +5,9 @@ This file is shown on the app's What's new page, so it is for people using Caden
 ## Planned
 
 - A photo cropper for your avatar.
-- Signing in with an email and a password, as well as with Google.
+- Signing in with GitHub, and signing up with your email address, confirmed with a code we send you.
 - Reminders: push notifications in your browser and by email.
+- A pause button on the focus timer, so you can pause and carry on, or stop.
 - A desktop app, with native notifications and an option to start on login.
 - Circles: something big is on the way, and it brings an XP system along with it. Stay tuned!
 
