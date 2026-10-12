@@ -9,7 +9,7 @@
 }
 
 .focus-sound__list {
-  @apply grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-6;
+  @apply grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-4;
 }
 
 .focus-sound__option {
@@ -40,10 +40,6 @@
   @apply text-center leading-tight;
 }
 
-.focus-sound__volume {
-  @apply flex items-center gap-3 text-sm text-ink-muted;
-}
-
-.focus-sound__volume input {
-  @apply min-h-11 flex-1 accent-primary;
+.focus-sound__change {
+  @apply w-fit text-xs text-ink-muted underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
 }

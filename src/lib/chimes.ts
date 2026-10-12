@@ -87,6 +87,32 @@ export const recipeLength = (notes: Note[]): number => {
   );
 };
 
+/**
+ * The sound for one focus session. The profile's sound is the default; a session may carry its own (a built-in sound, or one
+ * of the person's own with its link), played at the default's volume. One that has since been removed falls back to the default.
+ */
+export const sessionChoice = (
+  override: string | null,
+  base: ChimeChoice,
+  customs: { id: string; url: string | null }[],
+): ChimeChoice => {
+  if (override === null) {
+    return base;
+  }
+
+  const { volume } = base;
+
+  if (isChimeId(override)) {
+    return { id: override, volume, url: null };
+  }
+
+  const custom = customs.find(({ id }) => {
+    return id === override;
+  });
+
+  return custom ? { id: override, volume, url: custom.url } : base;
+};
+
 export const parseChoice = (raw: string): ChimeChoice => {
   try {
     const { id, volume } = JSON.parse(raw) as { id?: unknown; volume?: unknown };

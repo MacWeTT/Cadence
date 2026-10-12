@@ -53,14 +53,14 @@ export type Database = {
                   ]
                 },"focus_sessions": {
                   Row: {
-                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"started_at": string,"user_id": string
+                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"sound_id": string | null,"started_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"plan"?: Json | null,"skipped_seconds"?: number,"started_at"?: string,"user_id"?: string
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
                   }
                   Update: {
-                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"plan"?: Json | null,"skipped_seconds"?: number,"started_at"?: string,"user_id"?: string
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {

@@ -21,6 +21,8 @@ export interface FocusApi {
   view: SessionView | null;
   /** The numbers last used on each habit. */
   plans: Record<string, FocusPlan>;
+  /** The sound last chosen on each habit (a habit last run on the default has none). */
+  sounds: Record<string, string>;
   panelOpen: boolean;
   /** The habit the setup panel is for (when nothing is running). */
   target: FocusTarget | null;
@@ -31,6 +33,9 @@ export interface FocusApi {
   /** The "I did it" box on the ending panel: ticked unless the person unticks it. */
   didIt: boolean;
   setDidIt: (didIt: boolean) => void;
+  /** The "Count this time in focus" box: ticked unless the person unticks it; unticked, the session is not kept. */
+  countIt: boolean;
+  setCountIt: (countIt: boolean) => void;
   openFor: (target: FocusTarget) => void;
   openRunning: () => void;
   closePanel: () => void;

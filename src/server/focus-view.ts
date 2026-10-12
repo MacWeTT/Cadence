@@ -18,6 +18,8 @@ export interface FocusRow {
   plan: unknown;
   skipped_seconds: number;
   focus_seconds: number | null;
+  /** The sound chosen for this session; `null` follows the profile's sound. */
+  sound_id: string | null;
 }
 
 /** A running session as the browser needs it: the start time and the skipped seconds define the whole timeline. */
@@ -35,6 +37,8 @@ export interface FocusSession {
   plan: FocusPlan | null;
   startedAt: string;
   skippedSeconds: number;
+  /** The sound chosen for this session; `null` follows the profile's sound. */
+  soundId: string | null;
 }
 
 export interface FocusState {
@@ -43,6 +47,8 @@ export interface FocusState {
   serverNow: string;
   /** The numbers last used on each habit. */
   plans: Record<string, FocusPlan>;
+  /** The sound last chosen on each habit (a habit whose last session used the default has no entry). */
+  sounds: Record<string, string>;
 }
 
 export interface FocusTotals {
@@ -78,7 +84,7 @@ export const parsePlan = (value: unknown): FocusPlan | null => {
 };
 
 export const toSession = (row: FocusRow, habit: FocusHabit): FocusSession => {
-  const { id, habit_id, mode, plan, started_at, skipped_seconds } = row;
+  const { id, habit_id, mode, plan, started_at, skipped_seconds, sound_id } = row;
 
   return {
     id,
@@ -88,7 +94,26 @@ export const toSession = (row: FocusRow, habit: FocusHabit): FocusSession => {
     plan: parsePlan(plan),
     startedAt: started_at,
     skippedSeconds: skipped_seconds,
+    soundId: sound_id,
   };
+};
+
+/** The sound last chosen on each habit, from its sessions newest first. Only a habit's latest session counts. */
+export const lastSoundsOf = (rows: { habit_id: string; sound_id: string | null }[]): Record<string, string> => {
+  const seen = new Set<string>();
+  const sounds: Record<string, string> = {};
+
+  for (const { habit_id, sound_id } of rows) {
+    if (!seen.has(habit_id)) {
+      seen.add(habit_id);
+
+      if (sound_id) {
+        sounds[habit_id] = sound_id;
+      }
+    }
+  }
+
+  return sounds;
 };
 
 export interface Settled {

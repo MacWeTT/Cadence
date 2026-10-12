@@ -182,6 +182,8 @@ export const seedFocusSession = async (o: {
   plan?: { focusMin: number; breakMin: number; longBreakMin: number; rounds: number };
   /** Makes the session finished, with this many focus seconds. */
   finishedWithSeconds?: number;
+  /** The sound chosen for the session; left out follows the profile sound. */
+  soundId?: string;
 }): Promise<void> => {
   const userId = await ensureE2EUser();
   const mode = o.mode ?? 'free';
@@ -199,6 +201,7 @@ export const seedFocusSession = async (o: {
           ? null
           : new Date(startedAt.getTime() + o.finishedWithSeconds * 1000).toISOString(),
       focus_seconds: o.finishedWithSeconds ?? null,
+      sound_id: o.soundId ?? null,
     });
 
   if (error) {
@@ -337,4 +340,30 @@ export const getContactMessages = async () => {
   }
 
   return data;
+};
+
+/** A sound of the e2e user's own, straight in the database (there is no file behind it, so it has no link). */
+export const seedCustomSound = async (name: string): Promise<string> => {
+  const userId = await ensureE2EUser();
+  const { data, error } = await adminClient()
+    .from('custom_sounds')
+    .insert({ user_id: userId, name, path: `${userId}/seeded.mp3`, duration_ms: 1000 })
+    .select('id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data.id;
+};
+
+/** Sets the profile sound, the default for every focus session. */
+export const setProfileSound = async (soundId: string): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const { error } = await adminClient().from('profiles').update({ sound_id: soundId }).eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
 };

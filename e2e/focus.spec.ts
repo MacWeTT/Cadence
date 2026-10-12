@@ -7,8 +7,10 @@ import {
   resetProfile,
   resetUserData,
   seedCompletion,
+  seedCustomSound,
   seedFocusSession,
   seedHabit,
+  setProfileSound,
 } from '@e2e/support/data';
 
 test.beforeEach(async () => {
@@ -88,6 +90,50 @@ test('unticking "I did it" keeps the focus minutes and ticks nothing', async ({ 
   expect((await getFocusSessions(id))[0].focus_seconds).toBeGreaterThanOrEqual(300);
 });
 
+test('"Count this time in focus" is ticked by default, and unticking it leaves the minutes out', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'Session finished' });
+
+  await expect(dialog.getByRole('checkbox', { name: /Count this time in focus/ })).toBeChecked();
+  await dialog.getByRole('checkbox', { name: /Count this time in focus/ }).uncheck();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+
+  await expect(dialog).toBeHidden();
+  await expect
+    .poll(async () => {
+      return await getFocusSessions(id);
+    })
+    .toEqual([]);
+  // "I did it" is its own box: still ticked, so the habit is ticked.
+  expect(await getCompletions(id)).toHaveLength(1);
+});
+
+test('unticking the focus box on an already ticked habit leaves the minutes out', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedCompletion(id, dayStartedMinutesAgo(10));
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'Session finished' });
+
+  await expect(dialog.getByText('Read is already ticked for that day.')).toBeVisible();
+  await dialog.getByRole('checkbox', { name: /Count this time in focus/ }).uncheck();
+  await dialog.getByRole('button', { name: 'Close' }).first().click();
+
+  await expect
+    .poll(async () => {
+      return await getFocusSessions(id);
+    })
+    .toEqual([]);
+});
+
 test('closing the ending panel applies the ticked box, so the habit is ticked', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
 
@@ -105,7 +151,7 @@ test('closing the ending panel applies the ticked box, so the habit is ticked', 
     .toBe(1);
 });
 
-test('a habit that is already ticked only shows the minutes', async ({ page }) => {
+test('a habit that is already ticked has no "I did it" box, only the focus one', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
 
   await seedCompletion(id, dayStartedMinutesAgo(10));
@@ -116,7 +162,8 @@ test('a habit that is already ticked only shows the minutes', async ({ page }) =
   const dialog = page.getByRole('dialog', { name: 'Session finished' });
 
   await expect(dialog.getByText('Read is already ticked for that day.')).toBeVisible();
-  await expect(dialog.getByRole('checkbox')).toHaveCount(0);
+  await expect(dialog.getByRole('checkbox', { name: /I did it/ })).toHaveCount(0);
+  await expect(dialog.getByRole('checkbox')).toHaveCount(1); // "Count this time in focus"
   await dialog.getByRole('button', { name: 'Close' }).first().click();
   await expect(dialog).toBeHidden();
 });
@@ -212,7 +259,7 @@ test('starting a second session is refused and names the one that is running', a
   expect(await getFocusSessions(write)).toEqual([]);
 });
 
-test('the setup remembers the last numbers used on the habit and the chosen sound', async ({ page }) => {
+test('the setup remembers the last numbers used on the habit and the sound chosen for it', async ({ page }) => {
   const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
 
   await seedFocusSession({
@@ -221,6 +268,7 @@ test('the setup remembers the last numbers used on the habit and the chosen soun
     mode: 'pomodoro',
     plan: { focusMin: 30, breakMin: 7, longBreakMin: 20, rounds: 3 },
     finishedWithSeconds: 1800,
+    soundId: 'marimba',
   });
   await page.goto('/today');
   await startPill(page, 'Read').click();
@@ -228,17 +276,42 @@ test('the setup remembers the last numbers used on the habit and the chosen soun
   await expect(page.getByLabel('Focus (min)')).toHaveValue('30');
   await expect(page.getByLabel('Rounds')).toHaveValue('3');
   await expect(page.getByText(/About .*, 90 minutes of focus/)).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Marimba' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: /^Default/ })).not.toBeChecked();
+});
 
-  await page.getByRole('radio', { name: 'Marimba' }).click();
-  // The sound is kept on the account now, so wait for it to be saved before leaving the page.
+test('the sound opens on the profile default and lists your own sounds too', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  await setProfileSound('wood');
+  await seedCustomSound('Air horn');
+  await page.goto('/today');
+  await startPill(page, 'Read').click();
+
+  await expect(page.getByRole('radio', { name: 'Default · Wood' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'Air horn' })).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Marimba' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Change your default in your profile' })).toBeVisible();
+});
+
+test('a sound chosen for one session is kept on it and leaves the profile default alone', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  const clip = await seedCustomSound('Air horn');
+
+  await page.goto('/today');
+  await startPill(page, 'Read').click();
+  await page.getByRole('radio', { name: 'Free' }).click();
+  await page.getByRole('radio', { name: 'Air horn' }).click();
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+
+  await expect(page.getByRole('dialog').getByRole('timer')).toBeVisible();
   await expect
     .poll(async () => {
-      return (await getProfileRow()).sound_id;
+      return (await getFocusSessions(id)).map(session => {
+        return session.sound_id;
+      });
     })
-    .toBe('marimba');
-  await page.reload();
-  await startPill(page, 'Read').click();
-  await expect(page.getByRole('radio', { name: 'Marimba' })).toBeChecked();
+    .toEqual([clip]);
+  expect((await getProfileRow()).sound_id).toBe('bell');
 });
 
 test('presets fill the numbers and a bad number blocks Start', async ({ page }) => {

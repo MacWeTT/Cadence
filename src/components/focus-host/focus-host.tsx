@@ -11,8 +11,9 @@ import { FocusPanel } from '@/components/focus-panel/focus-panel';
 import { playChime, unlockAudio } from '@/lib/chimes';
 import { sessionView } from '@/lib/focus-clock';
 import { queryKeys } from '@/lib/query/keys';
-import { useChimeChoice } from '@/components/focus-host/use-chime-choice';
+import { useSessionChime } from '@/components/focus-host/use-chime-choice';
 import type { FocusResult } from '@/server/focus';
+import { discardFocusAction } from '@/app/(app)/focus-actions';
 import { setCompletionAction } from '@/app/(app)/today/actions';
 import type { TodayRow, TodayView } from '@/server/today-view';
 
@@ -26,6 +27,7 @@ interface HostState {
   result: FocusApi['result'];
   error: string | null;
   didIt: boolean;
+  countIt: boolean;
 }
 
 /** Whether the cache already shows the habit ticked on that day (a tick is idempotent, so a miss is harmless). */
@@ -54,13 +56,13 @@ export const FocusHost = (props: FocusHostProps) => {
     result: null,
     error: null,
     didIt: true,
+    countIt: true,
   });
 
   const queryClient = useQueryClient();
   const t = useTranslations('focus');
   const { data, dataUpdatedAt } = useFocusState();
   const { start, stop, skip } = useFocusActions();
-  const [choice] = useChimeChoice();
 
   const seen = useRef<string | null>(null);
   const stopping = useRef(false);
@@ -68,9 +70,11 @@ export const FocusHost = (props: FocusHostProps) => {
   const quiet = useRef(false);
 
   const session = data?.running ?? null;
+  // The profile sound is the default; a session may carry its own.
+  const choice = useSessionChime(session?.soundId ?? null);
   const now = useServerNow(data, dataUpdatedAt, session !== null);
   const view = session ? sessionView(session, now) : null;
-  const { panelOpen, target, result, error, didIt } = state;
+  const { panelOpen, target, result, error, didIt, countIt } = state;
   const pending = start.isPending || stop.isPending || skip.isPending;
 
   const phase = view?.phase;
@@ -153,7 +157,13 @@ export const FocusHost = (props: FocusHostProps) => {
     );
 
     setState(current => {
-      return { ...current, panelOpen: true, didIt: true, result: { ...finished, name: habitName, ticked } };
+      return {
+        ...current,
+        panelOpen: true,
+        didIt: true,
+        countIt: true,
+        result: { ...finished, name: habitName, ticked },
+      };
     });
   };
 
@@ -185,21 +195,36 @@ export const FocusHost = (props: FocusHostProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
 
-  // Closing the ending panel, by Done, the X or Escape, applies "I did it" as it stands.
+  // Closing the ending panel, by Done, the X or Escape, applies both boxes as they stand. "I did it" ticks the habit for
+  // the day; "Count this time in focus", when unticked, drops the session so its minutes are not counted. They are independent.
   const confirm = async () => {
-    if (didIt && result && !result.ticked) {
-      const { habitId, date } = result;
-      const response = await setCompletionAction(habitId, date, true);
+    if (result) {
+      const { habitId, date, sessionId, ticked } = result;
 
-      if (!response.ok) {
-        toast.error(response.error);
+      if (didIt && !ticked) {
+        const response = await setCompletionAction(habitId, date, true);
 
-        return;
+        if (!response.ok) {
+          toast.error(response.error);
+
+          return;
+        }
+      }
+
+      if (!countIt) {
+        const response = await discardFocusAction(sessionId);
+
+        if (!response.ok) {
+          toast.error(response.error);
+
+          return;
+        }
       }
 
       void queryClient.invalidateQueries({ queryKey: queryKeys.todayAll });
       void queryClient.invalidateQueries({ queryKey: queryKeys.home });
       void queryClient.invalidateQueries({ queryKey: queryKeys.progressAll });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.focus });
     }
 
     setState(current => {
@@ -211,6 +236,7 @@ export const FocusHost = (props: FocusHostProps) => {
     session,
     view,
     plans: data?.plans ?? {},
+    sounds: data?.sounds ?? {},
     panelOpen,
     target,
     result,
@@ -220,6 +246,12 @@ export const FocusHost = (props: FocusHostProps) => {
     setDidIt: (value: boolean) => {
       setState(current => {
         return { ...current, didIt: value };
+      });
+    },
+    countIt,
+    setCountIt: (value: boolean) => {
+      setState(current => {
+        return { ...current, countIt: value };
       });
     },
     openFor: habit => {

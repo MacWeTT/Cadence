@@ -2,8 +2,9 @@
 
 import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
+import { isSoundId } from '@/lib/sound';
 import { getUser } from '@/lib/supabase/server';
-import { skipBreak, startFocus, stopFocus, type FocusResult } from '@/server/focus';
+import { discardFocusSession, skipBreak, startFocus, stopFocus, type FocusResult } from '@/server/focus';
 import { HabitError, type ErrorCode } from '@/server/habits';
 
 export type FocusActionResult = { ok: true; result: FocusResult | null } | { ok: false; error: string };
@@ -18,6 +19,7 @@ const startSchema = z.object({
   habitId: z.uuid(),
   mode: z.enum(['free', 'pomodoro']),
   plan: planSchema.nullable(),
+  soundId: z.string().refine(isSoundId).nullable(),
 });
 
 const describe = async (code: ErrorCode): Promise<FocusActionResult> => {
@@ -52,10 +54,25 @@ export const startFocusAction = async (input: unknown): Promise<FocusActionResul
     return describe('focusPlanInvalid');
   }
 
-  const { habitId, mode, plan } = data;
+  const { habitId, mode, plan, soundId } = data;
 
   return run(async () => {
-    await startFocus(habitId, mode, plan);
+    await startFocus(habitId, mode, plan, soundId);
+
+    return null;
+  });
+};
+
+/** Drops a finished session so its focus time is not counted. */
+export const discardFocusAction = async (input: unknown): Promise<FocusActionResult> => {
+  const { success, data } = z.uuid().safeParse(input);
+
+  if (!success) {
+    return describe('generic');
+  }
+
+  return run(async () => {
+    await discardFocusSession(data);
 
     return null;
   });
