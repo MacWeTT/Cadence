@@ -10,7 +10,7 @@ interface UserMenuAvatarProps {
   googleUrl?: string;
 }
 
-/** The avatar in the account menu: the one chosen on the profile page, from the same cache as the page itself. */
+/** The avatar in the top bar: the one chosen on the profile page, from the same cache as the page itself. */
 export const UserMenuAvatar = (props: UserMenuAvatarProps) => {
   const { name, googleUrl } = props;
 

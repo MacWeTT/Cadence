@@ -14,14 +14,14 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.6.0 | Install Cadence as an app (PWA, offline page) |
 | 0.6.3 | Every page fits phones and tablets; a new footer |
 | 0.7.0 | Focus sessions: a timer per habit (free or pomodoro), chimes, a running bar on every page, focus time on Progress |
+| 0.8.0 | Profile page: name, avatar (characters, emoji, photo), timezone, week start, focus sound and accent kept on the account, up to six custom sounds, Appearance moved here, the Account tab (export as JSON, CSV or PDF, import, delete account), a grey accent |
+| 0.8.1 | Contributors list on the About page |
 
 ## Scheduled
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.8 | Profile page (**next**), as a stack of three PRs | Tabs as routes under `/profile`: Overview, Appearance (moves here, `/appearance` redirects), Notifications, Account. Every edit is a modal with an optimistic save and a toast. **PR 1:** Overview (photo, name, timezone, week start, focus sound synced to the account), a "Get the app" dropdown (Web app, and Installer disabled with "Coming soon"), Appearance moved, Notifications (push and email toggles, disabled). Avatar: the Google photo to start, then one of six characters or an emoji (with an accent colour), or an uploaded photo cropped square. Sound: the six built-in sounds or up to six custom ones (5 seconds each), kept privately. Timezone: a city list with a warning that "today" shifts. **PR 2:** Account tab: delete account, and export and import of all your data (habits, schedules, ticks, links, focus sessions; replace-or-merge on import to be designed). **PR 3:** redrawn Alien and Mage, review fixes, version and changelog. Design: `docs/superpowers/specs/2026-10-12-profile-page-design.md` |
-| 0.8.1 | Contributors list | Shipped together with 0.8 as one release (two changelog entries, the version in the footer is 0.8.1). Credit for everyone who has helped build Cadence, shown on the About page: name, what they did, and a link to their profile. Kept by hand in one data file, so it can credit design, testing and ideas as well as code; a short "how to be listed" note in the repo for new contributors |
-| 0.9 | Regular login: email and password | Sign up, sign in, verify the email, reset a forgotten password, next to Google. Needs the email sender set up (see Notifications) and the account tab's delete-account flow to cover both kinds of account |
+| 0.9 | Regular login: email and password (**next**) | Sign up, sign in, verify the email, reset a forgotten password, next to Google. Needs the email sender set up (see Notifications) and the account tab's delete-account flow to cover both kinds of account |
 | 0.9.5 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
 | 1.0 | Desktop app (Tauri), the installer | native notifications, start on login; opens habit links without the popup limit |
 | 1.0 | First release: bug fixes, flow revisions, and the installer | The public release. Everything from 0.8 to 0.9.5 ships first; 1.0 is the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) plus the desktop installer. Later releases fix and refine, to be planned after it |
@@ -35,7 +35,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 ## After 1.0 (in scope, not yet versioned)
 
 - **Circles:** a friends-only way to share habits, without pressure. Proposed by a contributor in issue #64; to be designed when it is next. It replaces the old "viewing other people's streaks" idea below.
-- **User XP:** points for showing up, added once Circles has launched (it needs people to share it with). Design to follow Circles.
+- **User XP:** points for showing up, introduced together with Circles (it is part of that release, not a later one). Design with Circles.
 
 ## Considered, not scheduled
 
