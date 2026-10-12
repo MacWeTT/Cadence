@@ -1,0 +1,13 @@
+@reference '../../app/globals.css';
+
+.contributors-list {
+  @apply mt-2 flex animate-in flex-col gap-1 text-sm fade-in-0 motion-reduce:animate-none;
+}
+
+.contributors-list__label {
+  @apply text-ink-muted;
+}
+
+.contributors-list__link {
+  @apply text-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-clay;
+}

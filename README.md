@@ -14,11 +14,15 @@ Copy `.env.example` to `.env.local` and fill in the values from `npx supabase st
 
 ## Check it
 
-| Command | What it does |
-|---------|--------------|
-| `npm run verify` | format check, lint, typecheck, unit tests and a production build |
-| `npm run verify:full` | the above plus the database tests and Playwright |
-| `npm run format` | fix formatting |
+| Command               | What it does                                                     |
+| --------------------- | ---------------------------------------------------------------- |
+| `npm run verify`      | format check, lint, typecheck, unit tests and a production build |
+| `npm run verify:full` | the above plus the database tests and Playwright                 |
+| `npm run format`      | fix formatting                                                   |
+
+## Contributing
+
+Changes land by pull request into `develop` (see [`docs/policies.md`](docs/policies.md)). Everyone who has helped build Cadence is listed on the About page: add yourself at the end of the list in [`src/lib/contributors.ts`](src/lib/contributors.ts) in your pull request (your name and your GitHub link). The first entry is the primary contributor.
 
 ## Read next
 

@@ -4,7 +4,6 @@
   "intro": "Cadence is a calm personal habit tracker. Build daily and weekly habits, keep your streaks, and see your progress over time.",
   "howTitle": "How it works",
   "how": "Tick a habit off each day. A streak counts the days (or weeks) in a row you kept it, and a missed day breaks it, so the day's list always shows what is still open.",
-  "builtBy": "Built and maintained by",
   "featuresTitle": "What is inside",
   "features": {
     "daily": {
@@ -29,7 +28,12 @@
     },
     "theme": {
       "title": "Your own look",
-      "text": "Switch between light and dark from the top bar. Open Appearance from your account menu to pick a theme and an accent colour of your own."
+      "text": "Switch between light and dark from the top bar. Open Appearance in your profile to pick a theme and an accent colour of your own."
     }
-  }
+  },
+  "contributors": {
+    "primary": "Primary contributor",
+    "others": "With help from"
+  },
+  "builtBy": "Built and maintained by <dev>MacWeTT</dev>, with a little help from <friends>friends</friends>."
 }
