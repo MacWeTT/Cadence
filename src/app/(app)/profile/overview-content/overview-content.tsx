@@ -1,7 +1,9 @@
 'use client';
 
+import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { signOut } from '@/app/auth/actions';
 import { AvatarModal } from '@/app/(app)/profile/avatar-modal/avatar-modal';
 import { NameModal } from '@/app/(app)/profile/name-modal/name-modal';
 import { SoundModal } from '@/app/(app)/profile/sound-modal/sound-modal';
@@ -29,6 +31,7 @@ export const OverviewContent = () => {
   const [state, setState] = useState<OverviewState>({ open: null });
 
   const t = useTranslations('profile');
+  const ta = useTranslations('common.account');
   const { data, isError, refetch } = useProfile();
 
   const { open } = state;
@@ -103,6 +106,13 @@ export const OverviewContent = () => {
           {soundName}
         </SettingRow>
       </div>
+
+      <form action={signOut}>
+        <button type="submit" className="overview-content__sign-out">
+          <LogOut aria-hidden className="overview-content__sign-out-icon" />
+          {ta('signOut')}
+        </button>
+      </form>
 
       {open === 'photo' && <AvatarModal avatar={avatar} name={shownName} onClose={onClose} />}
       {open === 'name' && <NameModal name={name} onClose={onClose} />}

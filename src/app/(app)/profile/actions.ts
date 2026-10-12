@@ -3,6 +3,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { z } from 'zod';
 import {
+  accentInputSchema,
   avatarInputSchema,
   nameInputSchema,
   soundInputSchema,
@@ -10,7 +11,7 @@ import {
   weekStartInputSchema,
 } from '@/lib/profile-schema';
 import { getUser } from '@/lib/supabase/server';
-import { updateAvatar, updateName, updateSound, updateTimezone, updateWeekStart } from '@/server/profile';
+import { updateAccent, updateAvatar, updateName, updateSound, updateTimezone, updateWeekStart } from '@/server/profile';
 import { removeSound, uploadAvatarPhoto, uploadSound } from '@/server/profile-files';
 import { ProfileError } from '@/server/profile-storage';
 
@@ -116,6 +117,20 @@ export const uploadAvatarPhotoAction = async (form: FormData): Promise<ProfileAc
 
   return run(() => {
     return uploadAvatarPhoto(file);
+  });
+};
+
+export const updateAccentAction = async (input: unknown): Promise<ProfileActionResult> => {
+  const { success, data, error } = accentInputSchema.safeParse(input);
+
+  if (!success) {
+    return invalid(error);
+  }
+
+  const { accent, customHex } = data;
+
+  return run(() => {
+    return updateAccent(accent, customHex);
   });
 };
 

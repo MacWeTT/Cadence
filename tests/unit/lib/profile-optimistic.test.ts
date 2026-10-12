@@ -20,6 +20,7 @@ const view: ProfileView = {
   weekStartsOn: 1,
   sound: { id: 'bell', volume: 0.6 },
   customSounds: [clip],
+  accent: null,
 };
 
 describe('the profile as it looks before the server answers', () => {

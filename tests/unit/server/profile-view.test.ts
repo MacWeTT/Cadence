@@ -11,6 +11,8 @@ const row: ProfileRow = {
   week_starts_on: 1,
   sound_id: 'bell',
   sound_volume: 0.6,
+  accent: null,
+  accent_custom: null,
 };
 
 const clip: SoundRow = {
@@ -34,7 +36,18 @@ describe('toProfileView', () => {
       weekStartsOn: 1,
       sound: { id: 'bell', volume: 0.6 },
       customSounds: [],
+      accent: null,
     });
+  });
+
+  it('reads the accent kept on the account: a preset, or a custom colour, and nothing for anything else', () => {
+    expect(view({ accent: 'plum' }).accent).toEqual({ accent: 'plum', customHex: null });
+    expect(view({ accent: 'custom', accent_custom: '#336699' }).accent).toEqual({
+      accent: 'custom',
+      customHex: '#336699',
+    });
+    expect(view({ accent: 'custom', accent_custom: null }).accent).toBeNull();
+    expect(view({ accent: 'neon' }).accent).toBeNull();
   });
 
   it('shows a character and an emoji with their colour and no picture', () => {

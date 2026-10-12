@@ -11,13 +11,26 @@ interface AvatarCharacterProps {
   color: string;
 }
 
+const SHRUNK = 'translate(32 34) scale(0.86) translate(-32 -32)';
+/** The two with a torso keep a little more size and reach past the bottom edge, so the circle is filled to its base. */
+const WITH_TORSO = 'translate(32 36) scale(0.9) translate(-32 -34)';
+
+const TRANSFORM: Record<CharacterId, string> = {
+  alien: WITH_TORSO,
+  mage: WITH_TORSO,
+  robot: SHRUNK,
+  cyclops: SHRUNK,
+  ghost: SHRUNK,
+  punk: SHRUNK,
+};
+
 /** The drawing of each character, 64 by 64, in the body colour given. Plain shapes: any six SVGs would do. */
 const drawing = (id: CharacterId, c: string): React.ReactNode => {
   switch (id) {
     case 'alien':
       return (
         <>
-          <path d="M13 63c0-9 8-14 19-14s19 5 19 14z" fill={c} />
+          <path d="M4 80C4 58 16 48 32 48s28 10 28 32z" fill={c} />
           <path d="M32 8C19 8 12 17 13 28c1 10 9 20 19 23 10-3 18-13 19-23C52 17 45 8 32 8z" fill={c} />
           <path d="M26 10 21 2M38 10l5-8" />
           <circle cx="21" cy="2.5" r="2.6" fill={GOLD} />
@@ -74,7 +87,7 @@ const drawing = (id: CharacterId, c: string): React.ReactNode => {
     case 'mage':
       return (
         <>
-          <path d="M10 63c0-8 9-12 22-12s22 4 22 12z" fill={c} />
+          <path d="M0 80C0 60 12 51 32 51s32 9 32 29z" fill={c} />
           <path d="M21 42c-2 11 2 20 11 20s13-9 11-20z" fill="#f4efe6" />
           <ellipse cx="32" cy="40" rx="10" ry="9" fill={SKIN} />
           <path d="M15 33C22 30 24 16 33 6c2 8 4 14 16 27z" fill={c} />
@@ -109,7 +122,7 @@ export const AvatarCharacter = (props: AvatarCharacterProps) => {
       strokeLinejoin="round"
       className="avatar-character"
     >
-      <g transform="translate(32 34) scale(0.86) translate(-32 -32)">{drawing(id, color)}</g>
+      <g transform={TRANSFORM[id]}>{drawing(id, color)}</g>
     </svg>
   );
 };

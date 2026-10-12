@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('the Appearance tab opens from the account menu, and the old address redirects to it', async ({ page }) => {
+test('the Appearance tab opens from the profile', async ({ page }) => {
   await page.goto('/today');
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.getByRole('menuitem', { name: 'Profile' }).click();
+  await page.getByRole('banner').getByRole('link', { name: 'Profile' }).click();
   await page.getByRole('link', { name: 'Appearance' }).click();
 
   await expect(page).toHaveURL(/\/profile\/appearance$/);

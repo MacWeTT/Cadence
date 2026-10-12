@@ -273,6 +273,15 @@ export const getProfileRow = async () => {
   return data;
 };
 
+export const setAccent = async (accent: string): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const { error } = await adminClient().from('profiles').update({ accent }).eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+};
+
 /** Puts the e2e user's profile back as a new account has it, and removes any uploaded avatar and custom sounds. */
 export const resetProfile = async (): Promise<void> => {
   const userId = await ensureE2EUser();
@@ -289,6 +298,8 @@ export const resetProfile = async (): Promise<void> => {
       avatar_color: null,
       sound_id: 'bell',
       sound_volume: 0.6,
+      accent: null,
+      accent_custom: null,
     })
     .eq('user_id', userId);
 

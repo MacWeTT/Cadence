@@ -1,4 +1,6 @@
 // Pure mapping behind the profile page. Kept free of `server-only` so it can be unit-tested.
+import { parseHex } from '@/lib/accent-color';
+import { ACCENTS, type Accent } from '@/lib/appearance';
 import { CHARACTER_IDS, type AvatarKind } from '@/lib/avatar';
 import { CHIME_IDS } from '@/lib/chimes';
 import { isKnownZone, modernZone } from '@/lib/zones';
@@ -13,6 +15,8 @@ export interface ProfileRow {
   week_starts_on: number;
   sound_id: string;
   sound_volume: number;
+  accent: string | null;
+  accent_custom: string | null;
 }
 
 export interface SoundRow {
@@ -37,6 +41,12 @@ export interface SoundView {
   url: string | null;
 }
 
+/** The app accent kept on the account: a preset, or 'custom' with its colour. */
+export interface AccentView {
+  accent: Accent;
+  customHex: string | null;
+}
+
 export interface ProfileView {
   name: string;
   email: string;
@@ -45,6 +55,8 @@ export interface ProfileView {
   weekStartsOn: 1 | 7;
   sound: { id: string; volume: number };
   customSounds: SoundView[];
+  /** Null until the person has chosen an accent on any device. */
+  accent: AccentView | null;
 }
 
 interface ProfileInput {
@@ -74,6 +86,25 @@ const toAvatar = (row: ProfileRow, urls: Record<string, string>): AvatarView => 
   return google;
 };
 
+const toAccent = (row: ProfileRow): AccentView | null => {
+  const { accent, accent_custom } = row;
+  const known = ACCENTS.find(value => {
+    return value === accent;
+  });
+
+  if (!known) {
+    return null;
+  }
+
+  if (known !== 'custom') {
+    return { accent: known, customHex: null };
+  }
+
+  const customHex = parseHex(accent_custom);
+
+  return customHex ? { accent: 'custom', customHex } : null;
+};
+
 export const toProfileView = (input: ProfileInput): ProfileView => {
   const { row, email, sounds, urls } = input;
   const { display_name, timezone, week_starts_on, sound_id, sound_volume } = row;
@@ -95,5 +126,6 @@ export const toProfileView = (input: ProfileInput): ProfileView => {
     weekStartsOn: week_starts_on === 7 ? 7 : 1,
     sound: { id: known ? sound_id : 'bell', volume: Math.min(1, Math.max(0, sound_volume)) },
     customSounds,
+    accent: toAccent(row),
   };
 };

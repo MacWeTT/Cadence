@@ -1,0 +1,49 @@
+@reference '../../app/globals.css';
+
+.hex-color-picker {
+  @apply flex flex-col gap-3;
+}
+
+.hex-color-picker__swatches {
+  @apply flex flex-wrap gap-3;
+}
+
+.hex-color-picker__swatch {
+  @apply block size-9 cursor-pointer rounded-full ring-offset-2 ring-offset-popover focus-visible:ring-2 focus-visible:ring-clay;
+}
+
+.hex-color-picker__swatch--active {
+  @apply ring-2 ring-ink;
+}
+
+.hex-color-picker__custom {
+  @apply flex items-center gap-3;
+}
+
+.hex-color-picker__color {
+  @apply size-9 shrink-0 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 ring-offset-2 ring-offset-popover focus-visible:ring-2 focus-visible:ring-clay;
+}
+
+.hex-color-picker__color::-webkit-color-swatch-wrapper {
+  @apply p-0;
+}
+
+.hex-color-picker__color::-webkit-color-swatch {
+  @apply rounded-full border border-line;
+}
+
+.hex-color-picker__color::-moz-color-swatch {
+  @apply rounded-full border border-line;
+}
+
+.hex-color-picker__color--active {
+  @apply ring-2 ring-ink;
+}
+
+.hex-color-picker__hex {
+  @apply w-32 rounded-md border border-line bg-surface px-3 py-2 font-mono text-sm outline-none focus-visible:border-ink;
+}
+
+.hex-color-picker__hex--invalid {
+  @apply border-danger;
+}

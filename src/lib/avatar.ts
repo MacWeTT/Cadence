@@ -6,8 +6,8 @@ export type AvatarKind = (typeof AVATAR_KINDS)[number];
 export const CHARACTER_IDS = ['alien', 'robot', 'cyclops', 'ghost', 'punk', 'mage'] as const;
 export type CharacterId = (typeof CHARACTER_IDS)[number];
 
-/** The emoji offered first; any other single emoji can be picked from the full picker. */
-export const EMOJI_CHOICES = ['😀', '😎', '🤓', '🥳', '🌱', '🔥', '⚡', '🎧', '🚀', '🦊', '🐢', '🌈'] as const;
+/** The five emoji offered first; any other single emoji can be picked from the full picker. */
+export const EMOJI_CHOICES = ['😀', '😎', '🔥', '🚀', '🌱'] as const;
 
 export const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;

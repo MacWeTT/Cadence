@@ -14,7 +14,6 @@
   },
   "account": {
     "fallbackName": "Account",
-    "menu": "Account menu",
     "signOut": "Sign out",
     "profile": "Profile"
   },

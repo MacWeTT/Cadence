@@ -33,22 +33,6 @@
   @apply ring-2 ring-primary ring-offset-2 ring-offset-popover;
 }
 
-.avatar-modal__colours {
-  @apply flex flex-wrap items-center gap-2;
-}
-
-.avatar-modal__swatch {
-  @apply size-7 rounded-full;
-}
-
-.avatar-modal__swatch--active {
-  @apply ring-2 ring-ink ring-offset-2 ring-offset-popover;
-}
-
-.avatar-modal__custom {
-  @apply size-7 cursor-pointer rounded-full border border-line bg-transparent p-0;
-}
-
 .avatar-modal__upload {
   @apply flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-line px-3 py-3 text-left hover:bg-line/40;
 }

@@ -9,9 +9,9 @@ import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
 import { useUpdateAvatar, useUploadPhoto } from '@/app/(app)/profile/use-profile';
 import { Avatar } from '@/components/avatar/avatar';
 import { AvatarCharacter } from '@/components/avatar-character/avatar-character';
+import { HexColorPicker } from '@/components/hex-color-picker/hex-color-picker';
 import { SettingModal } from '@/components/setting-modal/setting-modal';
-import { parseHex } from '@/lib/accent-color';
-import { ACCENT_PRESETS, ACCENT_SWATCH } from '@/lib/appearance';
+import { ACCENT_SWATCH } from '@/lib/appearance';
 import { CHARACTER_IDS, EMOJI_CHOICES, type CharacterId } from '@/lib/avatar';
 import { cropToSquare } from '@/lib/crop-square';
 import { checkPhotoFile } from '@/lib/profile-schema';
@@ -56,6 +56,12 @@ export const AvatarModal = (props: AvatarModalProps) => {
   const { shown, photo, color } = draft;
   const { kind, value } = shown;
   const tinted = kind === 'character' || kind === 'emoji';
+  const shownName =
+    kind === 'character' && value
+      ? t(`characterNames.${value as CharacterId}`)
+      : kind === 'emoji' && value
+        ? value
+        : t(`names.${kind === 'photo' ? 'photo' : 'google'}`);
   const changed = photo !== null || kind !== savedKind || value !== savedValue || (tinted && color !== savedColor);
 
   // A photo chosen here is shown from a local link, which is let go of when it is replaced or the modal closes.
@@ -79,10 +85,6 @@ export const AvatarModal = (props: AvatarModalProps) => {
 
   const pickColor = (next: string) => {
     setDraft({ ...draft, color: next, shown: tinted ? { ...shown, color: next } : shown });
-  };
-
-  const onColorInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    pickColor(parseHex(event.target.value) ?? color);
   };
 
   const onUploadClick = () => {
@@ -142,7 +144,9 @@ export const AvatarModal = (props: AvatarModalProps) => {
     <SettingModal title={t('title')} saveDisabled={!changed} onSave={onSave} onClose={onClose}>
       <div className="avatar-modal__current">
         <Avatar avatar={shown} name={name} size="xl" className="avatar-modal__preview" />
-        <span className="avatar-modal__caption">{changed ? t('preview') : t('current')}</span>
+        <span className="avatar-modal__caption">
+          {t(changed ? 'captionPreview' : 'captionCurrent', { name: shownName })}
+        </span>
       </div>
 
       <section>
@@ -160,6 +164,7 @@ export const AvatarModal = (props: AvatarModalProps) => {
                 key={id}
                 type="button"
                 aria-label={t(`characterNames.${id}`)}
+                title={t(`characterNames.${id}`)}
                 aria-pressed={active}
                 onClick={onPick}
                 className={clsx('avatar-modal__tile', active && 'avatar-modal__tile--active')}
@@ -175,34 +180,7 @@ export const AvatarModal = (props: AvatarModalProps) => {
       {tinted && (
         <section>
           <h3 className="avatar-modal__heading">{t('colour')}</h3>
-          <div className="avatar-modal__colours">
-            {ACCENT_PRESETS.map(preset => {
-              const swatch = ACCENT_SWATCH[preset];
-
-              const onPick = () => {
-                pickColor(swatch);
-              };
-
-              return (
-                <button
-                  key={preset}
-                  type="button"
-                  aria-label={swatch}
-                  aria-pressed={color === swatch}
-                  onClick={onPick}
-                  className={clsx('avatar-modal__swatch', color === swatch && 'avatar-modal__swatch--active')}
-                  style={{ backgroundColor: swatch }}
-                />
-              );
-            })}
-            <input
-              type="color"
-              aria-label={t('customColour')}
-              value={color}
-              onChange={onColorInput}
-              className="avatar-modal__custom"
-            />
-          </div>
+          <HexColorPicker value={color} onChange={pickColor} />
         </section>
       )}
 

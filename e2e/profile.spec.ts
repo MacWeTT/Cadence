@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { getProfileRow, resetProfile } from '@e2e/support/data';
+import { getProfileRow, resetProfile, setAccent } from '@e2e/support/data';
 
 // A valid WAV: mono, 8 kHz, 16-bit, silent, `seconds` long.
 const wav = (seconds: number): Buffer => {
@@ -125,8 +125,10 @@ test('the timezone is chosen from a list of cities, with the warning shown first
   await row(page, 'Timezone').click();
 
   await expect(page.getByText('Changing your timezone changes what “today” means.')).toBeVisible();
-  await expect(page.getByRole('option').filter({ hasText: '_' })).toHaveCount(0);
+  await expect(page.getByRole('option')).toHaveCount(0); // closed until opened
 
+  await page.getByRole('button', { name: 'Choose a timezone' }).click();
+  await expect(page.getByRole('option').filter({ hasText: '_' })).toHaveCount(0);
   await page.getByRole('searchbox', { name: 'Search cities' }).fill('tokyo');
   await page.getByRole('option', { name: /Tokyo/ }).click();
   await page.getByRole('button', { name: 'Save' }).click();
@@ -144,7 +146,7 @@ test('a character avatar can be chosen with a colour', async ({ page }) => {
   await page.goto('/profile');
   await row(page, 'Photo').click();
   await page.getByRole('button', { name: 'Robot' }).click();
-  await page.getByRole('button', { name: '#a8512b' }).click();
+  await page.getByRole('button', { name: 'Clay' }).click();
   await page.getByRole('button', { name: 'Save' }).click();
 
   await expect(page.getByText('Avatar updated')).toBeVisible();
@@ -155,6 +157,37 @@ test('a character avatar can be chosen with a colour', async ({ page }) => {
       return [avatar_kind, avatar_value, avatar_color];
     })
     .toEqual(['character', 'robot', '#a8512b']);
+});
+
+test('the chosen character is named under the picture', async ({ page }) => {
+  await page.goto('/profile');
+  await row(page, 'Photo').click();
+  await expect(page.getByText('Current: Google photo')).toBeVisible();
+  await page.getByRole('button', { name: 'Mage' }).click();
+
+  await expect(page.getByText('Preview: Mage')).toBeVisible();
+});
+
+test('the app accent is kept on the account', async ({ page }) => {
+  await page.goto('/profile/appearance');
+  await page.getByLabel('Clay').check({ force: true });
+
+  await expect
+    .poll(async () => {
+      return (await getProfileRow()).accent;
+    })
+    .toBe('clay');
+});
+
+test('an accent on the account is applied on a fresh browser', async ({ browser, baseURL }) => {
+  await setAccent('plum');
+
+  const context = await browser.newContext({ baseURL, storageState: 'e2e/.auth/user.json' });
+  const page = await context.newPage();
+
+  await page.goto('/profile');
+  await expect(page.locator('html')).toHaveAttribute('data-accent', 'plum');
+  await context.close();
 });
 
 test('an emoji avatar can be chosen', async ({ page }) => {

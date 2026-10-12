@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  accentInputSchema,
   avatarInputSchema,
   checkPhotoFile,
   checkSoundFile,
@@ -71,6 +72,31 @@ describe('avatarInputSchema', () => {
   it('does not take a photo or the Google picture: those are set by their own paths', () => {
     expect(avatarInputSchema.safeParse({ kind: 'photo', value: 'a/b.png' }).success).toBe(false);
     expect(avatarInputSchema.safeParse({ kind: 'google' }).success).toBe(false);
+  });
+});
+
+describe('accentInputSchema', () => {
+  it('accepts a preset, with no colour', () => {
+    expect(accentInputSchema.safeParse({ accent: 'teal', customHex: null })).toMatchObject({
+      success: true,
+      data: { accent: 'teal', customHex: null },
+    });
+  });
+
+  it('drops a colour sent with a preset, and normalises a custom colour', () => {
+    expect(accentInputSchema.safeParse({ accent: 'sky', customHex: '#123456' })).toMatchObject({
+      data: { accent: 'sky', customHex: null },
+    });
+    expect(accentInputSchema.safeParse({ accent: 'custom', customHex: '#ABC' })).toMatchObject({
+      success: true,
+      data: { accent: 'custom', customHex: '#aabbcc' },
+    });
+  });
+
+  it('refuses an unknown accent and a custom accent with no valid colour', () => {
+    expect(accentInputSchema.safeParse({ accent: 'neon', customHex: null }).success).toBe(false);
+    expect(accentInputSchema.safeParse({ accent: 'custom', customHex: null }).success).toBe(false);
+    expect(accentInputSchema.safeParse({ accent: 'custom', customHex: 'green' }).success).toBe(false);
   });
 });
 

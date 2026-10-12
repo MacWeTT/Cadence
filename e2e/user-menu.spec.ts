@@ -10,26 +10,17 @@ test.beforeEach(async ({ context }) => {
   await context.addCookies(state.cookies);
 });
 
-test('the account menu shows the user and can be dismissed', async ({ page }) => {
+test('the avatar in the top bar opens the profile', async ({ page }) => {
   await page.goto('/today');
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  const menu = page.getByRole('menu');
+  await page.getByRole('banner').getByRole('link', { name: 'Profile' }).click();
 
-  await expect(menu).toContainText('E2E User');
-  await expect(menu.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
-
-  await page.mouse.click(300, 600); // outside click (Radix blocks pointer events on the page while a menu is open)
-  await expect(menu).toBeHidden();
-
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.keyboard.press('Escape');
-  await expect(menu).toBeHidden();
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test('signing out lands on the login page and protects the app again', async ({ page }) => {
-  await page.goto('/today');
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.getByRole('menuitem', { name: 'Sign out' }).click();
+test('signing out from the profile lands on the login page and protects the app again', async ({ page }) => {
+  await page.goto('/profile');
+  await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/login$/);
   await page.goto('/today');
   await expect(page).toHaveURL(/\/login$/);

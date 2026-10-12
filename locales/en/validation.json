@@ -27,5 +27,6 @@
   "soundType": "Use an MP3, WAV or OGG sound",
   "soundTooBig": "Keep the sound under 500 KB",
   "soundTooLong": "Keep the sound to 5 seconds or less",
-  "soundLimit": "You can keep up to 6 sounds. Remove one to add another."
+  "soundLimit": "You can keep up to 6 sounds. Remove one to add another.",
+  "accentInvalid": "Choose one of the accent colours, or a colour of your own"
 }

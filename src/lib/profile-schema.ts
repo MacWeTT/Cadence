@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { parseHex } from '@/lib/accent-color';
+import { ACCENTS } from '@/lib/appearance';
 import { CHARACTER_IDS, PHOTO_MAX_BYTES, PHOTO_TYPES } from '@/lib/avatar';
 import { isSingleEmoji, type ValidationCode } from '@/lib/habit-schema';
 import { isSoundId, SOUND_MAX_BYTES, SOUND_MAX_MS, SOUND_NAME_MAX, SOUND_TYPES } from '@/lib/sound';
@@ -46,6 +47,28 @@ export const soundInputSchema = z.object({
   id: z.string().refine(isSoundId, 'soundInvalid'),
   volume: z.number().min(0, 'soundInvalid').max(1, 'soundInvalid'),
 });
+
+/** A preset accent, or 'custom' with its colour (normalised). */
+export const accentInputSchema = z
+  .object({
+    accent: z.enum(ACCENTS, 'accentInvalid'),
+    customHex: z.string().nullable(),
+  })
+  .transform(({ accent, customHex }, context) => {
+    if (accent !== 'custom') {
+      return { accent, customHex: null };
+    }
+
+    const hex = parseHex(customHex);
+
+    if (!hex) {
+      context.addIssue({ code: 'custom', message: 'colorInvalid', path: ['customHex'] });
+
+      return z.NEVER;
+    }
+
+    return { accent, customHex: hex };
+  });
 
 export interface FileInfo {
   type: string;

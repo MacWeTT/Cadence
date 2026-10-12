@@ -13,21 +13,23 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.5.0 | Fixed-weekday schedules, optional habits, habit links |
 | 0.6.0 | Install Cadence as an app (PWA, offline page) |
 | 0.6.3 | Every page fits phones and tablets; a new footer |
+| 0.7.0 | Focus sessions: a timer per habit, free or pomodoro, with chimes and minutes of focus on Progress |
 
 ## Scheduled
 
 | Version | Feature | Notes |
 |---|---|---|
 | 0.8 | Profile page (**next**), as a stack of three PRs | Tabs as routes under `/profile`: Overview, Appearance (moves here, `/appearance` redirects), Notifications, Account. Every edit is a modal with an optimistic save and a toast. **PR 1:** Overview (photo, name, timezone, week start, focus sound synced to the account), a "Get the app" dropdown (Web app, and Installer disabled with "Coming soon"), Appearance moved, Notifications (push and email toggles, disabled). Avatar: the Google photo to start, then one of six characters or an emoji (with an accent colour), or an uploaded photo cropped square. Sound: the six built-in sounds or up to six custom ones (5 seconds each), kept privately. Timezone: a city list with a warning that "today" shifts. **PR 2:** Account tab: delete account, and export and import of all your data (habits, schedules, ticks, links, focus sessions; replace-or-merge on import to be designed). **PR 3:** redrawn Alien and Mage, review fixes, version and changelog. Design: `docs/superpowers/specs/2026-10-12-profile-page-design.md` |
-| 0.7 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
-| 0.7 | Focus sessions: a timer per habit (**next**) | free (count up) or pomodoro (presets Classic 25/5, Deep 50/10, Short 15/3, all editable, last numbers remembered per habit); a running bar on every page; "I did it" ticks the habit; minutes of focus on Progress. Design: `docs/superpowers/specs/2026-10-12-focus-sessions-design.md`. Later: a Focus page with recent sessions |
-| after 0.7 | Desktop app (Tauri) | native notifications, start on login; opens habit links without the popup limit |
+| 0.9 | Regular login: email and password | Sign up, sign in, verify the email, reset a forgotten password, next to Google. Needs the email sender set up (see Notifications) and the account tab's delete-account flow to cover both kinds of account |
+| 0.9.5 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
+| 1.0 | Desktop app (Tauri), the installer | native notifications, start on login; opens habit links without the popup limit |
+| 1.0 | First release: bug fixes, flow revisions, and the installer | The public release. Everything from 0.8 to 0.9.5 ships first; 1.0 is the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) plus the desktop installer. Later releases fix and refine, to be planned after it |
 
-## Before 1.0 (not yet versioned)
+## Before 1.0
 
 - The accessibility pass and the dark-theme contrast check left over from the original milestone 7.
-- A privacy page and terms before strangers sign up.
-- 1.0 itself is the public release; its exact scope is not final. Proposed: everything above up to notifications, plus these two.
+- A privacy page and terms before strangers sign up. Google also needs them (with a home page) to verify the app's name, so the sign-in screen can say Cadence instead of the Supabase address.
+- 1.0 is the first release: bug fixes, flow revisions and the installer, on top of everything scheduled above it.
 
 ## Considered, not scheduled
 

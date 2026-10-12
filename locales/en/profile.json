@@ -52,7 +52,8 @@
     "detected": "Detected",
     "none": "No city matches that.",
     "warningTitle": "Changing your timezone changes what “today” means.",
-    "warning": "If the new zone is behind, ticks from a later date show again when that date arrives, and a habit that started today starts tomorrow. Nothing is deleted."
+    "warning": "If the new zone is behind, ticks from a later date show again when that date arrives, and a habit that started today starts tomorrow. Nothing is deleted.",
+    "choose": "Choose a timezone"
   },
   "avatar": {
     "title": "Your avatar",
@@ -73,7 +74,14 @@
       "ghost": "Ghost",
       "punk": "Punk",
       "mage": "Mage"
-    }
+    },
+    "captionCurrent": "Current: {name}",
+    "captionPreview": "Preview: {name}",
+    "names": {
+      "google": "Google photo",
+      "photo": "Your photo"
+    },
+    "customTitle": "Your own colour"
   },
   "sound": {
     "title": "Focus sound",

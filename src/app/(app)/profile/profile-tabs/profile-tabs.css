@@ -5,7 +5,7 @@
 }
 
 .profile-tabs__tab {
-  @apply -mb-px whitespace-nowrap border-b-2 border-transparent py-2.5 text-ink-muted transition-colors hover:text-ink;
+  @apply whitespace-nowrap border-b-2 border-transparent py-2.5 text-ink-muted transition-colors hover:text-ink;
 }
 
 .profile-tabs__tab--active {

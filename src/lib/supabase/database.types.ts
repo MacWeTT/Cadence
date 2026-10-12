@@ -147,14 +147,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"timezone": string,"user_id": string,"week_starts_on": number
+                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"timezone": string,"user_id": string,"week_starts_on": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id": string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id": string,"week_starts_on"?: number
                   }
                   Update: {
-                    "avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
                   }
                   Relationships: [
                     
