@@ -22,11 +22,16 @@ Focus on a habit.
 
 ## 0.6.3 (2026-10-12)
 
+Every screen, every size.
+
+- Every page now fits phones and tablets: a tab bar at the foot of the screen on phones, long habit names that wrap, a year heatmap that scrolls sideways, dialogs that fit the screen, and larger buttons to tap.
+- A new footer.
+
+## 0.6.0 (2026-10-11)
+
 Cadence goes with you.
 
 - Install Cadence on your phone or computer like an app, with its own icon and window, shortcuts to Today and Progress, and an offline page when your connection drops.
-- Every page now fits phones and tablets: a tab bar at the foot of the screen on phones, long habit names that wrap, a year heatmap that scrolls sideways, dialogs that fit the screen, and larger buttons to tap.
-- A new footer.
 
 ## 0.5.0 (2026-10-11)
 

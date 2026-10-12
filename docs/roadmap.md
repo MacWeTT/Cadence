@@ -11,7 +11,8 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.3.6 | Appearance page, contact form, nav highlight |
 | 0.4.0 | Instant pages: the browser cache and optimistic changes |
 | 0.5.0 | Fixed-weekday schedules, optional habits, habit links |
-| 0.6.3 | Install Cadence as an app (PWA, offline page); every page fits phones and tablets; a new footer |
+| 0.6.0 | Install Cadence as an app (PWA, offline page) |
+| 0.6.3 | Every page fits phones and tablets; a new footer |
 
 ## Scheduled
 
