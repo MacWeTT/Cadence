@@ -23,3 +23,8 @@
 .profile-header__text-skeleton {
   @apply h-9 w-56 animate-pulse rounded-xl bg-line/60 motion-reduce:animate-none;
 }
+
+/* The ring is the app accent, like the avatar in the top bar. */
+.profile-header__avatar {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-bg;
+}

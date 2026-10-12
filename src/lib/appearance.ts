@@ -20,7 +20,7 @@ export const PALETTES = [
   'slate',
   'forest-night',
 ] as const;
-export const ACCENT_PRESETS = ['moss', 'clay', 'sky', 'plum', 'teal'] as const;
+export const ACCENT_PRESETS = ['moss', 'clay', 'sky', 'plum', 'teal', 'grey'] as const;
 export const ACCENTS = [...ACCENT_PRESETS, 'custom'] as const;
 
 export type Palette = (typeof PALETTES)[number];
@@ -38,6 +38,7 @@ export const ACCENT_SWATCH: Record<AccentPreset, string> = {
   sky: '#3f6f98',
   plum: '#7d5a8c',
   teal: '#2f6f69',
+  grey: '#5b6168',
 };
 
 interface Preview {

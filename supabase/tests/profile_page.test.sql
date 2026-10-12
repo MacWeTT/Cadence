@@ -1,5 +1,5 @@
 begin;
-select plan(20);
+select plan(21);
 
 insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-0000000000a1', 'a@test.dev'),
@@ -20,6 +20,7 @@ select throws_ok($$update public.profiles set sound_id = 'airhorn' where user_id
 
 -- the accent: a preset, or custom with its colour; nothing else
 select lives_ok($$update public.profiles set accent = 'sky', accent_custom = null where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'a preset accent is accepted');
+select lives_ok($$update public.profiles set accent = 'grey', accent_custom = null where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'the grey accent is accepted');
 select lives_ok($$update public.profiles set accent = 'custom', accent_custom = '#336699' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'a custom accent with its colour is accepted');
 select throws_ok($$update public.profiles set accent = 'neon', accent_custom = null where user_id = '00000000-0000-0000-0000-0000000000a1'$$, '23514', null, 'an unknown accent is rejected');
 select throws_ok($$update public.profiles set accent = 'custom', accent_custom = null where user_id = '00000000-0000-0000-0000-0000000000a1'$$, '23514', null, 'a custom accent needs its colour');

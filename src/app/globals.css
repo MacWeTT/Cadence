@@ -348,6 +348,14 @@
   --btn: #6fb5ac;
 }
 
+:root[data-accent='grey'] {
+  --btn: #5b6168;
+}
+
+.dark[data-accent='grey'] {
+  --btn: #a3a9b0;
+}
+
 :root[data-accent='custom'] {
   --btn: var(--accent-custom-light);
 }
