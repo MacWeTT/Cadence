@@ -33,7 +33,7 @@ const clearLegacy = (): void => {
 /**
  * The chime and volume, kept on the account so they follow the person to a new phone. A choice made on this browser
  * before that (the old local value) is copied up once. A change shows at once; the save waits a moment so dragging the
- * volume is one request, and it makes no toast (the profile page's own edits do).
+ * volume is one request (a different sound is saved at once), and it makes no toast (the profile page's own edits do).
  */
 export const useChimeChoice = (): [ChimeChoice, (choice: ChimeChoice) => void] => {
   const queryClient = useQueryClient();
@@ -44,20 +44,24 @@ export const useChimeChoice = (): [ChimeChoice, (choice: ChimeChoice) => void] =
   const save = useCallback(
     (choice: ChimeChoice) => {
       const { id, volume } = choice;
+      const before = queryClient.getQueryData<ProfileView>(queryKeys.profile)?.sound.id;
 
       queryClient.setQueryData<ProfileView>(queryKeys.profile, view => {
         return view && withSound(view, { id, volume });
       });
       window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => {
-        void updateSoundAction({ id, volume }).then(result => {
-          if (!result.ok) {
-            toast.error(result.error);
-          }
+      timer.current = window.setTimeout(
+        () => {
+          void updateSoundAction({ id, volume }).then(result => {
+            if (!result.ok) {
+              toast.error(result.error);
+            }
 
-          return queryClient.invalidateQueries({ queryKey: queryKeys.profile });
-        });
-      }, SAVE_DELAY_MS);
+            return queryClient.invalidateQueries({ queryKey: queryKeys.profile });
+          });
+        },
+        before === id ? SAVE_DELAY_MS : 0,
+      );
     },
     [queryClient],
   );
