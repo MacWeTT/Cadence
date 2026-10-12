@@ -3,6 +3,8 @@ import {
   daysAgo,
   getCompletions,
   getFocusSessions,
+  getProfileRow,
+  resetProfile,
   resetUserData,
   seedCompletion,
   seedFocusSession,
@@ -11,6 +13,9 @@ import {
 
 test.beforeEach(async () => {
   await resetUserData();
+});
+test.afterEach(async () => {
+  await resetProfile(); // a test may have changed the account's sound
 });
 
 const bar = (page: Page) => {
@@ -225,6 +230,12 @@ test('the setup remembers the last numbers used on the habit and the chosen soun
   await expect(page.getByText(/About .*, 90 minutes of focus/)).toBeVisible();
 
   await page.getByRole('radio', { name: 'Marimba' }).click();
+  // The sound is kept on the account now, so wait for it to be saved before leaving the page.
+  await expect
+    .poll(async () => {
+      return (await getProfileRow()).sound_id;
+    })
+    .toBe('marimba');
   await page.reload();
   await startPill(page, 'Read').click();
   await expect(page.getByRole('radio', { name: 'Marimba' })).toBeChecked();
