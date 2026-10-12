@@ -1,0 +1,9 @@
+@reference '../../app/globals.css';
+
+.focus-button {
+  @apply flex aspect-square size-8 shrink-0 items-center justify-center rounded-full border p-0 border-line text-ink-muted transition-colors hover:border-ink hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay data-running:border-primary data-running:bg-primary data-running:text-primary-foreground;
+}
+
+.focus-button__icon {
+  @apply size-4;
+}

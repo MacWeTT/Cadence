@@ -1,0 +1,33 @@
+@reference '../../app/globals.css';
+
+.focus-bar {
+  @apply border-b border-line bg-surface;
+}
+
+.focus-bar__inner {
+  @apply mx-auto flex w-full max-w-295 items-center gap-2 px-4 sm:px-8;
+}
+
+.focus-bar__open {
+  @apply flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left;
+}
+
+.focus-bar__icon {
+  @apply flex size-7 shrink-0 items-center justify-center rounded-lg text-base;
+}
+
+.focus-bar__name {
+  @apply min-w-0 truncate font-semibold;
+}
+
+.focus-bar__phase {
+  @apply hidden truncate text-sm text-ink-muted sm:inline;
+}
+
+.focus-bar__time {
+  @apply ml-auto font-display tabular-nums;
+}
+
+.focus-bar__stop {
+  @apply min-h-11 min-w-11 rounded-full px-3 text-sm font-medium text-danger disabled:opacity-60;
+}

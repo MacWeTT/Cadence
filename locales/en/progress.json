@@ -35,5 +35,11 @@
   },
   "loadFailedTitle": "Couldn't load your progress",
   "loadFailedText": "Check your connection and try again.",
-  "retry": "Try again"
+  "retry": "Try again",
+  "focus": {
+    "title": "Focus time",
+    "total": "{minutes, plural, one {# minute} other {# minutes}} in total",
+    "empty": "No focus sessions in this period.",
+    "habit": "{minutes, plural, one {# min} other {# min}}"
+  }
 }

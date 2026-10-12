@@ -1,4 +1,6 @@
 import { Suspense } from 'react';
+import { FocusBar } from '@/components/focus-bar/focus-bar';
+import { FocusHost } from '@/components/focus-host/focus-host';
 import { Footer } from '@/components/footer/footer';
 import { QueryProvider } from '@/components/query-provider/query-provider';
 import { TabBar } from '@/components/tab-bar/tab-bar';
@@ -16,20 +18,23 @@ const AppLayout = (props: AppLayoutProps) => {
 
   return (
     <QueryProvider>
-      <div className="app-layout">
-        {/* The session read streams in behind the boundary so the rest of the page isn't blocked. */}
-        <TopBar
-          menu={
-            <Suspense fallback={<span className="app-layout__avatar-fallback" />}>
-              <UserMenu />
-            </Suspense>
-          }
-        />
-        <TimezoneSync />
-        <main className="app-layout__main">{children}</main>
-        <Footer />
-        <TabBar />
-      </div>
+      <FocusHost>
+        <div className="app-layout">
+          {/* The session read streams in behind the boundary so the rest of the page isn't blocked. */}
+          <TopBar
+            menu={
+              <Suspense fallback={<span className="app-layout__avatar-fallback" />}>
+                <UserMenu />
+              </Suspense>
+            }
+          />
+          <FocusBar />
+          <TimezoneSync />
+          <main className="app-layout__main">{children}</main>
+          <Footer />
+          <TabBar />
+        </div>
+      </FocusHost>
     </QueryProvider>
   );
 };

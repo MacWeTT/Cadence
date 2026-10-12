@@ -1,0 +1,53 @@
+@reference '../../app/globals.css';
+
+.focus-setup {
+  @apply grid gap-4;
+}
+
+.focus-setup__modes {
+  @apply grid grid-cols-2 gap-1 rounded-full bg-line p-1;
+}
+
+.focus-setup__mode {
+  @apply min-h-11 rounded-full text-sm font-medium;
+}
+
+.focus-setup__mode--on {
+  @apply bg-surface shadow-sm;
+}
+
+.focus-setup__presets {
+  @apply flex flex-wrap gap-2;
+}
+
+.focus-setup__chip {
+  @apply min-h-11 rounded-full border border-line px-4 text-sm;
+}
+
+.focus-setup__chip--on {
+  @apply border-primary bg-primary/10;
+}
+
+.focus-setup__fields {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.focus-setup__field {
+  @apply grid gap-1 text-sm text-ink-muted;
+}
+
+.focus-setup__input {
+  @apply min-h-11 rounded-lg border border-line bg-surface px-3 text-base text-ink;
+}
+
+.focus-setup__total {
+  @apply text-sm text-ink-muted;
+}
+
+.focus-setup__error {
+  @apply text-sm text-danger;
+}
+
+.focus-setup__start {
+  @apply min-h-11;
+}
