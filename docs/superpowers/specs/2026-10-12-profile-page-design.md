@@ -79,7 +79,7 @@ Out of scope: real push and email reminders (0.7; here only disabled toggles), a
 
 1. **Profile page:** layout and tabs, Overview (all rows and modals, including photo and sound uploads with their buckets), Get the app, Appearance moved with the redirect, Notifications, the migration, the data layer, avatar characters. The largest PR.
 2. **Account tab:** delete account and export and import of all data. Its own spec (replace-or-merge on import is to be designed) before work starts.
-3. **Cleanup and release:** the redrawn Alien and Mage, anything left from review, the version bump, the changelog entry and the roadmap update (this belongs in the feature's last PR).
+3. **Cleanup and release (0.8 and 0.8.1 together):** the contributors list (0.8.1, its own short design: a hand-kept data file shown on the About page),  the redrawn Alien and Mage, anything left from review, the version bump, the changelog entry and the roadmap update (this belongs in the feature's last PR).
 
 If PR 1 is too big to review, the sound modal and its upload move to PR 3, and the Overview shows the six built-in sounds only.
 
