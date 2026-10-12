@@ -118,13 +118,21 @@ export const TodayClient = () => {
                 {todoCount === 0 && (
                   <p className="today__note">{isToday ? t('nothingLeftToday') : t('nothingLeftThisDay')}</p>
                 )}
-                <CheckSection id="todo-heading" title={t('todo')} rows={todo} saving={saving} onToggle={onToggle} />
+                <CheckSection
+                  id="todo-heading"
+                  title={t('todo')}
+                  rows={todo}
+                  saving={saving}
+                  onToggle={onToggle}
+                  canFocus={isToday}
+                />
                 <CheckSection
                   id="done-heading"
                   title={isToday ? t('doneToday') : t('done')}
                   rows={finished}
                   saving={saving}
                   onToggle={onToggle}
+                  canFocus={isToday}
                 />
                 <CheckSection
                   id="optional-heading"
@@ -132,6 +140,7 @@ export const TodayClient = () => {
                   rows={optional}
                   saving={saving}
                   onToggle={onToggle}
+                  canFocus={isToday}
                 />
               </>
             )}

@@ -6,10 +6,19 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 - A full profile page, with export and import of all your data, so you can keep a backup or restore it if it is ever lost.
 - Reminders: push notifications in your browser and by email.
-- Focus sessions: start a timer on a habit (free or pomodoro-style), see the time you spend on Progress, and confirm the habit when you finish.
 - A desktop app, with native notifications and an option to start on login.
 
 ## Known issues
+
+## 0.7.0 (2026-10-12)
+
+Focus on a habit.
+
+- Start a timer on any habit from Today or Home: Free (counts up until you stop) or Pomodoro (rounds of focus and break, with Classic, Deep and Short presets and your own numbers, remembered for each habit).
+- A slim bar on every page while a session runs, with the time in the tab title, so you can leave the page and come back.
+- A chime when a round or a break ends, in a sound you choose (or silent), and a browser notification if you allow it.
+- When you stop, say "I did it" to tick the habit for that day.
+- A new Focus time card on Progress: the minutes you focused, in total and for each habit.
 
 ## 0.6.3 (2026-10-12)
 

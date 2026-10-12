@@ -6,6 +6,7 @@ import changelog from './changelog.json';
 import common from './common.json';
 import contact from './contact.json';
 import errors from './errors.json';
+import focus from './focus.json';
 import footer from './footer.json';
 import greeting from './greeting.json';
 import habits from './habits.json';
@@ -26,6 +27,7 @@ const en = {
   common,
   contact,
   errors,
+  focus,
   footer,
   greeting,
   habits,

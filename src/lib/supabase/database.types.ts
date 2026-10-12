@@ -37,6 +37,26 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"focus_sessions": {
+                  Row: {
+                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"started_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"plan"?: Json | null,"skipped_seconds"?: number,"started_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"plan"?: Json | null,"skipped_seconds"?: number,"started_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "focus_sessions_habit_id_fkey"
+      columns: ["habit_id"]
+isOneToOne: false
+      referencedRelation: "habits"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"habit_archive_periods": {
                   Row: {
                     "archived_on": string,"habit_id": string,"id": string,"restored_on": string | null
@@ -153,8 +173,14 @@ isOneToOne: false
 "restore_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined
                            },
+"server_now":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "set_completion":
 { Args: { "p_date": string,"p_done": boolean,"p_habit_id": string,"p_today": string }; Returns: undefined
+                           },
+"valid_focus_plan":
+{ Args: { "p_plan": Json }; Returns: boolean
                            }
           }
           Enums: {

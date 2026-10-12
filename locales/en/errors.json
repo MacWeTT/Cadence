@@ -11,5 +11,7 @@
   "habitChanged": "That habit could not be found, or it has already changed.",
   "deleteNeedsArchive": "Archive a habit before deleting it.",
   "checkStartDate": "Check the start date.",
-  "contactFailed": "Couldn't send that. Try again in a moment."
+  "contactFailed": "Couldn't send that. Try again in a moment.",
+  "focusRunning": "A focus session is already running. Stop it first.",
+  "focusPlanInvalid": "Check the focus numbers."
 }

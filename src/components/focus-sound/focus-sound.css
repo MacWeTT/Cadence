@@ -1,0 +1,49 @@
+@reference '../../app/globals.css';
+
+.focus-sound {
+  @apply grid gap-2;
+}
+
+.focus-sound__legend {
+  @apply mb-1 text-sm font-medium;
+}
+
+.focus-sound__list {
+  @apply grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-6;
+}
+
+.focus-sound__option {
+  @apply flex min-h-11 flex-col items-center gap-1 rounded-lg text-xs text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+}
+
+.focus-sound__option--on {
+  @apply text-ink;
+}
+
+.focus-sound__circle {
+  @apply flex size-11 items-center justify-center rounded-full border border-line transition-colors;
+}
+
+.focus-sound__option:hover .focus-sound__circle {
+  @apply border-ink;
+}
+
+.focus-sound__option--on .focus-sound__circle {
+  @apply border-primary bg-primary text-primary-foreground;
+}
+
+.focus-sound__icon {
+  @apply size-5;
+}
+
+.focus-sound__name {
+  @apply text-center leading-tight;
+}
+
+.focus-sound__volume {
+  @apply flex items-center gap-3 text-sm text-ink-muted;
+}
+
+.focus-sound__volume input {
+  @apply min-h-11 flex-1 accent-primary;
+}

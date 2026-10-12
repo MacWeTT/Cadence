@@ -1,0 +1,67 @@
+{
+  "button": {
+    "label": "Focus",
+    "aria": "Start a focus session on {name}"
+  },
+  "setup": {
+    "title": "Focus on {name}",
+    "mode": "Session type",
+    "pomodoro": "Pomodoro",
+    "free": "Free",
+    "freeNote": "Counts up. Stop when you like.",
+    "preset": "Preset",
+    "classic": "Classic",
+    "deep": "Deep",
+    "short": "Short",
+    "focusMin": "Focus (min)",
+    "breakMin": "Break (min)",
+    "longBreakMin": "Long break (min)",
+    "rounds": "Rounds",
+    "total": "About {duration}, {focus, plural, one {# minute} other {# minutes}} of focus",
+    "hours": "{count, plural, one {# hour} other {# hours}}",
+    "minutes": "{count, plural, one {# minute} other {# minutes}}",
+    "invalid": "Check the numbers: focus 1 to 180, breaks 1 to 60, rounds 1 to 12.",
+    "start": "Start"
+  },
+  "sound": {
+    "title": "Sound",
+    "volume": "Volume",
+    "bell": "Bell",
+    "marimba": "Marimba",
+    "wood": "Wood block",
+    "beep": "Soft beep",
+    "rising": "Rising",
+    "silent": "Silent"
+  },
+  "running": {
+    "title": "Focus on {name}",
+    "focus": "Focus, round {round} of {rounds}",
+    "break": "Break, next: round {next}",
+    "free": "Focusing",
+    "done": "All rounds done",
+    "stop": "Stop",
+    "skipBreak": "Skip break",
+    "timer": "Time",
+    "round": "Round {round}",
+    "conflict": "{name} already has a focus session running. Stop it to start another."
+  },
+  "bar": {
+    "open": "Open the focus session on {name}",
+    "stop": "Stop",
+    "label": "Focus session"
+  },
+  "ending": {
+    "title": "Session finished",
+    "focused": "You focused for {minutes, plural, one {# minute} other {# minutes}}.",
+    "ask": "Did you do it?",
+    "yes": "I did it",
+    "no": "Not this time",
+    "close": "Close",
+    "alreadyTicked": "{name} is already ticked for that day."
+  },
+  "notify": {
+    "focusDone": "Focus round done. Time for a break.",
+    "breakDone": "Break over. Back to focus.",
+    "allDone": "All rounds done. Well done."
+  }
+}

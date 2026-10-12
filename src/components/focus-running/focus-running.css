@@ -1,0 +1,60 @@
+@reference '../../app/globals.css';
+
+.focus-running {
+  @apply grid justify-items-center gap-4 py-2;
+}
+
+.focus-running__ring {
+  @apply relative size-56;
+}
+
+.focus-running__svg {
+  @apply size-full -rotate-90;
+}
+
+.focus-running__track {
+  @apply fill-none stroke-line;
+  stroke-width: 8;
+}
+
+.focus-running__arc {
+  @apply fill-none stroke-primary;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.focus-running__arc--smooth {
+  transition: stroke-dashoffset 1s linear;
+}
+
+.focus-running__clock {
+  @apply absolute inset-0 flex items-center justify-center font-display text-5xl tabular-nums;
+}
+
+.focus-running__phase {
+  @apply text-ink-muted;
+}
+
+.focus-running__conflict {
+  @apply rounded-lg bg-line px-3 py-2 text-sm;
+}
+
+.focus-running__dots {
+  @apply flex gap-2;
+}
+
+.focus-running__dot {
+  @apply size-2.5 rounded-full bg-line;
+}
+
+.focus-running__dot--on {
+  @apply bg-primary;
+}
+
+.focus-running__actions {
+  @apply flex flex-wrap justify-center gap-2;
+}
+
+.focus-running__actions > * {
+  @apply min-h-11;
+}

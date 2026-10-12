@@ -1,0 +1,22 @@
+@reference '../../app/globals.css';
+
+.focus-ending {
+  @apply grid gap-3;
+}
+
+.focus-ending__minutes {
+  @apply text-lg font-semibold;
+}
+
+.focus-ending__note {
+  @apply text-ink-muted;
+}
+
+.focus-ending__actions {
+  @apply flex flex-wrap gap-2;
+}
+
+.focus-ending .button,
+.focus-ending__actions > * {
+  @apply min-h-11;
+}

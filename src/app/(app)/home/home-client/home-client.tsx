@@ -145,6 +145,7 @@ export const HomeClient = (props: HomeClientProps) => {
                 rows={todo}
                 saving={saving}
                 onToggle={onToggle}
+                canFocus
                 flush
               />
               <CheckSection
@@ -153,6 +154,7 @@ export const HomeClient = (props: HomeClientProps) => {
                 rows={finished}
                 saving={saving}
                 onToggle={onToggle}
+                canFocus
                 flush={todoCount === 0}
               />
               <CheckSection
@@ -161,6 +163,7 @@ export const HomeClient = (props: HomeClientProps) => {
                 rows={optional}
                 saving={saving}
                 onToggle={onToggle}
+                canFocus
               />
             </div>
             <div className="home__side">

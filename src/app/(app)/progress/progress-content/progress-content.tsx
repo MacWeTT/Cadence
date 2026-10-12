@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { formatCalendarDate } from '@/lib/format';
 import { parseRange } from '@/server/progress-view';
 import { BarsCard } from '@/app/(app)/progress/bars-card/bars-card';
+import { FocusCard } from '@/app/(app)/progress/focus-card/focus-card';
 import { HabitFilter } from '@/app/(app)/progress/habit-filter/habit-filter';
 import { RatesCard } from '@/app/(app)/progress/rates-card/rates-card';
 import { useProgressData } from '@/app/(app)/progress/use-progress';
@@ -40,7 +41,7 @@ export const ProgressContent = () => {
     );
   }
 
-  const { view, habits } = data;
+  const { view, habits, focus } = data;
 
   if (!view) {
     return (
@@ -69,6 +70,7 @@ export const ProgressContent = () => {
       <HabitFilter habits={habits} selectedId={selectedId} range={range} />
       <YearCard view={view} />
       <RatesCard view={view} />
+      <FocusCard focus={focus} habits={habits} />
       <div className="progress-content__bars">
         <BarsCard
           title={t('bars.perWeek')}

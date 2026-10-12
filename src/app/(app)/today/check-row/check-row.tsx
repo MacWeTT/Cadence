@@ -3,6 +3,7 @@
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
+import { FocusButton } from '@/components/focus-button/focus-button';
 import { OpenLinksButton } from '@/components/open-links-button/open-links-button';
 import { useMsg } from '@/lib/use-msg';
 import { habitColor } from '@/lib/palette';
@@ -16,10 +17,12 @@ interface CheckRowProps {
   /** True while a save for this row is in flight, so a double tap sends one request. */
   disabled: boolean;
   onToggle: (row: TodayRow) => void;
+  /** Shows the Focus pill: only when looking at today. */
+  canFocus?: boolean;
 }
 
 export const CheckRow = (props: CheckRowProps) => {
-  const { row, disabled, onToggle } = props;
+  const { row, disabled, onToggle, canFocus } = props;
 
   const t = useTranslations('today.row');
   const tm = useMsg();
@@ -65,7 +68,12 @@ export const CheckRow = (props: CheckRowProps) => {
         {streak && <span>{tm(streakMsg(streak))}</span>}
         {year !== undefined && <span>{tm(yearMsg(year))}</span>}
       </div>
-      {links && <OpenLinksButton links={links} name={name} />}
+      {(canFocus || links) && (
+        <div className="check-row__actions">
+          {links && <OpenLinksButton links={links} name={name} />}
+          {canFocus && <FocusButton habit={{ id, name, icon, color }} />}
+        </div>
+      )}
     </motion.li>
   );
 };

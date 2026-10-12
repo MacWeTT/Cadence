@@ -1,0 +1,14 @@
+@reference '../../app/globals.css';
+
+/* A bottom sheet on phones; the shared dialog's centring is undone below 640px. */
+.focus-panel {
+  @apply max-sm:top-auto max-sm:bottom-0 max-sm:left-0 max-sm:max-w-full max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-b-none max-sm:pb-[calc(1rem+env(safe-area-inset-bottom))] sm:max-w-md;
+}
+
+.focus-panel__title {
+  @apply font-display text-2xl font-normal;
+}
+
+.focus-panel__description {
+  @apply sr-only;
+}

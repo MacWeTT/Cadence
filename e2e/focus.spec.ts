@@ -1,0 +1,251 @@
+import { expect, test, type Page } from '@playwright/test';
+import {
+  daysAgo,
+  getCompletions,
+  getFocusSessions,
+  resetUserData,
+  seedCompletion,
+  seedFocusSession,
+  seedHabit,
+} from '@e2e/support/data';
+
+test.beforeEach(async () => {
+  await resetUserData();
+});
+
+const bar = (page: Page) => {
+  return page.getByRole('region', { name: 'Focus session' });
+};
+
+const startPill = (page: Page, name: string) => {
+  return page.getByRole('button', { name: `Start a focus session on ${name}` });
+};
+
+/** The calendar day (UTC, the e2e user's timezone) a session that started `minutes` ago belongs to. */
+const dayStartedMinutesAgo = (minutes: number): string => {
+  return new Date(Date.now() - minutes * 60_000).toISOString().slice(0, 10);
+};
+
+test('a Free session stopped under a minute leaves no record and asks nothing', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await page.goto('/today');
+  await startPill(page, 'Read').click();
+  await page.getByRole('radio', { name: 'Free' }).click();
+  await page.getByRole('button', { name: 'Start' }).click();
+
+  const dialog = page.getByRole('dialog');
+
+  await expect(dialog.getByRole('timer')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Stop' }).click();
+
+  await expect(dialog).toBeHidden();
+  await expect(bar(page)).toBeHidden();
+  expect(await getFocusSessions(id)).toEqual([]);
+});
+
+test('stopping a session asks "I did it", and yes ticks the habit for the day it started', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'Session finished' });
+
+  await expect(dialog.getByText('You focused for 10 minutes.')).toBeVisible();
+  await dialog.getByRole('button', { name: 'I did it' }).click();
+
+  await expect(dialog).toBeHidden();
+  await expect
+    .poll(async () => {
+      return (await getCompletions(id)).map(c => {
+        return c.completion_date;
+      });
+    })
+    .toEqual([dayStartedMinutesAgo(10)]);
+  expect(await getFocusSessions(id)).toHaveLength(1);
+});
+
+test('"Not this time" keeps the focus minutes and ticks nothing', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 5 });
+  await page.goto('/habits');
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+  await page.getByRole('button', { name: 'Not this time' }).click();
+
+  await expect(bar(page)).toBeHidden();
+  expect(await getCompletions(id)).toEqual([]);
+  expect((await getFocusSessions(id))[0].focus_seconds).toBeGreaterThanOrEqual(300);
+});
+
+test('a habit that is already ticked only shows the minutes', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedCompletion(id, dayStartedMinutesAgo(10));
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'Session finished' });
+
+  await expect(dialog.getByText('Read is already ticked for that day.')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'I did it' })).toHaveCount(0);
+  await dialog.getByRole('button', { name: 'Close' }).first().click();
+  await expect(dialog).toBeHidden();
+});
+
+test('a Pomodoro runs through its phases: the bar shows the break, Skip break goes back to focus', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  // 26 minutes into Classic: the first focus round (25) is over and the break has 4 minutes left
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 26, mode: 'pomodoro' });
+  await page.goto('/today');
+
+  await expect(bar(page)).toContainText('Break, next: round 2');
+  await bar(page).getByRole('button', { name: 'Open the focus session on Read' }).click();
+
+  const dialog = page.getByRole('dialog');
+
+  await expect(dialog.getByText('Break, next: round 2')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Skip break' }).click();
+  await expect(dialog.getByText('Focus, round 2 of 4')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Skip break' })).toHaveCount(0);
+
+  await dialog.getByRole('button', { name: 'Stop' }).click();
+  await expect(page.getByText('You focused for 25 minutes.')).toBeVisible();
+});
+
+test('a plan that has run out ends by itself and asks "I did it"', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({
+    habitId: id,
+    startedMinutesAgo: 30,
+    mode: 'pomodoro',
+    plan: { focusMin: 5, breakMin: 1, longBreakMin: 1, rounds: 2 },
+  });
+  await page.goto('/today');
+
+  await expect(page.getByRole('dialog', { name: 'Session finished' })).toBeVisible();
+  await expect(page.getByText('You focused for 10 minutes.')).toBeVisible();
+});
+
+test('the bar follows you to other pages, and tapping it reopens the panel', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 3 });
+  await page.goto('/progress');
+  await expect(bar(page)).toContainText('Read');
+  await expect(page).toHaveTitle(/^\d+:\d{2} · Read$/);
+
+  await page.getByRole('link', { name: 'Habits' }).first().click();
+  await expect(bar(page)).toBeVisible();
+  await expect(page).toHaveTitle(/^\d+:\d{2} · Read$/);
+  await bar(page).getByRole('button', { name: 'Open the focus session on Read' }).click();
+  await expect(page.getByRole('dialog').getByRole('timer')).toBeVisible();
+
+  // when the session ends the tab shows the page that is open now, not the one the session started on
+  await page.getByRole('dialog').getByRole('button', { name: 'Stop' }).click();
+  await page.getByRole('button', { name: 'Not this time' }).click();
+  await expect(page).toHaveTitle(/Habits/);
+});
+
+test('starting a second session is refused and names the one that is running', async ({ page }) => {
+  const read = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  const write = await seedHabit({ name: 'Write', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: read, startedMinutesAgo: 3 });
+  await page.goto('/today');
+  await startPill(page, 'Write').click();
+
+  await expect(page.getByRole('dialog').getByText('Read already has a focus session running.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start', exact: true })).toHaveCount(0);
+  expect(await getFocusSessions(write)).toEqual([]);
+});
+
+test('the setup remembers the last numbers used on the habit and the chosen sound', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({
+    habitId: id,
+    startedMinutesAgo: 120,
+    mode: 'pomodoro',
+    plan: { focusMin: 30, breakMin: 7, longBreakMin: 20, rounds: 3 },
+    finishedWithSeconds: 1800,
+  });
+  await page.goto('/today');
+  await startPill(page, 'Read').click();
+
+  await expect(page.getByLabel('Focus (min)')).toHaveValue('30');
+  await expect(page.getByLabel('Rounds')).toHaveValue('3');
+  await expect(page.getByText(/About .*, 90 minutes of focus/)).toBeVisible();
+
+  await page.getByRole('radio', { name: 'Marimba' }).click();
+  await page.reload();
+  await startPill(page, 'Read').click();
+  await expect(page.getByRole('radio', { name: 'Marimba' })).toBeChecked();
+});
+
+test('presets fill the numbers and a bad number blocks Start', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await page.goto('/today');
+  await startPill(page, 'Read').click();
+  await expect(page.getByRole('radio', { name: 'Classic' })).toBeChecked();
+
+  await page.getByRole('radio', { name: 'Deep' }).click();
+  await expect(page.getByLabel('Focus (min)')).toHaveValue('50');
+
+  await page.getByLabel('Focus (min)').fill('999');
+  await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeDisabled();
+  await expect(page.getByText(/Check the numbers/)).toBeVisible();
+});
+
+test('the Focus pill is not offered when looking at another day', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await page.goto(`/today?date=${daysAgo(1)}`);
+  await expect(page.getByRole('checkbox', { name: 'Mark Read done' })).toBeVisible();
+  await expect(startPill(page, 'Read')).toHaveCount(0);
+});
+
+test('Progress shows the focus time per habit and in total', async ({ page }) => {
+  const read = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  const write = await seedHabit({ name: 'Write', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: read, startedMinutesAgo: 60, finishedWithSeconds: 1800 });
+  await seedFocusSession({ habitId: write, startedMinutesAgo: 120, finishedWithSeconds: 600 });
+  await page.goto('/progress');
+
+  const card = page.getByRole('region', { name: 'Focus time' });
+
+  await expect(card.getByText('40 minutes in total')).toBeVisible();
+  await expect(card.getByText('30 min')).toBeVisible();
+  await expect(card.getByText('10 min')).toBeVisible();
+});
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 375, height: 700 } });
+
+  test('the panel is a bottom sheet, the bar fits and nothing scrolls sideways', async ({ page }) => {
+    const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+    await seedFocusSession({ habitId: id, startedMinutesAgo: 3 });
+    await page.goto('/today');
+    await expect(bar(page)).toBeVisible();
+    await bar(page).getByRole('button', { name: 'Open the focus session on Read' }).click();
+
+    const box = await page.getByRole('dialog').boundingBox();
+
+    expect(box?.width).toBeLessThanOrEqual(375);
+    expect((box?.y ?? 0) + (box?.height ?? 0)).toBeGreaterThanOrEqual(690);
+
+    const overflow = await page.evaluate(() => {
+      return document.documentElement.scrollWidth - window.innerWidth;
+    });
+
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+});
