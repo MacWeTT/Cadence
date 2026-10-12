@@ -15,5 +15,17 @@
   "startAfterFirstTick": "The start date can't be after your first check-in on {date}.",
   "messageRequired": "Write a message first",
   "messageTooLong": "Keep the message to 1000 characters or fewer",
-  "emailInvalid": "Enter a valid email address, or leave it empty"
+  "emailInvalid": "Enter a valid email address, or leave it empty",
+  "profileNameRequired": "Enter your name",
+  "profileNameTooLong": "Keep your name to 50 characters or fewer",
+  "weekStartInvalid": "Choose Monday or Sunday",
+  "zoneInvalid": "Choose a timezone from the list",
+  "avatarInvalid": "Choose one of the avatars or a single emoji",
+  "photoType": "Use a JPEG, PNG or WebP photo",
+  "photoTooBig": "Keep the photo under 2 MB",
+  "soundInvalid": "Choose one of the sounds",
+  "soundType": "Use an MP3, WAV or OGG sound",
+  "soundTooBig": "Keep the sound under 500 KB",
+  "soundTooLong": "Keep the sound to 5 seconds or less",
+  "soundLimit": "You can keep up to 6 sounds. Remove one to add another."
 }
