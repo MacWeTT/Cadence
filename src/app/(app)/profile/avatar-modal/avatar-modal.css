@@ -5,7 +5,7 @@
 }
 
 .avatar-modal__preview {
-  @apply ring-2 ring-btn ring-offset-2 ring-offset-popover;
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-popover;
 }
 
 .avatar-modal__caption {
@@ -30,7 +30,7 @@
 }
 
 .avatar-modal__tile--active {
-  @apply ring-2 ring-btn ring-offset-2 ring-offset-popover;
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-popover;
 }
 
 .avatar-modal__colours {
@@ -59,4 +59,8 @@
 
 .avatar-modal__hint {
   @apply block text-xs text-ink-muted;
+}
+
+.avatar-modal__tiles .emoji-field__trigger {
+  @apply size-11 rounded-full text-xl;
 }

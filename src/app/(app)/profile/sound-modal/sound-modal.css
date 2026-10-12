@@ -5,7 +5,7 @@
 }
 
 .sound-modal__current-tile {
-  @apply flex size-24 items-center justify-center rounded-3xl bg-line/70 text-btn ring-2 ring-btn ring-offset-2 ring-offset-popover;
+  @apply flex size-24 items-center justify-center rounded-3xl bg-line/70 text-primary ring-2 ring-primary ring-offset-2 ring-offset-popover;
 }
 
 .sound-modal__current-tile svg {
@@ -29,7 +29,7 @@
 }
 
 .sound-modal__sound--active {
-  @apply border-btn bg-line/60 ring-1 ring-btn;
+  @apply border-primary bg-line/60 ring-1 ring-primary;
 }
 
 .sound-modal__pick {
@@ -41,7 +41,7 @@
 }
 
 .sound-modal__play {
-  @apply flex size-7 shrink-0 items-center justify-center rounded-full bg-btn text-btn-text;
+  @apply flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground;
 }
 
 .sound-modal__play svg {

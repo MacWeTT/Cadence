@@ -24,7 +24,7 @@ Out of scope: real push and email reminders (0.7; here only disabled toggles), a
 - Tabs are routes, so each is linkable and has its own skeleton. Switching is near-instant: the profile is one `profile` query in the browser cache (as with Today, Home and Progress), so a tab read is a cache read; Appearance has no loading at all (local settings). The skeleton shows only on a cold first load.
 - Overview is one card of rows: Photo, Name, Timezone, Week starts on, Focus sound. Each row shows its current value and opens a modal. Phones: the same list, modals become full-width sheets.
 - Notifications has two disabled toggles, **Push notifications** and **Email reminders**, each marked "Coming soon". Nothing else until 0.7.
-- Account is a placeholder in PR 1 (it is not linked in the tab bar until PR 2).
+- The Account route and its tab arrive in PR 2; PR 1 has no placeholder for it.
 
 ## Every edit is a modal, saved optimistically
 

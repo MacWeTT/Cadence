@@ -9,5 +9,5 @@
 }
 
 .profile-tabs__tab--active {
-  @apply border-btn text-ink;
+  @apply border-primary text-ink;
 }

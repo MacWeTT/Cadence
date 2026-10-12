@@ -261,6 +261,55 @@ export const setWeekStartForTests = async (): Promise<void> => {
   }
 };
 
+/** The e2e user's profile row, for checking what an edit saved. */
+export const getProfileRow = async () => {
+  const userId = await ensureE2EUser();
+  const { data, error } = await adminClient().from('profiles').select('*').eq('user_id', userId).single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+/** Puts the e2e user's profile back as a new account has it, and removes any uploaded avatar and custom sounds. */
+export const resetProfile = async (): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const admin = adminClient();
+
+  const { error } = await admin
+    .from('profiles')
+    .update({
+      display_name: 'E2E User',
+      timezone: 'UTC',
+      week_starts_on: 1,
+      avatar_kind: 'google',
+      avatar_value: null,
+      avatar_color: null,
+      sound_id: 'bell',
+      sound_volume: 0.6,
+    })
+    .eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+
+  await admin.from('custom_sounds').delete().eq('user_id', userId);
+
+  for (const bucket of ['avatars', 'sounds']) {
+    const { data } = await admin.storage.from(bucket).list(userId);
+    const paths = (data ?? []).map(({ name }) => {
+      return `${userId}/${name}`;
+    });
+
+    if (paths.length > 0) {
+      await admin.storage.from(bucket).remove(paths);
+    }
+  }
+};
+
 export const clearContactMessages = async (): Promise<void> => {
   const { error } = await adminClient().from('contact_messages').delete().not('id', 'is', null);
 
