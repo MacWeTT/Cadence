@@ -12,6 +12,14 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Known issues
 
+## 0.8.2 (2026-10-12)
+
+Sounds, your way.
+
+- Your own sounds now show up when you start a focus session, next to the built-in ones.
+- The sound you choose in your profile is now your default. Pick a different one for a single focus session, and Cadence remembers it for that habit.
+- When a session ends, a new box lets you leave its minutes out of your focus time. "I did it" still only ticks the habit.
+
 ## 0.8.1 (2026-10-12)
 
 Credit where it's due.
