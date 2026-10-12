@@ -9,7 +9,7 @@ test('signed-in /today shows the heading, the navigation and the account menu', 
     await expect(nav.getByRole('link', { name })).toBeVisible();
   }
 
-  await expect(page.getByLabel('Account menu')).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Profile' })).toBeVisible();
 });
 
 test('a signed-in visit to /login goes home', async ({ page }) => {

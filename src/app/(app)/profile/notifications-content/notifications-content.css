@@ -1,0 +1,38 @@
+@reference '../../../globals.css';
+
+.notifications-content {
+  @apply flex flex-col gap-4;
+}
+
+.notifications-content__intro {
+  @apply text-ink-muted;
+}
+
+.notifications-content__card {
+  @apply rounded-xl border border-line bg-surface;
+}
+
+.notifications-content__row {
+  @apply flex items-center gap-3 border-b border-line px-4 py-3.5 opacity-60 last:border-b-0;
+}
+
+.notifications-content__icon {
+  @apply size-5 shrink-0;
+}
+
+.notifications-content__text {
+  @apply flex flex-1 flex-col;
+}
+
+.notifications-content__soon {
+  @apply text-sm text-ink-muted;
+}
+
+.notifications-content__switch {
+  @apply relative h-6 w-11 shrink-0 cursor-not-allowed rounded-full bg-line;
+}
+
+.notifications-content__switch::after {
+  content: '';
+  @apply absolute top-1 left-1 size-4 rounded-full bg-surface;
+}

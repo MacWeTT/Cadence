@@ -1,17 +1,17 @@
 import { expect, test } from '@playwright/test';
 
-test('the Appearance page opens from the account menu', async ({ page }) => {
+test('the Appearance tab opens from the profile', async ({ page }) => {
   await page.goto('/today');
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.getByRole('menuitem', { name: 'Appearance' }).click();
+  await page.getByRole('banner').getByRole('link', { name: 'Profile' }).click();
+  await page.getByRole('link', { name: 'Appearance' }).click();
 
-  await expect(page).toHaveURL(/\/appearance$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+  await expect(page).toHaveURL(/\/profile\/appearance$/);
+  await expect(page.getByRole('heading', { level: 2, name: 'Appearance' })).toBeVisible();
   await expect(page.getByText('Choose how Cadence looks.')).toBeVisible();
 });
 
 test('a colour theme applies, persists, and resets', async ({ page }) => {
-  await page.goto('/appearance');
+  await page.goto('/profile/appearance');
   await page.getByText('Ocean', { exact: true }).click();
 
   const html = page.locator('html');
@@ -27,7 +27,7 @@ test('a colour theme applies, persists, and resets', async ({ page }) => {
 });
 
 test('a custom accent colour applies, is kept readable, and persists', async ({ page }) => {
-  await page.goto('/appearance');
+  await page.goto('/profile/appearance');
   await page.getByLabel('Colour code, such as #3f6f98').fill('#ffe08a');
 
   const html = page.locator('html');
@@ -47,7 +47,7 @@ test('a custom accent colour applies, is kept readable, and persists', async ({ 
 });
 
 test('a code that is not a colour is flagged and changes nothing', async ({ page }) => {
-  await page.goto('/appearance');
+  await page.goto('/profile/appearance');
 
   const box = page.getByLabel('Colour code, such as #3f6f98');
 
@@ -59,7 +59,7 @@ test('a code that is not a colour is flagged and changes nothing', async ({ page
 test('the custom colour swatch stays a round 36px circle once a custom accent is chosen, and the hex box keeps its look when invalid', async ({
   page,
 }) => {
-  await page.goto('/appearance');
+  await page.goto('/profile/appearance');
 
   const swatch = page.getByLabel('Pick a custom colour');
   const hex = page.getByLabel(/Colour code/);

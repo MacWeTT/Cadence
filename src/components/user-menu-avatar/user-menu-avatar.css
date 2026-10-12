@@ -1,0 +1,5 @@
+@reference '../../app/globals.css';
+
+.user-menu-avatar {
+  @apply size-full bg-clay text-bg;
+}

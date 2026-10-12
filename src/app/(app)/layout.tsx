@@ -6,6 +6,7 @@ import { QueryProvider } from '@/components/query-provider/query-provider';
 import { TabBar } from '@/components/tab-bar/tab-bar';
 import { TopBar } from '@/components/top-bar/top-bar';
 import { UserMenu } from '@/components/user-menu/user-menu';
+import { AccentSync } from '@/app/(app)/accent-sync/accent-sync';
 import { TimezoneSync } from '@/app/(app)/timezone-sync/timezone-sync';
 import './layout.css';
 
@@ -30,6 +31,7 @@ const AppLayout = (props: AppLayoutProps) => {
           />
           <FocusBar />
           <TimezoneSync />
+          <AccentSync />
           <main className="app-layout__main">{children}</main>
           <Footer />
           <TabBar />

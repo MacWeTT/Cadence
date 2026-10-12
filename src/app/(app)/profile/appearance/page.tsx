@@ -19,7 +19,7 @@ const AppearancePage = () => {
   return (
     <div className="appearance">
       <header>
-        <h1 className="appearance__title">{t('title')}</h1>
+        <h2 className="appearance__title">{t('title')}</h2>
         <p className="appearance__intro">{t('intro')}</p>
         <p className="appearance__note">{t('note')}</p>
       </header>

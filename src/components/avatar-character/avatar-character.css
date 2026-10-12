@@ -1,0 +1,5 @@
+@reference '../../app/globals.css';
+
+.avatar-character {
+  @apply block size-full;
+}

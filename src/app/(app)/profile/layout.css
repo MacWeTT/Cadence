@@ -1,0 +1,9 @@
+@reference '../../globals.css';
+
+.profile-layout {
+  @apply flex flex-col gap-6;
+}
+
+.profile-layout__body {
+  @apply flex flex-col gap-8;
+}

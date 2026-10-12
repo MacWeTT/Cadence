@@ -5,6 +5,9 @@ This file is shown on the app's What's new page, so it is for people using Caden
 ## Planned
 
 - A full profile page, with export and import of all your data, so you can keep a backup or restore it if it is ever lost.
+- A list of the people who have helped build Cadence, on the About page.
+- A photo cropper for your avatar.
+- Signing in with an email and a password, as well as with Google.
 - Reminders: push notifications in your browser and by email.
 - A desktop app, with native notifications and an option to start on login.
 

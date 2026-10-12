@@ -13,6 +13,7 @@ import habits from './habits.json';
 import home from './home.json';
 import labels from './labels.json';
 import metadata from './metadata.json';
+import profile from './profile.json';
 import progress from './progress.json';
 import today from './today.json';
 import validation from './validation.json';
@@ -34,6 +35,7 @@ const en = {
   home,
   labels,
   metadata,
+  profile,
   progress,
   today,
   validation,

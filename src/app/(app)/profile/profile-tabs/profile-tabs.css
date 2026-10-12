@@ -1,0 +1,13 @@
+@reference '../../../globals.css';
+
+.profile-tabs {
+  @apply flex gap-6 overflow-x-auto overflow-y-hidden border-b border-line;
+}
+
+.profile-tabs__tab {
+  @apply whitespace-nowrap border-b-2 border-transparent py-2.5 text-ink-muted transition-colors hover:text-ink;
+}
+
+.profile-tabs__tab--active {
+  @apply border-primary text-ink;
+}

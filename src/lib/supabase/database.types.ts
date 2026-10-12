@@ -37,6 +37,20 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"custom_sounds": {
+                  Row: {
+                    "created_at": string,"duration_ms": number,"id": string,"name": string,"path": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"duration_ms": number,"id"?: string,"name": string,"path": string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"duration_ms"?: number,"id"?: string,"name"?: string,"path"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"focus_sessions": {
                   Row: {
                     "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"started_at": string,"user_id": string
@@ -133,14 +147,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_url": string | null,"created_at": string,"display_name": string | null,"timezone": string,"user_id": string,"week_starts_on": number
+                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"timezone": string,"user_id": string,"week_starts_on": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_url"?: string | null,"created_at"?: string,"display_name"?: string | null,"timezone"?: string,"user_id": string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id": string,"week_starts_on"?: number
                   }
                   Update: {
-                    "avatar_url"?: string | null,"created_at"?: string,"display_name"?: string | null,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
                   }
                   Relationships: [
                     

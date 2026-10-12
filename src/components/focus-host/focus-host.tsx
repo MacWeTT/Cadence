@@ -11,7 +11,7 @@ import { FocusPanel } from '@/components/focus-panel/focus-panel';
 import { playChime, unlockAudio } from '@/lib/chimes';
 import { sessionView } from '@/lib/focus-clock';
 import { queryKeys } from '@/lib/query/keys';
-import { useChimeChoice } from '@/lib/use-chime-choice';
+import { useChimeChoice } from '@/components/focus-host/use-chime-choice';
 import type { FocusResult } from '@/server/focus';
 import { setCompletionAction } from '@/app/(app)/today/actions';
 import type { TodayRow, TodayView } from '@/server/today-view';
