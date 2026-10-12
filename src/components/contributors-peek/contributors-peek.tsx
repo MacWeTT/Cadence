@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ContributorsList } from '@/components/contributors-list/contributors-list';
-import { CONTRIBUTORS } from '@/lib/contributors';
+import { CONTRIBUTORS, githubUrl } from '@/lib/contributors';
 import './contributors-peek.css';
 
 interface ContributorsPeekState {
@@ -12,7 +12,7 @@ interface ContributorsPeekState {
 
 /**
  * The credit line on the About page. It names the primary contributor and tucks the rest behind one quiet word:
- * "friends" opens the list of everyone who has helped build Cadence.
+ * "friendship" opens the list of everyone who has helped build Cadence.
  */
 export const ContributorsPeek = () => {
   const [state, setState] = useState<ContributorsPeekState>({ open: false });
@@ -20,7 +20,7 @@ export const ContributorsPeek = () => {
   const t = useTranslations('about');
 
   const { open } = state;
-  const [{ name: primaryName, url: primaryUrl }] = CONTRIBUTORS;
+  const [primary] = CONTRIBUTORS;
 
   const onToggle = () => {
     setState({ open: !open });
@@ -32,8 +32,8 @@ export const ContributorsPeek = () => {
         {t.rich('builtBy', {
           dev: () => {
             return (
-              <a href={primaryUrl} target="_blank" rel="noreferrer" className="contributors-peek__link">
-                {primaryName}
+              <a href={githubUrl(primary)} target="_blank" rel="noreferrer" className="contributors-peek__link">
+                {primary}
               </a>
             );
           },
