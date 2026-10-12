@@ -26,7 +26,7 @@ export const ProfileHeader = () => {
 
   return (
     <header className="profile-header">
-      <Avatar avatar={avatar} name={shownName} size="lg" />
+      <Avatar avatar={avatar} name={shownName} size="lg" className="profile-header__avatar" />
       <div className="profile-header__who">
         <h1 className="profile-header__name">{shownName}</h1>
         <p className="profile-header__email">{email}</p>
