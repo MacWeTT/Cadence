@@ -22,7 +22,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.9 | Accounts and the timer (**next**) | **Sign in:** GitHub next to Google, and sign up or sign in with an email and a password. No mail is sent in 0.9 (no paid or hosted mail service yet), so the email is not verified and there is no password reset; both wait for the mail system under *Later*. **Focus timer:** pause and resume, like LeetCode: pause or stop; the server keeps the paused time so the minutes are right on every device. **Small:** the ring on the avatar (in the code since 0.8.0; to be confirmed on screen) and the splash tagline (merged after 0.8.2). The account tab's delete-account flow must cover every kind of account, including one with no email (GitHub can hide it). Build order: email sign-up, GitHub sign-in, pause and resume, then the release |
+| 0.9 | Accounts and the timer (**next**) | **Sign in:** GitHub next to Google, and sign up or sign in with an email and a password. **Tags:** every account has a tag, `@name` (introduced with the sign-up work, in the same PR): by default the part of the email before the @ for Google and email accounts (`manasbajpai18@gmail.com` becomes `@manasbajpai18`) and the GitHub username for GitHub; made unique automatically, and changeable on the profile. No mail is sent in 0.9 (no paid or hosted mail service yet), so the email is not verified and there is no password reset; both wait for the mail system under *Later*. **Focus timer:** pause and resume, like LeetCode: pause or stop; the server keeps the paused time so the minutes are right on every device. **Small:** the ring on the avatar (in the code since 0.8.0; to be confirmed on screen) and the splash tagline (merged after 0.8.2). The account tab's delete-account flow must cover every kind of account, including one with no email (GitHub can hide it). Build order: email sign-up with tags, GitHub sign-in, pause and resume, then the release |
 | 1.0 | Desktop app (Tauri), the installer | native notifications, start on login; opens habit links without the popup limit |
 | 1.0 | First release: bug fixes, flow revisions, and the installer | The public release. Everything from 0.8 to 0.9 ships first; 1.0 is the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) plus the desktop installer. Later releases fix and refine, to be planned after it |
 
@@ -37,13 +37,13 @@ The internal list of everything planned or considered, so no feature is lost. Th
 Deferred on purpose: they need a mail service, and Cadence stays free until people actually use it.
 
 - **The mail system:** a sending address (a domain of our own, about $10 a year, with Resend's free plan; or a dedicated Gmail account over SMTP as a free stopgap), Supabase's custom SMTP, our own email templates, and a local mail catcher. It unlocks the next three.
-- **Verified email and password reset** for the accounts 0.9 adds: a code sent at sign-up and for a forgotten password.
+- **Verified email and password reset** for the accounts 0.9 adds: a code sent at sign-up and for a forgotten password. Two-factor sign-in (2FA) waits too.
 - **Reminders by push and by email:** per-user settings, a scheduler that reuses the Home alert rules in the user's timezone, an unsubscribe link.
 - **A support link** ("Buy me a coffee"), if funding makes the mail system and the rest worthwhile.
 
 ## After 1.0 (in scope, not yet versioned)
 
-- **Usernames** and **two-factor sign-in (2FA)**: wanted after the 0.9 accounts work, not before (2FA also wants the mail system for its recovery path).
+- **Two-factor sign-in (2FA):** wanted after the 0.9 accounts work, not before (it also wants the mail system for its recovery path).
 - **Circles:** a friends-only way to share habits, without pressure. Proposed by a contributor in issue #64; to be designed when it is next. It replaces the old "viewing other people's streaks" idea below.
 - **User XP:** points for showing up, introduced together with Circles (it is part of that release, not a later one). Design with Circles.
 
