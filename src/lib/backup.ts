@@ -227,8 +227,10 @@ const check = (raw: unknown, today: string): ParseResult => {
   const tickCount = count(shaped, 'ticks');
   const focusCount = count(shaped, 'focusSessions');
 
-  if (known.length > habits) {
-    return tooMany('habits', known.length, habits);
+  const { length: habitCount } = known;
+
+  if (habitCount > habits) {
+    return tooMany('habits', habitCount, habits);
   }
 
   if (tickCount > ticks) {
