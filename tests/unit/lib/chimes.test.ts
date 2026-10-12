@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHIME_IDS, parseChoice, recipeFor, recipeLength } from '@/lib/chimes';
+import { CHIME_IDS, parseChoice, recipeFor, recipeLength, sessionChoice } from '@/lib/chimes';
 
 describe('recipes', () => {
   it('has Bell as the first and default chime and Silent last', () => {
@@ -70,5 +70,28 @@ describe('parseChoice', () => {
   it('clamps the volume into range', () => {
     expect(parseChoice('{"id":"bell","volume":5}').volume).toBe(1);
     expect(parseChoice('{"id":"bell","volume":-1}').volume).toBe(0);
+  });
+});
+
+describe('sessionChoice', () => {
+  const base = { id: 'bell', volume: 0.4, url: null };
+  const clip = { id: '3f2b6c3e-1a2b-4c5d-8e9f-0a1b2c3d4e5f', url: 'https://signed/clip' };
+
+  it('follows the default when nothing was chosen for the session', () => {
+    expect(sessionChoice(null, base, [clip])).toEqual(base);
+  });
+
+  it('plays a built-in sound chosen for the session, at the default volume', () => {
+    expect(sessionChoice('marimba', base, [])).toEqual({ id: 'marimba', volume: 0.4, url: null });
+    expect(sessionChoice('silent', base, [])).toEqual({ id: 'silent', volume: 0.4, url: null });
+  });
+
+  it('plays one of your own sounds from its link', () => {
+    expect(sessionChoice(clip.id, base, [clip])).toEqual({ id: clip.id, volume: 0.4, url: clip.url });
+  });
+
+  it('falls back to the default when the chosen sound has since been removed', () => {
+    expect(sessionChoice(clip.id, base, [])).toEqual(base);
+    expect(sessionChoice('airhorn', base, [clip])).toEqual(base);
   });
 });

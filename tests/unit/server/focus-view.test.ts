@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PRESETS } from '@/domain/focus';
-import { focusByHabit, parsePlan, settle, toSession, type FocusRow } from '@/server/focus-view';
+import { focusByHabit, lastSoundsOf, parsePlan, settle, toSession, type FocusRow } from '@/server/focus-view';
 
 const row = (over: Partial<FocusRow> = {}): FocusRow => {
   return {
@@ -12,6 +12,7 @@ const row = (over: Partial<FocusRow> = {}): FocusRow => {
     plan: null,
     skipped_seconds: 0,
     focus_seconds: null,
+    sound_id: null,
     ...over,
   };
 };
@@ -41,7 +42,39 @@ describe('toSession', () => {
       plan: PRESETS.classic,
       startedAt: '2026-10-12T09:00:00Z',
       skippedSeconds: 30,
+      soundId: null,
     });
+  });
+
+  it('carries the sound chosen for the session', () => {
+    const habit = { name: 'Read', icon: 'book', color: 'moss' };
+
+    expect(toSession(row({ sound_id: 'marimba' }), habit).soundId).toBe('marimba');
+  });
+});
+
+describe('lastSoundsOf', () => {
+  it('remembers the sound last chosen on each habit, newest session first', () => {
+    expect(
+      lastSoundsOf([
+        { habit_id: 'h1', sound_id: 'marimba' },
+        { habit_id: 'h2', sound_id: 'wood' },
+        { habit_id: 'h1', sound_id: 'beep' },
+      ]),
+    ).toEqual({ h1: 'marimba', h2: 'wood' });
+  });
+
+  it('remembers nothing for a habit whose latest session used the default', () => {
+    expect(
+      lastSoundsOf([
+        { habit_id: 'h1', sound_id: null },
+        { habit_id: 'h1', sound_id: 'marimba' },
+      ]),
+    ).toEqual({});
+  });
+
+  it('is empty with no sessions', () => {
+    expect(lastSoundsOf([])).toEqual({});
   });
 });
 

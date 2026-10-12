@@ -25,13 +25,8 @@
   },
   "sound": {
     "title": "Sound",
-    "volume": "Volume",
-    "bell": "Bell",
-    "marimba": "Marimba",
-    "wood": "Wood block",
-    "beep": "Soft beep",
-    "rising": "Rising",
-    "silent": "Silent"
+    "default": "Default · {name}",
+    "change": "Change your default in your profile"
   },
   "running": {
     "title": "Focus on {name}",
@@ -58,7 +53,9 @@
     "alreadyTicked": "{name} is already ticked for that day.",
     "hint": "Ticks {name} for the day you started.",
     "done": "Done",
-    "tooShort": "Under a minute, so nothing was saved."
+    "tooShort": "Under a minute, so nothing was saved.",
+    "count": "Count this time in focus",
+    "countHint": "Untick to leave these minutes out of your focus time."
   },
   "notify": {
     "focusDone": "Focus round done. Time for a break.",

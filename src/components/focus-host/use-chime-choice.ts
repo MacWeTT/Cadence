@@ -1,18 +1,14 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useRef } from 'react';
-import { toast } from 'sonner';
+import { useEffect, useMemo, useRef } from 'react';
 import { updateSoundAction } from '@/app/(app)/profile/actions';
 import { useProfile } from '@/app/(app)/profile/use-profile';
-import { DEFAULT_CHOICE, parseChoice, type ChimeChoice } from '@/lib/chimes';
-import { withSound } from '@/lib/profile-optimistic';
+import { DEFAULT_CHOICE, parseChoice, sessionChoice, type ChimeChoice } from '@/lib/chimes';
 import { queryKeys } from '@/lib/query/keys';
-import type { ProfileView } from '@/server/profile-view';
 
 /** Where the chime lived before it moved to the account: this browser's storage. Read once and copied up. */
 const LEGACY_KEY = 'cadence.chime';
-const SAVE_DELAY_MS = 400;
 
 const readLegacy = (): string => {
   try {
@@ -31,40 +27,13 @@ const clearLegacy = (): void => {
 };
 
 /**
- * The chime and volume, kept on the account so they follow the person to a new phone. A choice made on this browser
- * before that (the old local value) is copied up once. A change shows at once; the save waits a moment so dragging the
- * volume is one request (a different sound is saved at once), and it makes no toast (the profile page's own edits do).
+ * The default sound and volume, kept on the account (the profile page changes them) so they follow the person to a new
+ * phone. A choice made on this browser before that (the old local value) is copied up once.
  */
-export const useChimeChoice = (): [ChimeChoice, (choice: ChimeChoice) => void] => {
+export const useChimeChoice = (): ChimeChoice => {
   const queryClient = useQueryClient();
   const { data } = useProfile();
-  const timer = useRef<number | undefined>(undefined);
   const copied = useRef(false);
-
-  const save = useCallback(
-    (choice: ChimeChoice) => {
-      const { id, volume } = choice;
-      const before = queryClient.getQueryData<ProfileView>(queryKeys.profile)?.sound.id;
-
-      queryClient.setQueryData<ProfileView>(queryKeys.profile, view => {
-        return view && withSound(view, { id, volume });
-      });
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(
-        () => {
-          void updateSoundAction({ id, volume }).then(result => {
-            if (!result.ok) {
-              toast.error(result.error);
-            }
-
-            return queryClient.invalidateQueries({ queryKey: queryKeys.profile });
-          });
-        },
-        before === id ? SAVE_DELAY_MS : 0,
-      );
-    },
-    [queryClient],
-  );
 
   // Copy the old local choice up once, unless the account already has a choice of its own.
   useEffect(() => {
@@ -94,14 +63,29 @@ export const useChimeChoice = (): [ChimeChoice, (choice: ChimeChoice) => void] =
     clearLegacy();
   }, [data, queryClient]);
 
-  if (!data) {
-    return [DEFAULT_CHOICE, save];
-  }
+  const sound = data?.sound;
+  const customSounds = data?.customSounds;
 
-  const { sound, customSounds } = data;
-  const custom = customSounds.find(({ id }) => {
-    return id === sound.id;
-  });
+  return useMemo(() => {
+    if (!sound) {
+      return DEFAULT_CHOICE;
+    }
 
-  return [{ ...sound, url: custom?.url ?? null }, save];
+    const custom = customSounds?.find(({ id }) => {
+      return id === sound.id;
+    });
+
+    return { ...sound, url: custom?.url ?? null };
+  }, [sound, customSounds]);
+};
+
+/** The sound for one session: the one it carries, or the default. Never changes the default. */
+export const useSessionChime = (soundId: string | null): ChimeChoice => {
+  const base = useChimeChoice();
+  const { data } = useProfile();
+  const customSounds = data?.customSounds;
+
+  return useMemo(() => {
+    return sessionChoice(soundId, base, customSounds ?? []);
+  }, [soundId, base, customSounds]);
 };

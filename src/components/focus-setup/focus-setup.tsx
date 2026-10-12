@@ -14,6 +14,8 @@ interface FocusSetupProps {
   target: FocusTarget;
   /** The numbers last used on this habit, if any. */
   last: FocusPlan | undefined;
+  /** The sound last chosen on this habit, if any (otherwise the profile sound is the default). */
+  lastSound: string | undefined;
   pending: boolean;
   error: string | null;
   onStart: (input: StartInput) => void;
@@ -36,17 +38,18 @@ const presetOf = (plan: FocusPlan): PresetKey | null => {
 
 /** Pomodoro (Classic, Deep, Short or your own numbers) or Free. Remembers the last numbers used on the habit. */
 export const FocusSetup = (props: FocusSetupProps) => {
-  const { target, last, pending, error, onStart } = props;
+  const { target, last, lastSound, pending, error, onStart } = props;
   const { id } = target;
 
-  const [state, setState] = useState<{ mode: 'pomodoro' | 'free'; plan: FocusPlan }>({
+  const [state, setState] = useState<{ mode: 'pomodoro' | 'free'; plan: FocusPlan; soundId: string | null }>({
     mode: 'pomodoro',
     plan: last ?? PRESETS.classic,
+    soundId: lastSound ?? null,
   });
 
   const t = useTranslations('focus.setup');
 
-  const { mode, plan } = state;
+  const { mode, plan, soundId } = state;
   const invalid = planErrors(plan).length > 0;
   const pomodoro = mode === 'pomodoro';
   const total = totalSeconds(plan) / 60;
@@ -80,9 +83,15 @@ export const FocusSetup = (props: FocusSetupProps) => {
     });
   };
 
+  const onSoundChange = (next: string | null) => {
+    setState(current => {
+      return { ...current, soundId: next };
+    });
+  };
+
   const onSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onStart({ habitId: id, mode, plan: pomodoro ? plan : null });
+    onStart({ habitId: id, mode, plan: pomodoro ? plan : null, soundId });
   };
 
   return (
@@ -147,7 +156,7 @@ export const FocusSetup = (props: FocusSetupProps) => {
       ) : (
         <p className="focus-setup__total">{t('freeNote')}</p>
       )}
-      <FocusSound />
+      <FocusSound value={soundId} onChange={onSoundChange} />
       {error && (
         <p role="alert" className="focus-setup__error">
           {error}

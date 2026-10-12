@@ -19,9 +19,12 @@ export const FocusPanel = () => {
     target,
     result,
     plans,
+    sounds,
     pending,
     error,
     didIt,
+    countIt,
+    setCountIt,
     setDidIt,
     start,
     stop,
@@ -47,7 +50,16 @@ export const FocusPanel = () => {
       <DialogContent className="focus-panel">
         <DialogTitle className="focus-panel__title">{title}</DialogTitle>
         <DialogDescription className="focus-panel__description">{name}</DialogDescription>
-        {result && <FocusEnding result={result} didIt={didIt} onDidItChange={setDidIt} onDone={confirm} />}
+        {result && (
+          <FocusEnding
+            result={result}
+            didIt={didIt}
+            countIt={countIt}
+            onDidItChange={setDidIt}
+            onCountItChange={setCountIt}
+            onDone={confirm}
+          />
+        )}
         {!result && session && view && (
           <FocusRunning
             view={view}
@@ -59,7 +71,14 @@ export const FocusPanel = () => {
           />
         )}
         {!result && !session && target && (
-          <FocusSetup target={target} last={plans[targetId ?? '']} pending={pending} error={error} onStart={start} />
+          <FocusSetup
+            target={target}
+            last={plans[targetId ?? '']}
+            lastSound={sounds[targetId ?? '']}
+            pending={pending}
+            error={error}
+            onStart={start}
+          />
         )}
       </DialogContent>
     </Dialog>

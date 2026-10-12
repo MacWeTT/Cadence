@@ -1,5 +1,5 @@
 begin;
-select plan(12);
+select plan(15);
 
 insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-0000000000a1', 'a@test.dev'),
@@ -16,6 +16,12 @@ select throws_ok($$insert into public.focus_sessions (user_id, habit_id, mode, p
 select throws_ok($$insert into public.focus_sessions (user_id, habit_id, mode) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'pomodoro')$$, '23514', null, 'a pomodoro session without a plan is rejected');
 select throws_ok($$insert into public.focus_sessions (user_id, habit_id, mode, plan) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'pomodoro', '{"focusMin":181,"breakMin":5,"longBreakMin":15,"rounds":4}')$$, '23514', null, 'a plan outside the limits is rejected');
 select throws_ok($$insert into public.focus_sessions (user_id, habit_id, mode, focus_seconds, ended_at) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'free', -1, now())$$, '23514', null, 'negative focus seconds are rejected');
+
+-- the sound chosen for a session: nothing (the default), a built-in sound, or one of the person's own sounds
+select lives_ok($$insert into public.focus_sessions (user_id, habit_id, mode, ended_at, focus_seconds, sound_id) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'free', now(), 600, 'marimba')$$, 'a built-in sound is accepted');
+select lives_ok($$insert into public.focus_sessions (user_id, habit_id, mode, ended_at, focus_seconds, sound_id) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'free', now(), 600, '3f2b6c3e-1a2b-4c5d-8e9f-0a1b2c3d4e5f')$$, 'a custom sound id is accepted');
+select throws_ok($$insert into public.focus_sessions (user_id, habit_id, mode, ended_at, focus_seconds, sound_id) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'free', now(), 600, 'airhorn')$$, '23514', null, 'an unknown sound is rejected');
+delete from public.focus_sessions where sound_id is not null;
 
 -- one running session per person
 insert into public.focus_sessions (user_id, habit_id, mode) values ('00000000-0000-0000-0000-0000000000a1', '10000000-0000-0000-0000-0000000000a1', 'free');

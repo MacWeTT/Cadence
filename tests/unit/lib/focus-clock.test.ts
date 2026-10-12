@@ -14,6 +14,7 @@ const session = (over: Partial<FocusSession> = {}): FocusSession => {
     plan: null,
     startedAt: '2026-10-12T09:00:00Z',
     skippedSeconds: 0,
+    soundId: null,
     ...over,
   };
 };
