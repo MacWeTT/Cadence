@@ -1,4 +1,18 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
+
+/**
+ * Clicks a toggle until it is in the wanted state. A click that lands before the page has hydrated does nothing, so it is
+ * tried again; one that has worked is not repeated (it would undo itself).
+ */
+const setExpanded = async (toggle: Locator, expanded: boolean) => {
+  await expect(async () => {
+    if ((await toggle.getAttribute('aria-expanded')) !== String(expanded)) {
+      await toggle.click();
+    }
+
+    await expect(toggle).toHaveAttribute('aria-expanded', String(expanded), { timeout: 1000 });
+  }).toPass();
+};
 
 test('the contributors are tucked behind "friends", with the primary contributor first', async ({ page }) => {
   await page.goto('/about');
@@ -9,8 +23,7 @@ test('the contributors are tucked behind "friends", with the primary contributor
   const toggle = page.getByRole('button', { name: 'friends' });
 
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await setExpanded(toggle, true);
 
   const list = page.locator('#contributors');
 
@@ -22,7 +35,7 @@ test('the contributors are tucked behind "friends", with the primary contributor
     'https://github.com/detoroito-sama',
   );
 
-  await toggle.click();
+  await setExpanded(toggle, false);
   await expect(page.locator('#contributors')).toHaveCount(0);
 });
 
