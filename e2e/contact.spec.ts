@@ -84,11 +84,22 @@ test('the two fields line up, and the message box cannot be resized', async ({ p
   await page.goto('/contact');
   await expect(page.getByLabel('Your name (optional)')).toBeVisible();
 
-  const name = await page.getByLabel('Your name (optional)').boundingBox();
-  const email = await page.getByLabel('Your email (optional)').boundingBox();
+  // Measure once the fonts are in and the layout has settled: a late font swap moves the second row by a few pixels.
+  await page.evaluate(() => {
+    return document.fonts.ready;
+  });
 
-  expect(Math.round(name!.y)).toBe(Math.round(email!.y));
-  expect(Math.round(name!.height)).toBe(Math.round(email!.height));
+  const box = async (label: string) => {
+    const found = await page.getByLabel(label).boundingBox();
+
+    return { y: Math.round(found!.y), height: Math.round(found!.height) };
+  };
+
+  await expect
+    .poll(async () => {
+      return await box('Your name (optional)');
+    })
+    .toEqual(await box('Your email (optional)'));
   await expect(page.getByLabel('Your message')).toHaveCSS('resize', 'none');
 });
 

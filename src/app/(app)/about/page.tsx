@@ -3,8 +3,8 @@ import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { AboutIllustration } from '@/components/about-illustration/about-illustration';
 import { Arrive } from '@/components/arrive/arrive';
+import { ContributorsPeek } from '@/components/contributors-peek/contributors-peek';
 import { PageTransition } from '@/components/page-transition/page-transition';
-import { DEVELOPER } from '@/lib/site';
 import './page.css';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -44,13 +44,7 @@ const AboutPage = () => {
             </ul>
           </Arrive>
           <Arrive index={3}>
-            <p className="about__text">
-              {t('builtBy')}{' '}
-              <a href={DEVELOPER.url} target="_blank" rel="noreferrer" className="about__link">
-                {DEVELOPER.name}
-              </a>
-              {'.'}
-            </p>
+            <ContributorsPeek />
           </Arrive>
         </div>
         <AboutIllustration />
