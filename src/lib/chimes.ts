@@ -15,9 +15,15 @@ export interface Note {
 }
 
 export interface ChimeChoice {
-  id: ChimeId;
+  /** A built-in sound name, or the id of one of the person's own sounds (then `url` is where to fetch it). */
+  id: string;
   volume: number;
+  url?: string | null;
 }
+
+export const isChimeId = (id: string): id is ChimeId => {
+  return (CHIME_IDS as readonly string[]).includes(id);
+};
 
 const RECIPES: Record<Exclude<ChimeId, 'silent'>, Note[]> = {
   bell: [
@@ -37,7 +43,7 @@ const RECIPES: Record<Exclude<ChimeId, 'silent'>, Note[]> = {
   ],
 };
 
-const DEFAULT_CHOICE: ChimeChoice = { id: 'bell', volume: 0.6 };
+export const DEFAULT_CHOICE: ChimeChoice = { id: 'bell', volume: 0.6 };
 
 /** The break cue is the same chime a little higher and shorter, so the two sound different without choosing twice. */
 const BREAK_PITCH = 1.25;
@@ -81,6 +87,32 @@ export const recipeLength = (notes: Note[]): number => {
   );
 };
 
+/**
+ * The sound for one focus session. The profile's sound is the default; a session may carry its own (a built-in sound, or one
+ * of the person's own with its link), played at the default's volume. One that has since been removed falls back to the default.
+ */
+export const sessionChoice = (
+  override: string | null,
+  base: ChimeChoice,
+  customs: { id: string; url: string | null }[],
+): ChimeChoice => {
+  if (override === null) {
+    return base;
+  }
+
+  const { volume } = base;
+
+  if (isChimeId(override)) {
+    return { id: override, volume, url: null };
+  }
+
+  const custom = customs.find(({ id }) => {
+    return id === override;
+  });
+
+  return custom ? { id: override, volume, url: custom.url } : base;
+};
+
 export const parseChoice = (raw: string): ChimeChoice => {
   try {
     const { id, volume } = JSON.parse(raw) as { id?: unknown; volume?: unknown };
@@ -107,10 +139,71 @@ export const unlockAudio = (): void => {
   }
 };
 
+const samples = new Map<string, Promise<AudioBuffer>>();
+
+const loadSample = (url: string, audio: AudioContext): Promise<AudioBuffer> => {
+  let sample = samples.get(url);
+
+  if (!sample) {
+    sample = fetch(url)
+      .then(response => {
+        return response.arrayBuffer();
+      })
+      .then(bytes => {
+        return audio.decodeAudioData(bytes);
+      });
+    samples.set(url, sample);
+    // A failed load is forgotten, so the next cue tries again.
+    sample.catch(() => {
+      samples.delete(url);
+    });
+  }
+
+  return sample;
+};
+
+/** A person's own sound, played like a built-in: higher for a break, three times, each higher, when a session is done. */
+const playSample = async (url: string, volume: number, cue: Cue): Promise<void> => {
+  const audio = context;
+
+  if (!audio) {
+    return;
+  }
+
+  try {
+    const buffer = await loadSample(url, audio);
+    const rates = cue === 'done' ? DONE_STEPS : [cue === 'break' ? BREAK_PITCH : 1];
+    const { currentTime, destination } = audio;
+    let start = currentTime;
+
+    for (const rate of rates) {
+      const source = audio.createBufferSource();
+      const amp = audio.createGain();
+
+      source.buffer = buffer;
+      source.playbackRate.value = rate;
+      amp.gain.value = volume;
+      source.connect(amp).connect(destination);
+      source.start(start);
+      start += buffer.duration / rate + 0.1;
+    }
+  } catch {
+    // the file could not be fetched or decoded: the notification and the tab title are the fallback
+  }
+};
+
 export const playChime = (choice: ChimeChoice, cue: Cue): void => {
-  const { id, volume } = choice;
+  const { id, volume, url } = choice;
 
   if (!context) {
+    return;
+  }
+
+  if (!isChimeId(id)) {
+    if (url) {
+      void playSample(url, volume, cue);
+    }
+
     return;
   }
 

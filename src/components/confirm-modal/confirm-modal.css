@@ -1,0 +1,13 @@
+@reference '../../app/globals.css';
+
+.confirm-modal {
+  @apply sm:max-w-md;
+}
+
+.confirm-modal__title {
+  @apply font-display text-lg;
+}
+
+.confirm-modal__description {
+  @apply text-sm text-ink-muted;
+}

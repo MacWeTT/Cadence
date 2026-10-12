@@ -1,0 +1,17 @@
+@reference '../../app/globals.css';
+
+.get-the-app__button {
+  @apply shrink-0 gap-2;
+}
+
+.get-the-app__menu {
+  @apply w-64;
+}
+
+.get-the-app__item {
+  @apply flex flex-col;
+}
+
+.get-the-app__hint {
+  @apply text-xs text-ink-muted;
+}

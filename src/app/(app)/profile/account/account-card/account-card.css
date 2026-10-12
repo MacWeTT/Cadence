@@ -1,0 +1,17 @@
+@reference '../../../../globals.css';
+
+.account-card {
+  @apply flex flex-col gap-4 rounded-xl border border-line bg-surface p-5;
+}
+
+.account-card--danger {
+  @apply border-danger/40;
+}
+
+.account-card__title {
+  @apply font-display text-xl;
+}
+
+.account-card__intro {
+  @apply -mt-2 text-sm text-ink-muted;
+}

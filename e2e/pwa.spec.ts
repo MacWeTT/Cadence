@@ -88,10 +88,10 @@ test('a page that cannot be reached because the server answered is not replaced 
   expect(response?.status()).toBe(404);
 });
 
-test('the account menu offers to install Cadence when the browser says it can be installed', async ({ page }) => {
-  await page.goto('/today');
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await expect(page.getByRole('menuitem', { name: 'Install app' })).toHaveCount(0);
+test('Get the app on the profile offers the web app when the browser says it can be installed', async ({ page }) => {
+  await page.goto('/profile');
+  await page.getByRole('button', { name: 'Get the app' }).click();
+  await expect(page.getByRole('menuitem', { name: /Web app/ })).toBeDisabled();
   await page.keyboard.press('Escape');
 
   await page.evaluate(() => {
@@ -109,14 +109,14 @@ test('the account menu offers to install Cadence when the browser says it can be
     event.userChoice = Promise.resolve({ outcome: 'dismissed' });
     window.dispatchEvent(event);
   });
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.getByRole('menuitem', { name: 'Install app' }).click();
+  await page.getByRole('button', { name: 'Get the app' }).click();
+  await page.getByRole('menuitem', { name: /Web app/ }).click();
 
   expect(
     await page.evaluate(() => {
       return (window as unknown as { __prompted?: boolean }).__prompted;
     }),
   ).toBe(true);
-  await page.getByRole('button', { name: 'Account menu' }).click();
-  await expect(page.getByRole('menuitem', { name: 'Install app' })).toHaveCount(0); // a prompt can be shown only once
+  await page.getByRole('button', { name: 'Get the app' }).click();
+  await expect(page.getByRole('menuitem', { name: /Web app/ })).toBeDisabled(); // a prompt can be shown only once
 });

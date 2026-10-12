@@ -37,16 +37,30 @@ export type Database = {
                   Relationships: [
                     
                   ]
-                },"focus_sessions": {
+                },"custom_sounds": {
                   Row: {
-                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"started_at": string,"user_id": string
+                    "created_at": string,"duration_ms": number,"id": string,"name": string,"path": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"plan"?: Json | null,"skipped_seconds"?: number,"started_at"?: string,"user_id"?: string
+                    "created_at"?: string,"duration_ms": number,"id"?: string,"name": string,"path": string,"user_id"?: string
                   }
                   Update: {
-                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"plan"?: Json | null,"skipped_seconds"?: number,"started_at"?: string,"user_id"?: string
+                    "created_at"?: string,"duration_ms"?: number,"id"?: string,"name"?: string,"path"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"focus_sessions": {
+                  Row: {
+                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"sound_id": string | null,"started_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -133,14 +147,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_url": string | null,"created_at": string,"display_name": string | null,"timezone": string,"user_id": string,"week_starts_on": number
+                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"timezone": string,"user_id": string,"week_starts_on": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_url"?: string | null,"created_at"?: string,"display_name"?: string | null,"timezone"?: string,"user_id": string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id": string,"week_starts_on"?: number
                   }
                   Update: {
-                    "avatar_url"?: string | null,"created_at"?: string,"display_name"?: string | null,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
                   }
                   Relationships: [
                     
@@ -169,6 +183,12 @@ isOneToOne: false
 { Args: { "p_color": string,"p_description": string,"p_icon": string,"p_kind": string,"p_name": string,"p_start_date": string,"p_times_per_week": number }; Returns: string
                            } |
 { Args: { "p_color": string,"p_description": string,"p_icon": string,"p_kind": string,"p_name": string,"p_start_date": string,"p_times_per_week": number,"p_weekdays": (number)[] }; Returns: string
+                           },
+"delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"replace_my_data":
+{ Args: { "p_backup": Json }; Returns: Json
                            },
 "restore_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined

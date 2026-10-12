@@ -4,11 +4,41 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Planned
 
-- A full profile page, with export and import of all your data, so you can keep a backup or restore it if it is ever lost.
+- A photo cropper for your avatar.
+- Signing in with an email and a password, as well as with Google.
 - Reminders: push notifications in your browser and by email.
 - A desktop app, with native notifications and an option to start on login.
+- Circles: something big is on the way, and it brings an XP system along with it. Stay tuned!
 
 ## Known issues
+
+## 0.8.2 (2026-10-12)
+
+Sounds, your way.
+
+- Your own sounds now show up when you start a focus session, next to the built-in ones.
+- The sound you choose in your profile is now your default. Pick a different one for a single focus session, and Cadence remembers it for that habit.
+- When a session ends, a new box lets you leave its minutes out of your focus time. "I did it" still only ticks the habit.
+
+## 0.8.1 (2026-10-12)
+
+Credit where it's due.
+
+- A list of the people who have helped build Cadence, on the About page.
+
+## 0.8.0 (2026-10-12)
+
+Your profile.
+
+- A profile page, opened from your picture in the top bar: your name, photo, timezone, week start and focus sound in one place, each changed in a moment.
+- Choose your avatar: one of six characters or an emoji, in any colour, or upload a photo of your own.
+- Your focus sound now follows you to any device. Add up to six sounds of your own, each up to five seconds.
+- Pick your timezone from a list of cities, with a note about what changes when you move it.
+- Your accent colour follows you to any device too, and there is a new grey to choose from.
+- Appearance now lives in your profile.
+- Take your data with you: export everything as a JSON or CSV file, or as a PDF report you can read and share, and restore a JSON or CSV backup whenever you like.
+- Delete your account, and everything in it, if you ever want to leave.
+- A "Get the app" button on your profile. Reminders, by push and by email, are shown as coming soon.
 
 ## 0.7.0 (2026-10-12)
 

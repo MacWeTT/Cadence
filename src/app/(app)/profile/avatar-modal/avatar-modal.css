@@ -1,0 +1,50 @@
+@reference '../../../globals.css';
+
+.avatar-modal__current {
+  @apply flex flex-col items-center gap-2;
+}
+
+.avatar-modal__preview {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-popover;
+}
+
+.avatar-modal__caption {
+  @apply text-sm text-ink-muted;
+}
+
+.avatar-modal__heading {
+  @apply mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted;
+}
+
+.avatar-modal__tiles {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.avatar-modal__tile {
+  @apply flex size-11 items-center justify-center overflow-hidden rounded-full border border-line;
+  background: color-mix(in srgb, var(--avatar-color, transparent) 28%, white);
+}
+
+.avatar-modal__tile--emoji {
+  @apply bg-surface text-xl leading-none;
+}
+
+.avatar-modal__tile--active {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-popover;
+}
+
+.avatar-modal__upload {
+  @apply flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-line px-3 py-3 text-left hover:bg-line/40;
+}
+
+.avatar-modal__upload-icon {
+  @apply size-5 shrink-0;
+}
+
+.avatar-modal__hint {
+  @apply block text-xs text-ink-muted;
+}
+
+.avatar-modal__tiles .emoji-field__trigger {
+  @apply size-11 rounded-full text-xl;
+}

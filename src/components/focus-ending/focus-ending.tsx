@@ -8,19 +8,25 @@ import './focus-ending.css';
 interface FocusEndingProps {
   result: NonNullable<FocusApi['result']>;
   didIt: boolean;
+  countIt: boolean;
   onDidItChange: (didIt: boolean) => void;
+  onCountItChange: (countIt: boolean) => void;
   onDone: () => void;
 }
 
 /** The minutes focused, and an "I did it" box (ticked, on the assumption the work got done) for the day it started. */
 export const FocusEnding = (props: FocusEndingProps) => {
-  const { result, didIt, onDidItChange, onDone } = props;
+  const { result, didIt, countIt, onDidItChange, onCountItChange, onDone } = props;
   const { focusSeconds, ticked, name } = result;
 
   const t = useTranslations('focus.ending');
 
   const onCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onDidItChange(event.currentTarget.checked);
+  };
+
+  const onCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onCountItChange(event.currentTarget.checked);
   };
 
   return (
@@ -37,6 +43,13 @@ export const FocusEnding = (props: FocusEndingProps) => {
           </span>
         </label>
       )}
+      <label className="focus-ending__check">
+        <input type="checkbox" checked={countIt} onChange={onCountChange} className="focus-ending__box" />
+        <span>
+          <span className="focus-ending__yes">{t('count')}</span>
+          <span className="focus-ending__note">{t('countHint')}</span>
+        </span>
+      </label>
       <Button onClick={onDone} className="focus-ending__done">
         {ticked ? t('close') : t('done')}
       </Button>

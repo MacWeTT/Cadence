@@ -54,6 +54,8 @@ export interface StartInput {
   habitId: string;
   mode: 'free' | 'pomodoro';
   plan: FocusPlan | null;
+  /** The sound for this session; `null` follows the profile's sound. */
+  soundId: string | null;
 }
 
 class FocusError extends Error {}

@@ -182,6 +182,8 @@ export const seedFocusSession = async (o: {
   plan?: { focusMin: number; breakMin: number; longBreakMin: number; rounds: number };
   /** Makes the session finished, with this many focus seconds. */
   finishedWithSeconds?: number;
+  /** The sound chosen for the session; left out follows the profile sound. */
+  soundId?: string;
 }): Promise<void> => {
   const userId = await ensureE2EUser();
   const mode = o.mode ?? 'free';
@@ -199,6 +201,7 @@ export const seedFocusSession = async (o: {
           ? null
           : new Date(startedAt.getTime() + o.finishedWithSeconds * 1000).toISOString(),
       focus_seconds: o.finishedWithSeconds ?? null,
+      sound_id: o.soundId ?? null,
     });
 
   if (error) {
@@ -261,6 +264,66 @@ export const setWeekStartForTests = async (): Promise<void> => {
   }
 };
 
+/** The e2e user's profile row, for checking what an edit saved. */
+export const getProfileRow = async () => {
+  const userId = await ensureE2EUser();
+  const { data, error } = await adminClient().from('profiles').select('*').eq('user_id', userId).single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+export const setAccent = async (accent: string): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const { error } = await adminClient().from('profiles').update({ accent }).eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+};
+
+/** Puts the e2e user's profile back as a new account has it, and removes any uploaded avatar and custom sounds. */
+export const resetProfile = async (): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const admin = adminClient();
+
+  const { error } = await admin
+    .from('profiles')
+    .update({
+      display_name: 'E2E User',
+      timezone: 'UTC',
+      week_starts_on: 1,
+      avatar_kind: 'google',
+      avatar_value: null,
+      avatar_color: null,
+      sound_id: 'bell',
+      sound_volume: 0.6,
+      accent: null,
+      accent_custom: null,
+    })
+    .eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+
+  await admin.from('custom_sounds').delete().eq('user_id', userId);
+
+  for (const bucket of ['avatars', 'sounds']) {
+    const { data } = await admin.storage.from(bucket).list(userId);
+    const paths = (data ?? []).map(({ name }) => {
+      return `${userId}/${name}`;
+    });
+
+    if (paths.length > 0) {
+      await admin.storage.from(bucket).remove(paths);
+    }
+  }
+};
+
 export const clearContactMessages = async (): Promise<void> => {
   const { error } = await adminClient().from('contact_messages').delete().not('id', 'is', null);
 
@@ -277,4 +340,30 @@ export const getContactMessages = async () => {
   }
 
   return data;
+};
+
+/** A sound of the e2e user's own, straight in the database (there is no file behind it, so it has no link). */
+export const seedCustomSound = async (name: string): Promise<string> => {
+  const userId = await ensureE2EUser();
+  const { data, error } = await adminClient()
+    .from('custom_sounds')
+    .insert({ user_id: userId, name, path: `${userId}/seeded.mp3`, duration_ms: 1000 })
+    .select('id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data.id;
+};
+
+/** Sets the profile sound, the default for every focus session. */
+export const setProfileSound = async (soundId: string): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const { error } = await adminClient().from('profiles').update({ sound_id: soundId }).eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
 };

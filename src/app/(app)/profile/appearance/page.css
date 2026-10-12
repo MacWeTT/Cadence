@@ -1,4 +1,4 @@
-@reference '../../globals.css';
+@reference '../../../globals.css';
 
 .appearance {
   @apply flex flex-col gap-8;

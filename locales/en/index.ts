@@ -1,4 +1,5 @@
 import about from './about.json';
+import account from './account.json';
 import alert from './alert.json';
 import appearance from './appearance.json';
 import auth from './auth.json';
@@ -13,6 +14,7 @@ import habits from './habits.json';
 import home from './home.json';
 import labels from './labels.json';
 import metadata from './metadata.json';
+import profile from './profile.json';
 import progress from './progress.json';
 import today from './today.json';
 import validation from './validation.json';
@@ -20,6 +22,7 @@ import validation from './validation.json';
 /** Every English message, one file per area. Add a file here when you add an area. */
 const en = {
   about,
+  account,
   alert,
   appearance,
   auth,
@@ -34,6 +37,7 @@ const en = {
   home,
   labels,
   metadata,
+  profile,
   progress,
   today,
   validation,
