@@ -1,0 +1,67 @@
+{
+  "pageTitle": "Account",
+  "loadFailedTitle": "Couldn't load your account",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again",
+  "export": {
+    "title": "Export your data",
+    "intro": "Take a copy of everything you have tracked.",
+    "counts": "You have {habits, plural, one {# habit} other {# habits}}, {ticks, plural, one {# check-in} other {# check-ins}} and {focusSessions, plural, one {# focus session} other {# focus sessions}}.",
+    "json": "JSON",
+    "jsonHint": "Everything, for backups and other tools",
+    "csv": "CSV",
+    "csvHint": "Everything in one spreadsheet file",
+    "pdf": "PDF",
+    "pdfHint": "A report to read and share (cannot be imported)",
+    "overLimit": "This is more than Cadence can import back (up to {habits} habits, {ticks} check-ins and {focusSessions} focus sessions). The export is complete, but restoring it here would be refused.",
+    "failed": "Couldn't make the export. Try again."
+  },
+  "import": {
+    "title": "Import your data",
+    "intro": "Restore a Cadence backup from a .json or .csv file.",
+    "limits": "Up to {size}, {habits} habits, {ticks} check-ins and {focusSessions} focus sessions.",
+    "choose": "Choose a file",
+    "modalTitle": "Replace your data?",
+    "contents": "This file has {habits, plural, one {# habit} other {# habits}}, {ticks, plural, one {# check-in} other {# check-ins}} and {focusSessions, plural, one {# focus session} other {# focus sessions}}.",
+    "warning": "This replaces all your current habits and history with what is in this file. It can't be undone.",
+    "understand": "I understand",
+    "confirm": "Replace my data",
+    "done": "Restored {habits, plural, one {# habit} other {# habits}} and {ticks, plural, one {# check-in} other {# check-ins}}.",
+    "errors": {
+      "unreadable": "That file couldn't be read.",
+      "notBackup": "That isn't a Cadence backup.",
+      "newerVersion": "That backup was made by a newer version of Cadence. Update Cadence and try again.",
+      "tooBig": "That file is over {limit}.",
+      "tooMany": "That file has {count} {what, select, habits {habits} ticks {check-ins} other {focus sessions}}. The limit is {limit}.",
+      "invalid": "That file has a problem in {where}: {reason}.",
+      "badCsv": "Row {row} of that file isn't valid ({reason}).",
+      "badCsvDate": "Row {row} has a date Cadence can't read: “{value}”. Dates look like 2026-09-02."
+    },
+    "reasons": {
+      "dateInvalid": "a date isn't valid",
+      "timestampInvalid": "a time isn't valid",
+      "scheduleInvalid": "a schedule isn't valid",
+      "nameInvalid": "the name is empty or too long",
+      "descriptionInvalid": "the description is too long",
+      "iconInvalid": "the icon is not a single emoji",
+      "colorInvalid": "the colour isn't one Cadence has",
+      "linkInvalid": "a link isn't a web address, or there are too many",
+      "tickDuplicate": "a day is ticked twice",
+      "tickBeforeStart": "a check-in is before the habit started",
+      "tickInFuture": "a check-in is after today",
+      "pauseInvalid": "a pause ends before it starts",
+      "archiveInvalid": "the archived date and the pauses don't match",
+      "focusInvalid": "a focus session isn't valid"
+    }
+  },
+  "delete": {
+    "title": "Delete your account",
+    "intro": "This permanently deletes your habits, history, focus sessions, uploaded files and your sign-in. Export your data first if you want to keep it.",
+    "button": "Delete account",
+    "modalTitle": "Delete your account?",
+    "warning": "Everything is deleted at once and can't be brought back.",
+    "type": "Type your email address to confirm",
+    "confirm": "Delete forever",
+    "done": "Your account has been deleted."
+  }
+}
