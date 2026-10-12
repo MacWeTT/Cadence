@@ -32,11 +32,16 @@ The internal list of everything planned or considered, so no feature is lost. Th
 - A privacy page and terms before strangers sign up. Google also needs them (with a home page) to verify the app's name, so the sign-in screen can say Cadence instead of the Supabase address.
 - 1.0 is the first release: bug fixes, flow revisions and the installer, on top of everything scheduled above it.
 
+## After 1.0 (in scope, not yet versioned)
+
+- **Circles:** a friends-only way to share habits, without pressure. Proposed by a contributor in issue #64; to be designed when it is next. It replaces the old "viewing other people's streaks" idea below.
+- **User XP:** points for showing up, added once Circles has launched (it needs people to share it with). Design to follow Circles.
+
 ## Considered, not scheduled
 
 From the original spec's non-goals, and ideas since. Nothing here is promised.
 
-- Social: viewing other people's streaks (the spec's "later phase"), and sharing.
+- Sharing outside Circles (public profiles, links).
 - An in-app photo cropper for avatars (uploads are cropped to a square by default until then).
 - A proper icon set across the app (lucide is installed; moving the hand-drawn icons over).
 - Integrations (calendar, other trackers), AI coaching, gamification, payments.
