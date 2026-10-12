@@ -18,7 +18,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.6.5 | Full profile page (not the priority now) | name, avatar, timezone and week start, delete account, **sound settings (the chime choice synced to the account, and custom chime uploads: short audio, size and type limits, stored privately)**, and **the install control moves here from the account menu: one Install button with two options, Web app (today's install prompt) and Installer (the desktop app, disabled with a "Coming soon" tooltip until it exists)**, and **export and import of all your data**: one file with habits, schedules, ticks, links and focus sessions, so a person can keep a backup or restore it after a loss. Replace-or-merge on import is to be designed with the page |
+| 0.6.5 | Profile page (**next**), as a stack of three PRs | Tabs as routes under `/profile`: Overview, Appearance (moves here, `/appearance` redirects), Notifications, Account. Every edit is a modal with an optimistic save and a toast. **PR 1:** Overview (photo, name, timezone, week start, focus sound synced to the account), a "Get the app" dropdown (Web app, and Installer disabled with "Coming soon"), Appearance moved, Notifications (push and email toggles, disabled). Avatar: the Google photo to start, then one of six characters or an emoji (with an accent colour), or an uploaded photo cropped square. Sound: the six built-in sounds or up to six custom ones (5 seconds each), kept privately. Timezone: a city list with a warning that "today" shifts. **PR 2:** Account tab: delete account, and export and import of all your data (habits, schedules, ticks, links, focus sessions; replace-or-merge on import to be designed). **PR 3:** redrawn Alien and Mage, review fixes, version and changelog. Design: `docs/superpowers/specs/2026-10-12-profile-page-design.md` |
 | 0.7 | Notifications: browser push and email reminders | Resend needs a verified domain and an unsubscribe link; per-user settings and a scheduler that reuses the Home alert rules in the user's timezone |
 | 0.7 | Focus sessions: a timer per habit (**next**) | free (count up) or pomodoro (presets Classic 25/5, Deep 50/10, Short 15/3, all editable, last numbers remembered per habit); a running bar on every page; "I did it" ticks the habit; minutes of focus on Progress. Design: `docs/superpowers/specs/2026-10-12-focus-sessions-design.md`. Later: a Focus page with recent sessions |
 | after 0.7 | Desktop app (Tauri) | native notifications, start on login; opens habit links without the popup limit |
@@ -34,7 +34,8 @@ The internal list of everything planned or considered, so no feature is lost. Th
 From the original spec's non-goals, and ideas since. Nothing here is promised.
 
 - Social: viewing other people's streaks (the spec's "later phase"), and sharing.
-- Custom avatar upload (the Google picture is used today).
+- An in-app photo cropper for avatars (uploads are cropped to a square by default until then).
+- A proper icon set across the app (lucide is installed; moving the hand-drawn icons over).
 - Integrations (calendar, other trackers), AI coaching, gamification, payments.
 - Hover-prefetching of the top-bar links (left out of the cache work).
 - Server-side prefetch so a cold first load skips the skeleton.
