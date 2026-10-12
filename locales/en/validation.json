@@ -28,5 +28,6 @@
   "soundTooBig": "Keep the sound under 500 KB",
   "soundTooLong": "Keep the sound to 5 seconds or less",
   "soundLimit": "You can keep up to 6 sounds. Remove one to add another.",
-  "accentInvalid": "Choose one of the accent colours, or a colour of your own"
+  "accentInvalid": "Choose one of the accent colours, or a colour of your own",
+  "tagInvalid": "Use 3 to 30 lowercase letters, digits or underscores, and not a reserved word."
 }

@@ -3,6 +3,7 @@ import { toProfileView, type ProfileRow, type SoundRow } from '@/server/profile-
 
 const row: ProfileRow = {
   display_name: 'Manas',
+  tag: 'manas',
   avatar_url: 'https://example.com/me.png',
   avatar_kind: 'google',
   avatar_value: null,
@@ -30,6 +31,7 @@ describe('toProfileView', () => {
   it('starts everyone on the Google picture, the Bell at 60% and their timezone under its current name', () => {
     expect(view()).toEqual({
       name: 'Manas',
+      tag: 'manas',
       email: 'm@test.dev',
       avatar: { kind: 'google', value: null, color: null, url: 'https://example.com/me.png' },
       timezone: 'Asia/Kolkata',

@@ -7,6 +7,10 @@ export const withName = (view: ProfileView, name: string): ProfileView => {
   return { ...view, name };
 };
 
+export const withTag = (view: ProfileView, tag: string): ProfileView => {
+  return { ...view, tag };
+};
+
 export const withWeekStart = (view: ProfileView, weekStartsOn: 1 | 7): ProfileView => {
   return { ...view, weekStartsOn };
 };

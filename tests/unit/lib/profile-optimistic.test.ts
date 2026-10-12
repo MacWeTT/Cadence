@@ -5,6 +5,7 @@ import {
   withPhoto,
   withSound,
   withSoundRemoved,
+  withTag,
   withTimezone,
   withWeekStart,
 } from '@/lib/profile-optimistic';
@@ -14,6 +15,7 @@ const clip = { id: '3f2b6c3e-1a2b-4c5d-8e9f-0a1b2c3d4e5f', name: 'Air horn', dur
 
 const view: ProfileView = {
   name: 'Manas',
+  tag: 'manas',
   email: 'm@test.dev',
   avatar: { kind: 'google', value: null, color: null, url: 'https://g/me.png' },
   timezone: 'Asia/Kolkata',
@@ -28,6 +30,10 @@ describe('the profile as it looks before the server answers', () => {
     expect(withName(view, 'Mac')).toEqual({ ...view, name: 'Mac' });
     expect(withWeekStart(view, 7)).toEqual({ ...view, weekStartsOn: 7 });
     expect(withTimezone(view, 'Europe/London')).toEqual({ ...view, timezone: 'Europe/London' });
+  });
+
+  it('changes the tag', () => {
+    expect(withTag(view, 'manasb')).toEqual({ ...view, tag: 'manasb' });
   });
 
   it('shows a character or an emoji with its colour and no picture', () => {

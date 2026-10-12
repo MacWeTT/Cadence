@@ -294,6 +294,7 @@ export const resetProfile = async (): Promise<void> => {
     .from('profiles')
     .update({
       display_name: 'E2E User',
+      tag: 'e2e',
       timezone: 'UTC',
       week_starts_on: 1,
       avatar_kind: 'google',

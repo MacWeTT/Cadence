@@ -7,6 +7,7 @@ import {
   nameInputSchema,
   soundInputSchema,
   soundNameFromFile,
+  tagInputSchema,
   timezoneInputSchema,
   weekStartInputSchema,
 } from '@/lib/profile-schema';
@@ -20,6 +21,18 @@ describe('nameInputSchema', () => {
     expect(nameInputSchema.safeParse({ name: '   ' }).success).toBe(false);
     expect(nameInputSchema.safeParse({ name: 'x'.repeat(51) }).success).toBe(false);
     expect(nameInputSchema.safeParse({ name: 'x'.repeat(50) }).success).toBe(true);
+  });
+});
+
+describe('tagInputSchema', () => {
+  it('forgives the @, the spaces and the capitals, and saves the plain tag', () => {
+    expect(tagInputSchema.safeParse({ tag: '  @Manas_B ' })).toMatchObject({ success: true, data: { tag: 'manas_b' } });
+  });
+
+  it('refuses a tag that is too short, too long, reserved or has other characters', () => {
+    for (const tag of ['ab', 'a'.repeat(31), 'admin', 'has-dash', 'has space', '']) {
+      expect(tagInputSchema.safeParse({ tag }).success).toBe(false);
+    }
   });
 });
 
