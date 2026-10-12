@@ -63,5 +63,37 @@
     "type": "Type your email address to confirm",
     "confirm": "Delete forever",
     "done": "Your account has been deleted."
+  },
+  "report": {
+    "subtitle": "Progress report",
+    "generated": "Generated on {date}",
+    "heading": "Habits of {name}",
+    "headingAnonymous": "Your habits",
+    "empty": "No habits yet. Add one in Cadence and your report will fill in.",
+    "made": "Made with Cadence",
+    "archived": "Archived",
+    "tiles": {
+      "habits": "Habits",
+      "checkIns": "Check-ins",
+      "focus": "Focus time",
+      "streak": "Best current streak"
+    },
+    "stats": {
+      "current": "Current streak",
+      "longest": "Longest streak",
+      "rate30": "Last 30 days",
+      "rate90": "Last 90 days"
+    },
+    "heat": {
+      "done": "Done",
+      "missed": "Missed"
+    },
+    "streakDay": "{count, plural, one {# day} other {# days}}",
+    "streakWeek": "{count, plural, one {# week} other {# weeks}}",
+    "checkIns": "{count, plural, one {# check-in} other {# check-ins}}",
+    "focus": "{duration} of focus",
+    "duration": "{hours} h {minutes} m",
+    "bestStreak": "on {name}",
+    "pageOf": "Page {page} of {total}"
   }
 }
