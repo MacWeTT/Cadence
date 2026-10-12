@@ -174,6 +174,48 @@ export const setProfileTimezone = async (timezone: string): Promise<void> => {
   }
 };
 
+/** A focus session straight in the database. `startedMinutesAgo` is measured on this machine's clock. */
+export const seedFocusSession = async (o: {
+  habitId: string;
+  startedMinutesAgo: number;
+  mode?: 'free' | 'pomodoro';
+  plan?: { focusMin: number; breakMin: number; longBreakMin: number; rounds: number };
+  /** Makes the session finished, with this many focus seconds. */
+  finishedWithSeconds?: number;
+}): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const mode = o.mode ?? 'free';
+  const startedAt = new Date(Date.now() - o.startedMinutesAgo * 60_000);
+  const { error } = await adminClient()
+    .from('focus_sessions')
+    .insert({
+      user_id: userId,
+      habit_id: o.habitId,
+      mode,
+      plan: mode === 'pomodoro' ? (o.plan ?? { focusMin: 25, breakMin: 5, longBreakMin: 15, rounds: 4 }) : null,
+      started_at: startedAt.toISOString(),
+      ended_at:
+        o.finishedWithSeconds === undefined
+          ? null
+          : new Date(startedAt.getTime() + o.finishedWithSeconds * 1000).toISOString(),
+      focus_seconds: o.finishedWithSeconds ?? null,
+    });
+
+  if (error) {
+    throw error;
+  }
+};
+
+export const getFocusSessions = async (habitId: string) => {
+  const { data, error } = await adminClient().from('focus_sessions').select('*').eq('habit_id', habitId);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
 export const getCompletions = async (habitId: string) => {
   const { data, error } = await adminClient()
     .from('habit_completions')

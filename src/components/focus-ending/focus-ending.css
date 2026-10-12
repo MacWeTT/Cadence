@@ -1,0 +1,29 @@
+@reference '../../app/globals.css';
+
+.focus-ending {
+  @apply grid gap-3;
+}
+
+.focus-ending__minutes {
+  @apply text-lg font-semibold;
+}
+
+.focus-ending__check {
+  @apply flex min-h-11 cursor-pointer items-start gap-3;
+}
+
+.focus-ending__box {
+  @apply mt-0.5 size-5 shrink-0 accent-primary;
+}
+
+.focus-ending__yes {
+  @apply block font-medium;
+}
+
+.focus-ending__note {
+  @apply block text-sm text-ink-muted;
+}
+
+.focus-ending__done {
+  @apply min-h-11;
+}

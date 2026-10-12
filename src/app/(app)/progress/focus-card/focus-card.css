@@ -1,0 +1,33 @@
+@reference '../../../globals.css';
+
+.focus-card__title {
+  @apply font-display text-xl;
+}
+
+.focus-card__total {
+  @apply mt-1 text-ink-muted;
+}
+
+.focus-card__empty {
+  @apply mt-2 text-ink-muted;
+}
+
+.focus-card__list {
+  @apply mt-4 grid gap-3;
+}
+
+.focus-card__item {
+  @apply grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2 gap-y-1;
+}
+
+.focus-card__name {
+  @apply truncate;
+}
+
+.focus-card__minutes {
+  @apply text-sm text-ink-muted;
+}
+
+.focus-card__bar {
+  @apply col-span-3 h-1.5 rounded-full;
+}

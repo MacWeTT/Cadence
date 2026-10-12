@@ -11,11 +11,13 @@ interface CheckSectionProps {
   onToggle: (row: TodayRow) => void;
   /** Drops the top margin, for a list that opens a column. */
   flush?: boolean;
+  /** Shows each row's Focus pill (today only). */
+  canFocus?: boolean;
 }
 
 /** A titled list of rows (To do, Done, Next up...), shared by Today and Home. */
 export const CheckSection = (props: CheckSectionProps) => {
-  const { id, title, rows, saving, onToggle, flush } = props;
+  const { id, title, rows, saving, onToggle, flush, canFocus } = props;
 
   if (rows.length === 0) {
     return null;
@@ -30,7 +32,9 @@ export const CheckSection = (props: CheckSectionProps) => {
         {rows.map(row => {
           const { id: rowId } = row;
 
-          return <CheckRow key={rowId} row={row} disabled={saving.has(rowId)} onToggle={onToggle} />;
+          return (
+            <CheckRow key={rowId} row={row} disabled={saving.has(rowId)} onToggle={onToggle} canFocus={canFocus} />
+          );
         })}
       </ul>
     </section>

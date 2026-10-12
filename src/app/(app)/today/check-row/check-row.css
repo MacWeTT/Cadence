@@ -31,7 +31,3 @@
 .check-row__tags {
   @apply flex flex-wrap items-center gap-x-2 text-sm text-ink-muted max-sm:col-start-3 max-sm:row-start-2;
 }
-
-.check-row > .open-links-button {
-  @apply max-sm:col-start-4 max-sm:row-span-2 max-sm:row-start-1 max-sm:size-11;
-}

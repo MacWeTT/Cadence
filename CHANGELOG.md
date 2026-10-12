@@ -4,20 +4,34 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Planned
 
-- A full profile page.
+- A full profile page, with export and import of all your data, so you can keep a backup or restore it if it is ever lost.
 - Reminders: push notifications in your browser and by email.
-- Focus sessions: a timer for a habit, with a confirmation when you finish.
 - A desktop app, with native notifications and an option to start on login.
 
 ## Known issues
 
+## 0.7.0 (2026-10-12)
+
+Focus on a habit.
+
+- Start a timer on any habit from Today or Home: Free (counts up until you stop) or Pomodoro (rounds of focus and break, with Classic, Deep and Short presets and your own numbers, remembered for each habit).
+- A slim bar on every page while a session runs, with the time in the tab title, so you can leave the page and come back.
+- A chime when a round or a break ends, in a sound you choose (or silent), and a browser notification if you allow it.
+- When you stop, say "I did it" to tick the habit for that day.
+- A new Focus time card on Progress: the minutes you focused, in total and for each habit.
+
 ## 0.6.3 (2026-10-12)
+
+Every screen, every size.
+
+- Every page now fits phones and tablets: a tab bar at the foot of the screen on phones, long habit names that wrap, a year heatmap that scrolls sideways, dialogs that fit the screen, and larger buttons to tap.
+- A new footer.
+
+## 0.6.0 (2026-10-11)
 
 Cadence goes with you.
 
 - Install Cadence on your phone or computer like an app, with its own icon and window, shortcuts to Today and Progress, and an offline page when your connection drops.
-- Every page now fits phones and tablets: a tab bar at the foot of the screen on phones, long habit names that wrap, a year heatmap that scrolls sideways, dialogs that fit the screen, and larger buttons to tap.
-- A new footer.
 
 ## 0.5.0 (2026-10-11)
 

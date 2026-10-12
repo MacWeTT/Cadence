@@ -8,6 +8,8 @@ export const queryKeys = {
     return ['today', date ?? 'now'] as const;
   },
   home: ['home'] as const,
+  /** The running focus session and the last-used numbers per habit. */
+  focus: ['focus'] as const,
   progressAll: ['progress'] as const,
   /** Progress for one habit filter (`null` is all habits) and one rate window. */
   progress: (habit: string | null, range: number) => {
