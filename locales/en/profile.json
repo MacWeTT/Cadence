@@ -9,7 +9,8 @@
     "label": "Profile sections",
     "overview": "Overview",
     "appearance": "Appearance",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "account": "Account"
   },
   "header": {
     "fallbackName": "Account"

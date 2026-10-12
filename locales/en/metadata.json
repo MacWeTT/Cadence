@@ -1,5 +1,6 @@
 {
   "title": "Cadence",
   "template": "%s · Cadence",
-  "description": "A calm personal habit tracker. Build daily and weekly habits, keep your streaks, and see your progress over time."
+  "description": "A calm personal habit tracker. Build daily and weekly habits, keep your streaks, and see your progress over time.",
+  "defaultTitle": "Cadence · For habits that stick"
 }

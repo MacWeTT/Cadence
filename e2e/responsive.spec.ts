@@ -16,6 +16,7 @@ const PAGES = [
   '/profile',
   '/profile/appearance',
   '/profile/notifications',
+  '/profile/account',
   '/about',
   '/contact',
   '/changelog',

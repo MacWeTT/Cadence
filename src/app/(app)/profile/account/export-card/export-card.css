@@ -1,0 +1,29 @@
+@reference '../../../../globals.css';
+
+.export-card__counts {
+  @apply text-sm;
+}
+
+.export-card__over {
+  @apply rounded-lg border border-amber-500/50 bg-amber-500/15 p-3 text-sm;
+}
+
+.export-card__formats {
+  @apply grid gap-3 sm:grid-cols-3;
+}
+
+.export-card__format {
+  @apply flex items-start gap-3 rounded-xl border border-line px-3 py-3 transition-colors hover:bg-line/40;
+}
+
+.export-card__icon {
+  @apply mt-0.5 size-4 shrink-0;
+}
+
+.export-card__name {
+  @apply block font-medium;
+}
+
+.export-card__hint {
+  @apply block text-xs text-ink-muted;
+}

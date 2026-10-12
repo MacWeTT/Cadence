@@ -184,6 +184,12 @@ isOneToOne: false
                            } |
 { Args: { "p_color": string,"p_description": string,"p_icon": string,"p_kind": string,"p_name": string,"p_start_date": string,"p_times_per_week": number,"p_weekdays": (number)[] }; Returns: string
                            },
+"delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"replace_my_data":
+{ Args: { "p_backup": Json }; Returns: Json
+                           },
 "restore_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined
                            },

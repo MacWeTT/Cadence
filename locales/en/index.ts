@@ -1,4 +1,5 @@
 import about from './about.json';
+import account from './account.json';
 import alert from './alert.json';
 import appearance from './appearance.json';
 import auth from './auth.json';
@@ -21,6 +22,7 @@ import validation from './validation.json';
 /** Every English message, one file per area. Add a file here when you add an area. */
 const en = {
   about,
+  account,
   alert,
   appearance,
   auth,

@@ -15,7 +15,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
   return {
     applicationName: t('title'),
-    title: { default: t('title'), template: t('template') },
+    title: { default: t('defaultTitle'), template: t('template') },
     description: t('description'),
     appleWebApp: { capable: true, title: t('title'), statusBarStyle: 'default' },
     openGraph: { type: 'website', siteName: t('title'), title: t('title'), description: t('description') },
