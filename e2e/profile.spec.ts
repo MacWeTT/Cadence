@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { getProfileRow, resetProfile, setAccent } from '@e2e/support/data';
+import { adminClient, getProfileRow, resetProfile, setAccent } from '@e2e/support/data';
 
 // A valid WAV: mono, 8 kHz, 16-bit, silent, `seconds` long.
 const wav = (seconds: number): Buffer => {
@@ -90,6 +90,70 @@ test('changing the name shows it at once, with a toast, and saves it', async ({ 
       return (await getProfileRow()).display_name;
     })
     .toBe('Ada Lovelace');
+});
+
+test('the profile header shows the tag, made from the email', async ({ page }) => {
+  await page.goto('/profile');
+
+  await expect(page.getByRole('heading', { level: 1, name: 'E2E User' })).toBeVisible();
+  await expect(page.locator('.profile-header').getByText('@e2e', { exact: true })).toBeVisible();
+});
+
+test('changing the tag forgives the @ and capitals, shows at once, and saves it', async ({ page }) => {
+  await page.goto('/profile');
+  await row(page, 'Tag').click();
+  await page.getByRole('textbox', { name: 'Tag' }).fill('@Manas_B');
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  await expect(row(page, 'Tag')).toContainText('@manas_b');
+  await expect(page.getByText('Tag changed to @manas_b')).toBeVisible();
+  await expect
+    .poll(async () => {
+      return (await getProfileRow()).tag;
+    })
+    .toBe('manas_b');
+});
+
+test('a tag that is too short or reserved cannot be saved', async ({ page }) => {
+  await page.goto('/profile');
+  await row(page, 'Tag').click();
+
+  const save = page.getByRole('button', { name: 'Save' });
+
+  await page.getByRole('textbox', { name: 'Tag' }).fill('ab');
+  await expect(save).toBeDisabled();
+  await page.getByRole('textbox', { name: 'Tag' }).fill('admin');
+  await expect(save).toBeDisabled();
+  await page.getByRole('textbox', { name: 'Tag' }).fill('fine_tag');
+  await expect(save).toBeEnabled();
+});
+
+test('a tag that someone else has is refused, and the old tag stays', async ({ page }) => {
+  const admin = adminClient();
+  const email = `taken-${Date.now()}@cadence.test`;
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    password: 'taken-password-123!',
+    email_confirm: true,
+  });
+
+  if (error || !data.user) {
+    throw error;
+  }
+
+  try {
+    const taken = email.split('@')[0].replace('-', '_');
+
+    await page.goto('/profile');
+    await row(page, 'Tag').click();
+    await page.getByRole('textbox', { name: 'Tag' }).fill(taken.toUpperCase());
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByText('That tag is taken. Try another.')).toBeVisible();
+    await expect(row(page, 'Tag')).toContainText('@e2e');
+  } finally {
+    await admin.auth.admin.deleteUser(data.user.id);
+  }
 });
 
 test('a save the server refuses puts the old value back and shows an error', async ({ page }) => {

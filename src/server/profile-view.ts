@@ -7,6 +7,7 @@ import { isKnownZone, modernZone } from '@/lib/zones';
 
 export interface ProfileRow {
   display_name: string | null;
+  tag: string;
   avatar_url: string | null;
   avatar_kind: string;
   avatar_value: string | null;
@@ -49,6 +50,8 @@ export interface AccentView {
 
 export interface ProfileView {
   name: string;
+  /** The account's tag, without the @. */
+  tag: string;
   email: string;
   avatar: AvatarView;
   timezone: string;
@@ -107,7 +110,7 @@ const toAccent = (row: ProfileRow): AccentView | null => {
 
 export const toProfileView = (input: ProfileInput): ProfileView => {
   const { row, email, sounds, urls } = input;
-  const { display_name, timezone, week_starts_on, sound_id, sound_volume } = row;
+  const { display_name, tag, timezone, week_starts_on, sound_id, sound_volume } = row;
 
   const customSounds = sounds.map(({ id, name, path, duration_ms }) => {
     return { id, name, durationMs: duration_ms, url: urls[path] ?? null };
@@ -120,6 +123,7 @@ export const toProfileView = (input: ProfileInput): ProfileView => {
 
   return {
     name: display_name ?? '',
+    tag,
     email,
     avatar: toAvatar(row, urls),
     timezone: isKnownZone(timezone) ? modernZone(timezone) : 'UTC',

@@ -12,7 +12,7 @@
   @apply truncate font-display text-3xl;
 }
 
-.profile-header__email {
+.profile-header__tag {
   @apply truncate text-ink-muted;
 }
 

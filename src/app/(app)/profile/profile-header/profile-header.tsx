@@ -21,7 +21,7 @@ export const ProfileHeader = () => {
     );
   }
 
-  const { avatar, name, email } = data;
+  const { avatar, name, tag, email } = data;
   const shownName = name || email || t('header.fallbackName');
 
   return (
@@ -29,7 +29,7 @@ export const ProfileHeader = () => {
       <Avatar avatar={avatar} name={shownName} size="lg" className="profile-header__avatar" />
       <div className="profile-header__who">
         <h1 className="profile-header__name">{shownName}</h1>
-        <p className="profile-header__email">{email}</p>
+        <p className="profile-header__tag">{t('tag.display', { tag })}</p>
       </div>
       <GetTheApp />
     </header>

@@ -7,11 +7,20 @@ import {
   avatarInputSchema,
   nameInputSchema,
   soundInputSchema,
+  tagInputSchema,
   timezoneInputSchema,
   weekStartInputSchema,
 } from '@/lib/profile-schema';
 import { getUser } from '@/lib/supabase/server';
-import { updateAccent, updateAvatar, updateName, updateSound, updateTimezone, updateWeekStart } from '@/server/profile';
+import {
+  updateAccent,
+  updateAvatar,
+  updateName,
+  updateSound,
+  updateTag,
+  updateTimezone,
+  updateWeekStart,
+} from '@/server/profile';
 import { removeSound, uploadAvatarPhoto, uploadSound } from '@/server/profile-files';
 import { ProfileError } from '@/server/profile-storage';
 
@@ -65,6 +74,20 @@ export const updateNameAction = async (input: unknown): Promise<ProfileActionRes
 
   return run(() => {
     return updateName(name);
+  });
+};
+
+export const updateTagAction = async (input: unknown): Promise<ProfileActionResult> => {
+  const { success, data, error } = tagInputSchema.safeParse(input);
+
+  if (!success) {
+    return invalid(error);
+  }
+
+  const { tag } = data;
+
+  return run(() => {
+    return updateTag(tag);
   });
 };
 
