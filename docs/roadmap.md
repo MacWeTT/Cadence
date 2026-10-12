@@ -13,7 +13,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.5.0 | Fixed-weekday schedules, optional habits, habit links |
 | 0.6.0 | Install Cadence as an app (PWA, offline page) |
 | 0.6.3 | Every page fits phones and tablets; a new footer |
-| 0.7.0 | Focus sessions: a timer per habit, free or pomodoro, with chimes and minutes of focus on Progress |
+| 0.7.0 | Focus sessions: a timer per habit (free or pomodoro), chimes, a running bar on every page, focus time on Progress |
 
 ## Scheduled
 
