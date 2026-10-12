@@ -38,7 +38,7 @@ Out of scope: real push and email reminders (0.7; here only disabled toggles), a
 - Starting avatar is the Google picture (`avatar_url`). It is the first "current" and is not offered again after the person changes it.
 - Choices: **six characters** (Alien, Robot, Cyclops, Ghost, Punk, Mage), **emoji** (a short fixed set plus a "more" picker), and **your own photo**.
 - Characters and emoji take a **colour**: the five preset accents plus a colour of your own, using the Appearance accent picker's logic (`deriveAccent`, hex validation). The colour row is hidden for a photo.
-- A photo (JPEG, PNG or WebP, up to 2 MB) is **cropped to a centred square** in the browser and shrunk to 256 px before upload. There is no cropper yet (roadmap).
+- A photo (JPEG, PNG or WebP, up to 2 MB) is **cropped to a centred square** in the browser before upload. The only limit is the file size (2 MB), not the dimensions. There is no cropper yet: it is on the Planned list and the roadmap.
 - Characters are SVG components that take the colour. The six drawn in the mockups are placeholders: Alien and Mage are out of proportion and cropped, and are redrawn during development. The picker works with any six SVGs. The wizard is renamed **Mage**.
 
 ## Sound modal
@@ -71,7 +71,7 @@ Out of scope: real push and email reminders (0.7; here only disabled toggles), a
 ## Server and app
 
 - `src/server/profile.ts` (a pure mapping kept free of `server-only`, unit-tested): `getProfile()` returning name, avatar (with signed URL), timezone, week start, sound (with signed URL for a custom one), custom sounds, and the zone list. `GET /api/profile` (401 when signed out). Server actions: `updateName`, `updateWeekStart`, `updateTimezone`, `updateAvatar`, `uploadAvatarPhoto`, `updateSound`, `uploadSound`, `removeSound`. Each validates on the server (lengths, kinds, zone in list, colour hex, file type, size and the six-sound cap) and returns a typed result for the toast.
-- The sound length (5 seconds) is measured in the browser (`decodeAudioData`) before upload, and the server stores `duration_ms` from that. shortcut: the server trusts the browser's duration; it checks only type, size and magic bytes. Upgrade if the length limit ever needs to be hard.
+- The sound length (5 seconds) is measured in the browser (`decodeAudioData`) before upload; a longer file is refused there with an error toast, and the server stores `duration_ms` from that. Like a soundboard: pick a clip, hear it, keep it. shortcut: the server trusts the browser's duration; it checks only type, size and magic bytes. Upgrade if the length limit ever needs to be hard.
 - Components: `ProfileHeader`, `ProfileTabs`, `GetTheApp`, `SettingRow`, `SettingModal` (shared frame: title, body, Cancel, Save), `AvatarModal`, `AvatarCharacter` (six SVGs), `SoundModal`, `TimezoneModal`, `NameModal`, `WeekStartModal`, and the Notifications toggles. All text in `locales/en/profile.json`; styles with `@apply`. Icons use `lucide-react`.
 - Everything follows `docs/policies.md`.
 
@@ -101,7 +101,7 @@ If PR 1 is too big to review, the sound modal and its upload move to PR 3, and t
 
 ## Decided defaults, open to change
 
-- Photo cap 2 MB, 256 px; sound cap 500 KB and 5 seconds, six custom sounds.
+- Photo cap 2 MB (size only, no pixel limit); sound cap 500 KB and 5 seconds, six custom sounds.
 - Emoji set: a short fixed list plus a picker; the exact set is chosen in development.
 - The Google picture is not offered again after the avatar is changed (no "switch back").
 - Avatar and sound files are private, with signed URLs, since profiles are not shared with anyone.
