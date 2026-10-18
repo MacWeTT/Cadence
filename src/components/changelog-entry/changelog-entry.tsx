@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Arrive } from '@/components/arrive/arrive';
+import { InlineText } from '@/components/changelog-entry/inline-text';
 import type { ChangelogEntry } from '@/lib/changelog';
 import { cn } from '@/lib/utils';
 import './changelog-entry.css';
@@ -17,9 +18,12 @@ export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
   const t = useTranslations('changelog');
 
   const { title, date, kind, note, items } = entry;
-  const heading = { planned: t('comingSoon'), known: t('knownIssues'), release: t('version', { version: title }) }[
-    kind
-  ];
+  const heading = {
+    planned: t('comingSoon'),
+    known: t('knownIssues'),
+    release: t('version', { version: title }),
+    highlights: title,
+  }[kind];
   const id = `changelog-${title}`;
 
   return (
@@ -36,23 +40,7 @@ export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
           {items.map((item, i) => {
             return (
               <li key={i} className="changelog-entry__item">
-                {item.map((part, j) => {
-                  const { kind, text } = part;
-
-                  if (kind === 'bold') {
-                    return <strong key={j}>{text}</strong>;
-                  }
-
-                  if (kind === 'code') {
-                    return (
-                      <code key={j} className="changelog-entry__code">
-                        {text}
-                      </code>
-                    );
-                  }
-
-                  return <span key={j}>{text}</span>;
-                })}
+                <InlineText parts={item} />
               </li>
             );
           })}
