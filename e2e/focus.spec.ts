@@ -442,3 +442,45 @@ test('a session left paused for over 12 hours is closed with the time up to its 
 
   expect(session.focus_seconds).toBe(3600);
 });
+
+/** Holds every server action (the Next-Action requests) for `ms`, then lets it through, or fails it when `fail` is set. */
+const slowActions = async (page: Page, ms: number, fail = false) => {
+  await page.route('**/*', async route => {
+    if (!route.request().headers()['next-action']) {
+      await route.continue();
+
+      return;
+    }
+
+    await new Promise(resolve => {return setTimeout(resolve, ms)});
+    await (fail ? route.abort() : route.continue());
+  });
+};
+
+test('Stop takes effect at once, before the server has answered', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await expect(bar(page)).toBeVisible();
+  await slowActions(page, 3000);
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  await expect(bar(page)).toBeHidden({ timeout: 1000 });
+  await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText('Session finished')).toBeVisible();
+});
+
+test('a Stop that fails puts the session back, still running', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await expect(bar(page)).toBeVisible();
+  await slowActions(page, 500, true);
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  await expect(bar(page)).toBeVisible({ timeout: 10_000 });
+  await expect(bar(page).getByRole('button', { name: 'Pause' })).toBeVisible();
+  expect((await getFocusSessions(id))[0].ended_at).toBeNull();
+});

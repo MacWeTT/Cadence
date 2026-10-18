@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { FocusContext, type FocusApi, type FocusTarget } from '@/components/focus-host/focus-context';
 import { tickedIn } from '@/components/focus-host/ticked-in';
+import { usePhaseChime } from '@/components/focus-host/use-phase-chime';
 import { useTabTitle } from '@/components/focus-host/use-tab-title';
 import { useFocusActions, useFocusState, useServerNow, type StartInput } from '@/components/focus-host/use-focus';
 import { FocusPanel } from '@/components/focus-panel/focus-panel';
@@ -51,8 +52,9 @@ export const FocusHost = (props: FocusHostProps) => {
   const { data, dataUpdatedAt } = useFocusState();
   const { start, stop, skip, pause, resume } = useFocusActions();
 
-  const seen = useRef<string | null>(null);
   const stopping = useRef(false);
+  /** Set when a stop failed, so a session that ran out is not retried in a loop; the Stop button still works. */
+  const gaveUp = useRef(false);
   /** Set when the person skips a break, so the jump to the next round is not announced as a phase that ended. */
   const quiet = useRef(false);
 
@@ -81,43 +83,7 @@ export const FocusHost = (props: FocusHostProps) => {
     };
   }, []);
 
-  // A chime, and a notification if allowed, at every phase change after the first one seen for a session.
-  useEffect(() => {
-    if (!phaseKey || !phase || !name) {
-      seen.current = null;
-
-      return;
-    }
-
-    const previous = seen.current;
-
-    seen.current = phaseKey;
-
-    if (previous === null || previous === phaseKey || previous.split(':')[0] !== phaseKey.split(':')[0]) {
-      return;
-    }
-
-    const wasQuiet = quiet.current;
-
-    quiet.current = false;
-
-    // skipping a break is the person's own doing, not a phase that ended
-    if (wasQuiet) {
-      return;
-    }
-
-    // the end of the whole session sounds from `finish`, once it is saved
-    if (phase !== 'done') {
-      playChime(choice, previous.split(':')[1] === 'break' ? 'break' : 'focus');
-    }
-
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const body =
-        phase === 'break' ? t('notify.focusDone') : phase === 'done' ? t('notify.allDone') : t('notify.breakDone');
-
-      new Notification(name, { body });
-    }
-  }, [phaseKey, phase, name, choice, t]);
+  usePhaseChime(phaseKey, phase, name, choice, quiet);
 
   const finish = (finished: FocusResult | null, habitName: string) => {
     if (finished && !finished.saved) {
@@ -156,12 +122,23 @@ export const FocusHost = (props: FocusHostProps) => {
 
   const onStop = () => {
     const habitName = session?.habit.name ?? '';
+    const wasOpen = panelOpen;
+
+    gaveUp.current = false;
+    // the session is already gone from the cache; the panel closes with it and the ending panel opens when the server answers
+    setState(current => {
+      return { ...current, panelOpen: false };
+    });
 
     stop.mutate(undefined, {
       onSuccess: finished => {
         finish(finished, habitName);
       },
       onError: e => {
+        gaveUp.current = true;
+        setState(current => {
+          return { ...current, panelOpen: wasOpen };
+        });
         toast.error(e.message);
       },
       onSettled: () => {
@@ -174,7 +151,7 @@ export const FocusHost = (props: FocusHostProps) => {
   const done = view?.done ?? false;
 
   useEffect(() => {
-    if (done && !stopping.current) {
+    if (done && !stopping.current && !gaveUp.current) {
       stopping.current = true;
       onStop();
     }
