@@ -11,3 +11,12 @@
 .changelog__intro {
   @apply -mt-3 text-ink-muted;
 }
+
+.changelog__all,
+.changelog__back {
+  @apply block min-h-11 w-fit rounded-full border border-line px-4 py-2.5 text-sm font-medium hover:bg-line;
+}
+
+.changelog__all {
+  @apply mx-auto;
+}
