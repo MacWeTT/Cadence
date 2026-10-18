@@ -4,7 +4,14 @@ import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 import { isSoundId } from '@/lib/sound';
 import { getUser } from '@/lib/supabase/server';
-import { discardFocusSession, skipBreak, startFocus, stopFocus, type FocusResult } from '@/server/focus';
+import { pauseFocus, resumeFocus } from '@/server/focus-pause';
+import {
+  discardFocusSession,
+  skipBreak,
+  startFocus,
+  stopFocus,
+  type FocusResult,
+} from '@/server/focus';
 import { HabitError, type ErrorCode } from '@/server/habits';
 
 export type FocusActionResult = { ok: true; result: FocusResult | null } | { ok: false; error: string };
@@ -87,6 +94,22 @@ export const stopFocusAction = async (): Promise<FocusActionResult> => {
 export const skipBreakAction = async (): Promise<FocusActionResult> => {
   return run(async () => {
     await skipBreak();
+
+    return null;
+  });
+};
+
+export const pauseFocusAction = async (): Promise<FocusActionResult> => {
+  return run(async () => {
+    await pauseFocus();
+
+    return null;
+  });
+};
+
+export const resumeFocusAction = async (): Promise<FocusActionResult> => {
+  return run(async () => {
+    await resumeFocus();
 
     return null;
   });

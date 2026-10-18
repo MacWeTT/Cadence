@@ -28,6 +28,8 @@ export const PRESETS = {
 } satisfies Record<string, FocusPlan>;
 
 export const FREE_CAP_SECONDS = 8 * 3600;
+/** A session left paused this long is closed by the server (with the time up to the pause). */
+export const PAUSE_LIMIT_SECONDS = 12 * 3600;
 export const MIN_SAVED_SECONDS = 60;
 
 /** The long break comes after every 4th round; the number is not editable. */
@@ -117,6 +119,25 @@ export const breakLeftAt = (plan: FocusPlan, elapsed: number): number => {
   const { phase, left } = phaseAt(plan, elapsed);
 
   return phase === 'break' ? left : 0;
+};
+
+/**
+ * Seconds a session has been running at `nowMs`, leaving out paused time: the pause that is on stops the count at the
+ * moment it began, and earlier pauses are already summed in `pausedSeconds`.
+ */
+export const activeSeconds = (
+  startedAt: string,
+  pausedSeconds: number,
+  pausedAt: string | null,
+  nowMs: number,
+): number => {
+  const until = pausedAt ? Date.parse(pausedAt) : nowMs;
+
+  return Math.max(0, Math.floor((until - Date.parse(startedAt)) / 1000) - pausedSeconds);
+};
+
+export const pausedTooLong = (pausedAt: string | null, nowMs: number): boolean => {
+  return pausedAt !== null && nowMs - Date.parse(pausedAt) >= PAUSE_LIMIT_SECONDS * 1000;
 };
 
 export const freeFocusSeconds = (elapsed: number): number => {
