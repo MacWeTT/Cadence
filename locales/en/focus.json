@@ -17,6 +17,7 @@
     "breakMin": "Break (min)",
     "longBreakMin": "Long break (min)",
     "rounds": "Rounds",
+    "longBreakUnused": "Used after every 4th round, so with 5 or more rounds.",
     "total": "About {duration}, {focus, plural, one {# minute} other {# minutes}} of focus",
     "hours": "{count, plural, one {# hour} other {# hours}}",
     "minutes": "{count, plural, one {# minute} other {# minutes}}",

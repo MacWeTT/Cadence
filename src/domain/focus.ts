@@ -42,6 +42,11 @@ const LIMITS: Record<PlanField, [number, number]> = {
   rounds: [1, 12],
 };
 
+/** The long break only comes when a round follows the 4th, so a plan of 4 rounds or fewer never has one. */
+export const usesLongBreak = (rounds: number): boolean => {
+  return rounds > LONG_BREAK_EVERY;
+};
+
 /** The fields of a plan that are not whole numbers inside their limits. */
 export const planErrors = (plan: FocusPlan): PlanField[] => {
   const fields = Object.keys(LIMITS) as PlanField[];

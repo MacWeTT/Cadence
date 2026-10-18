@@ -11,6 +11,7 @@ import {
   phaseAt,
   planErrors,
   totalSeconds,
+  usesLongBreak,
 } from '@/domain/focus';
 
 const classic = PRESETS.classic;
@@ -169,5 +170,18 @@ describe('pausedTooLong', () => {
     expect(pausedTooLong(pausedAt, Date.parse('2026-10-12T20:59:59Z'))).toBe(false);
     expect(pausedTooLong(pausedAt, Date.parse('2026-10-12T21:00:00Z'))).toBe(true);
     expect(pausedTooLong(null, Date.parse('2026-10-14T21:00:00Z'))).toBe(false);
+  });
+});
+
+describe('usesLongBreak', () => {
+  it('is false until a break can follow the 4th round, so from 5 rounds up it is true', () => {
+    expect(usesLongBreak(3)).toBe(false);
+    expect(usesLongBreak(4)).toBe(false);
+    expect(usesLongBreak(5)).toBe(true);
+    expect(usesLongBreak(12)).toBe(true);
+  });
+
+  it('is false for a number that is not there yet', () => {
+    expect(usesLongBreak(Number.NaN)).toBe(false);
   });
 });

@@ -11,6 +11,7 @@ import {
 } from '@/app/(app)/focus-actions';
 import type { FocusPlan } from '@/domain/focus';
 import { offsetFrom } from '@/lib/focus-clock';
+import { withoutRunning } from '@/lib/focus-optimistic';
 import { fetchJson } from '@/lib/query/fetch-json';
 import { queryKeys } from '@/lib/query/keys';
 import type { FocusResult } from '@/server/focus';
@@ -96,9 +97,28 @@ export const useFocusActions = () => {
       });
     },
   });
+  // Stop is shown at once: the session leaves the cache now, and the server's answer (refetched in `run`) replaces it.
+  // If the stop fails, the session goes back as it was, with the time it was fetched at so the clock does not jump.
   const stop = useMutation({
     mutationFn: () => {
       return run(stopFocusAction);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.focus });
+
+      const previous = queryClient.getQueryData<FocusState>(queryKeys.focus);
+      const updatedAt = queryClient.getQueryState(queryKeys.focus)?.dataUpdatedAt;
+
+      queryClient.setQueryData<FocusState | undefined>(queryKeys.focus, withoutRunning);
+
+      return { previous, updatedAt };
+    },
+    onError: (_error, _input, context) => {
+      const { previous, updatedAt } = context ?? {};
+
+      if (previous) {
+        queryClient.setQueryData(queryKeys.focus, previous, { updatedAt });
+      }
     },
   });
   const skip = useMutation({
