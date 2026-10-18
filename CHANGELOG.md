@@ -14,6 +14,13 @@ This file is shown on the app's What's new page, so it is for people using Caden
 
 ## Known issues
 
+## 0.8.4 (2026-10-18)
+
+Smoother focus sessions.
+
+- Stop now works at once: the timer stops the moment you press it instead of running on until the server answers. If it cannot be stopped, the timer comes back with an error message.
+- The Long break box is greyed out when it cannot be used (it only comes after the 4th round, so it needs a plan of 5 or more rounds), with a note saying why.
+
 ## 0.8.3 (2026-10-18)
 
 Pause, and a tag of your own.
