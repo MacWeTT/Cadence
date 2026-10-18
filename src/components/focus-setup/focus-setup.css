@@ -49,7 +49,7 @@
 }
 
 .focus-setup__hint {
-  @apply text-xs;
+  @apply text-xs text-ink-muted;
 }
 
 .focus-setup__total {
