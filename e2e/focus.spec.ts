@@ -430,10 +430,15 @@ test('a session left paused for over 12 hours is closed with the time up to its 
   await seedFocusSession({ habitId: id, startedMinutesAgo: 14 * 60, pausedMinutesAgo: 13 * 60 });
   await page.goto('/today');
 
+  // the close happens when the page asks for the running session, so wait for it in the database
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0].ended_at;
+    })
+    .not.toBeNull();
   await expect(bar(page)).toBeHidden();
 
   const [session] = await getFocusSessions(id);
 
-  expect(session.ended_at).not.toBeNull();
   expect(session.focus_seconds).toBe(3600);
 });
