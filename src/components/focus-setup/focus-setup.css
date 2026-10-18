@@ -40,6 +40,14 @@
   @apply min-h-11 rounded-lg border border-line bg-surface px-3 text-base text-ink;
 }
 
+.focus-setup__input:disabled {
+  @apply opacity-50;
+}
+
+.focus-setup__hint {
+  @apply text-xs;
+}
+
 .focus-setup__total {
   @apply text-sm text-ink-muted;
 }

@@ -280,6 +280,23 @@ test('the setup remembers the last numbers used on the habit and the sound chose
   await expect(page.getByRole('radio', { name: /^Default/ })).not.toBeChecked();
 });
 
+test('the long break is only editable when the plan has 5 or more rounds', async ({ page }) => {
+  await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+  await page.goto('/today');
+  await startPill(page, 'Read').click();
+
+  const longBreak = page.getByLabel('Long break (min)');
+  const rounds = page.getByLabel('Rounds');
+
+  await rounds.fill('3');
+  await expect(longBreak).toBeDisabled();
+  await expect(page.getByText('Used after every 4th round, so with 5 or more rounds.')).toBeVisible();
+
+  await rounds.fill('5');
+  await expect(longBreak).toBeEnabled();
+  await expect(page.getByText('Used after every 4th round, so with 5 or more rounds.')).toBeHidden();
+});
+
 test('the sound opens on the profile default and lists your own sounds too', async ({ page }) => {
   await seedHabit({ name: 'Read', startDate: daysAgo(5) });
   await setProfileSound('wood');

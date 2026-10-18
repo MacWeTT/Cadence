@@ -6,7 +6,7 @@ import type { FocusTarget } from '@/components/focus-host/focus-context';
 import type { StartInput } from '@/components/focus-host/use-focus';
 import { FocusSound } from '@/components/focus-sound/focus-sound';
 import { Button } from '@/components/ui/button';
-import { PRESETS, planErrors, totalSeconds, type FocusPlan, type PlanField } from '@/domain/focus';
+import { PRESETS, planErrors, totalSeconds, usesLongBreak, type FocusPlan, type PlanField } from '@/domain/focus';
 import { cn } from '@/lib/utils';
 import './focus-setup.css';
 
@@ -134,10 +134,13 @@ export const FocusSetup = (props: FocusSetupProps) => {
           </div>
           <div className="focus-setup__fields">
             {FIELDS.map(field => {
+              const unused = field === 'longBreakMin' && !usesLongBreak(plan.rounds);
+
               return (
                 <label key={field} className="focus-setup__field">
                   <span>{t(field)}</span>
                   <input
+                    disabled={unused}
                     type="number"
                     inputMode="numeric"
                     name={field}
@@ -145,6 +148,7 @@ export const FocusSetup = (props: FocusSetupProps) => {
                     onChange={onFieldChange}
                     className="focus-setup__input"
                   />
+                  {unused && <span className="focus-setup__hint">{t('longBreakUnused')}</span>}
                 </label>
               );
             })}
