@@ -4,9 +4,9 @@ Status: approved in conversation, written here for the record. Version: 0.9. It 
 
 ## Purpose
 
-Let people sign up and sign in without Google, keep a way back in without a mail service, and give every account a **tag** (`@name`) that Circles will use later. No mail is sent in 0.9: the paid or hosted mail service is deferred until there are enough users to justify it (see the roadmap, *Later*). So there is no email verification, no password reset and no 2FA yet.
+Let people sign up and sign in without Google, with a confirmed email and a way back in by code, and give every account a **tag** (`@name`) that Circles will use later. The mail is Supabase Auth's, sent through a dedicated Gmail account as custom SMTP: ₹0, no domain. Nothing else is mailed (no reminders, no 2FA in 0.9).
 
-Out of scope: the mail system, verification codes, password reset, 2FA, unlinking a sign-in method, and everything about Circles.
+Out of scope: a paid mail service or a domain (Resend), notification mail, any 2FA (email or authenticator app), unlinking a sign-in method, and everything about Circles.
 
 ## Tags
 
@@ -16,22 +16,20 @@ Out of scope: the mail system, verification codes, password reset, 2FA, unlinkin
 - **Privacy:** the default shows the first part of an email address, and tags will be visible to friends in Circles. A person can change theirs; the profile does not hide the default.
 - **Data:** `profiles.tag` (not null, unique on `lower(tag)`, checked by `valid_tag()`); `free_tag(base)` builds a free one; `handle_new_user` uses it for new accounts; one migration gives every existing account a tag. The profile endpoint returns it; the optimistic save and toast pattern is the one the other profile settings use ("That tag is taken" on a clash).
 
-## Email and password
+## Email and password, with a code
 
-- The login page offers Google, GitHub and an email and password form that switches between **Sign in** and **Create an account** (name, email, password of at least 8 characters). Email confirmation is off (`enable_confirmations = false` in `config.toml`, and "Confirm email" off in the Supabase dashboard for production), so no mail is sent.
-- Under the form, one funny line: "Remember your password. We haven't taught Cadence to send emails yet. (Yet!)".
+- The login page offers Google, GitHub and an email and password form that switches between **Sign in** and **Create an account** (name, email, password of at least 8 characters).
+- **Sign-up is confirmed by a 6-digit code** Supabase Auth sends to the address (`enable_confirmations = true`, and "Confirm email" on in the dashboard). The account exists only after the code is entered; an unconfirmed address cannot sign in.
+- **Forgot password** on the login form: enter the email, get a 6-digit code, enter it with a new password. It always answers the same ("if that address has an account, a code is on its way") so it does not reveal who has one.
+- The mail goes through **Gmail SMTP** (a dedicated account and an app password, set in the Supabase dashboard; the secret never enters the repo). Supabase's own mailer reaches only team addresses, so it cannot serve friends. Gmail allows about 500 a day, plenty for under 10 users, but its delivery is not guaranteed: before inviting anyone, sign up, confirm and reset with an address outside the team. The dashboard email templates are edited by hand to show the code (`{{ .Token }}`). Setup and limits are in `docs/deploy.md`. Locally the codes appear in Supabase's mail catcher (Inbucket, port 54324), which the e2e specs read.
 - An email already used by a Google or GitHub account is refused with a message that points at that button.
 - A new account's name comes from the form; there is no picture, so the avatar shows an initial until one is chosen.
-- Risks accepted for now: anyone can sign up with an address they do not own (how Supabase links such an account to a later Google or GitHub sign-in on that address must be tested before shipping), and a forgotten password cannot be reset by mail.
 
-## The way back in: linking, the banner, change password
+## Sign-in methods, change password, delete
 
-- **Sign-in methods** card at the top of the Account tab: Email and password, Google, GitHub, each "Linked" or a **Link** button (Supabase manual linking: `enable_manual_linking = true` locally, one toggle in the dashboard for production). No unlinking yet.
-- A **banner** at the top of the app for an account with an email and password and no linked Google or GitHub: "Link Google or GitHub so you can get back in if you forget your password", with a button to that card. Persistent: no dismiss button, and it disappears once one is linked. The profile endpoint reports the account's sign-in methods.
-- **Change password** card (email accounts) with a modal: new password and a confirmation, at least 8 characters, **no current password asked**, so someone who got in through a linked account after forgetting it can set a new one (an unattended signed-in session could change it; accepted for this stopgap).
-- The shared e2e account is an email account, so the banner would show on every page; the e2e setup marks it dismissed in its saved browser state, and only the banner's own spec removes that.
+- **Sign-in methods** card at the top of the Account tab: Email and password, Google, GitHub, each "Linked" or a **Link** button (Supabase manual linking: `enable_manual_linking = true` locally, one toggle in the dashboard for production). No unlinking yet. No banner: a forgotten password is now reset by code.
+- **Change password** card (email accounts) with a modal: new password and a confirmation, at least 8 characters.
 - Deleting an account must work for accounts with no email (GitHub can hide it): the typed confirmation falls back to the word "delete".
-- This whole flow is a stopgap, to be revised once the mail system exists.
 
 ## GitHub sign-in
 
@@ -40,13 +38,14 @@ A GitHub button next to Google (a GitHub OAuth app, free; `[auth.external.github
 ## PRs and tasks
 
 1. **Tags** (this PR): the migration and its tests, the pure rules (`src/lib/tag.ts`) and schema, the server action, the Tag row and modal, the `@tag` in the profile header, the e2e support reset, specs.
-2. **Email sign-up and the way back in**: `config.toml` (confirmations off, manual linking on), the login form and the funny line, the Sign-in methods card with linking, the banner, change password, the delete confirmation fallback, the e2e dismissal, specs.
-3. **GitHub sign-in**: the button and config, with a note on creating the OAuth app.
-4. **Pause and resume**: its own design.
-5. **The 0.9 release**: version, changelog, roadmap.
+2. **Email sign-up and forgot password**: `config.toml` (confirmations on, minimum length 8), the login form with its code step, forgot password, specs reading the code from the local mail catcher.
+3. **Sign-in methods and password**: manual linking, the Sign-in methods card, change password, the delete confirmation fallback.
+4. **GitHub sign-in**: the button and config, with a note on creating the OAuth app.
+5. **Pause and resume**: its own design.
+6. **The 0.9 release**: version, changelog, roadmap.
 
 ## Tests
 
-- Unit: the tag rules and schema, the sign-in methods mapping, password schema, the banner's condition.
+- Unit: the tag rules and schema, the sign-in methods mapping, password and code schemas.
 - Database (pgTAP): the tag check, uniqueness without regard to case, the reserved words, default tags (email, GitHub username, clashes, short and odd emails), and the backfill.
-- e2e: the tag row and its toast, a taken tag, the header; later, sign-up and sign-in with an email, the banner and its absence, change password.
+- e2e: the tag row and its toast, a taken tag, the header; later, sign-up with a code, sign-in, wrong password, forgot password, linking, change password.
