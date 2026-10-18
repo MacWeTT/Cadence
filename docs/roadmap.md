@@ -18,6 +18,7 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.8.1 | Contributors list on the About page |
 | 0.8.2 | A sound for each focus session (your own sounds included, the profile sound as the default), and a box to leave a session's minutes out of the focus time |
 | 0.8.3 | Pause and resume on the focus timer (the server keeps the paused time, so the minutes are right on every device), a tag of your own (`@name`) on every account, and the splash tagline |
+| 0.8.5 | What's new as cards: one big card for each version line with its highlights (the newest also shows its latest release), and a page with every change in full |
 
 ## Scheduled
 

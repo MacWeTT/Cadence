@@ -1,6 +1,6 @@
 # Changelog
 
-This file is shown on the app's What's new page, so it is for people using Cadence: features only, nothing internal or sensitive, and no version numbers on what is coming (what ships next is decided internally). Under Known issues, a plain line for each problem people can run into; it is removed when the bugfix release that fixes it ships. The version lives in `package.json` and shows in the app's footer.
+This file is shown on the app's What's new page, so it is for people using Cadence: features only, nothing internal or sensitive, and no version numbers on what is coming (what ships next is decided internally). Under Known issues, a plain line for each problem people can run into; it is removed when the bugfix release that fixes it ships. A `## Highlights 0.8` section holds the headline and a few bullets for that version line's card on the page, written by hand when a line starts; the releases below it are shown in full on the "every change" page. The version lives in `package.json` and shows in the app's footer.
 
 ## Planned
 
@@ -13,6 +13,23 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - Circles: something big is on the way, and it brings an XP system along with it. Stay tuned!
 
 ## Known issues
+
+## Highlights 0.8
+
+Your profile, your sounds, your own tag, and a timer you can pause.
+
+- A profile page: your name, photo or character, timezone, week start and focus sound in one place.
+- Your own sounds for focus sessions, and a sound for each session.
+- A tag of your own, like @yourname, on your profile.
+- Pause and resume a focus session, and Stop answers at once.
+- Export your data as JSON, CSV or a PDF report, and restore a backup, or delete your account.
+
+## 0.8.5 (2026-10-18)
+
+A new look for What's new.
+
+- What's new now has one big card for each version line (0.8, 0.7 and so on), with its highlights. The newest card also shows the notes of the latest release.
+- A "See every change" page with every release in full.
 
 ## 0.8.4 (2026-10-18)
 
@@ -57,6 +74,15 @@ Your profile.
 - Delete your account, and everything in it, if you ever want to leave.
 - A "Get the app" button on your profile. Reminders, by push and by email, are shown as coming soon.
 
+## Highlights 0.7
+
+Focus on a habit.
+
+- A timer on any habit: Free, or Pomodoro with presets and numbers of your own.
+- A slim bar on every page while a session runs, with the time in the tab title.
+- A chime and a notification when a round or a break ends.
+- A Focus time card on Progress.
+
 ## 0.7.0 (2026-10-12)
 
 Focus on a habit.
@@ -66,6 +92,13 @@ Focus on a habit.
 - A chime when a round or a break ends, in a sound you choose (or silent), and a browser notification if you allow it.
 - When you stop, say "I did it" to tick the habit for that day.
 - A new Focus time card on Progress: the minutes you focused, in total and for each habit.
+
+## Highlights 0.6
+
+Cadence goes with you, on every screen.
+
+- Install Cadence on your phone or computer like an app, with an offline page.
+- Every page fits phones and tablets, with a tab bar at the foot of the screen.
 
 ## 0.6.3 (2026-10-12)
 
@@ -80,6 +113,14 @@ Cadence goes with you.
 
 - Install Cadence on your phone or computer like an app, with its own icon and window, shortcuts to Today and Progress, and an offline page when your connection drops.
 
+## Highlights 0.5
+
+More ways to shape a habit.
+
+- Habits on fixed days of the week.
+- Optional habits for whenever you like.
+- Links on a habit, opened all at once in one click.
+
 ## 0.5.0 (2026-10-11)
 
 More ways to shape a habit.
@@ -88,6 +129,13 @@ More ways to shape a habit.
 - Optional habits, with no fixed days: they sit in their own "Whenever you like" list and count how many times you do them each year.
 - Links on a habit: add up to ten, then open them all in one click from Today, Home or the Habits list.
 
+## Highlights 0.4
+
+Instant pages.
+
+- Pages open instantly with your latest data, then refresh quietly.
+- Ticking, archiving and deleting a habit answer at once, and go back if something goes wrong.
+
 ## 0.4.0 (2026-10-11)
 
 Instant pages.
@@ -95,6 +143,14 @@ Instant pages.
 - Pages open instantly with your latest data, then refresh quietly in the background.
 - Ticking, archiving, restoring and deleting a habit answer at once; if something goes wrong, it goes back and tells you.
 - A tick on Home or Today shows on every page right away.
+
+## Highlights 0.3
+
+The first numbered versions, and making Cadence yours.
+
+- A Home dashboard with today and week views, progress and a heatmap.
+- Ten colour themes with light and dark versions, and an accent colour of your own.
+- A contact form, and pages that move in smoothly.
 
 ## 0.3.6 (2026-10-11)
 

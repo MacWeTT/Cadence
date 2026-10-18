@@ -50,5 +50,5 @@ test('the About page is one click from the footer', async ({ page }) => {
 test('the footer shows the version', async ({ page }) => {
   await page.goto('/about');
 
-  await expect(page.getByRole('contentinfo')).toContainText('Version 0.8.4');
+  await expect(page.getByRole('contentinfo')).toContainText('Version 0.8.5');
 });

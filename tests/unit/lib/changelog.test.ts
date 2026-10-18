@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseChangelog } from '@/lib/changelog';
+import { groupLines, lineOf, parseChangelog } from '@/lib/changelog';
 
 const SOURCE = `# Changelog
 
@@ -69,5 +69,118 @@ describe('parseChangelog', () => {
 
   it('gives an empty list for an empty file', () => {
     expect(parseChangelog('')).toEqual([]);
+  });
+});
+
+const CURATED = `## Planned
+
+- Something.
+
+## Highlights 0.4
+
+Instant pages and more.
+
+- **Fast** pages.
+- Ticks answer at once.
+
+## 0.4.1 (2026-10-13)
+
+A fix.
+
+- Fixed a thing.
+
+## 0.4.0 (2026-10-11)
+
+Instant pages.
+
+- Pages open instantly.
+- Ticks answer at once.
+- A tick shows everywhere.
+- A fourth thing.
+
+## 0.3.6 (2026-10-10)
+
+Say hello.
+
+- A contact form.
+- Appearance themes.
+
+## 0.3.0 (2026-10-09)
+
+The first version.
+
+- Home dashboard.
+`;
+
+const UNCURATED = `## 0.2.0 (2026-10-01)
+
+Note.
+
+- a
+- b
+- c
+- d
+`;
+
+describe('parseChangelog, highlights', () => {
+  const entries = parseChangelog(CURATED);
+
+  it('reads a Highlights section with its headline and bullets', () => {
+    expect(entries[1]).toMatchObject({ kind: 'highlights', title: 'Highlights 0.4', note: 'Instant pages and more.' });
+    expect(entries[1].items).toHaveLength(2);
+  });
+});
+
+describe('lineOf', () => {
+  it('is the first two numbers of a version', () => {
+    expect(lineOf('0.8.4')).toBe('0.8');
+    expect(lineOf('0.10.0')).toBe('0.10');
+    expect(lineOf('1.0.2')).toBe('1.0');
+  });
+});
+
+describe('groupLines', () => {
+  const lines = groupLines(parseChangelog(CURATED));
+
+  it('makes one group per minor line, newest first, with its releases newest first', () => {
+    expect(
+      lines.map(({ line }) => {
+        return line;
+      }),
+    ).toEqual(['0.4', '0.3']);
+    expect(
+      lines[0].releases.map(({ title }) => {
+        return title;
+      }),
+    ).toEqual(['0.4.1', '0.4.0']);
+  });
+
+  it('spans from the oldest release to the newest of the line, and keeps the newest date', () => {
+    expect(lines[0]).toMatchObject({ from: '0.4.0', to: '0.4.1', date: '2026-10-13' });
+    expect(lines[1]).toMatchObject({ from: '0.3.0', to: '0.3.6', date: '2026-10-10' });
+  });
+
+  it('uses the curated headline and highlights when the changelog has them', () => {
+    expect(lines[0].headline).toBe('Instant pages and more.');
+    expect(lines[0].highlights).toHaveLength(2);
+  });
+
+  it('falls back to the first release of the line when nothing is curated: its note and first three bullets', () => {
+    expect(lines[1].headline).toBe('The first version.');
+    expect(lines[1].highlights).toHaveLength(1);
+
+    const more = groupLines(parseChangelog(UNCURATED));
+
+    expect(more[0].highlights).toHaveLength(3);
+  });
+
+  it('leaves Planned, Known issues and Highlights out of the groups', () => {
+    expect(
+      lines.flatMap(({ releases }) => {
+        return releases.map(({ kind }) => {
+          return kind;
+        });
+      }),
+    ).toEqual(['release', 'release', 'release', 'release']);
   });
 });

@@ -4,12 +4,15 @@ export interface Inline {
   text: string;
 }
 
-/** One `##` section of CHANGELOG.md: a release (with its date and note), the Planned list or the Known issues list. */
+/**
+ * One `##` section of CHANGELOG.md: a release (with its date and note), the Planned list, the Known issues list, or the
+ * hand-written highlights of a minor line (`## Highlights 0.8`, a headline and a few bullets for its card).
+ */
 export interface ChangelogEntry {
   title: string;
   /** `YYYY-MM-DD`, from a heading like `## 0.3.5 (2026-10-11)`. */
   date: string | null;
-  kind: 'release' | 'planned' | 'known';
+  kind: 'release' | 'planned' | 'known' | 'highlights';
   /** A sentence or two between the heading and the bullets. */
   note: string | null;
   items: Inline[][];
@@ -44,7 +47,11 @@ const kindOf = (title: string): ChangelogEntry['kind'] => {
     return 'planned';
   }
 
-  return name === 'known issues' ? 'known' : 'release';
+  if (name === 'known issues') {
+    return 'known';
+  }
+
+  return name.startsWith('highlights ') ? 'highlights' : 'release';
 };
 
 /** Reads CHANGELOG.md into its sections. Anything before the first `##` heading is ignored. */
@@ -72,10 +79,62 @@ export const parseChangelog = (source: string): ChangelogEntry[] => {
 
     if (line.startsWith('- ')) {
       items.push(parseInline(line.slice(2)));
-    } else if (kind === 'release' && items.length === 0) {
+    } else if ((kind === 'release' || kind === 'highlights') && items.length === 0) {
       current.note = note ? `${note} ${line}` : line;
     }
   }
 
   return entries;
+};
+
+/** `0.8.4` belongs to the line `0.8`. */
+export const lineOf = (version: string): string => {
+  return version.split('.').slice(0, 2).join('.');
+};
+
+/** A minor line with everything it shipped: the card on the What's new page. */
+export interface ChangelogLine {
+  line: string;
+  /** The releases of the line, newest first. */
+  releases: ChangelogEntry[];
+  from: string;
+  to: string;
+  /** The date of the newest release. */
+  date: string | null;
+  headline: string | null;
+  highlights: Inline[][];
+}
+
+const FALLBACK_HIGHLIGHTS = 3;
+
+/**
+ * Groups the releases by minor line, newest first (the file's order). A line's headline and highlights are the ones
+ * written under `## Highlights x.y`; without them, the first release of the line stands in for it.
+ */
+export const groupLines = (entries: ChangelogEntry[]): ChangelogLine[] => {
+  const curated = new Map<string, ChangelogEntry>();
+  const groups = new Map<string, ChangelogEntry[]>();
+
+  for (const entry of entries) {
+    const { kind, title } = entry;
+
+    if (kind === 'highlights') {
+      curated.set(title.slice('highlights '.length), entry);
+    } else if (kind === 'release') {
+      const line = lineOf(title);
+
+      groups.set(line, [...(groups.get(line) ?? []), entry]);
+    }
+  }
+
+  return [...groups.entries()].map(([line, releases]) => {
+    const { title: from, note, items } = releases.at(-1) as ChangelogEntry;
+    const { title: to, date } = releases[0];
+    const { note: headline, items: highlights } = curated.get(line) ?? {
+      note,
+      items: items.slice(0, FALLBACK_HIGHLIGHTS),
+    };
+
+    return { line, releases, from, to, date, headline, highlights };
+  });
 };

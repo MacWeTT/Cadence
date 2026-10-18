@@ -1,11 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { ChangelogEntryCard } from '@/components/changelog-entry/changelog-entry';
+import { ChangelogLineCard } from '@/components/changelog-line-card/changelog-line-card';
 import { PageTransition } from '@/components/page-transition/page-transition';
-import { parseChangelog } from '@/lib/changelog';
+import { groupLines, parseChangelog } from '@/lib/changelog';
 import './page.css';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -14,25 +16,36 @@ export const generateMetadata = async (): Promise<Metadata> => {
   return { title: t('title') };
 };
 
-/** What's new: the releases and the plans, read from CHANGELOG.md, which stays the one place they are written. */
+/**
+ * What's new: what is coming and what is known, then one card for each minor line (0.8, 0.7, ...), read from
+ * CHANGELOG.md, which stays the one place everything is written. Every release in full is on the "all changes" page.
+ */
 const ChangelogPage = () => {
   const t = useTranslations('changelog');
 
   // Read when the page is built, so the file is not needed while the app runs.
-  const entries = parseChangelog(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf8')).filter(
-    ({ kind, items }) => {
-      return kind === 'release' || items.length > 0;
-    },
-  );
+  const entries = parseChangelog(readFileSync(join(process.cwd(), 'CHANGELOG.md'), 'utf8'));
+  const notes = entries.filter(({ kind, items }) => {
+    return (kind === 'planned' || kind === 'known') && items.length > 0;
+  });
+  const lines = groupLines(entries);
 
   return (
     <PageTransition>
       <div className="changelog">
         <h1 className="changelog__title">{t('title')}</h1>
         <p className="changelog__intro">{t('intro')}</p>
-        {entries.map((entry, index) => {
+        {notes.map((entry, index) => {
           return <ChangelogEntryCard key={entry.title} entry={entry} index={index} />;
         })}
+        {lines.map((group, index) => {
+          return (
+            <ChangelogLineCard key={group.line} group={group} featured={index === 0} index={notes.length + index} />
+          );
+        })}
+        <Link href="/changelog/all" className="changelog__all">
+          {t('seeAll')}
+        </Link>
       </div>
     </PageTransition>
   );
