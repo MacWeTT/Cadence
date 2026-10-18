@@ -452,7 +452,9 @@ const slowActions = async (page: Page, ms: number, fail = false) => {
       return;
     }
 
-    await new Promise(resolve => {return setTimeout(resolve, ms)});
+    await new Promise(resolve => {
+      return setTimeout(resolve, ms);
+    });
     await (fail ? route.abort() : route.continue());
   });
 };
