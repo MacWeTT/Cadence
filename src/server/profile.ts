@@ -10,7 +10,7 @@ import { toProfileView, type ProfileView } from '@/server/profile-view';
 import { ProfileError, removeFiles, signedUrls } from '@/server/profile-storage';
 
 const COLUMNS =
-  'display_name, avatar_url, avatar_kind, avatar_value, avatar_color, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom';
+  'display_name, tag, avatar_url, avatar_kind, avatar_value, avatar_color, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom';
 
 /** The signed-in person's id and a client, or the error that sends them to sign in again. */
 export const requireOwner = async () => {
@@ -70,6 +70,19 @@ const save = async (patch: TablesUpdate<'profiles'>): Promise<void> => {
 
 export const updateName = async (name: string): Promise<void> => {
   await save({ display_name: name });
+};
+
+/** A tag is unique whatever its case: a clash is the person's to fix, not a failure. */
+export const updateTag = async (tag: string): Promise<void> => {
+  try {
+    await save({ tag });
+  } catch (e) {
+    if ((e as { code?: string }).code === '23505') {
+      throw new ProfileError('tagTaken');
+    }
+
+    throw e;
+  }
 };
 
 export const updateWeekStart = async (weekStartsOn: 1 | 7): Promise<void> => {

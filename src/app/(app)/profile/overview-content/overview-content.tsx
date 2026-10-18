@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { signOut } from '@/app/auth/actions';
 import { AvatarModal } from '@/app/(app)/profile/avatar-modal/avatar-modal';
 import { NameModal } from '@/app/(app)/profile/name-modal/name-modal';
+import { TagModal } from '@/app/(app)/profile/tag-modal/tag-modal';
 import { SoundModal } from '@/app/(app)/profile/sound-modal/sound-modal';
 import { TimezoneModal } from '@/app/(app)/profile/timezone-modal/timezone-modal';
 import { useProfile } from '@/app/(app)/profile/use-profile';
@@ -19,7 +20,7 @@ import { isChimeId } from '@/lib/chimes';
 import { zoneLabel } from '@/lib/zones';
 import './overview-content.css';
 
-type Setting = 'photo' | 'name' | 'timezone' | 'weekStart' | 'sound';
+type Setting = 'photo' | 'name' | 'tag' | 'timezone' | 'weekStart' | 'sound';
 
 interface OverviewState {
   /** The modal that is open, if any. */
@@ -52,6 +53,10 @@ export const OverviewContent = () => {
     setState({ open: 'name' });
   };
 
+  const onTagOpen = () => {
+    setState({ open: 'tag' });
+  };
+
   const onTimezoneOpen = () => {
     setState({ open: 'timezone' });
   };
@@ -76,7 +81,7 @@ export const OverviewContent = () => {
     );
   }
 
-  const { name, email, avatar, timezone, weekStartsOn, sound, customSounds } = data;
+  const { name, tag, email, avatar, timezone, weekStartsOn, sound, customSounds } = data;
   const shownName = name || email || t('header.fallbackName');
   const { city, region } = zoneLabel(timezone);
   const { id: soundId } = sound;
@@ -95,6 +100,9 @@ export const OverviewContent = () => {
         </SettingRow>
         <SettingRow label={t('rows.name')} onOpen={onNameOpen}>
           {name}
+        </SettingRow>
+        <SettingRow label={t('rows.tag')} onOpen={onTagOpen}>
+          {t('tag.display', { tag })}
         </SettingRow>
         <SettingRow label={t('rows.timezone')} onOpen={onTimezoneOpen}>
           {region ? `${city} · ${region}` : city}
@@ -116,6 +124,7 @@ export const OverviewContent = () => {
 
       {open === 'photo' && <AvatarModal avatar={avatar} name={shownName} onClose={onClose} />}
       {open === 'name' && <NameModal name={name} onClose={onClose} />}
+      {open === 'tag' && <TagModal tag={tag} onClose={onClose} />}
       {open === 'timezone' && <TimezoneModal timezone={timezone} onClose={onClose} />}
       {open === 'weekStart' && <WeekStartModal weekStartsOn={weekStartsOn} onClose={onClose} />}
       {open === 'sound' && <SoundModal sound={sound} customSounds={customSounds} onClose={onClose} />}

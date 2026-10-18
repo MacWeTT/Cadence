@@ -1,4 +1,11 @@
-import { FREE_CAP_SECONDS, focusSecondsAt, freeFocusSeconds, phaseAt, type FocusPhase } from '@/domain/focus';
+import {
+  FREE_CAP_SECONDS,
+  activeSeconds,
+  focusSecondsAt,
+  freeFocusSeconds,
+  phaseAt,
+  type FocusPhase,
+} from '@/domain/focus';
 import type { FocusSession } from '@/server/focus-view';
 
 export interface SessionView {
@@ -12,6 +19,8 @@ export interface SessionView {
   phaseLength: number;
   focusSeconds: number;
   done: boolean;
+  /** The clock is held until the person resumes. */
+  paused: boolean;
 }
 
 /** h:mm:ss from one hour up, m:ss below. */
@@ -35,8 +44,9 @@ export const tabTitle = (clock: number, habit: string): string => {
 
 /** Everything the panel, bar and tab title show, derived from the start time and `now` (server time, in ms). */
 export const sessionView = (session: FocusSession, nowMs: number): SessionView => {
-  const { plan, startedAt, skippedSeconds } = session;
-  const elapsed = Math.max(0, Math.floor((nowMs - Date.parse(startedAt)) / 1000));
+  const { plan, startedAt, skippedSeconds, pausedAt, pausedSeconds } = session;
+  const elapsed = activeSeconds(startedAt, pausedSeconds, pausedAt, nowMs);
+  const paused = pausedAt !== null;
 
   if (!plan) {
     return {
@@ -47,6 +57,7 @@ export const sessionView = (session: FocusSession, nowMs: number): SessionView =
       phaseLength: 0,
       focusSeconds: freeFocusSeconds(elapsed),
       done: elapsed >= FREE_CAP_SECONDS,
+      paused,
     };
   }
 
@@ -64,5 +75,6 @@ export const sessionView = (session: FocusSession, nowMs: number): SessionView =
     phaseLength: phase === 'done' ? 0 : phaseLength,
     focusSeconds: focusSecondsAt(plan, effective),
     done: phase === 'done',
+    paused,
   };
 };

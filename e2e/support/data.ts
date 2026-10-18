@@ -184,6 +184,8 @@ export const seedFocusSession = async (o: {
   finishedWithSeconds?: number;
   /** The sound chosen for the session; left out follows the profile sound. */
   soundId?: string;
+  /** Makes the session paused since this many minutes ago (measured on this machine's clock). */
+  pausedMinutesAgo?: number;
 }): Promise<void> => {
   const userId = await ensureE2EUser();
   const mode = o.mode ?? 'free';
@@ -202,6 +204,8 @@ export const seedFocusSession = async (o: {
           : new Date(startedAt.getTime() + o.finishedWithSeconds * 1000).toISOString(),
       focus_seconds: o.finishedWithSeconds ?? null,
       sound_id: o.soundId ?? null,
+      paused_at:
+        o.pausedMinutesAgo === undefined ? null : new Date(Date.now() - o.pausedMinutesAgo * 60_000).toISOString(),
     });
 
   if (error) {
@@ -294,6 +298,7 @@ export const resetProfile = async (): Promise<void> => {
     .from('profiles')
     .update({
       display_name: 'E2E User',
+      tag: 'e2e',
       timezone: 'UTC',
       week_starts_on: 1,
       avatar_kind: 'google',

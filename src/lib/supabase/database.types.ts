@@ -53,14 +53,14 @@ export type Database = {
                   ]
                 },"focus_sessions": {
                   Row: {
-                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"plan": Json | null,"skipped_seconds": number,"sound_id": string | null,"started_at": string,"user_id": string
+                    "ended_at": string | null,"focus_seconds": number | null,"habit_id": string,"id": string,"mode": string,"paused_at": string | null,"paused_seconds": number,"plan": Json | null,"skipped_seconds": number,"sound_id": string | null,"started_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id": string,"id"?: string,"mode": string,"paused_at"?: string | null,"paused_seconds"?: number,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
                   }
                   Update: {
-                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
+                    "ended_at"?: string | null,"focus_seconds"?: number | null,"habit_id"?: string,"id"?: string,"mode"?: string,"paused_at"?: string | null,"paused_seconds"?: number,"plan"?: Json | null,"skipped_seconds"?: number,"sound_id"?: string | null,"started_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -147,14 +147,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"timezone": string,"user_id": string,"week_starts_on": number
+                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"tag": string,"timezone": string,"user_id": string,"week_starts_on": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id": string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"tag": string,"timezone"?: string,"user_id": string,"week_starts_on"?: number
                   }
                   Update: {
-                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"tag"?: string,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
                   }
                   Relationships: [
                     

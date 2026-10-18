@@ -22,7 +22,7 @@ Copy `.env.example` to `.env.local` and fill in the values from `npx supabase st
 
 ## Contributing
 
-Changes land by pull request into `develop` (see [`docs/policies.md`](docs/policies.md)). Everyone who has helped build Cadence is listed on the About page: add yourself at the end of the list in [`src/lib/contributors.ts`](src/lib/contributors.ts) in your pull request (your name and your GitHub link). The first entry is the primary contributor.
+Changes land by pull request into `develop` (see [`docs/policies.md`](docs/policies.md)). Everyone who has helped build Cadence is listed on the About page: add your GitHub username at the end of the list in [`src/lib/contributors.ts`](src/lib/contributors.ts) in your pull request (usernames only, no real names). The first entry is the primary contributor.
 
 ## Read next
 

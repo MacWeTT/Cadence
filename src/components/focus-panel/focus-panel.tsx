@@ -29,6 +29,8 @@ export const FocusPanel = () => {
     start,
     stop,
     skip,
+    pause,
+    resume,
     confirm,
   } = useFocusApi();
 
@@ -68,6 +70,8 @@ export const FocusPanel = () => {
             conflict={conflict ?? null}
             onStop={stop}
             onSkip={skip}
+            onPause={pause}
+            onResume={resume}
           />
         )}
         {!result && !session && target && (

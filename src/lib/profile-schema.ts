@@ -4,6 +4,7 @@ import { ACCENTS } from '@/lib/appearance';
 import { CHARACTER_IDS, PHOTO_MAX_BYTES, PHOTO_TYPES } from '@/lib/avatar';
 import { isSingleEmoji, type ValidationCode } from '@/lib/habit-schema';
 import { isSoundId, SOUND_MAX_BYTES, SOUND_MAX_MS, SOUND_NAME_MAX, SOUND_TYPES } from '@/lib/sound';
+import { isValidTag, normaliseTag } from '@/lib/tag';
 import { isKnownZone, modernZone } from '@/lib/zones';
 
 /** What each profile edit may send. The messages are validation codes, like the habit and contact schemas. */
@@ -11,6 +12,11 @@ export const NAME_MAX = 50;
 
 export const nameInputSchema = z.object({
   name: z.string().trim().min(1, 'profileNameRequired').max(NAME_MAX, 'profileNameTooLong'),
+});
+
+/** A tag as typed (the @ and capitals are forgiven), saved without them. */
+export const tagInputSchema = z.object({
+  tag: z.string().transform(normaliseTag).refine(isValidTag, 'tagInvalid'),
 });
 
 export const weekStartInputSchema = z.object({

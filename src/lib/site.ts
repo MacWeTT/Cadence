@@ -1,8 +1,8 @@
 import { version } from '@package';
-import { CONTRIBUTORS } from '@/lib/contributors';
+import { CONTRIBUTORS, githubUrl } from '@/lib/contributors';
 
 /** Who builds Cadence, and where to reach them: the primary contributor. */
-export const DEVELOPER = CONTRIBUTORS[0];
+export const DEVELOPER = { name: CONTRIBUTORS[0], url: githubUrl(CONTRIBUTORS[0]) };
 
 /**
  * The release, read from package.json itself, so the footer always shows the version in the file (see CHANGELOG.md).

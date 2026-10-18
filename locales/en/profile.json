@@ -30,7 +30,8 @@
     "timezone": "Timezone",
     "weekStart": "Week starts on",
     "sound": "Focus sound",
-    "change": "Change"
+    "change": "Change",
+    "tag": "Tag"
   },
   "weekdays": {
     "monday": "Monday",
@@ -118,6 +119,14 @@
     "avatar": "Avatar updated",
     "sound": "Focus sound set to {name}",
     "soundAdded": "{name} added",
-    "soundRemoved": "{name} removed"
+    "soundRemoved": "{name} removed",
+    "tag": "Tag changed to @{tag}"
+  },
+  "tag": {
+    "title": "Your tag",
+    "label": "Tag",
+    "hint": "3 to 30 lowercase letters, digits or underscores. It shows as @{example}.",
+    "display": "@{tag}",
+    "at": "@"
   }
 }

@@ -8,6 +8,7 @@ import {
   updateAvatarAction,
   updateNameAction,
   updateSoundAction,
+  updateTagAction,
   updateTimezoneAction,
   updateWeekStartAction,
   uploadAvatarPhotoAction,
@@ -20,12 +21,14 @@ import {
   withPhoto,
   withSound,
   withSoundRemoved,
+  withTag,
   withTimezone,
   withWeekStart,
 } from '@/lib/profile-optimistic';
 import type { AvatarInput } from '@/lib/profile-schema';
 import { fetchJson } from '@/lib/query/fetch-json';
 import { queryKeys } from '@/lib/query/keys';
+import { normaliseTag } from '@/lib/tag';
 import { zoneLabel } from '@/lib/zones';
 import type { ProfileView } from '@/server/profile-view';
 
@@ -111,6 +114,21 @@ export const useUpdateName = () => {
     apply: withName,
     success: () => {
       return t('name');
+    },
+  });
+};
+
+/** A tag change: shown at once, and put back with an error toast if it is taken. */
+export const useUpdateTag = () => {
+  const t = useTranslations('profile.toasts');
+
+  return useEdit<string>({
+    action: tag => {
+      return updateTagAction({ tag });
+    },
+    apply: withTag,
+    success: tag => {
+      return t('tag', { tag: normaliseTag(tag) });
     },
   });
 };

@@ -1,0 +1,21 @@
+@reference '../../../globals.css';
+
+.tag-modal__field {
+  @apply relative;
+}
+
+.tag-modal__at {
+  @apply pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-muted;
+}
+
+.tag-modal__input {
+  @apply pl-7;
+}
+
+.tag-modal__hint {
+  @apply text-xs text-ink-muted;
+}
+
+.tag-modal__hint--error {
+  @apply text-danger;
+}

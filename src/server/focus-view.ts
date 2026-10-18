@@ -2,8 +2,10 @@
 import { toCalendarDate, type CalendarDate } from '@/domain/dates';
 import {
   FREE_CAP_SECONDS,
+  activeSeconds,
   focusSecondsAt,
   freeFocusSeconds,
+  pausedTooLong,
   planErrors,
   totalSeconds,
   type FocusPlan,
@@ -17,6 +19,10 @@ export interface FocusRow {
   mode: string;
   plan: unknown;
   skipped_seconds: number;
+  /** When the running pause began (`null` while running). */
+  paused_at: string | null;
+  /** Seconds of earlier pauses; the pause that is on is not in it yet. */
+  paused_seconds: number;
   focus_seconds: number | null;
   /** The sound chosen for this session; `null` follows the profile's sound. */
   sound_id: string | null;
@@ -37,6 +43,8 @@ export interface FocusSession {
   plan: FocusPlan | null;
   startedAt: string;
   skippedSeconds: number;
+  pausedAt: string | null;
+  pausedSeconds: number;
   /** The sound chosen for this session; `null` follows the profile's sound. */
   soundId: string | null;
 }
@@ -84,7 +92,7 @@ export const parsePlan = (value: unknown): FocusPlan | null => {
 };
 
 export const toSession = (row: FocusRow, habit: FocusHabit): FocusSession => {
-  const { id, habit_id, mode, plan, started_at, skipped_seconds, sound_id } = row;
+  const { id, habit_id, mode, plan, started_at, skipped_seconds, paused_at, paused_seconds, sound_id } = row;
 
   return {
     id,
@@ -94,6 +102,8 @@ export const toSession = (row: FocusRow, habit: FocusHabit): FocusSession => {
     plan: parsePlan(plan),
     startedAt: started_at,
     skippedSeconds: skipped_seconds,
+    pausedAt: paused_at,
+    pausedSeconds: paused_seconds,
     soundId: sound_id,
   };
 };
@@ -128,17 +138,18 @@ export interface Settled {
  * A pomodoro row whose plan cannot be read is closed like a free one, so it never blocks the person.
  */
 export const settle = (row: FocusRow, now: Date): Settled => {
-  const { started_at, skipped_seconds, plan: stored } = row;
+  const { started_at, skipped_seconds, paused_at, paused_seconds, plan: stored } = row;
   const plan = row.mode === 'pomodoro' ? parsePlan(stored) : null;
   const start = new Date(started_at).getTime();
   const length = plan ? Math.max(0, totalSeconds(plan) - skipped_seconds) : FREE_CAP_SECONDS;
-  const elapsed = Math.floor((now.getTime() - start) / 1000);
-  const seconds = Math.min(Math.max(0, elapsed), length);
+  const elapsed = activeSeconds(started_at, paused_seconds, paused_at, now.getTime());
+  const seconds = Math.min(elapsed, length);
 
   return {
-    endedAt: new Date(start + seconds * 1000).toISOString(),
+    // paused time sits between the start and the end, so the end is the start plus the pauses plus the running time
+    endedAt: new Date(start + (paused_seconds + seconds) * 1000).toISOString(),
     focusSeconds: plan ? focusSecondsAt(plan, seconds + skipped_seconds) : freeFocusSeconds(seconds),
-    expired: elapsed >= length,
+    expired: elapsed >= length || pausedTooLong(paused_at, now.getTime()),
   };
 };
 

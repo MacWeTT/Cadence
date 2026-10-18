@@ -14,13 +14,13 @@ const setExpanded = async (toggle: Locator, expanded: boolean) => {
   }).toPass();
 };
 
-test('the contributors are tucked behind "friends", with the primary contributor first', async ({ page }) => {
+test('the contributors are tucked behind "friendship", with the primary contributor first', async ({ page }) => {
   await page.goto('/about');
 
-  await expect(page.getByText(/Built and maintained by/)).toBeVisible();
+  await expect(page.getByText(/Built by/)).toBeVisible();
   await expect(page.locator('#contributors')).toHaveCount(0);
 
-  const toggle = page.getByRole('button', { name: 'friends' });
+  const toggle = page.getByRole('button', { name: 'friendship' });
 
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await setExpanded(toggle, true);
@@ -30,7 +30,7 @@ test('the contributors are tucked behind "friends", with the primary contributor
   await expect(list.getByText('Primary contributor')).toBeVisible();
   await expect(list.getByRole('link').first()).toHaveText('MacWeTT');
   await expect(list.getByRole('link').first()).toHaveAttribute('href', 'https://github.com/MacWeTT');
-  await expect(list.getByRole('link', { name: 'Aditya Kapoor' })).toHaveAttribute(
+  await expect(list.getByRole('link', { name: 'detoroito-sama' })).toHaveAttribute(
     'href',
     'https://github.com/detoroito-sama',
   );
@@ -44,11 +44,11 @@ test('the About page is one click from the footer', async ({ page }) => {
   await page.getByRole('contentinfo').getByRole('link', { name: 'About' }).click();
 
   await expect(page).toHaveURL(/\/about$/);
-  await expect(page.getByRole('button', { name: 'friends' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'friendship' })).toBeVisible();
 });
 
 test('the footer shows the version', async ({ page }) => {
   await page.goto('/about');
 
-  await expect(page.getByRole('contentinfo')).toContainText('Version 0.8.2');
+  await expect(page.getByRole('contentinfo')).toContainText('Version 0.8.3');
 });

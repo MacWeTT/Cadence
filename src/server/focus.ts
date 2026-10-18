@@ -1,10 +1,11 @@
 import 'server-only';
 import { connection } from 'next/server';
 import { addDays, toCalendarDate, type CalendarDate } from '@/domain/dates';
-import { breakLeftAt, isSavedSession, planErrors, type FocusPlan } from '@/domain/focus';
+import { activeSeconds, breakLeftAt, planErrors, type FocusPlan } from '@/domain/focus';
 import { isChimeId } from '@/lib/chimes';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { fetchAll } from '@/server/fetch-all';
+import { closeRow, runningRow, serverNow } from '@/server/focus-store';
 import {
   focusByHabit,
   lastSoundsOf,
@@ -12,7 +13,6 @@ import {
   settle,
   toSession,
   type FocusHabit,
-  type FocusRow,
   type FocusState,
   type FocusTotals,
 } from '@/server/focus-view';
@@ -30,59 +30,7 @@ export interface FocusResult {
   saved: boolean;
 }
 
-const COLUMNS = 'id, habit_id, started_at, ended_at, mode, plan, skipped_seconds, focus_seconds, sound_id';
 const RECENT_PLANS = 200;
-
-const serverNow = async (): Promise<Date> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc('server_now');
-
-  if (error) {
-    throw error;
-  }
-
-  return new Date(data);
-};
-
-const runningRow = async (): Promise<FocusRow | null> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('focus_sessions').select(COLUMNS).is('ended_at', null).maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-};
-
-/** Saves a settled session, or drops it when it was under a minute. Only touches a session that is still running. */
-const closeRow = async (row: FocusRow, now: Date): Promise<{ focusSeconds: number; saved: boolean }> => {
-  const { id } = row;
-  const { endedAt, focusSeconds } = settle(row, now);
-  const supabase = await createSupabaseServerClient();
-
-  if (!isSavedSession(focusSeconds)) {
-    const { error } = await supabase.from('focus_sessions').delete().eq('id', id).is('ended_at', null);
-
-    if (error) {
-      throw error;
-    }
-
-    return { focusSeconds, saved: false };
-  }
-
-  const { error } = await supabase
-    .from('focus_sessions')
-    .update({ ended_at: endedAt, focus_seconds: focusSeconds })
-    .eq('id', id)
-    .is('ended_at', null);
-
-  if (error) {
-    throw error;
-  }
-
-  return { focusSeconds, saved: true };
-};
 
 /** The numbers last used on each habit, read from its latest pomodoro session. */
 const lastPlans = async (): Promise<Record<string, FocusPlan>> => {
@@ -141,7 +89,16 @@ const lastSounds = async (): Promise<Record<string, string>> => {
 
 export const getFocusState = async (): Promise<FocusState> => {
   await connection(); // the Supabase client reads the clock; this must only run at request time
-  const [now, row, plans, sounds] = await Promise.all([serverNow(), runningRow(), lastPlans(), lastSounds()]);
+  const [now, found, plans, sounds] = await Promise.all([serverNow(), runningRow(), lastPlans(), lastSounds()]);
+
+  // a session left paused for 12 hours is closed with the time up to its pause
+  const abandoned = found?.paused_at && settle(found, now).expired;
+
+  if (found && abandoned) {
+    await closeRow(found, now);
+  }
+
+  const row = abandoned ? null : found;
 
   return {
     running: row ? toSession(row, await habitOf(row.habit_id)) : null,
@@ -247,9 +204,15 @@ export const skipBreak = async (): Promise<void> => {
     return;
   }
 
-  const { id, started_at, skipped_seconds } = row;
+  const { id, started_at, skipped_seconds, paused_at, paused_seconds } = row;
+
+  // a break cannot be skipped while the clock is held
+  if (paused_at) {
+    return;
+  }
+
   const now = await serverNow();
-  const elapsed = Math.floor((now.getTime() - new Date(started_at).getTime()) / 1000) + skipped_seconds;
+  const elapsed = activeSeconds(started_at, paused_seconds, null, now.getTime()) + skipped_seconds;
   const left = breakLeftAt(plan, elapsed);
 
   if (left === 0) {

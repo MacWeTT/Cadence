@@ -35,6 +35,9 @@
     "free": "Focusing",
     "done": "All rounds done",
     "stop": "Stop",
+    "pause": "Pause",
+    "resume": "Resume",
+    "paused": "Paused",
     "skipBreak": "Skip break",
     "timer": "Time",
     "round": "Round {round}",
@@ -43,6 +46,8 @@
   "bar": {
     "open": "Open the focus session on {name}",
     "stop": "Stop",
+    "pause": "Pause",
+    "resume": "Resume",
     "label": "Focus session"
   },
   "ending": {

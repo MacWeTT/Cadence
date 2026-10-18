@@ -12,8 +12,8 @@
   @apply truncate font-display text-3xl;
 }
 
-.profile-header__email {
-  @apply truncate text-ink-muted;
+.profile-header__tag {
+  @apply w-fit max-w-full truncate rounded-full border border-primary/30 bg-primary/10 px-3 py-0.5 text-sm font-medium text-primary;
 }
 
 .profile-header__avatar-skeleton {

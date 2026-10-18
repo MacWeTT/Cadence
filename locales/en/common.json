@@ -61,7 +61,7 @@
     "sky": "sky",
     "slate": "slate"
   },
-  "tagline": "A calm personal habit tracker.",
+  "tagline": "Build habits that stick, one day at a time.",
   "limit": {
     "left": "{count, plural, one {{count} character left} other {{count} characters left}}",
     "reached": "Limit reached: {max} characters"
