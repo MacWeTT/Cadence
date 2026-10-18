@@ -11,6 +11,8 @@ const row = (over: Partial<FocusRow> = {}): FocusRow => {
     mode: 'free',
     plan: null,
     skipped_seconds: 0,
+    paused_at: null,
+    paused_seconds: 0,
     focus_seconds: null,
     sound_id: null,
     ...over,
@@ -42,6 +44,8 @@ describe('toSession', () => {
       plan: PRESETS.classic,
       startedAt: '2026-10-12T09:00:00Z',
       skippedSeconds: 30,
+      pausedAt: null,
+      pausedSeconds: 0,
       soundId: null,
     });
   });
@@ -119,6 +123,45 @@ describe('settle, pomodoro', () => {
     const r = settle(pomodoro({ plan: { nope: 1 } }), new Date('2026-10-12T09:05:00Z'));
 
     expect(r.focusSeconds).toBe(300);
+  });
+});
+
+describe('settle, with pauses', () => {
+  it('leaves paused time out of a free session', () => {
+    const r = settle(row({ paused_seconds: 300 }), new Date('2026-10-12T09:15:00Z'));
+
+    expect(r).toEqual({ endedAt: '2026-10-12T09:15:00.000Z', focusSeconds: 600, expired: false });
+  });
+
+  it('stops counting at the moment of a pause that is still on', () => {
+    const r = settle(row({ paused_at: '2026-10-12T09:10:00Z' }), new Date('2026-10-12T09:40:00Z'));
+
+    expect(r).toEqual({ endedAt: '2026-10-12T09:10:00.000Z', focusSeconds: 600, expired: false });
+  });
+
+  it('counts earlier pauses and the one that is on', () => {
+    const r = settle(row({ paused_seconds: 120, paused_at: '2026-10-12T09:20:00Z' }), new Date('2026-10-12T09:30:00Z'));
+
+    expect(r).toEqual({ endedAt: '2026-10-12T09:20:00.000Z', focusSeconds: 18 * 60, expired: false });
+  });
+
+  it('pushes the 8 hour cap later by the paused time', () => {
+    const r = settle(row({ paused_seconds: 3600 }), new Date('2026-10-12T18:30:00Z'));
+
+    expect(r).toEqual({ endedAt: '2026-10-12T18:00:00.000Z', focusSeconds: 8 * 3600, expired: true });
+  });
+
+  it('keeps a pomodoro in its phase while paused', () => {
+    const plan = { mode: 'pomodoro', plan: PRESETS.classic };
+    const r = settle(row({ ...plan, paused_at: '2026-10-12T09:26:00Z' }), new Date('2026-10-12T12:00:00Z'));
+
+    expect(r).toMatchObject({ focusSeconds: 25 * 60, expired: false });
+  });
+
+  it('is expired once a pause has lasted 12 hours, with the time up to the pause', () => {
+    const r = settle(row({ paused_at: '2026-10-12T09:10:00Z' }), new Date('2026-10-12T21:10:00Z'));
+
+    expect(r).toEqual({ endedAt: '2026-10-12T09:10:00.000Z', focusSeconds: 600, expired: true });
   });
 });
 

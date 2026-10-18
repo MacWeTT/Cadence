@@ -16,15 +16,17 @@ interface FocusRunningProps {
   conflict: string | null;
   onStop: () => void;
   onSkip: () => void;
+  onPause: () => void;
+  onResume: () => void;
 }
 
 const RADIUS = 52;
 const CIRCLE = 2 * Math.PI * RADIUS;
 
-/** A ring and a large countdown (or count-up), the phase, the round dots, Stop, and Skip break during a break. */
+/** A ring and a large countdown (or count-up), the phase, the round dots, Pause or Resume, Stop, and Skip break during a break. */
 export const FocusRunning = (props: FocusRunningProps) => {
-  const { view, mode, pending, conflict, onStop, onSkip } = props;
-  const { phase, round, rounds, clock, phaseLength } = view;
+  const { view, mode, pending, conflict, onStop, onSkip, onPause, onResume } = props;
+  const { phase, round, rounds, clock, phaseLength, paused } = view;
 
   const t = useTranslations('focus.running');
   const reduced = useReducedMotion();
@@ -49,7 +51,12 @@ export const FocusRunning = (props: FocusRunningProps) => {
             strokeDashoffset={CIRCLE * (1 - left)}
           />
         </svg>
-        <p role="timer" aria-live="off" aria-label={t('timer')} className="focus-running__clock">
+        <p
+          role="timer"
+          aria-live="off"
+          aria-label={t('timer')}
+          className={cn('focus-running__clock', paused && 'focus-running__clock--paused')}
+        >
           {formatClock(clock)}
         </p>
       </div>
@@ -72,7 +79,12 @@ export const FocusRunning = (props: FocusRunningProps) => {
         <Button onClick={onStop} disabled={pending}>
           {t('stop')}
         </Button>
-        {phase === 'break' && (
+        {phase !== 'done' && (
+          <Button variant="outline" onClick={paused ? onResume : onPause} disabled={pending}>
+            {paused ? t('resume') : t('pause')}
+          </Button>
+        )}
+        {phase === 'break' && !paused && (
           <Button variant="outline" onClick={onSkip} disabled={pending}>
             {t('skipBreak')}
           </Button>

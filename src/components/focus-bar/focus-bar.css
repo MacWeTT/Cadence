@@ -28,6 +28,10 @@
   @apply ml-auto font-display tabular-nums;
 }
 
+.focus-bar__pause {
+  @apply min-h-11 min-w-11 rounded-full px-3 text-sm font-medium disabled:opacity-60;
+}
+
 .focus-bar__stop {
   @apply min-h-11 min-w-11 rounded-full px-3 text-sm font-medium text-danger disabled:opacity-60;
 }

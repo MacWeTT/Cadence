@@ -1,5 +1,5 @@
 begin;
-select plan(15);
+select plan(19);
 
 insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-0000000000a1', 'a@test.dev'),
@@ -41,6 +41,12 @@ reset role;
 -- cascade
 delete from public.habits where id = '10000000-0000-0000-0000-0000000000a1';
 select is((select count(*)::int from public.focus_sessions where habit_id = '10000000-0000-0000-0000-0000000000a1'), 0, 'deleting a habit removes its sessions');
+
+-- pausing: only a running session can be paused, and the seconds of pauses never go below zero
+select is((select paused_seconds from public.focus_sessions where user_id = '00000000-0000-0000-0000-0000000000b2'), 0, 'a new session has no paused time');
+select lives_ok($$update public.focus_sessions set paused_at = now() where user_id = '00000000-0000-0000-0000-0000000000b2'$$, 'a running session can be paused');
+select throws_ok($$update public.focus_sessions set ended_at = now() where user_id = '00000000-0000-0000-0000-0000000000b2'$$, '23514', null, 'a paused session cannot be left finished and paused');
+select throws_ok($$update public.focus_sessions set paused_seconds = -1 where user_id = '00000000-0000-0000-0000-0000000000b2'$$, '23514', null, 'negative paused time is rejected');
 
 select * from finish();
 rollback;

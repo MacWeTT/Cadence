@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { FocusContext, type FocusApi, type FocusTarget } from '@/components/focus-host/focus-context';
+import { tickedIn } from '@/components/focus-host/ticked-in';
 import { useTabTitle } from '@/components/focus-host/use-tab-title';
 import { useFocusActions, useFocusState, useServerNow, type StartInput } from '@/components/focus-host/use-focus';
 import { FocusPanel } from '@/components/focus-panel/focus-panel';
@@ -15,7 +16,6 @@ import { useSessionChime } from '@/components/focus-host/use-chime-choice';
 import type { FocusResult } from '@/server/focus';
 import { discardFocusAction } from '@/app/(app)/focus-actions';
 import { setCompletionAction } from '@/app/(app)/today/actions';
-import type { TodayRow, TodayView } from '@/server/today-view';
 
 interface FocusHostProps {
   children: React.ReactNode;
@@ -29,19 +29,6 @@ interface HostState {
   didIt: boolean;
   countIt: boolean;
 }
-
-/** Whether the cache already shows the habit ticked on that day (a tick is idempotent, so a miss is harmless). */
-const tickedIn = (views: [unknown, unknown][], habitId: string): boolean => {
-  return views.some(([, data]) => {
-    const { view } = (data ?? {}) as { view?: TodayView };
-    const { done, optional } = view ?? { done: [], optional: [] };
-    const rows: TodayRow[] = [...done, ...optional];
-
-    return rows.some(({ id, ticked }) => {
-      return id === habitId && ticked;
-    });
-  });
-};
 
 /**
  * Holds the focus session for the whole app: the clock, the chime and notification at each phase change, the tab title,
@@ -62,7 +49,7 @@ export const FocusHost = (props: FocusHostProps) => {
   const queryClient = useQueryClient();
   const t = useTranslations('focus');
   const { data, dataUpdatedAt } = useFocusState();
-  const { start, stop, skip } = useFocusActions();
+  const { start, stop, skip, pause, resume } = useFocusActions();
 
   const seen = useRef<string | null>(null);
   const stopping = useRef(false);
@@ -75,7 +62,7 @@ export const FocusHost = (props: FocusHostProps) => {
   const now = useServerNow(data, dataUpdatedAt, session !== null);
   const view = session ? sessionView(session, now) : null;
   const { panelOpen, target, result, error, didIt, countIt } = state;
-  const pending = start.isPending || stop.isPending || skip.isPending;
+  const pending = start.isPending || stop.isPending || skip.isPending || pause.isPending || resume.isPending;
 
   const phase = view?.phase;
   const round = view?.round;
@@ -232,6 +219,10 @@ export const FocusHost = (props: FocusHostProps) => {
     });
   };
 
+  const onError = (e: Error) => {
+    toast.error(e.message);
+  };
+
   const api: FocusApi = {
     session,
     view,
@@ -299,6 +290,12 @@ export const FocusHost = (props: FocusHostProps) => {
           toast.error(e.message);
         },
       });
+    },
+    pause: () => {
+      pause.mutate(undefined, { onError });
+    },
+    resume: () => {
+      resume.mutate(undefined, { onError });
     },
     confirm,
   };

@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   FREE_CAP_SECONDS,
   PRESETS,
+  activeSeconds,
   breakLeftAt,
   focusSecondsAt,
   freeFocusSeconds,
   isSavedSession,
+  pausedTooLong,
   phaseAt,
   planErrors,
   totalSeconds,
@@ -134,5 +136,38 @@ describe('isSavedSession', () => {
   it('needs one full minute of focus', () => {
     expect(isSavedSession(59)).toBe(false);
     expect(isSavedSession(60)).toBe(true);
+  });
+});
+
+describe('activeSeconds', () => {
+  const start = '2026-10-12T09:00:00Z';
+
+  const at = (time: string) => {
+    return Date.parse(`2026-10-12T${time}Z`);
+  };
+
+  it('is the seconds since the start, less the paused time', () => {
+    expect(activeSeconds(start, 0, null, at('09:10:00'))).toBe(600);
+    expect(activeSeconds(start, 120, null, at('09:10:00'))).toBe(480);
+  });
+
+  it('stops at the pause that is on', () => {
+    expect(activeSeconds(start, 0, '2026-10-12T09:04:00Z', at('11:00:00'))).toBe(240);
+    expect(activeSeconds(start, 60, '2026-10-12T09:04:00Z', at('11:00:00'))).toBe(180);
+  });
+
+  it('is never negative', () => {
+    expect(activeSeconds(start, 0, null, at('08:59:58'))).toBe(0);
+    expect(activeSeconds(start, 900, null, at('09:10:00'))).toBe(0);
+  });
+});
+
+describe('pausedTooLong', () => {
+  it('is true from 12 hours after the pause began', () => {
+    const pausedAt = '2026-10-12T09:00:00Z';
+
+    expect(pausedTooLong(pausedAt, Date.parse('2026-10-12T20:59:59Z'))).toBe(false);
+    expect(pausedTooLong(pausedAt, Date.parse('2026-10-12T21:00:00Z'))).toBe(true);
+    expect(pausedTooLong(null, Date.parse('2026-10-14T21:00:00Z'))).toBe(false);
   });
 });

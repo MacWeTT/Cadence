@@ -14,6 +14,8 @@ const session = (over: Partial<FocusSession> = {}): FocusSession => {
     plan: null,
     startedAt: '2026-10-12T09:00:00Z',
     skippedSeconds: 0,
+    pausedAt: null,
+    pausedSeconds: 0,
     soundId: null,
     ...over,
   };
@@ -84,6 +86,31 @@ describe('sessionView, pomodoro', () => {
 
   it('does not go negative when the server clock is slightly behind the start', () => {
     expect(sessionView(pomodoro(), START - 2000)).toMatchObject({ phase: 'focus', clock: 25 * 60 });
+  });
+});
+
+describe('sessionView, paused', () => {
+  it('is not paused by default', () => {
+    expect(sessionView(session(), START + 60_000).paused).toBe(false);
+  });
+
+  it('holds a free clock at the moment of the pause, however late it is', () => {
+    const paused = session({ pausedAt: '2026-10-12T09:10:00Z' });
+
+    expect(sessionView(paused, START + 10 * 60_000)).toMatchObject({ clock: 600, paused: true });
+    expect(sessionView(paused, START + 5 * 3600_000)).toMatchObject({ clock: 600, paused: true });
+  });
+
+  it('leaves out time paused earlier', () => {
+    const resumed = session({ pausedSeconds: 120 });
+
+    expect(sessionView(resumed, START + 10 * 60_000)).toMatchObject({ clock: 480, paused: false });
+  });
+
+  it('holds a pomodoro in its phase', () => {
+    const paused = pomodoro({ pausedAt: '2026-10-12T09:01:00Z' });
+
+    expect(sessionView(paused, START + 3600_000)).toMatchObject({ phase: 'focus', clock: 24 * 60, done: false });
   });
 });
 

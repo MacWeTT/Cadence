@@ -2,7 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useSyncExternalStore } from 'react';
-import { skipBreakAction, startFocusAction, stopFocusAction } from '@/app/(app)/focus-actions';
+import {
+  pauseFocusAction,
+  resumeFocusAction,
+  skipBreakAction,
+  startFocusAction,
+  stopFocusAction,
+} from '@/app/(app)/focus-actions';
 import type { FocusPlan } from '@/domain/focus';
 import { offsetFrom } from '@/lib/focus-clock';
 import { fetchJson } from '@/lib/query/fetch-json';
@@ -60,7 +66,7 @@ export interface StartInput {
 
 class FocusError extends Error {}
 
-/** Start, stop and skip: each runs the server action, then refreshes the session and Progress. */
+/** Start, stop, skip, pause and resume: each runs the server action, then refreshes the session and Progress. */
 export const useFocusActions = () => {
   const queryClient = useQueryClient();
 
@@ -101,5 +107,16 @@ export const useFocusActions = () => {
     },
   });
 
-  return { start, stop, skip };
+  const pause = useMutation({
+    mutationFn: () => {
+      return run(pauseFocusAction);
+    },
+  });
+  const resume = useMutation({
+    mutationFn: () => {
+      return run(resumeFocusAction);
+    },
+  });
+
+  return { start, stop, skip, pause, resume };
 };

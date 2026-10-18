@@ -375,3 +375,70 @@ test.describe('on a phone', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+test('Pause holds the clock and Resume lets it run again', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+
+  const time = bar(page).locator('.focus-bar__time');
+
+  await bar(page).getByRole('button', { name: 'Pause' }).click();
+  await expect(bar(page).getByRole('button', { name: 'Resume' })).toBeVisible();
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0].paused_at;
+    })
+    .not.toBeNull();
+
+  const held = await time.textContent();
+
+  await page.waitForTimeout(2500);
+  await expect(time).toHaveText(held ?? '');
+
+  await bar(page).getByRole('button', { name: 'Resume' }).click();
+  await expect(bar(page).getByRole('button', { name: 'Pause' })).toBeVisible();
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0].paused_at;
+    })
+    .toBeNull();
+  expect((await getFocusSessions(id))[0].paused_seconds).toBeGreaterThanOrEqual(2);
+});
+
+test('the panel says Paused, and a paused Pomodoro break cannot be skipped', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 27, mode: 'pomodoro' });
+  await page.goto('/today');
+  await bar(page).getByRole('button', { name: 'Open the focus session on Read' }).click();
+
+  const dialog = page.getByRole('dialog');
+
+  await expect(dialog.getByRole('button', { name: 'Skip break' })).toBeVisible();
+  await dialog.getByRole('button', { name: 'Pause' }).click();
+  await expect(dialog.getByText('Paused')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Skip break' })).toBeHidden();
+  await dialog.getByRole('button', { name: 'Resume' }).click();
+  await expect(dialog.getByRole('button', { name: 'Skip break' })).toBeVisible();
+});
+
+test('a session left paused for over 12 hours is closed with the time up to its pause', async ({ page }) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 14 * 60, pausedMinutesAgo: 13 * 60 });
+  await page.goto('/today');
+
+  // the close happens when the page asks for the running session, so wait for it in the database
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0].ended_at;
+    })
+    .not.toBeNull();
+  await expect(bar(page)).toBeHidden();
+
+  const [session] = await getFocusSessions(id);
+
+  expect(session.focus_seconds).toBe(3600);
+});

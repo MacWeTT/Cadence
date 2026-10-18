@@ -31,6 +31,10 @@
   @apply absolute inset-0 flex items-center justify-center font-display text-5xl tabular-nums;
 }
 
+.focus-running__clock--paused {
+  @apply text-ink-muted;
+}
+
 .focus-running__phase {
   @apply text-ink-muted;
 }

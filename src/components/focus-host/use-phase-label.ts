@@ -3,10 +3,14 @@
 import { useTranslations } from 'next-intl';
 import type { SessionView } from '@/lib/focus-clock';
 
-/** "Focus, round 2 of 4", "Break, next: round 3", "Focusing" or "All rounds done". */
+/** "Focus, round 2 of 4", "Break, next: round 3", "Focusing", "All rounds done" or "Paused". */
 export const usePhaseLabel = (view: SessionView): string => {
   const t = useTranslations('focus.running');
-  const { phase, round, rounds } = view;
+  const { phase, round, rounds, paused } = view;
+
+  if (paused) {
+    return t('paused');
+  }
 
   switch (phase) {
     case 'free':

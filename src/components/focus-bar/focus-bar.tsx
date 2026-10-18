@@ -19,7 +19,8 @@ const RunningBar = (props: RunningBarProps) => {
   const { name, icon, color } = session.habit;
 
   const t = useTranslations('focus.bar');
-  const { openRunning, stop, pending } = useFocusApi();
+  const { openRunning, stop, pause, resume, pending } = useFocusApi();
+  const { paused, phase: current } = view;
   const phase = usePhaseLabel(view);
 
   return (
@@ -37,6 +38,11 @@ const RunningBar = (props: RunningBarProps) => {
           <span className="focus-bar__phase">{phase}</span>
           <span className="focus-bar__time">{formatClock(view.clock)}</span>
         </button>
+        {current !== 'done' && (
+          <button type="button" className="focus-bar__pause" onClick={paused ? resume : pause} disabled={pending}>
+            {paused ? t('resume') : t('pause')}
+          </button>
+        )}
         <button type="button" className="focus-bar__stop" onClick={stop} disabled={pending}>
           {t('stop')}
         </button>

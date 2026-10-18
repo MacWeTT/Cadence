@@ -42,6 +42,8 @@ export interface FocusApi {
   start: (input: StartInput) => void;
   stop: () => void;
   skip: () => void;
+  pause: () => void;
+  resume: () => void;
   /** Closes the ending panel, ticking the habit when "I did it" is ticked. */
   confirm: () => void;
 }
