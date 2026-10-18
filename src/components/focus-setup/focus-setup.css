@@ -32,6 +32,10 @@
   @apply grid grid-cols-2 gap-3;
 }
 
+.focus-setup__cell {
+  @apply grid content-start gap-1;
+}
+
 .focus-setup__field {
   @apply grid gap-1 text-sm text-ink-muted;
 }

@@ -23,6 +23,7 @@ interface FocusSetupProps {
 
 type PresetKey = keyof typeof PRESETS;
 
+const LONG_BREAK_HINT = 'long-break-hint';
 const FIELDS: PlanField[] = ['focusMin', 'breakMin', 'longBreakMin', 'rounds'];
 const PRESET_KEYS = Object.keys(PRESETS) as PresetKey[];
 
@@ -137,19 +138,26 @@ export const FocusSetup = (props: FocusSetupProps) => {
               const unused = field === 'longBreakMin' && !usesLongBreak(plan.rounds);
 
               return (
-                <label key={field} className="focus-setup__field">
-                  <span>{t(field)}</span>
-                  <input
-                    disabled={unused}
-                    type="number"
-                    inputMode="numeric"
-                    name={field}
-                    value={Number.isNaN(plan[field]) ? '' : plan[field]}
-                    onChange={onFieldChange}
-                    className="focus-setup__input"
-                  />
-                  {unused && <span className="focus-setup__hint">{t('longBreakUnused')}</span>}
-                </label>
+                <div key={field} className="focus-setup__cell">
+                  <label className="focus-setup__field">
+                    <span>{t(field)}</span>
+                    <input
+                      disabled={unused}
+                      aria-describedby={unused ? LONG_BREAK_HINT : undefined}
+                      type="number"
+                      inputMode="numeric"
+                      name={field}
+                      value={Number.isNaN(plan[field]) ? '' : plan[field]}
+                      onChange={onFieldChange}
+                      className="focus-setup__input"
+                    />
+                  </label>
+                  {unused && (
+                    <p id={LONG_BREAK_HINT} className="focus-setup__hint">
+                      {t('longBreakUnused')}
+                    </p>
+                  )}
+                </div>
               );
             })}
           </div>
