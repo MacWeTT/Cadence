@@ -6,7 +6,7 @@ import type { FocusTarget } from '@/components/focus-host/focus-context';
 import type { StartInput } from '@/components/focus-host/use-focus';
 import { FocusSound } from '@/components/focus-sound/focus-sound';
 import { Button } from '@/components/ui/button';
-import { PRESETS, planErrors, totalSeconds, type FocusPlan, type PlanField } from '@/domain/focus';
+import { PRESETS, planErrors, totalSeconds, usesLongBreak, type FocusPlan, type PlanField } from '@/domain/focus';
 import { cn } from '@/lib/utils';
 import './focus-setup.css';
 
@@ -23,6 +23,7 @@ interface FocusSetupProps {
 
 type PresetKey = keyof typeof PRESETS;
 
+const LONG_BREAK_HINT = 'long-break-hint';
 const FIELDS: PlanField[] = ['focusMin', 'breakMin', 'longBreakMin', 'rounds'];
 const PRESET_KEYS = Object.keys(PRESETS) as PresetKey[];
 
@@ -134,18 +135,29 @@ export const FocusSetup = (props: FocusSetupProps) => {
           </div>
           <div className="focus-setup__fields">
             {FIELDS.map(field => {
+              const unused = field === 'longBreakMin' && !usesLongBreak(plan.rounds);
+
               return (
-                <label key={field} className="focus-setup__field">
-                  <span>{t(field)}</span>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    name={field}
-                    value={Number.isNaN(plan[field]) ? '' : plan[field]}
-                    onChange={onFieldChange}
-                    className="focus-setup__input"
-                  />
-                </label>
+                <div key={field} className="focus-setup__cell">
+                  <label className="focus-setup__field">
+                    <span>{t(field)}</span>
+                    <input
+                      disabled={unused}
+                      aria-describedby={unused ? LONG_BREAK_HINT : undefined}
+                      type="number"
+                      inputMode="numeric"
+                      name={field}
+                      value={Number.isNaN(plan[field]) ? '' : plan[field]}
+                      onChange={onFieldChange}
+                      className="focus-setup__input"
+                    />
+                  </label>
+                  {unused && (
+                    <p id={LONG_BREAK_HINT} className="focus-setup__hint">
+                      {t('longBreakUnused')}
+                    </p>
+                  )}
+                </div>
               );
             })}
           </div>

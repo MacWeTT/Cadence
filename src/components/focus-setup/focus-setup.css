@@ -32,12 +32,24 @@
   @apply grid grid-cols-2 gap-3;
 }
 
+.focus-setup__cell {
+  @apply grid content-start gap-1;
+}
+
 .focus-setup__field {
   @apply grid gap-1 text-sm text-ink-muted;
 }
 
 .focus-setup__input {
   @apply min-h-11 rounded-lg border border-line bg-surface px-3 text-base text-ink;
+}
+
+.focus-setup__input:disabled {
+  @apply opacity-50;
+}
+
+.focus-setup__hint {
+  @apply text-xs text-ink-muted;
 }
 
 .focus-setup__total {
