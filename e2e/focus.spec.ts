@@ -386,7 +386,11 @@ test('Pause holds the clock and Resume lets it run again', async ({ page }) => {
 
   await bar(page).getByRole('button', { name: 'Pause' }).click();
   await expect(bar(page).getByRole('button', { name: 'Resume' })).toBeVisible();
-  await expect.poll(async () => {return (await getFocusSessions(id))[0].paused_at}).not.toBeNull();
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0].paused_at;
+    })
+    .not.toBeNull();
 
   const held = await time.textContent();
 
@@ -395,7 +399,11 @@ test('Pause holds the clock and Resume lets it run again', async ({ page }) => {
 
   await bar(page).getByRole('button', { name: 'Resume' }).click();
   await expect(bar(page).getByRole('button', { name: 'Pause' })).toBeVisible();
-  await expect.poll(async () => {return (await getFocusSessions(id))[0].paused_at}).toBeNull();
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0].paused_at;
+    })
+    .toBeNull();
   expect((await getFocusSessions(id))[0].paused_seconds).toBeGreaterThanOrEqual(2);
 });
 

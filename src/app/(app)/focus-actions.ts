@@ -5,13 +5,7 @@ import { z } from 'zod';
 import { isSoundId } from '@/lib/sound';
 import { getUser } from '@/lib/supabase/server';
 import { pauseFocus, resumeFocus } from '@/server/focus-pause';
-import {
-  discardFocusSession,
-  skipBreak,
-  startFocus,
-  stopFocus,
-  type FocusResult,
-} from '@/server/focus';
+import { discardFocusSession, skipBreak, startFocus, stopFocus, type FocusResult } from '@/server/focus';
 import { HabitError, type ErrorCode } from '@/server/habits';
 
 export type FocusActionResult = { ok: true; result: FocusResult | null } | { ok: false; error: string };
