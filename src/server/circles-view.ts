@@ -1,0 +1,174 @@
+// Pure mapping from what `circle_overview` returns to what the Circles screens show. Kept free of `server-only` so it can
+// be unit-tested. The database decides what a friend may see; this layer also cuts every fact above the habit's level,
+// so a screen can never show more than the level allows, even if a payload carried more.
+import { z } from 'zod';
+import { reveal, type Level } from '@/domain/circles';
+import { isCalendarDate, type CalendarDate } from '@/domain/dates';
+import { weekProgress, type WeekProgress } from '@/domain/listing';
+import { currentStreak, type Streak } from '@/domain/streaks';
+import type { HabitData } from '@/domain/types';
+import { toSchedule } from '@/server/habit-view';
+
+const calendarDate = z.string().refine(isCalendarDate);
+
+const dataSchema = z.object({
+  start_date: calendarDate,
+  schedules: z.array(
+    z.object({
+      kind: z.string(),
+      times_per_week: z.number().nullable(),
+      weekdays: z.array(z.number()).nullable(),
+      effective_from: calendarDate,
+    }),
+  ),
+  pauses: z.array(z.object({ from: calendarDate, to: calendarDate.nullable() })),
+  completions: z.array(calendarDate),
+});
+
+const habitSchema = z.object({
+  name: z.string().nullable(),
+  icon: z.string().nullable(),
+  level: z.enum(['done_today', 'streaks', 'everything']),
+  done: z.boolean(),
+  data: dataSchema.optional(),
+});
+
+const memberSchema = z.object({
+  user_id: z.uuid(),
+  tag: z.string(),
+  display_name: z.string().nullable(),
+  is_you: z.boolean(),
+  paused: z.boolean(),
+  today: calendarDate,
+  week_starts_on: z.union([z.literal(1), z.literal(7)]),
+  allow_cheers: z.boolean(),
+  in_week: z.boolean(),
+  avatar_kind: z.enum(['google', 'character', 'emoji', 'initial']),
+  avatar_value: z.string().nullable(),
+  avatar_color: z.string().nullable(),
+  avatar_url: z.string().nullable(),
+  showed_up_week: z.boolean(),
+  habits: z.array(habitSchema),
+  cheers_today: z.array(z.object({ user_id: z.uuid(), tag: z.string() })).nullable(),
+  cheered_by_you: z.boolean().nullable(),
+});
+
+const overviewSchema = z.object({
+  circle: z.object({ id: z.uuid(), name: z.string(), is_owner: z.boolean(), week_ticks: z.number() }),
+  members: z.array(memberSchema),
+});
+
+type MemberPayload = z.infer<typeof memberSchema>;
+type HabitPayload = z.infer<typeof habitSchema>;
+
+/** One habit a friend shares with you, with only what its level allows. */
+export interface SharedHabitView {
+  /** Null when the owner shows the emoji only, or "a habit". */
+  name: string | null;
+  /** Null when the owner shows "a habit". */
+  icon: string | null;
+  level: Exclude<Level, 'hidden' | 'showed_up'>;
+  /** Done on the owner's today. */
+  done: boolean;
+  /** At Streaks and Everything, and only above zero. */
+  streak: Streak | null;
+  /** At Streaks and Everything, for a weekly habit. */
+  week: WeekProgress | null;
+  /** At Everything only: the dates ticked, oldest first, for the heatmap. */
+  ticks?: CalendarDate[];
+}
+
+export interface AvatarView {
+  kind: 'google' | 'character' | 'emoji' | 'initial';
+  value: string | null;
+  color: string | null;
+  url: string | null;
+}
+
+export interface CircleMemberView {
+  userId: string;
+  tag: string;
+  displayName: string | null;
+  isYou: boolean;
+  paused: boolean;
+  avatar: AvatarView;
+  allowCheers: boolean;
+  showedUpWeek: boolean;
+  habits: SharedHabitView[];
+  /** Who cheered you today: only on your own card. */
+  cheersToday: { userId: string; tag: string }[] | null;
+  /** Whether you cheered this person today: not on your own card. */
+  cheeredByYou: boolean | null;
+}
+
+export interface CircleView {
+  id: string;
+  name: string;
+  isOwner: boolean;
+  /** This week's check-ins across the circle: one number, never per person. */
+  weekTicks: number;
+  members: CircleMemberView[];
+}
+
+const habitDataOf = (data: z.infer<typeof dataSchema>): HabitData => {
+  const { start_date, schedules, pauses, completions } = data;
+
+  return { startDate: start_date, schedules: schedules.map(toSchedule), pauses, completions: new Set(completions) };
+};
+
+/** A shared habit as the screens see it. The streak and week are worked out here, with the owner's own day and week. */
+const toSharedHabit = (habit: HabitPayload, member: MemberPayload): SharedHabitView => {
+  const { name, icon, level, done, data } = habit;
+  const view: SharedHabitView = { name, icon, level, done, streak: null, week: null };
+  const { streak: showsStreak, history: showsHistory } = reveal(level);
+
+  if (!data || !showsStreak) {
+    return view;
+  }
+
+  const { today, week_starts_on } = member;
+  const ctx = { today, weekStartsOn: week_starts_on };
+  const habitData = habitDataOf(data);
+  const streak = currentStreak(habitData, ctx);
+
+  view.streak = streak.count > 0 ? streak : null;
+  view.week = weekProgress(habitData, today, ctx);
+
+  if (showsHistory) {
+    view.ticks = [...data.completions].sort();
+  }
+
+  return view;
+};
+
+const toMember = (member: MemberPayload): CircleMemberView => {
+  const { user_id, tag, display_name, is_you, paused, allow_cheers, showed_up_week, habits, cheers_today } = member;
+  const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
+
+  return {
+    userId: user_id,
+    tag,
+    displayName: display_name,
+    isYou: is_you,
+    paused,
+    avatar: { kind: avatar_kind, value: avatar_value, color: avatar_color, url: avatar_url },
+    allowCheers: allow_cheers,
+    showedUpWeek: showed_up_week,
+    habits: habits.map(habit => {
+      return toSharedHabit(habit, member);
+    }),
+    cheersToday:
+      cheers_today?.map(({ user_id: userId, tag: cheerTag }) => {
+        return { userId, tag: cheerTag };
+      }) ?? null,
+    cheeredByYou: cheered_by_you,
+  };
+};
+
+/** Reads `circle_overview`'s answer. Throws when it is not the shape the database promises. */
+export const toCircleView = (payload: unknown): CircleView => {
+  const { circle, members } = overviewSchema.parse(payload);
+  const { id, name, is_owner, week_ticks } = circle;
+
+  return { id, name, isOwner: is_owner, weekTicks: week_ticks, members: members.map(toMember) };
+};
