@@ -340,6 +340,11 @@ isOneToOne: false
 "leave_circle":
 { Args: { "p_circle": string }; Returns: undefined
                            },
+"my_circles":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "id": string,"is_owner": boolean,"member_count": number,"name": string
+            }[]
+                           },
 "remove_member":
 { Args: { "p_circle": string,"p_user": string }; Returns: undefined
                            },

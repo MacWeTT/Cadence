@@ -1,0 +1,73 @@
+{
+  "title": "Circles",
+  "intro": "Small, private groups of close friends or classmates. Nothing is shared until you choose to share it.",
+  "newCircle": "New circle",
+  "listLabel": "Your circles",
+  "people": "{count, plural, one {# person} other {# people}}",
+  "startedByYou": "You started it",
+  "emptyTitle": "No circles yet",
+  "emptyText": "A circle is a few friends who can see each other showing up. Start one, then invite them with a link.",
+  "emptyAction": "Start a circle",
+  "loadFailedTitle": "Circles did not load",
+  "loadFailedText": "Check your connection and try again.",
+  "retry": "Try again",
+  "new": {
+    "title": "Start a circle",
+    "description": "Give it a name your friends will recognise.",
+    "label": "Circle name",
+    "placeholder": "Study group",
+    "create": "Create circle"
+  },
+  "circle": {
+    "back": "All circles",
+    "members": "In this circle",
+    "you": "You",
+    "owner": "Started it",
+    "invite": "Invite",
+    "leave": "Leave",
+    "close": "Close circle",
+    "remove": "Remove",
+    "removeLabel": "Remove {who} from the circle",
+    "notFoundTitle": "Circle not found",
+    "notFoundText": "It may have been closed, or you are no longer in it.",
+    "backToList": "Back to your circles"
+  },
+  "invite": {
+    "title": "Invite someone",
+    "description": "Anyone with this link can join until it stops working. That is in 7 days, or as soon as you make a new link.",
+    "linkLabel": "Invite link",
+    "making": "Making your link…",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "renew": "Make a new link",
+    "done": "Done"
+  },
+  "join": {
+    "title": "Join {name}?",
+    "text": "{count, plural, one {# person is} other {# people are}} in this circle.",
+    "peopleLabel": "Who is in it",
+    "join": "Join circle",
+    "decline": "No thanks",
+    "invalidTitle": "This invite does not work",
+    "invalidText": "It has expired, or a newer link replaced it. Ask for a new one.",
+    "full": "This circle is full, so no one else can join right now."
+  },
+  "confirm": {
+    "leaveTitle": "Leave {name}?",
+    "leaveText": "What you shared there goes with you. You can be invited back.",
+    "leaveConfirm": "Leave circle",
+    "closeTitle": "Close {name}?",
+    "closeText": "This removes the circle for everyone in it. It cannot be undone.",
+    "closeConfirm": "Close circle",
+    "removeTitle": "Remove {who}?",
+    "removeText": "They leave the circle, and what they shared there is removed.",
+    "removeConfirm": "Remove"
+  },
+  "toasts": {
+    "created": "Circle created",
+    "joined": "You joined the circle",
+    "left": "You left the circle",
+    "closed": "Circle closed",
+    "removed": "Removed from the circle"
+  }
+}

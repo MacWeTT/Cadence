@@ -1,27 +1,16 @@
 import 'server-only';
 import { connection } from 'next/server';
-import { z } from 'zod';
 import { circleNameProblem, type Label, type Level } from '@/domain/circles';
 import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
 import { circleErrorCode } from '@/server/circle-errors';
-import { toCircleView, type CircleView } from '@/server/circles-view';
+import {
+  parseInvitePreview,
+  toCircleView,
+  type CircleListItem,
+  type CircleView,
+  type InvitePreview,
+} from '@/server/circles-view';
 import { HabitError } from '@/server/habits';
-
-/** One of the person's circles, for the list. */
-export interface CircleListItem {
-  id: string;
-  name: string;
-  isOwner: boolean;
-}
-
-/** What an invite opens, for the "Join this circle?" screen. */
-const previewSchema = z.object({
-  name: z.string(),
-  full: z.boolean(),
-  members: z.array(z.object({ tag: z.string(), display_name: z.string().nullable() })),
-});
-
-export type InvitePreview = z.infer<typeof previewSchema>;
 
 /** The database raises short codes; a known one becomes a message, anything else the generic failure. */
 const check = <T>(result: { data: T; error: { message: string } | null }): T => {
@@ -48,11 +37,10 @@ const need = <T>(result: { data: T; error: { message: string } | null }): NonNul
 export const listCircles = async (): Promise<CircleListItem[]> => {
   await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
   const supabase = await createSupabaseServerClient();
-  const user = await getUser();
-  const rows = need(await supabase.from('circles').select('id, name, owner_id').order('created_at'));
+  const rows = need(await supabase.rpc('my_circles'));
 
-  return rows.map(({ id, name, owner_id }) => {
-    return { id, name, isOwner: owner_id === user?.id };
+  return rows.map(({ id, name, is_owner, member_count }) => {
+    return { id, name, isOwner: is_owner, memberCount: member_count };
   });
 };
 
@@ -85,7 +73,7 @@ export const previewInvite = async (token: string): Promise<InvitePreview> => {
   await connection();
   const supabase = await createSupabaseServerClient();
 
-  return previewSchema.parse(need(await supabase.rpc('circle_invite_preview', { p_token: token })));
+  return parseInvitePreview(need(await supabase.rpc('circle_invite_preview', { p_token: token })));
 };
 
 export const joinCircle = async (token: string): Promise<string> => {

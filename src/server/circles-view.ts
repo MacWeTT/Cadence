@@ -38,6 +38,7 @@ const memberSchema = z.object({
   tag: z.string(),
   display_name: z.string().nullable(),
   is_you: z.boolean(),
+  is_owner: z.boolean(),
   paused: z.boolean(),
   today: calendarDate,
   week_starts_on: z.union([z.literal(1), z.literal(7)]),
@@ -90,6 +91,8 @@ export interface CircleMemberView {
   tag: string;
   displayName: string | null;
   isYou: boolean;
+  /** Started this circle. */
+  isOwner: boolean;
   paused: boolean;
   avatar: AvatarView;
   allowCheers: boolean;
@@ -99,6 +102,15 @@ export interface CircleMemberView {
   cheersToday: { userId: string; tag: string }[] | null;
   /** Whether you cheered this person today: not on your own card. */
   cheeredByYou: boolean | null;
+}
+
+/** One of the person's circles, for the list. */
+export interface CircleListItem {
+  id: string;
+  name: string;
+  isOwner: boolean;
+  /** How many people are in it, the person included. */
+  memberCount: number;
 }
 
 export interface CircleView {
@@ -142,7 +154,8 @@ const toSharedHabit = (habit: HabitPayload, member: MemberPayload): SharedHabitV
 };
 
 const toMember = (member: MemberPayload): CircleMemberView => {
-  const { user_id, tag, display_name, is_you, paused, allow_cheers, showed_up_week, habits, cheers_today } = member;
+  const { user_id, tag, display_name, is_you, is_owner, paused, allow_cheers, showed_up_week, habits } = member;
+  const { cheers_today } = member;
   const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
 
   return {
@@ -150,6 +163,7 @@ const toMember = (member: MemberPayload): CircleMemberView => {
     tag,
     displayName: display_name,
     isYou: is_you,
+    isOwner: is_owner,
     paused,
     avatar: { kind: avatar_kind, value: avatar_value, color: avatar_color, url: avatar_url },
     allowCheers: allow_cheers,
@@ -171,4 +185,18 @@ export const toCircleView = (payload: unknown): CircleView => {
   const { id, name, is_owner, week_ticks } = circle;
 
   return { id, name, isOwner: is_owner, weekTicks: week_ticks, members: members.map(toMember) };
+};
+
+const previewSchema = z.object({
+  name: z.string(),
+  full: z.boolean(),
+  members: z.array(z.object({ tag: z.string(), display_name: z.string().nullable() })),
+});
+
+/** What an invite opens, for the "Join this circle?" screen: the circle's name, whether it is full, and who is in it. */
+export type InvitePreview = z.infer<typeof previewSchema>;
+
+/** Reads `circle_invite_preview`'s answer. Throws when it is not the shape the database promises. */
+export const parseInvitePreview = (payload: unknown): InvitePreview => {
+  return previewSchema.parse(payload);
 };

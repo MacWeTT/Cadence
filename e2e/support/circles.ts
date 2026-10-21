@@ -18,6 +18,24 @@ export const makeFriend = async (label: string): Promise<string> => {
   return data.user.id;
 };
 
+/** A second person who can sign in, so a spec can open a second browser session as them. */
+export const makeLoginFriend = async (label: string): Promise<{ id: string; email: string; password: string }> => {
+  const email = `${label}-${crypto.randomUUID().slice(0, 8)}@circles.test`;
+  const password = 'friend-password-123!';
+  const { data, error } = await adminClient().auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: label },
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return { id: data.user.id, email, password };
+};
+
 /** A circle with its owner and members, made directly. */
 export const makeCircle = async (name: string, ownerId: string, memberIds: string[]): Promise<string> => {
   const admin = adminClient();
@@ -110,4 +128,9 @@ export const cleanUp = async (made: { circles: string[]; users: string[] }): Pro
   for (const id of made.users) {
     await admin.auth.admin.deleteUser(id);
   }
+};
+
+/** Removes every circle whose name starts with the prefix: the ones a spec made by clicking through the screens. */
+export const cleanUpByName = async (prefix: string): Promise<void> => {
+  await adminClient().from('circles').delete().like('name', `${prefix}%`);
 };

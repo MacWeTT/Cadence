@@ -26,14 +26,16 @@ import {
 } from '@/server/circles';
 import { HabitError, type ErrorCode } from '@/server/habits';
 
-export type CircleActionResult<T = null> = { ok: true; value: T } | { ok: false; error: string };
+/** Both outcomes carry both fields, so a caller can destructure `{ ok, value, error }` once and still narrow on `ok`. */
+export type CircleActionResult<T = null> =
+  { ok: true; value: T; error: null } | { ok: false; value: null; error: string };
 
 const removeInput = z.object({ circleId: z.uuid(), userId: z.uuid() });
 
-const fail = async (code: ErrorCode): Promise<{ ok: false; error: string }> => {
+const fail = async (code: ErrorCode): Promise<{ ok: false; value: null; error: string }> => {
   const t = await getTranslations('errors');
 
-  return { ok: false, error: t(code) };
+  return { ok: false, value: null, error: t(code) };
 };
 
 // Every action checks its input, verifies the user itself, then relies on the database as the last word: the
@@ -44,7 +46,7 @@ const run = async <T>(work: () => Promise<T>): Promise<CircleActionResult<T>> =>
   }
 
   try {
-    return { ok: true, value: await work() };
+    return { ok: true, value: await work(), error: null };
   } catch (error) {
     if (error instanceof HabitError) {
       return fail(error.code);

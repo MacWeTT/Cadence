@@ -18,6 +18,7 @@ const member = (over: Record<string, unknown> = {}) => {
     tag: 'sam',
     display_name: 'Sam',
     is_you: false,
+    is_owner: false,
     paused: false,
     today: TODAY,
     week_starts_on: 1,
@@ -135,6 +136,16 @@ describe('toCircleView', () => {
     expect(view.members[0].cheeredByYou).toBeNull();
     expect(view.members[1].cheersToday).toBeNull();
     expect(view.members[1].cheeredByYou).toBe(true);
+  });
+
+  it('says who started the circle, on that member only', () => {
+    const view = toCircleView(overview([member({ is_owner: true }), member({ user_id: ME, is_you: true })]));
+
+    expect(
+      view.members.map(m => {
+        return m.isOwner;
+      }),
+    ).toEqual([true, false]);
   });
 
   it('keeps a paused member with no habits', () => {
