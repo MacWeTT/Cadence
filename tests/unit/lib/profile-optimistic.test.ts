@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   withAvatar,
   withName,
+  withPasswordSet,
   withPhoto,
   withSound,
   withSoundRemoved,
@@ -23,6 +24,7 @@ const view: ProfileView = {
   sound: { id: 'bell', volume: 0.6 },
   customSounds: [clip],
   accent: null,
+  passwordSet: false,
 };
 
 describe('the profile as it looks before the server answers', () => {
@@ -65,5 +67,11 @@ describe('the profile as it looks before the server answers', () => {
     expect(removed.customSounds).toEqual([]);
     expect(removed.sound).toEqual({ id: 'bell', volume: 0.3 });
     expect(withSoundRemoved(view, clip.id).sound).toEqual({ id: 'bell', volume: 0.6 });
+  });
+});
+
+describe('a password being set', () => {
+  it('marks the account as having one, and changes nothing else', () => {
+    expect(withPasswordSet(view)).toEqual({ ...view, passwordSet: true });
   });
 });

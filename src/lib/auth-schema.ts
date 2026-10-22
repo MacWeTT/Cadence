@@ -1,33 +1,24 @@
 import { z } from 'zod';
-import { NAME_MAX } from '@/lib/profile-schema';
+import { tagInputSchema } from '@/lib/profile-schema';
 
 /** Passwords are at least this long; the same number is `minimum_password_length` in supabase/config.toml. */
 export const PASSWORD_MIN = 8;
 
-const email = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .refine(value => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
-  }, 'authEmailInvalid');
+/** bcrypt, which Supabase hashes with, only reads the first 72 characters. */
+const PASSWORD_MAX = 72;
 
-const newPassword = z.string().min(PASSWORD_MIN, 'passwordShort').max(72, 'passwordLong');
+const newPassword = z.string().min(PASSWORD_MIN, 'passwordShort').max(PASSWORD_MAX, 'passwordLong');
 
-/** Signing in only asks that something was typed: whether it is right is Supabase's to say. */
-export const signInInputSchema = z.object({
-  email,
-  password: z.string().min(1, 'passwordRequired'),
-});
+const matching = ({ password, confirm }: { password: string; confirm: string }): boolean => {
+  return password === confirm;
+};
 
-export const signUpInputSchema = z.object({
-  name: z.string().trim().min(1, 'profileNameRequired').max(NAME_MAX, 'profileNameTooLong'),
-  email,
-  password: newPassword,
-});
-
+/** The set-or-change password modal: a new password, typed twice. */
 export const passwordChangeSchema = z
   .object({ password: newPassword, confirm: z.string() })
-  .refine(({ password, confirm }) => {
-    return password === confirm;
-  }, 'passwordMismatch');
+  .refine(matching, 'passwordMismatch');
+
+/** The register screen after a first Google or GitHub sign-in: the tag to keep, and a password, typed twice. */
+export const registerInputSchema = z
+  .object({ tag: tagInputSchema.shape.tag, password: newPassword, confirm: z.string() })
+  .refine(matching, 'passwordMismatch');

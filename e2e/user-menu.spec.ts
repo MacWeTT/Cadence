@@ -23,5 +23,5 @@ test('signing out from the profile lands on the login page and protects the app 
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/login$/);
   await page.goto('/today');
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login\?next=%2Ftoday$/); // the page it was heading for is remembered
 });

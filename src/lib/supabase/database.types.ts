@@ -147,14 +147,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"sound_id": string,"sound_volume": number,"tag": string,"timezone": string,"user_id": string,"week_starts_on": number
+                    "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"password_set": boolean,"registered_at": string | null,"sound_id": string,"sound_volume": number,"tag": string,"timezone": string,"user_id": string,"week_starts_on": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"tag": string,"timezone"?: string,"user_id": string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"password_set"?: boolean,"registered_at"?: string | null,"sound_id"?: string,"sound_volume"?: number,"tag": string,"timezone"?: string,"user_id": string,"week_starts_on"?: number
                   }
                   Update: {
-                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"sound_id"?: string,"sound_volume"?: number,"tag"?: string,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
+                    "accent"?: string | null,"accent_custom"?: string | null,"avatar_color"?: string | null,"avatar_kind"?: string,"avatar_url"?: string | null,"avatar_value"?: string | null,"created_at"?: string,"display_name"?: string | null,"password_set"?: boolean,"registered_at"?: string | null,"sound_id"?: string,"sound_volume"?: number,"tag"?: string,"timezone"?: string,"user_id"?: string,"week_starts_on"?: number
                   }
                   Relationships: [
                     

@@ -30,7 +30,9 @@ const LoginPage = () => {
         <Suspense>
           <LoginError />
         </Suspense>
-        <GoogleSignInButton />
+        <Suspense>
+          <GoogleSignInButton />
+        </Suspense>
       </div>
     </main>
   );

@@ -24,9 +24,8 @@ The internal list of everything planned or considered, so no feature is lost. Th
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.9 | Accounts (**next**) | **Sign in:** GitHub next to Google, and sign up or sign in with an email and a password. **Email:** signing up is confirmed by a 6-digit code, and a forgotten password is reset by one, both sent by Supabase Auth through a dedicated Gmail account as custom SMTP (₹0, no domain; to be tested with outside addresses before friends are invited). A person can **link Google or GitHub** and **change their password** in the Account tab. The account tab's delete-account flow must cover every kind of account, including one with no email (GitHub can hide it). Build order: email sign-up with codes and forgot password, sign-in methods and change password, GitHub sign-in, then the release. Tags and the pause timer shipped in 0.8.3; the avatar ring is still to be confirmed on screen |
 | 1.0 | Desktop app (Tauri), the installer | native notifications, start on login; opens habit links without the popup limit |
-| 1.0 | First release: bug fixes, flow revisions, and the installer | The public release. Everything from 0.8 to 0.9 ships first; 1.0 is the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) plus the desktop installer. Later releases fix and refine, to be planned after it |
+| 1.0 | First release: accounts, Circles, bug fixes and flow revisions | The public release. **Accounts:** no mail is sent (no confirmation, no forgot password, no 2FA). A first sign-in with Google or GitHub ends on a register screen: the email (locked), a tag (the only word for a username) and a password. Sign up with an email, a tag and a password; sign in with a tag or an email and a password. Existing accounts are not forced to register; the profile page, and only it, warns when no password is set or no Google or GitHub is linked (a forgotten password is gone, so link one). Sign-in methods and linking in the Account tab, a password modal, and delete-account for accounts with no email. GitHub sign-in. See `docs/superpowers/specs/2026-10-12-accounts-design.md`. **Circles:** friends-only sharing, six PRs by their author (`docs/superpowers/specs/2026-10-12-circles-design.md`). Then the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) and the desktop installer. Later releases fix and refine, to be planned after it |
 
 ## Before 1.0
 
@@ -45,8 +44,7 @@ Deferred on purpose: Cadence stays free until people actually use it.
 ## After 1.0 (in scope, not yet versioned)
 
 - **Two-factor sign-in:** authenticator-app codes (TOTP, native to Supabase), when there are enough users to want it.
-- **Circles:** a friends-only way to share habits, without pressure. Proposed by a contributor in issue #64; to be designed when it is next. It replaces the old "viewing other people's streaks" idea below.
-- **User XP:** points for showing up, introduced together with Circles (it is part of that release, not a later one). Design with Circles.
+- **User XP:** points for showing up, follows Circles (the Circles release is the 1.0 one). Design with Circles.
 
 ## Considered, not scheduled
 

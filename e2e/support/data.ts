@@ -299,6 +299,8 @@ export const resetProfile = async (): Promise<void> => {
     .update({
       display_name: 'E2E User',
       tag: 'e2e',
+      registered_at: new Date().toISOString(),
+      password_set: true,
       timezone: 'UTC',
       week_starts_on: 1,
       avatar_kind: 'google',
@@ -371,4 +373,53 @@ export const setProfileSound = async (soundId: string): Promise<void> => {
   if (error) {
     throw error;
   }
+};
+
+/** The shared test account has been through registration and has a password, as a person who has used the app would. */
+export const markE2EUserRegistered = async (): Promise<void> => {
+  const userId = await ensureE2EUser();
+  const { error } = await adminClient()
+    .from('profiles')
+    .update({ registered_at: new Date().toISOString(), password_set: true })
+    .eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+};
+
+/** A throwaway account made like a first Google sign-in: not registered, no password marked. Delete it after the test. */
+export const createThrowawayUser = async (name: string) => {
+  const email = `${name}-${Date.now()}@example.com`;
+  const password = 'throwaway-pass-123';
+  const { data, error } = await adminClient().auth.admin.createUser({ email, password, email_confirm: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return { id: data.user.id, email, password };
+};
+
+export const deleteUser = async (userId: string): Promise<void> => {
+  const { error } = await adminClient().auth.admin.deleteUser(userId);
+
+  if (error) {
+    throw error;
+  }
+};
+
+/** The registration columns of any account, for checking what the register screen saved. */
+export const getRegistrationRow = async (userId: string) => {
+  const { data, error } = await adminClient()
+    .from('profiles')
+    .select('tag, registered_at, password_set')
+    .eq('user_id', userId)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 };
