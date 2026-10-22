@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
-import { RegisterForm } from '@/app/(auth)/register/register-form/register-form';
+import { Suspense } from 'react';
+import { RegisterContent } from '@/app/(auth)/register/register-content/register-content';
 import { AnimatedLogo } from '@/components/animated-logo/animated-logo';
 import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
-import { safeNext } from '@/lib/next-path';
-import { getRegistration } from '@/server/registration';
 import './register-page.css';
 
 interface RegisterPageProps {
@@ -18,19 +17,11 @@ export const generateMetadata = async (): Promise<Metadata> => {
   return { title: t('title') };
 };
 
-/** Where a first Google sign-in ends: choose a tag and a password. An account that has done it goes straight on. */
-const RegisterPage = async (props: RegisterPageProps) => {
+/** Where a first Google sign-in ends: choose a tag and a password. */
+const RegisterPage = (props: RegisterPageProps) => {
   const { searchParams } = props;
 
-  const [{ next }, { email, tag, registered }, t] = await Promise.all([
-    searchParams,
-    getRegistration(),
-    getTranslations('auth.register'),
-  ]);
-
-  if (registered) {
-    redirect(safeNext(next));
-  }
+  const t = useTranslations('auth.register');
 
   return (
     <main className="register">
@@ -43,7 +34,9 @@ const RegisterPage = async (props: RegisterPageProps) => {
         </h1>
         <h2 className="register__title">{t('title')}</h2>
         <p className="register__intro">{t('intro')}</p>
-        <RegisterForm email={email} tag={tag} next={next ?? null} />
+        <Suspense>
+          <RegisterContent searchParams={searchParams} />
+        </Suspense>
       </div>
     </main>
   );

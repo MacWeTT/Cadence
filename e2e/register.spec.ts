@@ -59,12 +59,12 @@ test('a tag someone has is refused, and a good form saves the tag and password a
 
     await page.getByLabel('Tag').fill('e2e'); // the shared test account has it
     await page.getByRole('button', { name: 'Save and continue' }).click();
-    await expect(page.getByRole('alert')).toHaveText('That tag is taken. Try another.');
+    await expect(page.locator('.register-form__error')).toHaveText('That tag is taken. Try another.');
     expect((await getRegistrationRow(user.id)).registered_at).toBeNull();
 
     await page.getByLabel('Tag').fill('zqreg_mine');
     await page.getByRole('button', { name: 'Save and continue' }).click();
-    await expect(page).toHaveURL(/\/habits$/);
+    await expect(page).toHaveURL(/localhost:\d+\/habits$/);
 
     const row = await getRegistrationRow(user.id);
 
@@ -84,7 +84,7 @@ test('an account that has registered goes straight on, to the path it was headin
   await expect(page).toHaveURL(/localhost:\d+\/$/);
 
   await page.goto('/register?next=/habits');
-  await expect(page).toHaveURL(/\/habits$/);
+  await expect(page).toHaveURL(/localhost:\d+\/habits$/);
 
   await page.goto('/register?next=https://evil.example/');
   await expect(page).toHaveURL(/localhost:\d+\/$/);
@@ -102,7 +102,7 @@ test('the profile says when no password is set, and the Account tab sets one', a
     await warning.getByRole('link', { name: 'Set a password' }).click();
     await expect(page).toHaveURL(/\/profile\/account$/);
 
-    const card = page.getByRole('region', { name: 'Sign-in' });
+    const card = page.locator('.account-card', { has: page.getByRole('heading', { name: 'Sign-in' }) });
 
     await expect(card).toContainText('Not set');
     await card.getByRole('button', { name: 'Set a password' }).click();
@@ -131,5 +131,7 @@ test('an account with a password has no warning, on the profile or anywhere else
   await expect(page.getByText('This account has no password yet')).toHaveCount(0);
 
   await page.goto('/profile/account');
-  await expect(page.getByRole('region', { name: 'Sign-in' })).toContainText('Set');
+  await expect(page.locator('.account-card', { has: page.getByRole('heading', { name: 'Sign-in' }) })).toContainText(
+    'Set',
+  );
 });
