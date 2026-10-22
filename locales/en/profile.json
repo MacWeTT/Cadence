@@ -128,5 +128,9 @@
     "hint": "3 to 30 lowercase letters, digits or underscores. It shows as @{example}.",
     "display": "@{tag}",
     "at": "@"
+  },
+  "warnings": {
+    "noPassword": "This account has no password yet. Set one to sign in with your tag or email too.",
+    "setPassword": "Set a password"
   }
 }

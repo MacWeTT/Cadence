@@ -5,9 +5,9 @@ This file is shown on the app's What's new page, so it is for people using Caden
 ## Planned
 
 - A photo cropper for your avatar.
-- Signing in with GitHub, and signing up with an email address and a password.
-- Confirm your email with a code when you sign up, and reset a forgotten password with one.
-- Link Google or GitHub to an account made with an email, and change your password from the Account tab.
+- Create an account with an email, a tag and a password, and sign in with your tag or your email.
+- Choose your own tag and a password when you first sign in with Google.
+- Sign in with GitHub, and link Google or GitHub to your account so you never lose it.
 - Reminders: push notifications in your browser.
 - A desktop app, with native notifications and an option to start on login.
 - Circles: something big is on the way, and it brings an XP system along with it. Stay tuned!

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/page-transition/page-transition';
+import { ProfileWarnings } from '@/app/(app)/profile/profile-warnings/profile-warnings';
 import { ProfileHeader } from '@/app/(app)/profile/profile-header/profile-header';
 import { ProfileTabs } from '@/app/(app)/profile/profile-tabs/profile-tabs';
 import './layout.css';
@@ -22,6 +23,7 @@ const ProfileLayout = (props: ProfileLayoutProps) => {
     <PageTransition>
       <div className="profile-layout">
         <ProfileHeader />
+        <ProfileWarnings />
         <ProfileTabs />
         <div className="profile-layout__body">{children}</div>
       </div>

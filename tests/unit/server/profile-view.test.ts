@@ -14,6 +14,7 @@ const row: ProfileRow = {
   sound_volume: 0.6,
   accent: null,
   accent_custom: null,
+  password_set: true,
 };
 
 const clip: SoundRow = {
@@ -39,7 +40,12 @@ describe('toProfileView', () => {
       sound: { id: 'bell', volume: 0.6 },
       customSounds: [],
       accent: null,
+      passwordSet: true,
     });
+  });
+
+  it('says when the account has no password yet', () => {
+    expect(view({ password_set: false }).passwordSet).toBe(false);
   });
 
   it('reads the accent kept on the account: a preset, or a custom colour, and nothing for anything else', () => {

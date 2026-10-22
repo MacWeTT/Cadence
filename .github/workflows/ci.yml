@@ -1,8 +1,15 @@
 name: CI
 
+# A pull request into develop runs only the quick checks (format, lint, types, unit tests, build). The database tests and
+# the browser tests run on a pull request into master (a release) and on every deploy, which calls this workflow.
 on:
   pull_request:
   workflow_call:
+
+# A new push to a pull request replaces its running checks. Deploys are never cancelled.
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   static:
@@ -28,6 +35,8 @@ jobs:
   # The browser tests take about four minutes in one piece, so they run as four shards at once, each on its own database.
   e2e:
     name: Playwright (shard ${{ matrix.shard }} of 4)
+    # Not for a pull request into develop (see the top of this file). A deploy calls this with the push event.
+    if: github.event_name != 'pull_request' || github.base_ref == 'master'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -72,12 +81,12 @@ jobs:
           name: playwright-results-${{ matrix.shard }}
           path: test-results/
 
-  # The one check the branch rules wait for: it passes when every shard did.
+  # The check the branch rules wait for: it passes when every shard did, or when they were left out on purpose.
   database-and-e2e:
     name: Database tests and Playwright
     needs: e2e
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Every shard passed
-        run: test "${{ needs.e2e.result }}" = "success"
+      - name: Every shard passed, or was skipped
+        run: test "${{ needs.e2e.result }}" = "success" || test "${{ needs.e2e.result }}" = "skipped"
