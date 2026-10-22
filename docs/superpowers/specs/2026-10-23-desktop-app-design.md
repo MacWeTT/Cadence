@@ -16,6 +16,7 @@ Out of scope: macOS and Linux (later, once Windows is solid), push reminders (a 
 - **The same Cadence screens and rules**, bundled into the app. No second app, no second copy of the rules in `docs/rules.md`.
 - **SQLite** on the PC for the offline data, read and written from TypeScript through Tauri's SQL plugin, so the existing pure code (`src/domain`, the pure view mapping in `src/server/*-view.ts`) runs on local rows unchanged. The Rust we write stays small: the shell and the native features.
 - **`supabase-js` straight from the app**, signed in as the person. Row-level security already protects the data; the publishable key is meant to be public. The desktop app does not need the Next server.
+- **The screens are bundled in the app** (not loaded from the live site as Discord's desktop app does). That is what lets it start and work offline, and an update of the screens ships as a new installer through the auto-updater. Loading the live site when online, with the bundled copy as the offline fallback, was considered and set aside for now: it would give instant UI updates but needs the local database versioned against the screens (an older copy must refuse a newer database). The data-source seam makes it a later switch, not a rewrite.
 - **Windows only first.**
 - **Google sign-in through the system browser**, then back into the app (below).
 
