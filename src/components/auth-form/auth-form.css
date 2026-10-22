@@ -1,0 +1,63 @@
+@reference '../../app/globals.css';
+
+/* The classes of the sign-in and create-account forms too: they are only ever shown inside this one. */
+
+.auth-form {
+  @apply mt-6 grid gap-4 border-t border-line pt-6 text-left;
+}
+
+.auth-form__tabs {
+  @apply grid grid-cols-2 gap-1 rounded-full bg-line p-1;
+}
+
+.auth-form__tab {
+  @apply min-h-11 rounded-full text-sm font-medium;
+}
+
+.auth-form__tab--on {
+  @apply bg-surface shadow-sm;
+}
+
+.auth-form__form {
+  @apply grid gap-4;
+}
+
+.auth-form__modes {
+  @apply flex gap-2;
+}
+
+.auth-form__mode {
+  @apply min-h-11 rounded-full border border-line px-4 text-sm;
+}
+
+.auth-form__mode--on {
+  @apply border-primary bg-primary/10;
+}
+
+.auth-form__field {
+  @apply grid gap-1.5;
+}
+
+.auth-form__hint {
+  @apply text-xs text-ink-muted;
+}
+
+.auth-form__tag {
+  @apply relative;
+}
+
+.auth-form__at {
+  @apply pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-muted;
+}
+
+.auth-form__tag-input {
+  @apply pl-7;
+}
+
+.auth-form__error {
+  @apply rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger;
+}
+
+.auth-form__submit {
+  @apply min-h-11;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RESERVED_TAGS, isValidTag, normaliseTag } from '@/lib/tag';
+import { RESERVED_TAGS, isValidTag, normaliseTag, tagFromEmail } from '@/lib/tag';
 
 describe('isValidTag', () => {
   it('accepts 3 to 30 lowercase letters, digits and underscores', () => {
@@ -33,5 +33,21 @@ describe('normaliseTag', () => {
     expect(normaliseTag('  @Manas_B  ')).toBe('manas_b');
     expect(normaliseTag('manas')).toBe('manas');
     expect(normaliseTag('@@manas')).toBe('manas');
+  });
+});
+
+describe('tagFromEmail', () => {
+  it('makes a tag from the part before the @, lowercase, with anything not allowed turned into an underscore', () => {
+    expect(tagFromEmail('Manas.B-18@example.com')).toBe('manas_b_18');
+    expect(tagFromEmail('manasbajpai18@gmail.com')).toBe('manasbajpai18');
+  });
+
+  it('keeps to the longest a tag can be', () => {
+    expect(tagFromEmail(`${'x'.repeat(45)}@example.com`)).toBe('x'.repeat(30));
+  });
+
+  it('gives nothing to build on before there is an address', () => {
+    expect(tagFromEmail('')).toBe('');
+    expect(tagFromEmail('@example.com')).toBe('');
   });
 });

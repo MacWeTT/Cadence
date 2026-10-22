@@ -29,3 +29,12 @@ export const isValidTag = (tag: string): boolean => {
 export const normaliseTag = (input: string): string => {
   return input.trim().replace(/^@+/, '').toLowerCase();
 };
+
+/** A tag to start from, for the create-account form: the part of the email before the @, with what a tag cannot hold turned into `_`. */
+export const tagFromEmail = (email: string): string => {
+  return email
+    .split('@')[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '_')
+    .slice(0, TAG_MAX);
+};

@@ -1,7 +1,7 @@
 @reference '../../globals.css';
 
 .login {
-  @apply relative flex min-h-screen items-center justify-center px-6;
+  @apply relative flex min-h-screen items-center justify-center px-6 py-10;
 }
 
 .login__theme {
@@ -19,4 +19,8 @@
 
 .login__tagline {
   @apply mt-2 mb-8 text-ink-muted;
+}
+
+.login__or {
+  @apply mt-5 text-sm text-ink-muted;
 }

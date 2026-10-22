@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import { AnimatedLogo } from '@/components/animated-logo/animated-logo';
+import { AuthForm } from '@/components/auth-form/auth-form';
 import { GoogleSignInButton } from '@/components/google-sign-in-button/google-sign-in-button';
 import { LoginError } from '@/components/login-error/login-error';
 import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
@@ -32,6 +33,10 @@ const LoginPage = () => {
         </Suspense>
         <Suspense>
           <GoogleSignInButton />
+        </Suspense>
+        <p className="login__or">{t('auth.form.or')}</p>
+        <Suspense>
+          <AuthForm />
         </Suspense>
       </div>
     </main>
