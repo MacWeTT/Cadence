@@ -13,7 +13,7 @@ const signInByTag = async (page: Page, tag: string, password: string) => {
 
 test('signing in by email works, and lands on Home', async ({ page }) => {
   await page.goto('/login');
-  await page.getByRole('button', { name: 'Email', exact: true }).click();
+  await page.getByRole('tab', { name: 'Email', exact: true }).click();
   await page.getByLabel('Email').fill(E2E_USER.email);
   await page.getByLabel('Password').fill(E2E_USER.password);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
@@ -38,7 +38,7 @@ test('a wrong password and an unknown tag get the same answer', async ({ page })
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.locator('.auth-form__error')).toHaveText(MISMATCH);
 
-  await page.getByRole('button', { name: 'Email', exact: true }).click();
+  await page.getByRole('tab', { name: 'Email', exact: true }).click();
   await page.getByLabel('Email').fill(E2E_USER.email);
   await page.getByLabel('Password').fill('not-the-password');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();

@@ -3,7 +3,7 @@
 /* The classes of the sign-in and create-account forms too: they are only ever shown inside this one. */
 
 .auth-form {
-  @apply mt-6 grid gap-4 border-t border-line pt-6 text-left;
+  @apply grid gap-4 text-left;
 }
 
 .auth-form__tabs {
@@ -22,16 +22,17 @@
   @apply grid gap-4;
 }
 
-.auth-form__modes {
-  @apply flex gap-2;
+/* Tag or Email: tabs like the profile's, each taking half the width. */
+.auth-form__subtabs {
+  @apply grid grid-cols-2 border-b border-line;
 }
 
-.auth-form__mode {
-  @apply min-h-11 rounded-full border border-line px-4 text-sm;
+.auth-form__subtab {
+  @apply border-b-2 border-transparent py-2.5 text-center text-ink-muted transition-colors hover:text-ink;
 }
 
-.auth-form__mode--on {
-  @apply border-primary bg-primary/10;
+.auth-form__subtab--on {
+  @apply border-primary text-ink;
 }
 
 .auth-form__field {

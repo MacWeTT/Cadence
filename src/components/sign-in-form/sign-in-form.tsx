@@ -67,16 +67,17 @@ export const SignInForm = (props: SignInFormProps) => {
 
   return (
     <form onSubmit={onSubmit} className="auth-form__form">
-      <div role="group" aria-label={t('signInBy')} className="auth-form__modes">
+      <div role="tablist" aria-label={t('signInBy')} className="auth-form__subtabs">
         {MODES.map(name => {
           return (
             <button
               key={name}
               type="button"
-              aria-pressed={mode === name}
+              role="tab"
+              aria-selected={mode === name}
               value={name}
               onClick={onModeClick}
-              className={cn('auth-form__mode', mode === name && 'auth-form__mode--on')}
+              className={cn('auth-form__subtab', mode === name && 'auth-form__subtab--on')}
             >
               {t(name === 'tag' ? 'byTag' : 'byEmail')}
             </button>
