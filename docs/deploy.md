@@ -2,7 +2,7 @@
 
 Every merge into `master` (a release) is deployed; merges into `develop` are not. The workflow in `.github/workflows/deploy.yml` runs these steps in order, and stops at the first one that fails:
 
-1. **CI**: format, lint, types, unit tests, build, then the database tests and Playwright (the same jobs as a pull request).
+1. **CI**: format, lint, types, unit tests, build, then the database tests and Playwright (the same jobs as a pull request into `master`).
 2. **Migrate**: `supabase db push` applies any new files from `supabase/migrations/` to the hosted database (a dry run is printed first).
 3. **Deploy**: `vercel deploy --prod` builds the app on Vercel and publishes it.
 4. **Check**: the login page must answer (needs `APP_URL`).
@@ -36,7 +36,7 @@ You do these once. Nothing here can be done from the repository.
 
 ## Day to day
 
-- Features and fixes go by PR into `develop` (protected: a PR with passing checks, no force-push). Nothing deploys. To release, see below; merging the release into `master` starts the **Deploy** workflow; watch it under the Actions tab. A failed CI or migration step stops everything before the app changes.
+- Features and fixes go by PR into `develop` (protected: a PR with passing checks, no force-push). A PR into `develop` runs the quick checks only (format, lint, types, unit tests, build); the database tests and Playwright run on the release PR into `master` and on every deploy, so run the relevant ones locally before raising a PR. Nothing deploys. To release, see below; merging the release into `master` starts the **Deploy** workflow; watch it under the Actions tab. A failed CI or migration step stops everything before the app changes.
 - A new database change is a new file in `supabase/migrations/` (never edit a file that has been merged). Migrations only go forwards, so write them to be safe for the **previous** version of the app too: add a column before the app uses it, and remove a column only after the app stopped using it.
 - To go back after a bad deploy, use Vercel's "Instant Rollback" (Deployments → the previous one → Promote). The database is not rolled back; fix it with a new migration.
 - To redeploy without a code change, run the **Deploy** workflow by hand (Actions → Deploy → Run workflow).
