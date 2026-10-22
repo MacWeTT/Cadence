@@ -423,3 +423,20 @@ export const getRegistrationRow = async (userId: string) => {
 
   return data;
 };
+
+/** Removes the account made by a create-account test, found by its email. */
+export const deleteUserByEmail = async (email: string): Promise<void> => {
+  const { data, error } = await adminClient().auth.admin.listUsers({ perPage: 1000 });
+
+  if (error) {
+    throw error;
+  }
+
+  const found = data.users.find(user => {
+    return user.email === email;
+  });
+
+  if (found) {
+    await deleteUser(found.id);
+  }
+};

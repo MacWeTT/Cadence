@@ -145,6 +145,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"login_failures": {
+                  Row: {
+                    "at": string,"tag": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "at"?: string,"tag": string
+                  }
+                  Update: {
+                    "at"?: string,"tag"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"profiles": {
                   Row: {
                     "accent": string | null,"accent_custom": string | null,"avatar_color": string | null,"avatar_kind": string,"avatar_url": string | null,"avatar_value": string | null,"created_at": string,"display_name": string | null,"password_set": boolean,"registered_at": string | null,"sound_id": string,"sound_volume": number,"tag": string,"timezone": string,"user_id": string,"week_starts_on": number
@@ -187,6 +201,14 @@ isOneToOne: false
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"free_tag":
+{ Args: { "p_base": string }; Returns: string
+                           },
+"login_email":
+{ Args: { "p_password": string,"p_tag": string }; Returns: {
+              "email": string,"locked": boolean
+            }[]
+                           },
 "replace_my_data":
 { Args: { "p_backup": Json }; Returns: Json
                            },
@@ -199,8 +221,14 @@ isOneToOne: false
 "set_completion":
 { Args: { "p_date": string,"p_done": boolean,"p_habit_id": string,"p_today": string }; Returns: undefined
                            },
+"tag_available":
+{ Args: { "p_tag": string }; Returns: boolean
+                           },
 "valid_focus_plan":
 { Args: { "p_plan": Json }; Returns: boolean
+                           },
+"valid_tag":
+{ Args: { "p_tag": string }; Returns: boolean
                            }
           }
           Enums: {

@@ -2,6 +2,17 @@ import { expect, test, type Page } from '@playwright/test';
 
 test.use({ colorScheme: 'light', storageState: { cookies: [], origins: [] } });
 
+test('the login page offers Google, and GitHub switched off with a note that it is coming', async ({ page }) => {
+  await page.goto('/login');
+
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeEnabled();
+
+  const github = page.getByRole('button', { name: 'GitHub' });
+
+  await expect(github).toBeDisabled();
+  await expect(page.getByText('Coming soon')).toBeVisible();
+});
+
 test('unauthenticated visit to Home lands on the login page', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveURL(/\/login$/);
