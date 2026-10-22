@@ -14,6 +14,12 @@ export const queryKeys = {
   profile: ['profile'] as const,
   /** The running focus session and the last-used numbers per habit. */
   focus: ['focus'] as const,
+  /** The circles the person is in. */
+  circles: ['circles'] as const,
+  /** One circle as the person may see it. */
+  circle: (id: string) => {
+    return ['circles', id] as const;
+  },
   progressAll: ['progress'] as const,
   /** Progress for one habit filter (`null` is all habits) and one rate window. */
   progress: (habit: string | null, range: number) => {

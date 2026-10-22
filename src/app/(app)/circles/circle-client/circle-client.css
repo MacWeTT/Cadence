@@ -1,0 +1,25 @@
+@reference '../../../globals.css';
+
+.circle__back {
+  @apply mb-3 inline-block rounded-md text-sm text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.circle__header {
+  @apply mb-8 flex flex-wrap items-start justify-between gap-4;
+}
+
+.circle__title {
+  @apply min-w-0 font-display text-4xl wrap-break-word;
+}
+
+.circle__actions {
+  @apply flex flex-wrap gap-2;
+}
+
+.circle__members {
+  @apply max-w-2xl;
+}
+
+.circle__subtitle {
+  @apply mb-2 font-display text-xl;
+}

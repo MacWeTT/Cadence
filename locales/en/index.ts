@@ -4,6 +4,7 @@ import alert from './alert.json';
 import appearance from './appearance.json';
 import auth from './auth.json';
 import changelog from './changelog.json';
+import circles from './circles.json';
 import common from './common.json';
 import contact from './contact.json';
 import errors from './errors.json';
@@ -27,6 +28,7 @@ const en = {
   appearance,
   auth,
   changelog,
+  circles,
   common,
   contact,
   errors,
