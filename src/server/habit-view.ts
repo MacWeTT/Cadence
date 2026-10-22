@@ -25,7 +25,12 @@ export interface HabitListItem {
   links: string[];
 }
 
-export const toSchedule = ({ kind, times_per_week, weekdays, effective_from }: ScheduleRow): Schedule => {
+export const toSchedule = ({
+  kind,
+  times_per_week,
+  weekdays,
+  effective_from,
+}: Pick<ScheduleRow, 'kind' | 'times_per_week' | 'weekdays' | 'effective_from'>): Schedule => {
   switch (kind) {
     case 'weekly_count':
       return { kind, timesPerWeek: times_per_week ?? 1, effectiveFrom: effective_from };

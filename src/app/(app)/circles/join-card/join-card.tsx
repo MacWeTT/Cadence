@@ -1,0 +1,63 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useJoinCircle } from '@/app/(app)/circles/use-circles';
+import { Button } from '@/components/ui/button';
+import { memberName } from '@/lib/circle-people';
+import type { InvitePreview } from '@/server/circles-view';
+import './join-card.css';
+
+interface JoinCardProps {
+  token: string;
+  preview: InvitePreview;
+}
+
+/** "Join this circle?": its name, who is in it, and Join or No thanks. */
+export const JoinCard = (props: JoinCardProps) => {
+  const { token, preview } = props;
+  const { name, full, members } = preview;
+
+  const t = useTranslations('circles.join');
+  const router = useRouter();
+  const join = useJoinCircle();
+
+  const onJoinClick = () => {
+    join.mutate(token, {
+      onSuccess: id => {
+        router.push(`/circles/${id}`);
+      },
+    });
+  };
+
+  const onDeclineClick = () => {
+    router.push('/circles');
+  };
+
+  return (
+    <section aria-labelledby="join-title" className="join-card">
+      <h1 id="join-title" className="join-card__title">
+        {t('title', { name })}
+      </h1>
+      <p className="join-card__text">{t('text', { count: members.length })}</p>
+      <ul aria-label={t('peopleLabel')} className="join-card__people">
+        {members.map(({ tag, display_name }) => {
+          return (
+            <li key={tag} className="join-card__person">
+              {memberName(display_name, tag)}
+            </li>
+          );
+        })}
+      </ul>
+      {full && <p className="join-card__full">{t('full')}</p>}
+      <div className="join-card__actions">
+        <Button disabled={full || join.isPending} onClick={onJoinClick}>
+          {t('join')}
+        </Button>
+        <Button variant="outline" onClick={onDeclineClick}>
+          {t('decline')}
+        </Button>
+      </div>
+    </section>
+  );
+};

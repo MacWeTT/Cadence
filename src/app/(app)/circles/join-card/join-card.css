@@ -1,0 +1,29 @@
+@reference '../../../globals.css';
+
+.join-card {
+  @apply mx-auto mt-6 max-w-md rounded-xl border border-line bg-surface p-6;
+}
+
+.join-card__title {
+  @apply font-display text-3xl wrap-break-word;
+}
+
+.join-card__text {
+  @apply mt-2 text-ink-muted;
+}
+
+.join-card__people {
+  @apply my-4 flex flex-wrap gap-2;
+}
+
+.join-card__person {
+  @apply rounded-full border border-line px-3 py-1 text-sm wrap-break-word;
+}
+
+.join-card__full {
+  @apply mb-4 text-sm text-danger;
+}
+
+.join-card__actions {
+  @apply flex flex-wrap gap-2;
+}

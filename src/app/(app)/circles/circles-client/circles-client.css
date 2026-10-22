@@ -1,0 +1,17 @@
+@reference '../../../globals.css';
+
+.circles__header {
+  @apply flex items-center justify-between gap-4;
+}
+
+.circles__title {
+  @apply font-display text-4xl;
+}
+
+.circles__intro {
+  @apply mt-2 mb-6 max-w-xl text-ink-muted;
+}
+
+.circles__list {
+  @apply flex flex-col gap-3;
+}
