@@ -1,0 +1,26 @@
+@reference '../../globals.css';
+
+.register {
+  @apply relative flex min-h-screen items-center justify-center px-6 py-10;
+}
+
+.register__theme {
+  @apply absolute top-6 right-6;
+}
+
+.register__card {
+  @apply grid w-full max-w-sm gap-3 rounded-2xl border border-line bg-surface p-8;
+}
+
+.register__logo {
+  @apply flex justify-center;
+  --logo-height: 3rem;
+}
+
+.register__title {
+  @apply text-center font-display text-2xl;
+}
+
+.register__intro {
+  @apply mb-2 text-center text-ink-muted;
+}

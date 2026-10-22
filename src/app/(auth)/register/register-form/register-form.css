@@ -1,0 +1,33 @@
+@reference '../../../globals.css';
+
+.register-form {
+  @apply grid gap-4 text-left;
+}
+
+.register-form__field {
+  @apply grid gap-1.5;
+}
+
+.register-form__hint {
+  @apply text-xs text-ink-muted;
+}
+
+.register-form__tag {
+  @apply relative;
+}
+
+.register-form__at {
+  @apply pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-muted;
+}
+
+.register-form__tag-input {
+  @apply pl-7;
+}
+
+.register-form__error {
+  @apply rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger;
+}
+
+.register-form__save {
+  @apply min-h-11;
+}

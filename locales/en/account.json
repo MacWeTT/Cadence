@@ -98,5 +98,20 @@
     "duration": "{hours} h {minutes} m",
     "bestStreak": "on {name}",
     "pageOf": "Page {page} of {total}"
+  },
+  "signIn": {
+    "title": "Sign-in",
+    "intro": "How you get into this account.",
+    "password": "Password",
+    "isSet": "Set",
+    "notSet": "Not set",
+    "setButton": "Set a password",
+    "changeButton": "Change password",
+    "modalSet": "Set a password",
+    "modalChange": "Change your password",
+    "newPassword": "New password",
+    "confirm": "Confirm password",
+    "hint": "At least 8 characters. There is no password reset, so keep it somewhere safe.",
+    "saved": "Password saved"
   }
 }

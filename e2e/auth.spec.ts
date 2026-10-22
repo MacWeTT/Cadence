@@ -2,10 +2,19 @@ import { expect, test, type Page } from '@playwright/test';
 
 test.use({ colorScheme: 'light', storageState: { cookies: [], origins: [] } });
 
-for (const path of ['/', '/today', '/habits', '/progress']) {
-  test(`unauthenticated visit to ${path} lands on the login page`, async ({ page }) => {
+test('unauthenticated visit to Home lands on the login page', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
+});
+
+// Any other page is remembered, so signing in brings the person back to it (an invite link, for one).
+for (const path of ['/today', '/habits', '/progress']) {
+  test(`unauthenticated visit to ${path} lands on the login page, and remembers where it was going`, async ({
+    page,
+  }) => {
     await page.goto(path);
-    await expect(page).toHaveURL(/\/login$/);
+    await expect(page).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(path)}$`));
     await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
   });
 }

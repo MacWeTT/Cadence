@@ -7,6 +7,10 @@ export const withName = (view: ProfileView, name: string): ProfileView => {
   return { ...view, name };
 };
 
+export const withPasswordSet = (view: ProfileView): ProfileView => {
+  return { ...view, passwordSet: true };
+};
+
 export const withTag = (view: ProfileView, tag: string): ProfileView => {
   return { ...view, tag };
 };
