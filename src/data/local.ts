@@ -8,6 +8,8 @@ import { cloud } from '@/data/local/cloud';
 import { createGoogle } from '@/data/local/google';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
+import { createStayInStep } from '@/data/local/stay-in-step';
+import { cloudStep } from '@/data/local/step-port';
 import { createSync } from '@/data/local/sync';
 import { createProfileChanges } from '@/data/local/profile-changes';
 import { createReads } from '@/data/local/reads';
@@ -53,6 +55,8 @@ export interface DesktopExtras {
   /** Google sign-in through the system browser: open it, then finish from the `cadence://` link it comes back with. */
   /** The first-sign-in sync of this PC's file with the signed-in account. */
   sync: ReturnType<typeof createSync>;
+  /** Sends what changed on the PC and brings in what changed on the account (a round; the account of the signed-in user). */
+  stayInStep: (userId: string) => Promise<{ pushed: number; pulled: boolean }>;
   /** The account's data as a JSON file, to keep before the PC's copy replaces it. */
   accountCopy: () => Promise<{ fileName: string; type: string; text: string }>;
   startGoogle: () => Promise<{ error: string | null }>;
@@ -60,6 +64,8 @@ export interface DesktopExtras {
 }
 
 const account = cloudAccount(cloud);
+
+const stayInStep = createStayInStep(sql, cloudStep(cloud));
 
 const { signIn, signUp, register, registration, signOut, currentUser } = createAuth(cloud);
 
@@ -83,6 +89,7 @@ export const local: DataSource & DesktopExtras = {
   currentUser,
   registration,
   sync: createSync(sql, account),
+  stayInStep: stayInStep.run,
   accountCopy: async () => {
     const backup = await account.readBackup();
 
