@@ -1,49 +1,21 @@
-import { createTranslator } from 'next-intl';
 import { isCalendarDate } from '@/domain/dates';
 import { planScheduleChange } from '@/domain/schedule-change';
 import type { Schedule } from '@/domain/types';
 import { getProfile } from '@/data/local/load';
 import { insertSchedule, scheduleStatements } from '@/data/local/schedule-sql';
+import { ChangeError, describe, failed, t } from '@/data/local/outcome';
 import type { Sql } from '@/data/local/sql';
 import type { ActionResult, DataSource } from '@/data/types';
 import { formatCalendarDate } from '@/lib/format';
-import { habitInputSchema, toFieldErrors, type FieldIssue, type HabitInput } from '@/lib/habit-schema';
-import { msg, translateMsg, type Msg, type MessageKey } from '@/lib/message';
+import { habitInputSchema, toFieldErrors, type HabitInput } from '@/lib/habit-schema';
+import { translateMsg, type Msg } from '@/lib/message';
 import { completionErrorMsg } from '@/server/completion-errors';
-import type { ErrorCode } from '@/server/habits';
 import { toDesired, toSchedule, type ScheduleRow } from '@/server/habit-view';
-import en from '@locales/en';
 
 type Changes = Pick<
   DataSource,
   'createHabit' | 'updateHabit' | 'archiveHabit' | 'restoreHabit' | 'deleteHabit' | 'setCompletion'
 >;
-
-/** An expected failure: the message to show, and which fields of the form it is about. */
-class ChangeError extends Error {
-  constructor(
-    readonly code: ErrorCode,
-    readonly fieldIssues?: Record<string, FieldIssue>,
-  ) {
-    super(code);
-  }
-}
-
-const t = createTranslator({ locale: 'en', messages: en });
-
-const describe = (code: ErrorCode, fieldIssues?: Record<string, FieldIssue>): ActionResult => {
-  return {
-    ok: false,
-    error: translateMsg(t, msg(`errors.${code}`)),
-    fieldErrors: fieldIssues
-      ? Object.fromEntries(
-          Object.entries(fieldIssues).map(([field, { code: issue, values }]) => {
-            return [field, translateMsg(t, msg(`validation.${issue}` as MessageKey, values))];
-          }),
-        )
-      : undefined,
-  };
-};
 
 const run = async (work: () => Promise<void>): Promise<ActionResult> => {
   try {
@@ -51,15 +23,7 @@ const run = async (work: () => Promise<void>): Promise<ActionResult> => {
 
     return { ok: true };
   } catch (e) {
-    if (e instanceof ChangeError) {
-      const { code, fieldIssues } = e;
-
-      return describe(code, fieldIssues);
-    }
-
-    console.error(e);
-
-    return describe('saveFailed');
+    return failed(e);
   }
 };
 
@@ -262,9 +226,7 @@ export const createChanges = (sql: Sql): Changes => {
 
         return { ok: true };
       } catch (e) {
-        console.error(e);
-
-        return describe('saveFailed');
+        return failed(e);
       }
     },
   };
