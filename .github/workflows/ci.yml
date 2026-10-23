@@ -31,6 +31,11 @@ jobs:
           # The build does not talk to a database; these only need to exist.
           NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+      # The static copy the desktop app bundles: it fails if any server code reaches the screens.
+      - run: npm run build:desktop
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
 
   # The browser tests take about four minutes in one piece, so they run as four shards at once, each on its own database.
   e2e:

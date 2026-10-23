@@ -1,6 +1,6 @@
 // The one place the screens import their data from. The desktop build swaps this module for the local (SQLite) one
-// with a bundler alias, so none of the server code reaches it.
-export { remote as dataSource } from '@/data/remote';
+// (see `source.desktop.ts` and next.config.ts), so none of the server code reaches it.
+export { source as dataSource } from '@/data/source';
 export type {
   AccountActionResult,
   ActionResult,

@@ -34,6 +34,8 @@ The existing e2e specs are the proof that the web app did not change.
 
 **Spike result** (a throwaway static export of the app): it compiles; the things that stop a desktop build are the route handlers, the manifest route, `cacheComponents` and `partialPrefetching`, Circles' pages (dynamic routes, and `instant`), and above all Server Actions. Sizing: 7 reads (8 call sites) and 31 actions in 10 files; only 2 server components read the session (`UserMenu`, `RegisterContent`).
 
+**The desktop build.** `npm run build:desktop` (`scripts/build-desktop.mjs`) sets `DESKTOP=1`, sets aside what only a server can do (the API routes, the proxy, the manifest route, the sign-in callback, Circles, the Contact page and the register screen), runs `next build` as a static export into `out/`, and puts everything back, even when the build fails. `next.config.ts` in that mode turns off `cacheComponents` and `partialPrefetching`, drops the redirects and headers, and aliases `@/data/source` to `source.desktop.ts` (the local data source; today a stub whose calls all reject) and the top bar's `UserMenu` to a version with no server read. CI runs it in the quick checks, and `tests/unit/data/desktop-boundary.test.ts` fails if any file other than the web data source imports a Server Action module. Left for the desktop app itself: the real local data source, a client-side user menu, and hiding the footer's Contact link.
+
 **Task list for the seam**, one PR each, none changing the web app's behaviour, each run against the existing e2e specs locally:
 
 - [x] **Reads:** habits, home, today, progress, profile, account, focus.
@@ -41,7 +43,7 @@ The existing e2e specs are the proof that the web app did not change.
 - [x] **Focus:** start, stop, skip, pause, resume, discard (`focus-actions.ts`).
 - [x] **Profile and account:** the eleven profile edits, and export, import and delete (`profile/actions.ts`, `profile/account/actions.ts`).
 - [x] **Everything else:** timezone sync, contact, sign in, sign up, register, sign out.
-- [ ] **The desktop build flag:** the alias, the settings that differ, and leaving the server-only routes and pages out.
+- [x] **The desktop build flag:** the alias, the settings that differ, and leaving the server-only routes and pages out.
 
 ## The local database
 
