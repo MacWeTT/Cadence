@@ -16,7 +16,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"e2e/**/*.ts\" \"tests/**/*.ts\" \"*.{ts,mts,mjs,json}\" \"eslint-rules/*.mjs\"",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build",
     "verify:full": "npm run verify && npm run db:test && npx playwright test",
-    "build:desktop": "node scripts/build-desktop.mjs"
+    "build:desktop": "node scripts/build-desktop.mjs",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",
@@ -43,6 +44,7 @@
   "devDependencies": {
     "@playwright/test": "^1.64.0",
     "@tailwindcss/turbopack": "^4",
+    "@tauri-apps/cli": "2.12.4",
     "@types/node": "^24.19.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",

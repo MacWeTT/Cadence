@@ -94,6 +94,8 @@ Notifications (Tauri's notification plugin: the Home alert rules and the focus t
 0. **Spike (throwaway):** build the current app as a static export against a stub data source, and list what breaks, to size step 1. The answer is a recommendation; anything built is deleted.
 1. **The data-source seam** on the web app. No behaviour change.
 2. **The desktop build and the Tauri shell**, running on local SQLite, no account.
+   - Done: the Tauri shell (`src-tauri/`, run with `npm run tauri -- dev`, build with `npm run tauri -- build`). It opens a Cadence window on the static desktop copy; every screen says "Couldn't load" until the local data source below exists. Needs the Rust toolchain and the Visual Studio C++ build tools.
+   - Next: the local SQLite data source (`src/data/local.ts`), the screens' rules over local rows, and the local migrations.
 3. **Signing in from the app, and the sync at sign-in** (the table above, the choice dialog, the safety copy).
 4. **Staying in step**: the change queue, `updated_at`, pulling, conflicts.
 5. **Native features, the installer and the updater**, and the profile's Installer link.
