@@ -95,7 +95,8 @@ Notifications (Tauri's notification plugin: the Home alert rules and the focus t
 1. **The data-source seam** on the web app. No behaviour change.
 2. **The desktop build and the Tauri shell**, running on local SQLite, no account.
    - Done: the Tauri shell (`src-tauri/`, run with `npm run tauri -- dev`, build with `npm run tauri -- build`). It opens a Cadence window on the static desktop copy; every screen says "Couldn't load" until the local data source below exists. Needs the Rust toolchain and the Visual Studio C++ build tools.
-   - Next: the local SQLite data source (`src/data/local.ts`), the screens' rules over local rows, and the local migrations.
+   - Done: the local SQLite file (`src/data/local/`, with the two Rust commands in `src-tauri/src/db.rs`): versioned migrations that refuse a file made by a newer app, the habit, schedule, pause, tick, focus and profile tables, and the reads (Today, Home, Habits, Progress, Profile, Account, Focus), built with the same pure builders the server uses (`src/server/page-data.ts`), plus the timezone sync. Tested against an in-memory SQLite in unit tests. The desktop build removes the web app's service worker (it cannot reach the app's own address).
+   - Next: the changes on local rows (create, edit, archive, restore, delete, tick, with the rules the server's database functions keep), then focus, then the profile and account edits.
 3. **Signing in from the app, and the sync at sign-in** (the table above, the choice dialog, the safety copy).
 4. **Staying in step**: the change queue, `updated_at`, pulling, conflicts.
 5. **Native features, the installer and the updater**, and the profile's Installer link.
