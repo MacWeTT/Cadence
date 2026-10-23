@@ -4,22 +4,28 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { ConversationHeader } from '@/app/(app)/circles/conversation-header/conversation-header';
+import { Feed } from '@/app/(app)/circles/feed/feed';
 import { InviteModal } from '@/app/(app)/circles/invite-modal/invite-modal';
-import { MemberRow } from '@/app/(app)/circles/member-row/member-row';
-import { SharingSection } from '@/app/(app)/circles/sharing-section/sharing-section';
-import { MemberDetails } from '@/app/(app)/circles/member-details/member-details';
+import { LookDialog } from '@/app/(app)/circles/look-dialog/look-dialog';
+import { PeopleDialog } from '@/app/(app)/circles/people-dialog/people-dialog';
 import { RemoveMemberModal } from '@/app/(app)/circles/remove-member-modal/remove-member-modal';
+import { SharingDialog } from '@/app/(app)/circles/sharing-dialog/sharing-dialog';
+import { useSharing } from '@/app/(app)/circles/use-sharing';
 import { useCircle, useCloseCircle, useLeaveCircle, useRemoveMember } from '@/app/(app)/circles/use-circles';
 import { ConfirmModal } from '@/components/confirm-modal/confirm-modal';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
+import { Scenery } from '@/components/scenery/scenery';
 import { Button } from '@/components/ui/button';
+import { buildFeed } from '@/lib/circle-feed';
+import { habitColor } from '@/lib/palette';
 import { HttpError } from '@/lib/query/fetch-json';
 import type { CircleMemberView } from '@/server/circles-view';
 import './circle-client.css';
 
 interface CircleState {
-  dialog: 'invite' | 'leave' | 'close' | null;
+  dialog: 'invite' | 'leave' | 'close' | 'share' | 'look' | 'people' | null;
   removing: CircleMemberView | null;
 }
 
@@ -27,6 +33,7 @@ interface CircleClientProps {
   id: string;
 }
 
+/** One circle as a conversation: friends' days as messages you can react to, and the buttons around them. */
 export const CircleClient = (props: CircleClientProps) => {
   const { id } = props;
 
@@ -35,40 +42,52 @@ export const CircleClient = (props: CircleClientProps) => {
   const t = useTranslations('circles');
   const router = useRouter();
   const { data: circle, error, isError, refetch } = useCircle(id);
+
+  useSharing(id); // started now so "What I share" opens with its habits already there
   const leave = useLeaveCircle();
   const close = useCloseCircle();
   const remove = useRemoveMember();
 
   const { dialog, removing } = state;
 
-  const setField = <K extends keyof CircleState>(field: K, value: CircleState[K]) => {
-    setState(current => {
-      return { ...current, [field]: value };
-    });
+  const open = (next: CircleState['dialog']) => {
+    setState({ dialog: next, removing: null });
   };
 
   const onInviteClick = () => {
-    setField('dialog', 'invite');
+    open('invite');
+  };
+
+  const onShareClick = () => {
+    open('share');
+  };
+
+  const onSettingsClick = () => {
+    open('look');
+  };
+
+  const onPeopleClick = () => {
+    open('people');
   };
 
   const onLeaveClick = () => {
-    setField('dialog', 'leave');
+    open('leave');
   };
 
   const onCloseCircleClick = () => {
-    setField('dialog', 'close');
+    open('close');
   };
 
   const onDialogClose = () => {
-    setField('dialog', null);
+    open(null);
   };
 
   const onRemoveClick = (member: CircleMemberView) => {
-    setField('removing', member);
+    setState({ dialog: null, removing: member });
   };
 
   const onRemoveClose = () => {
-    setField('removing', null);
+    setState({ dialog: null, removing: null });
   };
 
   const onLeaveConfirm = () => {
@@ -129,51 +148,53 @@ export const CircleClient = (props: CircleClientProps) => {
     );
   }
 
-  const { name, isOwner, members, weekTicks } = circle;
+  const { name, color, pinned, isOwner, members } = circle;
+  const me = members.find(member => {
+    return member.isYou;
+  });
   const others = members.filter(member => {
     return !member.isYou;
   });
+  const { userId: meId = '', tag: meTag = '', today = members[0].today } = me ?? {};
+  const days = buildFeed(members, today);
+  const style = { '--circle-color': habitColor(color) } as React.CSSProperties;
 
   return (
     <>
-      <Link href="/circles" className="circle__back">
-        {t('circle.back')}
-      </Link>
-      <div className="circle__header">
-        <h1 className="circle__title">{name}</h1>
-        <div className="circle__actions">
-          {isOwner && <Button onClick={onInviteClick}>{t('circle.invite')}</Button>}
-          <Button variant="outline" onClick={onLeaveClick}>
-            {t('circle.leave')}
-          </Button>
-          {isOwner && (
-            <Button variant="outline" onClick={onCloseCircleClick}>
-              {t('circle.close')}
-            </Button>
-          )}
-        </div>
+      <div style={style} className="conversation">
+        <Scenery variant="backdrop" className="conversation__scenery" />
+        <ConversationHeader
+          circle={circle}
+          onInvite={onInviteClick}
+          onShare={onShareClick}
+          onSettings={onSettingsClick}
+          onPeople={onPeopleClick}
+        />
+        <Feed circleId={id} days={days} me={{ id: meId, tag: meTag }} onShare={onShareClick} />
       </div>
-      <p className="circle__week">{t('circle.week', { count: weekTicks })}</p>
-      <section aria-labelledby="circle-members" className="circle__members">
-        <h2 id="circle-members" className="circle__subtitle">
-          {t('circle.members')}
-        </h2>
-        <ul>
-          {members.map(member => {
-            const { userId, isYou } = member;
-
-            return (
-              <MemberRow key={userId} member={member} canRemove={isOwner && !isYou} onRemove={onRemoveClick}>
-                <MemberDetails circleId={id} member={member} />
-              </MemberRow>
-            );
-          })}
-        </ul>
-      </section>
-
-      <SharingSection circleId={id} others={others} />
 
       {dialog === 'invite' && <InviteModal circleId={id} onClose={onDialogClose} />}
+      {dialog === 'share' && me && <SharingDialog circleId={id} me={me} others={others} onClose={onDialogClose} />}
+      {dialog === 'look' && (
+        <LookDialog
+          circleId={id}
+          color={color}
+          pinned={pinned}
+          isOwner={isOwner}
+          onLeave={onLeaveClick}
+          onCloseCircle={onCloseCircleClick}
+          onClose={onDialogClose}
+        />
+      )}
+      {dialog === 'people' && (
+        <PeopleDialog
+          name={name}
+          members={members}
+          isOwner={isOwner}
+          onRemove={onRemoveClick}
+          onClose={onDialogClose}
+        />
+      )}
       {dialog === 'leave' && (
         <ConfirmModal
           destructive

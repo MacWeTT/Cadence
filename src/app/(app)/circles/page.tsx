@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { CirclesClient } from '@/app/(app)/circles/circles-client/circles-client';
+import { CirclesWelcome } from '@/app/(app)/circles/circles-welcome/circles-welcome';
 import { PageTransition } from '@/components/page-transition/page-transition';
 
-/** The page is only a frame: its data comes from the browser's cache (see use-circles.ts), so it opens at once. */
+/** The page is only a frame: the list is in the layout, and its data comes from the browser's cache, so it opens at once. */
 const CirclesPage = () => {
   return (
     <PageTransition>
-      <CirclesClient />
+      <CirclesWelcome />
     </PageTransition>
   );
 };

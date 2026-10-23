@@ -7,7 +7,9 @@ import {
   circleIdInput,
   inviteTokenInput,
   overrideInput,
+  lookInput,
   prefsInput,
+  reactInput,
   shareInput,
 } from '@/lib/circle-schema';
 import { getUser } from '@/lib/supabase/server';
@@ -17,8 +19,10 @@ import {
   deleteCircle,
   joinCircle,
   leaveCircle,
+  reactTo,
   removeMember,
   sendCheer,
+  setCircleLook,
   setCirclePrefs,
   setCirclesPaused,
   setShare,
@@ -220,6 +224,40 @@ export const setCirclesPausedAction = async (input: unknown): Promise<CircleActi
 
   return run(async () => {
     await setCirclesPaused(data);
+
+    return null;
+  });
+};
+
+/** Your own colour and pin for a circle. Only you see them. */
+export const setCircleLookAction = async (input: unknown): Promise<CircleActionResult> => {
+  const { success, data } = lookInput.safeParse(input);
+
+  if (!success) {
+    return fail('generic');
+  }
+
+  const { circleId, color, pinned } = data;
+
+  return run(async () => {
+    await setCircleLook(circleId, color, pinned);
+
+    return null;
+  });
+};
+
+/** An emoji on a friend's day, or taking it back. */
+export const reactAction = async (input: unknown): Promise<CircleActionResult> => {
+  const { success, data } = reactInput.safeParse(input);
+
+  if (!success) {
+    return fail('generic');
+  }
+
+  const { circleId, toUser, forDate, emoji, on } = data;
+
+  return run(async () => {
+    await reactTo(circleId, toUser, forDate, emoji, on);
 
     return null;
   });

@@ -1,0 +1,51 @@
+@reference '../../../globals.css';
+
+.bubble {
+  @apply flex max-w-xl items-start gap-3;
+}
+
+.bubble__body {
+  @apply flex min-w-0 flex-1 flex-col items-start gap-1.5;
+}
+
+.bubble__who {
+  @apply text-sm font-semibold wrap-break-word;
+}
+
+.bubble__card {
+  @apply max-w-full rounded-2xl rounded-tl-sm border border-line bg-surface px-4 py-3 shadow-sm;
+}
+
+.bubble__habits {
+  @apply flex flex-col gap-1.5;
+}
+
+.bubble__habit {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-0.5;
+}
+
+.bubble__habit-name {
+  @apply wrap-break-word;
+}
+
+.bubble__streak {
+  @apply rounded-full bg-clay/15 px-2 py-0.5 text-xs text-ink;
+}
+
+/* Your own day sits on the right, like a message you sent, and nobody can react to themselves. */
+.bubble--mine {
+  @apply ml-auto flex-row-reverse;
+}
+
+.bubble--mine .bubble__body {
+  @apply items-end;
+}
+
+.bubble--mine .bubble__who {
+  @apply text-ink-muted;
+}
+
+.bubble--mine .bubble__card {
+  @apply rounded-2xl rounded-tr-sm border-(--circle-color)/40;
+  background: color-mix(in srgb, var(--circle-color) 10%, var(--color-surface));
+}

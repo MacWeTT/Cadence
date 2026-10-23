@@ -1,6 +1,13 @@
 import 'server-only';
 import { connection } from 'next/server';
-import { circleNameProblem, type Label, type Level } from '@/domain/circles';
+import {
+  circleNameProblem,
+  isCircleColor,
+  type CircleColor,
+  type Label,
+  type Level,
+  type Reaction,
+} from '@/domain/circles';
 import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
 import { circleErrorCode } from '@/server/circle-errors';
 import { toSharingView, type SharingView } from '@/server/circle-sharing-view';
@@ -35,13 +42,18 @@ const need = <T>(result: { data: T; error: { message: string } | null }): NonNul
   return data;
 };
 
+/** A colour the database holds that this code does not know is shown as the first one. */
+const toColor = (value: string): CircleColor => {
+  return isCircleColor(value) ? value : 'moss';
+};
+
 export const listCircles = async (): Promise<CircleListItem[]> => {
   await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
   const supabase = await createSupabaseServerClient();
   const rows = need(await supabase.rpc('my_circles'));
 
-  return rows.map(({ id, name, is_owner, member_count }) => {
-    return { id, name, isOwner: is_owner, memberCount: member_count };
+  return rows.map(({ id, name, is_owner, member_count, color, pinned }) => {
+    return { id, name, isOwner: is_owner, memberCount: member_count, color: toColor(color), pinned };
   });
 };
 
@@ -177,4 +189,24 @@ export const setCirclesPaused = async (paused: boolean): Promise<void> => {
   const supabase = await createSupabaseServerClient();
 
   check(await supabase.from('profiles').update({ circles_paused: paused }).eq('user_id', user.id));
+};
+
+/** Your own colour for a circle, and whether it is pinned to the top of your list. Friends never see either. */
+export const setCircleLook = async (circleId: string, color: CircleColor, pinned: boolean): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+
+  check(await supabase.rpc('set_circle_look', { p_circle: circleId, p_color: color, p_pinned: pinned }));
+};
+
+/** An emoji on a friend's day (their own today or the six days before), or taking it back. */
+export const reactTo = async (
+  circleId: string,
+  toUser: string,
+  forDate: string,
+  emoji: Reaction,
+  on: boolean,
+): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+
+  check(await supabase.rpc('react', { p_circle: circleId, p_to: toUser, p_for: forDate, p_emoji: emoji, p_on: on }));
 };

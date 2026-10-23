@@ -2,7 +2,14 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { CIRCLE_DB_CODES, circleErrorCode } from '@/server/circle-errors';
 
-const MIGRATION = readFileSync('supabase/migrations/20261019100000_circles.sql', 'utf8');
+const MIGRATION = [
+  'supabase/migrations/20261019100000_circles.sql',
+  'supabase/migrations/20261025080000_circle_look_and_reactions.sql',
+]
+  .map(file => {
+    return readFileSync(file, 'utf8');
+  })
+  .join('\n');
 
 describe('circleErrorCode', () => {
   it.each([
@@ -15,6 +22,7 @@ describe('circleErrorCode', () => {
     ['invalid_name', 'circleNameInvalid'],
     ['cheers_off', 'cheersOff'],
     ['cheer_date', 'cheerDate'],
+    ['react_date', 'reactDate'],
     ['not_signed_in', 'signIn'],
   ] as const)('turns %s into the message %s', (code, expected) => {
     expect(circleErrorCode(code)).toBe(expected);
@@ -29,6 +37,9 @@ describe('circleErrorCode', () => {
       'invalid_viewer',
       'invalid_level',
       'invalid_label',
+      'invalid_color',
+      'invalid_emoji',
+      'cannot_react_self',
     ]) {
       expect(circleErrorCode(code), code).toBe('generic');
     }

@@ -1,0 +1,29 @@
+@reference '../../../globals.css';
+
+.reaction-bar {
+  @apply flex flex-wrap items-center gap-1.5;
+}
+
+.reaction-bar__chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-sm transition-colors hover:border-ink-muted focus-visible:outline-2 focus-visible:outline-clay disabled:cursor-default disabled:hover:border-line;
+}
+
+.reaction-bar__chip--mine {
+  @apply border-moss bg-moss/15;
+}
+
+.reaction-bar__add {
+  @apply inline-flex size-8 items-center justify-center rounded-full border border-transparent text-ink-muted transition-colors hover:border-line hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.reaction-bar__add-icon {
+  @apply size-4;
+}
+
+.reaction-bar__picker {
+  @apply flex gap-1 rounded-full border border-line bg-surface px-1.5 py-1 shadow-sm;
+}
+
+.reaction-bar__pick {
+  @apply flex size-9 items-center justify-center rounded-full text-xl transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-clay aria-pressed:bg-moss/15;
+}

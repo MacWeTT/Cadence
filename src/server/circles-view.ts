@@ -2,7 +2,7 @@
 // be unit-tested. The database decides what a friend may see; this layer also cuts every fact above the habit's level,
 // so a screen can never show more than the level allows, even if a payload carried more.
 import { z } from 'zod';
-import { reveal, type Level } from '@/domain/circles';
+import { CIRCLE_COLORS, REACTIONS, reveal, type CircleColor, type Level, type Reaction } from '@/domain/circles';
 import { isCalendarDate, type CalendarDate } from '@/domain/dates';
 import { weekProgress, type WeekProgress } from '@/domain/listing';
 import { currentStreak, type Streak } from '@/domain/streaks';
@@ -50,12 +50,20 @@ const memberSchema = z.object({
   avatar_url: z.string().nullable(),
   showed_up_week: z.boolean(),
   habits: z.array(habitSchema),
+  reactions: z.array(z.object({ user_id: z.uuid(), tag: z.string(), date: calendarDate, emoji: z.enum(REACTIONS) })),
   cheers_today: z.array(z.object({ user_id: z.uuid(), tag: z.string() })).nullable(),
   cheered_by_you: z.boolean().nullable(),
 });
 
 const overviewSchema = z.object({
-  circle: z.object({ id: z.uuid(), name: z.string(), is_owner: z.boolean(), week_ticks: z.number() }),
+  circle: z.object({
+    id: z.uuid(),
+    name: z.string(),
+    is_owner: z.boolean(),
+    week_ticks: z.number(),
+    color: z.enum(CIRCLE_COLORS),
+    pinned: z.boolean(),
+  }),
   members: z.array(memberSchema),
 });
 
@@ -102,6 +110,8 @@ export interface CircleMemberView {
   allowCheers: boolean;
   showedUpWeek: boolean;
   habits: SharedHabitView[];
+  /** The reactions on this person's days, from everyone in the circle, for today and the six days before. */
+  reactions: { userId: string; tag: string; date: CalendarDate; emoji: Reaction }[];
   /** Who cheered you today: only on your own card. */
   cheersToday: { userId: string; tag: string }[] | null;
   /** Whether you cheered this person today: not on your own card. */
@@ -115,11 +125,17 @@ export interface CircleListItem {
   isOwner: boolean;
   /** How many people are in it, the person included. */
   memberCount: number;
+  /** The person's own colour for it, and whether they pinned it. */
+  color: CircleColor;
+  pinned: boolean;
 }
 
 export interface CircleView {
   id: string;
   name: string;
+  /** The viewer's own colour for the circle, and whether they pinned it. */
+  color: CircleColor;
+  pinned: boolean;
   isOwner: boolean;
   /** This week's check-ins across the circle: one number, never per person. */
   weekTicks: number;
@@ -159,7 +175,7 @@ const toSharedHabit = (habit: HabitPayload, member: MemberPayload): SharedHabitV
 
 const toMember = (member: MemberPayload): CircleMemberView => {
   const { user_id, tag, display_name, is_you, is_owner, paused, allow_cheers, showed_up_week, habits } = member;
-  const { cheers_today, today, in_week } = member;
+  const { cheers_today, today, in_week, reactions } = member;
   const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
 
   return {
@@ -177,6 +193,9 @@ const toMember = (member: MemberPayload): CircleMemberView => {
     habits: habits.map(habit => {
       return toSharedHabit(habit, member);
     }),
+    reactions: reactions.map(({ user_id, tag: reactionTag, date, emoji }) => {
+      return { userId: user_id, tag: reactionTag, date, emoji };
+    }),
     cheersToday:
       cheers_today?.map(({ user_id: userId, tag: cheerTag }) => {
         return { userId, tag: cheerTag };
@@ -188,9 +207,9 @@ const toMember = (member: MemberPayload): CircleMemberView => {
 /** Reads `circle_overview`'s answer. Throws when it is not the shape the database promises. */
 export const toCircleView = (payload: unknown): CircleView => {
   const { circle, members } = overviewSchema.parse(payload);
-  const { id, name, is_owner, week_ticks } = circle;
+  const { id, name, is_owner, week_ticks, color, pinned } = circle;
 
-  return { id, name, isOwner: is_owner, weekTicks: week_ticks, members: members.map(toMember) };
+  return { id, name, color, pinned, isOwner: is_owner, weekTicks: week_ticks, members: members.map(toMember) };
 };
 
 const previewSchema = z.object({

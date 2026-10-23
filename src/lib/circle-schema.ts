@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { isCalendarDate } from '@/domain/dates';
-import { LABELS, LEVELS } from '@/domain/circles';
+import { CIRCLE_COLORS, LABELS, LEVELS, REACTIONS } from '@/domain/circles';
 
 // What the Circles actions accept, checked before the database is asked. The database checks again, as the last word.
 
@@ -37,4 +37,19 @@ export const cheerInput = z.object({
   circleId: z.uuid(),
   toUser: z.uuid(),
   forDate: z.string().refine(isCalendarDate),
+});
+
+export const lookInput = z.object({
+  circleId: z.uuid(),
+  color: z.enum(CIRCLE_COLORS),
+  pinned: z.boolean(),
+});
+
+/** A reaction to a friend's day, or taking it back (`on: false`). */
+export const reactInput = z.object({
+  circleId: z.uuid(),
+  toUser: z.uuid(),
+  forDate: z.string().refine(isCalendarDate),
+  emoji: z.enum(REACTIONS),
+  on: z.boolean(),
 });

@@ -1,0 +1,22 @@
+@reference '../../../globals.css';
+
+.circles-shell {
+  @apply flex min-w-0 flex-1 gap-6 lg:gap-8;
+}
+
+/* On a phone the list and the circle are separate screens: the list on the Circles page, the circle on its own page. */
+.circles-shell__rail {
+  @apply w-full min-w-0 max-lg:hidden lg:w-80 lg:shrink-0;
+}
+
+.circles-shell__content {
+  @apply min-w-0 flex-1;
+}
+
+.circles-shell--index .circles-shell__rail {
+  @apply max-lg:block;
+}
+
+.circles-shell--index .circles-shell__content {
+  @apply max-lg:hidden;
+}

@@ -1,0 +1,9 @@
+@reference '../../../globals.css';
+
+.sharing-dialog {
+  @apply sm:max-w-2xl;
+}
+
+.sharing-dialog__title {
+  @apply font-display text-xl;
+}

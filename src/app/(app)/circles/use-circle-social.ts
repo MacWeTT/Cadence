@@ -1,27 +1,32 @@
 'use client';
 
-import { sendCheerAction, setCirclePrefsAction } from '@/app/(app)/circles/actions';
+import { reactAction, setCircleLookAction, setCirclePrefsAction } from '@/app/(app)/circles/actions';
 import { useOptimisticCircleAction } from '@/app/(app)/circles/use-optimistic-circle-action';
-import { withCheered, withPrefs } from '@/lib/circle-social-optimistic';
+import type { CircleColor, Reaction } from '@/domain/circles';
+import type { CalendarDate } from '@/domain/dates';
+import { withLook, withPrefs, withReaction } from '@/lib/circle-social-optimistic';
 import { queryKeys } from '@/lib/query/keys';
 import type { CircleView } from '@/server/circles-view';
 
-interface CheerInput {
+interface ReactInput {
   circleId: string;
   toUser: string;
-  /** The friend's own today. */
-  forDate: string;
+  /** The friend's day the reaction is for. */
+  forDate: CalendarDate;
+  emoji: Reaction;
+  on: boolean;
+  /** You, and your tag: only used to show the reaction at once, before the server answers. */
+  me: string;
+  myTag: string;
 }
 
-/** A cheer for a friend's day. The friend shows as cheered at once. */
-export const useCheer = (circleId: string) => {
-  return useOptimisticCircleAction<CircleView, CheerInput>(
-    queryKeys.circle(circleId),
-    sendCheerAction,
-    (view, input) => {
-      return withCheered(view, input.toUser);
-    },
-  );
+/** An emoji on a friend's day, or taking it back. It shows at once and goes back if the server refuses. */
+export const useReact = (circleId: string) => {
+  return useOptimisticCircleAction<CircleView, ReactInput>(queryKeys.circle(circleId), reactAction, (view, input) => {
+    const { toUser, forDate, emoji, on, me, myTag } = input;
+
+    return withReaction(view, { me, myTag, toUser, date: forDate, emoji, on });
+  });
 };
 
 interface PrefsInput {
@@ -30,7 +35,7 @@ interface PrefsInput {
   allowCheers: boolean;
 }
 
-/** Whether your week counts towards the circle's, and whether friends can cheer you. */
+/** Whether your week counts towards the circle's, and whether friends can react to you. */
 export const useSetPrefs = (circleId: string) => {
   return useOptimisticCircleAction<CircleView, PrefsInput>(
     queryKeys.circle(circleId),
@@ -39,6 +44,23 @@ export const useSetPrefs = (circleId: string) => {
       const { inWeek, allowCheers } = input;
 
       return withPrefs(view, inWeek, allowCheers);
+    },
+  );
+};
+
+interface LookInput {
+  circleId: string;
+  color: CircleColor;
+  pinned: boolean;
+}
+
+/** Your own colour for a circle, and whether it is pinned to the top of your list. */
+export const useSetLook = (circleId: string) => {
+  return useOptimisticCircleAction<CircleView, LookInput>(
+    queryKeys.circle(circleId),
+    setCircleLookAction,
+    (view, { color, pinned }) => {
+      return withLook(view, color, pinned);
     },
   );
 };

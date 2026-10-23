@@ -25,5 +25,6 @@
   "notOwner": "Only the person who started the circle can do that.",
   "notAMember": "You are not in this circle.",
   "cheersOff": "This person is not taking cheers right now.",
-  "cheerDate": "A cheer is for someone's today only."
+  "cheerDate": "A cheer is for someone's today only.",
+  "reactDate": "You can react to the last week only."
 }
