@@ -1,4 +1,5 @@
 import { createChanges } from '@/data/local/changes';
+import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
 import { createReads } from '@/data/local/reads';
 import type { Sql } from '@/data/local/sql';
@@ -37,15 +38,10 @@ const sql: Sql = {
 export const local: DataSource = {
   ...createReads(sql),
   ...createChanges(sql),
+  ...createFocusChanges(sql),
   syncTimezone: deviceTimeZone => {
     return syncTimezone(sql, deviceTimeZone);
   },
-  startFocus: notBuilt,
-  stopFocus: notBuilt,
-  skipBreak: notBuilt,
-  pauseFocus: notBuilt,
-  resumeFocus: notBuilt,
-  discardFocus: notBuilt,
   updateName: notBuilt,
   updateTag: notBuilt,
   setPassword: notBuilt,

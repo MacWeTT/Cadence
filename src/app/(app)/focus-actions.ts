@@ -3,26 +3,13 @@
 import { getTranslations } from 'next-intl/server';
 import type { FocusActionResult } from '@/data/types';
 import { z } from 'zod';
-import { isSoundId } from '@/lib/sound';
+import { startSchema } from '@/lib/focus-schema';
 import { getUser } from '@/lib/supabase/server';
 import { pauseFocus, resumeFocus } from '@/server/focus-pause';
 import { discardFocusSession, skipBreak, startFocus, stopFocus, type FocusResult } from '@/server/focus';
 import { HabitError, type ErrorCode } from '@/server/habits';
 
 export type { FocusActionResult };
-
-const planSchema = z.object({
-  focusMin: z.number(),
-  breakMin: z.number(),
-  longBreakMin: z.number(),
-  rounds: z.number(),
-});
-const startSchema = z.object({
-  habitId: z.uuid(),
-  mode: z.enum(['free', 'pomodoro']),
-  plan: planSchema.nullable(),
-  soundId: z.string().refine(isSoundId).nullable(),
-});
 
 const describe = async (code: ErrorCode): Promise<FocusActionResult> => {
   const t = await getTranslations('errors');
