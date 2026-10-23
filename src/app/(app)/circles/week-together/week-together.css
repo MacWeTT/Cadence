@@ -6,7 +6,20 @@
 }
 
 .week-together__head {
-  @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1;
+  @apply relative flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 max-sm:pr-10;
+}
+
+/* On a phone the week folds away to its summary line, so the conversation gets the room. */
+.week-together__toggle {
+  @apply absolute top-0 right-0 inline-flex size-9 items-center justify-center rounded-full text-ink-muted hover:bg-surface focus-visible:outline-2 focus-visible:outline-clay sm:hidden;
+}
+
+.week-together__chevron {
+  @apply size-5 transition-transform;
+}
+
+.week-together--open .week-together__chevron {
+  @apply rotate-180;
 }
 
 .week-together__title {
@@ -24,6 +37,10 @@
 }
 
 /* A name column, then seven days. The rows are subgrids of it, so the days line up under their letters. */
+.week-together:not(.week-together--open) .week-together__grid {
+  @apply max-sm:hidden;
+}
+
 .week-together__grid {
   @apply grid grid-cols-[minmax(5rem,9rem)_repeat(7,minmax(0,1fr))] items-center gap-x-1 gap-y-2;
 }

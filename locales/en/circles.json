@@ -194,7 +194,9 @@
     "summary": "{count, plural, =0 {No shared days yet. There is always today.} one {You both showed up on # day.} other {You both showed up on # days.}}",
     "you": "You",
     "rowLabel": "{name} showed up on {count} of the last 7 days.{off, plural, =0 {} one { One day didn't happen.} other { # days didn't happen.}}",
-    "offMark": "Didn't happen"
+    "offMark": "Didn't happen",
+    "show": "Show the week",
+    "hide": "Hide the week"
   },
   "closer": {
     "label": "Let us see each other's off days",
