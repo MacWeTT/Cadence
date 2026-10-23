@@ -39,7 +39,8 @@ jobs:
 
   # The browser tests take about four minutes in one piece, so they run as four shards at once, each on its own database.
   e2e:
-    name: Playwright # a skipped matrix job cannot fill in the shard number, so the name has none; running shards show as "Playwright (1)"
+    # A skipped matrix job cannot fill in the shard number, so the name has none; running shards show as "... (1)".
+    name: Playwright, release PRs only
     # Not for a pull request into develop (see the top of this file). A deploy calls this with the push event.
     if: github.event_name != 'pull_request' || github.base_ref == 'master'
     runs-on: ubuntu-latest
