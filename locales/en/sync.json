@@ -1,0 +1,18 @@
+{
+  "uploadTitle": "Upload this PC's habits?",
+  "uploadDescription": "You have {habits, plural, one {# habit} other {# habits}} on this PC, and your account has none. Upload them to your account?",
+  "upload": "Upload",
+  "keepOnPc": "Keep them on this PC only",
+  "askTitle": "Which should we keep?",
+  "askDescription": "This PC and your account both have habits. The side you keep replaces the other. A safety copy of what is replaced is saved first.",
+  "pc": "This PC",
+  "account": "Your account",
+  "counts": "{habits, plural, one {# habit} other {# habits}}, {ticks, plural, one {# check-in} other {# check-ins}}, {focusSessions, plural, one {# focus session} other {# focus sessions}}",
+  "keepPc": "Keep this PC's",
+  "keepAccount": "Keep my account's",
+  "later": "Decide later",
+  "downloadAccount": "Download my account's copy first",
+  "pulled": "Your habits are on this PC now.",
+  "uploaded": "Your habits are on your account now.",
+  "failed": "Couldn't sync. Check your connection and try again."
+}

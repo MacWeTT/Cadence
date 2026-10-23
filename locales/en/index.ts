@@ -17,6 +17,7 @@ import labels from './labels.json';
 import metadata from './metadata.json';
 import profile from './profile.json';
 import progress from './progress.json';
+import sync from './sync.json';
 import today from './today.json';
 import validation from './validation.json';
 
@@ -41,6 +42,7 @@ const en = {
   metadata,
   profile,
   progress,
+  sync,
   today,
   validation,
 };

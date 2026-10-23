@@ -75,6 +75,7 @@ const MIGRATIONS: string[][] = [
     )`,
     'insert into profile (id) values (1)',
   ],
+  ['create table meta (key text primary key, value text not null)'],
 ];
 
 export const LATEST_VERSION = MIGRATIONS.length;

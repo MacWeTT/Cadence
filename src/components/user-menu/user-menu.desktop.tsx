@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { SyncPrompt } from '@/components/sync-prompt/sync-prompt';
 import { UserMenuAvatar } from '@/components/user-menu-avatar/user-menu-avatar';
 import { useSession } from '@/lib/query/use-session';
 import './user-menu.css';
@@ -28,8 +29,11 @@ export const UserMenu = () => {
   }
 
   return (
-    <Link href="/profile" aria-label={t('profile')} className="user-menu__trigger">
-      <UserMenuAvatar name={user.email || t('fallbackName')} />
-    </Link>
+    <>
+      <Link href="/profile" aria-label={t('profile')} className="user-menu__trigger">
+        <UserMenuAvatar name={user.email || t('fallbackName')} />
+      </Link>
+      <SyncPrompt />
+    </>
   );
 };
