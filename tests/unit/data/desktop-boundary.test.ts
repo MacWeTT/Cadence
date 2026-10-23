@@ -3,13 +3,7 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 // What the desktop build leaves out (scripts/build-desktop.mjs), and the one module that is allowed to call the actions.
-const WEB_ONLY = [
-  'src/app/api',
-  'src/app/auth',
-  'src/app/(app)/circles',
-  'src/app/(app)/contact',
-  'src/app/(auth)/register',
-];
+const WEB_ONLY = ['src/app/api', 'src/app/auth', 'src/app/(app)/circles', 'src/app/(app)/contact'];
 const ALLOWED = ['src/data/remote.ts'];
 
 const files = (dir: string): string[] => {

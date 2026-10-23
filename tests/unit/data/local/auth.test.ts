@@ -1,9 +1,20 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createAuth, type Cloud } from '@/data/local/auth';
+import { createGoogle } from '@/data/local/google';
 
 interface Fake {
   rpc: ReturnType<typeof vi.fn>;
-  auth: Record<'signInWithPassword' | 'signUp' | 'signOut' | 'getSession', ReturnType<typeof vi.fn>>;
+  auth: Record<
+    | 'signInWithPassword'
+    | 'signUp'
+    | 'signOut'
+    | 'getSession'
+    | 'getUser'
+    | 'updateUser'
+    | 'signInWithOAuth'
+    | 'exchangeCodeForSession',
+    ReturnType<typeof vi.fn>
+  >;
   from: ReturnType<typeof vi.fn>;
   saved: unknown[];
 }
@@ -18,6 +29,18 @@ const fake = (over: Partial<Fake> = {}): Fake & Cloud => {
       return Promise.resolve({ data: true, error: null });
     }),
     auth: {
+      getUser: vi.fn(() => {
+        return Promise.resolve({ data: { user: { id: 'u1' } }, error: null });
+      }),
+      updateUser: vi.fn(() => {
+        return Promise.resolve({ error: null });
+      }),
+      signInWithOAuth: vi.fn(() => {
+        return Promise.resolve({ data: { url: 'https://accounts.example/auth' }, error: null });
+      }),
+      exchangeCodeForSession: vi.fn(() => {
+        return Promise.resolve({ error: null });
+      }),
       signInWithPassword: vi.fn(() => {
         return Promise.resolve({ error: null });
       }),
@@ -189,5 +212,127 @@ describe('the session', () => {
     await createAuth(cloud).signOut();
 
     expect(cloud.auth.signOut).toHaveBeenCalled();
+  });
+});
+
+describe('finishing a first Google sign-in on the register screen', () => {
+  const input = { tag: '@Mac', password: 'longenough', confirm: 'longenough' };
+
+  it('saves the tag and the password, marks the account registered, and goes on', async () => {
+    const cloud = fake();
+
+    expect(await createAuth(cloud).register(input, '/habits')).toEqual({ next: '/habits', error: null });
+    expect(cloud.auth.updateUser).toHaveBeenCalledWith({ password: 'longenough' });
+    expect(cloud.saved).toEqual([
+      expect.objectContaining({ tag: 'mac', password_set: true, registered_at: expect.any(String) }),
+    ]);
+  });
+
+  it('says a password Supabase turns down, and a tag that is taken, without marking anything', async () => {
+    const rejected = fake();
+    const taken = fake({
+      rpc: vi.fn(() => {
+        return Promise.resolve({ data: false, error: null });
+      }),
+    });
+
+    rejected.auth.updateUser.mockResolvedValue({ error: { code: 'weak_password' } });
+
+    expect(await createAuth(rejected).register(input, null)).toMatchObject({ next: null, error: expect.any(String) });
+    expect(rejected.saved).toEqual([]);
+    expect(await createAuth(taken).register(input, null)).toMatchObject({
+      error: expect.stringContaining('tag is taken'),
+    });
+    expect(taken.auth.updateUser).not.toHaveBeenCalled();
+  });
+
+  it('refuses passwords that differ', async () => {
+    expect(await createAuth(fake()).register({ ...input, confirm: 'other' }, null)).toMatchObject({ next: null });
+  });
+
+  it('says whether the signed-in account still has to register', async () => {
+    const cloud = fake();
+
+    const answer = (registered_at: string | null) => {
+      return () => {
+        return {
+          select: () => {
+            return {
+              maybeSingle: () => {
+                return Promise.resolve({ data: { registered_at }, error: null });
+              },
+            };
+          },
+        };
+      };
+    };
+
+    cloud.from = vi.fn(answer(null)) as never;
+    expect(await createAuth(cloud).needsRegistration()).toBe(true);
+
+    cloud.from = vi.fn(answer('2026-10-24T00:00:00Z')) as never;
+    expect(await createAuth(cloud).needsRegistration()).toBe(false);
+  });
+});
+
+describe('Google sign-in through the system browser', () => {
+  it('asks Supabase for the sign-in address with the site return page, and opens it in the browser', async () => {
+    const cloud = fake();
+    const open = vi.fn(() => {
+      return Promise.resolve();
+    });
+
+    expect(await createGoogle(cloud, 'https://cadence.example', open).start()).toEqual({ error: null });
+    expect(cloud.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: { redirectTo: 'https://cadence.example/auth/desktop', skipBrowserRedirect: true },
+    });
+    expect(open).toHaveBeenCalledWith('https://accounts.example/auth');
+  });
+
+  it('says why when it cannot start', async () => {
+    const cloud = fake();
+
+    cloud.auth.signInWithOAuth.mockResolvedValue({ data: {}, error: { message: 'nope' } });
+
+    expect(await createGoogle(cloud, 'https://cadence.example', vi.fn()).start()).toMatchObject({
+      error: expect.any(String),
+    });
+  });
+
+  it('finishes with the code from the link, and says where to go (the register screen for a new account)', async () => {
+    const cloud = fake();
+    const google = createGoogle(cloud, 'https://cadence.example', vi.fn());
+
+    cloud.from = vi.fn(() => {
+      return {
+        select: () => {
+          return {
+            maybeSingle: () => {
+              return Promise.resolve({ data: { registered_at: null }, error: null });
+            },
+          };
+        },
+      };
+    }) as never;
+
+    expect(await google.finish('cadence://auth?code=abc123')).toEqual({ next: '/register', error: null });
+    expect(cloud.auth.exchangeCodeForSession).toHaveBeenCalledWith('abc123');
+  });
+
+  it('ignores a link that is not a sign-in, and reports a refused one', async () => {
+    const cloud = fake();
+    const google = createGoogle(cloud, 'https://cadence.example', vi.fn());
+
+    expect(await google.finish('cadence://other')).toBeNull();
+    expect(await google.finish('cadence://auth?error=access_denied')).toMatchObject({
+      next: null,
+      error: expect.any(String),
+    });
+    expect(cloud.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+
+    cloud.auth.exchangeCodeForSession.mockResolvedValue({ error: { message: 'bad' } });
+
+    expect(await google.finish('cadence://auth?code=abc123')).toMatchObject({ next: null, error: expect.any(String) });
   });
 });

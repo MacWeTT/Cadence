@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { signInInputSchema, signUpInputSchema } from '@/lib/auth-schema';
+import { registerInputSchema, signInInputSchema, signUpInputSchema } from '@/lib/auth-schema';
 import { msg, translateMsg, type MessageKey } from '@/lib/message';
 import { safeNext } from '@/lib/next-path';
 import type { Database } from '@/lib/supabase/database.types';
@@ -132,6 +132,73 @@ export const createAuth = (cloud: Cloud) => {
     return { next: safeNext(next), error: null };
   };
 
+  /** Finishes the register screen: the tag first (a taken one is refused before anything changes), then the password. */
+  const register = async (input: unknown, next: string | null): Promise<AuthResult> => {
+    const { success, data, error } = registerInputSchema.safeParse(input);
+
+    if (!success) {
+      return words(error.issues[0].message);
+    }
+
+    const { tag, password } = data;
+    const { auth } = cloud;
+
+    try {
+      const { data: free, error: freeError } = await cloud.rpc('tag_available', { p_tag: tag });
+
+      if (freeError) {
+        throw freeError;
+      }
+
+      if (!free) {
+        throw new Refused('tagTaken');
+      }
+
+      const { error: passwordError } = await auth.updateUser({ password });
+
+      if (passwordError) {
+        throw new Refused(passwordError.code === 'same_password' ? 'passwordSame' : 'passwordRejected');
+      }
+
+      const { data: user } = await auth.getUser();
+      const { error: saveError } = await cloud
+        .from('profiles')
+        .update({ tag, registered_at: new Date().toISOString(), password_set: true })
+        .eq('user_id', user.user?.id ?? '');
+
+      if (saveError) {
+        throw saveError.code === '23505' ? new Refused('tagTaken') : saveError;
+      }
+    } catch (e) {
+      return refuse(e);
+    }
+
+    return { next: safeNext(next), error: null };
+  };
+
+  /** True for an account that has not been through the register screen yet (a first Google sign-in). */
+  const needsRegistration = async (): Promise<boolean> => {
+    const { data } = await cloud.from('profiles').select('registered_at').maybeSingle();
+
+    return data !== null && data.registered_at === null;
+  };
+
+  /** What the register screen shows: the account's email and its default tag, and whether it has registered already. */
+  const registration = async (): Promise<{ email: string; tag: string; registered: boolean } | null> => {
+    const [user, { data }] = await Promise.all([
+      currentUser(),
+      cloud.from('profiles').select('tag, registered_at').maybeSingle(),
+    ]);
+
+    if (!user || !data) {
+      return null;
+    }
+
+    const { tag, registered_at } = data;
+
+    return { email: user.email, tag, registered: registered_at !== null };
+  };
+
   const sessionOf = () => {
     const { auth } = cloud;
 
@@ -160,5 +227,5 @@ export const createAuth = (cloud: Cloud) => {
     await sessionOf().signOut();
   };
 
-  return { signIn, signUp, currentUser, signOut };
+  return { signIn, signUp, register, needsRegistration, registration, currentUser, signOut };
 };

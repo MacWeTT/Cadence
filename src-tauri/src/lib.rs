@@ -1,10 +1,19 @@
 use tauri::Manager;
+use tauri_plugin_deep_link::DeepLinkExt;
 
 mod db;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
+    // Must come first: a second launch (the `cadence://` link back from the browser) hands over to the running app.
+    .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+      if let Some(window) = app.get_webview_window("main") {
+        let _ = window.set_focus();
+      }
+    }))
+    .plugin(tauri_plugin_deep_link::init())
+    .plugin(tauri_plugin_opener::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -13,6 +22,10 @@ pub fn run() {
             .build(),
         )?;
       }
+
+      // A development run is not installed, so it registers the link itself; an installed app has it from its installer.
+      #[cfg(any(windows, target_os = "linux"))]
+      app.deep_link().register_all()?;
 
       app.manage(db::open(app.handle())?);
 

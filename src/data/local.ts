@@ -1,7 +1,9 @@
 import { createChanges } from '@/data/local/changes';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { createAuth, type SignedInUser } from '@/data/local/auth';
 import { createAccountChanges, exportFile } from '@/data/local/backup';
 import { cloud } from '@/data/local/cloud';
+import { createGoogle } from '@/data/local/google';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
 import { createProfileChanges } from '@/data/local/profile-changes';
@@ -43,9 +45,21 @@ const sql: Sql = {
 export interface DesktopExtras {
   exportFile: (format: 'json' | 'csv') => ReturnType<typeof exportFile>;
   currentUser: () => Promise<SignedInUser | null>;
+  /** What the register screen shows, or `null` when nobody is signed in. */
+  registration: () => Promise<{ email: string; tag: string; registered: boolean } | null>;
+  /** Google sign-in through the system browser: open it, then finish from the `cadence://` link it comes back with. */
+  startGoogle: () => Promise<{ error: string | null }>;
+  finishGoogle: (link: string) => Promise<{ next: string | null; error: string | null } | null>;
 }
 
-const { signIn, signUp, signOut, currentUser } = createAuth(cloud);
+const { signIn, signUp, register, registration, signOut, currentUser } = createAuth(cloud);
+
+// The site that hosts `/auth/desktop`, the page Google comes back to (it must be an allowed redirect in Supabase).
+const { start: startGoogle, finish: finishGoogle } = createGoogle(
+  cloud,
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  openUrl,
+);
 
 export const local: DataSource & DesktopExtras = {
   ...createReads(sql),
@@ -55,8 +69,12 @@ export const local: DataSource & DesktopExtras = {
   ...createAccountChanges(sql),
   signIn,
   signUp,
+  register,
   signOut,
   currentUser,
+  registration,
+  startGoogle,
+  finishGoogle,
   exportFile: format => {
     return exportFile(sql, format);
   },
@@ -64,5 +82,4 @@ export const local: DataSource & DesktopExtras = {
     return syncTimezone(sql, deviceTimeZone);
   },
   sendContact: notBuilt,
-  register: notBuilt,
 };
