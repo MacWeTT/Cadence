@@ -37,8 +37,16 @@ describe('the local file and the server keep the same columns', () => {
       );
       const server = serverColumns(table);
 
-      expect(server.filter(c => !local.includes(c) && !serverOnly.includes(c))).toEqual([]);
-      expect(local.filter(c => !server.includes(c) && !localOnly.includes(c))).toEqual([]);
+      expect(
+        server.filter(c => {
+          return !local.includes(c) && !serverOnly.includes(c);
+        }),
+      ).toEqual([]);
+      expect(
+        local.filter(c => {
+          return !server.includes(c) && !localOnly.includes(c);
+        }),
+      ).toEqual([]);
     });
   }
 });
