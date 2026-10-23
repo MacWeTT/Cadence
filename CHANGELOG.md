@@ -10,7 +10,9 @@ This file is shown on the app's What's new page, so it is for people using Caden
 - Sign in with GitHub, and link Google or GitHub to your account so you never lose it.
 - Reminders: push notifications in your browser.
 - A desktop app, with native notifications and an option to start on login.
-- Circles: something big is on the way, and it brings an XP system along with it. Stay tuned!
+- Circles: small, private groups of close friends or classmates. Nothing is shared until you choose, and then only as much of each habit as you like. See friends showing up as a conversation, react with an emoji, and give each circle a colour or pin it to the top.
+- Partners: a circle for just two of you. Turn on Closer together to see each other's off days, for the habits each of you chooses, and see your week side by side.
+- XP: points for showing up, coming after Circles.
 
 ## Known issues
 
