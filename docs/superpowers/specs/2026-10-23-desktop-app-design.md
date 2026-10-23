@@ -30,6 +30,19 @@ Today the screens read through `fetchJson('/api/...')` and change data through S
 
 The existing e2e specs are the proof that the web app did not change.
 
+**How it is built.** `src/data/` has the `DataSource` interface (`types.ts`), the web implementation (`remote.ts`, today's `fetch` and Server Actions) and `index.ts`, the one module the screens import (`dataSource`). The desktop build points `@/data` at a `local` implementation with a bundler alias (Turbopack `resolveAlias`), not a runtime switch, so the desktop bundle never contains Server Action or server-only code. Circles stays outside the seam: it needs the server, so it is left out of the desktop build.
+
+**Spike result** (a throwaway static export of the app): it compiles; the things that stop a desktop build are the route handlers, the manifest route, `cacheComponents` and `partialPrefetching`, Circles' pages (dynamic routes, and `instant`), and above all Server Actions. Sizing: 7 reads (8 call sites) and 31 actions in 10 files; only 2 server components read the session (`UserMenu`, `RegisterContent`).
+
+**Task list for the seam**, one PR each, none changing the web app's behaviour, each run against the existing e2e specs locally:
+
+- [x] **Reads:** habits, home, today, progress, profile, account, focus.
+- [ ] **Habits and Today:** create, edit, archive, restore, delete, check in (`habits/actions.ts`, `today/actions.ts`).
+- [ ] **Focus:** start, stop, skip, pause, resume, discard (`focus-actions.ts`).
+- [ ] **Profile and account:** the eleven profile edits, and export, import and delete (`profile/actions.ts`, `profile/account/actions.ts`).
+- [ ] **Everything else:** timezone sync, contact, sign in, sign up, register, sign out.
+- [ ] **The desktop build flag:** the alias, the settings that differ, and leaving the server-only routes and pages out.
+
 ## The local database
 
 - Tables mirror the server's: habits, habit schedules, completions, archive periods, focus sessions, and the profile's settings (tag, timezone, week start, sound, accent). Ids are UUIDs made on the device, so offline creation never clashes.

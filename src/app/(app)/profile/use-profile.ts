@@ -26,7 +26,7 @@ import {
   withWeekStart,
 } from '@/lib/profile-optimistic';
 import type { AvatarInput } from '@/lib/profile-schema';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import { normaliseTag } from '@/lib/tag';
 import { zoneLabel } from '@/lib/zones';
@@ -37,7 +37,7 @@ export const useProfile = () => {
   return useQuery({
     queryKey: queryKeys.profile,
     queryFn: () => {
-      return fetchJson<ProfileView>('/api/profile');
+      return dataSource.profile();
     },
   });
 };
