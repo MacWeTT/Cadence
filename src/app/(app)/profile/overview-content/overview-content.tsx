@@ -3,7 +3,7 @@
 import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { signOut } from '@/app/auth/actions';
+import { dataSource } from '@/data';
 import { AvatarModal } from '@/app/(app)/profile/avatar-modal/avatar-modal';
 import { NameModal } from '@/app/(app)/profile/name-modal/name-modal';
 import { TagModal } from '@/app/(app)/profile/tag-modal/tag-modal';
@@ -115,7 +115,7 @@ export const OverviewContent = () => {
         </SettingRow>
       </div>
 
-      <form action={signOut} className="overview-content__sign-out">
+      <form action={dataSource.signOut} className="overview-content__sign-out">
         <Button type="submit" variant="destructive">
           <LogOut aria-hidden />
           {ta('signOut')}

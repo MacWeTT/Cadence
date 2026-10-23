@@ -5,6 +5,11 @@ import {
   restoreHabitAction,
   updateHabitAction,
 } from '@/app/(app)/habits/actions';
+import { sendContactAction } from '@/app/(app)/contact/actions';
+import { syncTimezoneAction } from '@/app/(app)/timezone-actions';
+import { signInAction, signUpAction } from '@/app/(auth)/login/actions';
+import { registerAction } from '@/app/(auth)/register/actions';
+import { signOut } from '@/app/auth/actions';
 import {
   removeSoundAction,
   setPasswordAction,
@@ -136,5 +141,23 @@ export const remote: DataSource = {
   },
   deleteAccount: email => {
     return deleteAccountAction(email);
+  },
+  syncTimezone: browserTimeZone => {
+    return syncTimezoneAction(browserTimeZone);
+  },
+  sendContact: input => {
+    return sendContactAction(input);
+  },
+  signIn: (input, next) => {
+    return signInAction(input, next);
+  },
+  signUp: (input, next) => {
+    return signUpAction(input, next);
+  },
+  register: (input, next) => {
+    return registerAction(input, next);
+  },
+  signOut: () => {
+    return signOut();
   },
 };

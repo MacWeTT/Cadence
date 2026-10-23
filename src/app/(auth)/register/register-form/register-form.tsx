@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { registerAction } from '@/app/(auth)/register/actions';
+import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,7 +55,7 @@ export const RegisterForm = (props: RegisterFormProps) => {
     event.preventDefault();
     setForm({ ...form, saving: true, error: null });
 
-    const { next: goTo, error: refusal } = await registerAction({ tag: draftTag, password, confirm }, next);
+    const { next: goTo, error: refusal } = await dataSource.register({ tag: draftTag, password, confirm }, next);
 
     if (goTo) {
       router.replace(goTo);

@@ -1,9 +1,10 @@
 import 'server-only';
 import { getTranslations } from 'next-intl/server';
+import type { AuthResult } from '@/data/types';
 import { ProfileError } from '@/server/profile-storage';
 
 /** What the register, sign-in and create-account forms hear back: where to go on to, or the message to show. */
-export type AuthResult = { next: string | null; error: string | null };
+export type { AuthResult };
 
 /** A refusal in words: a code the server threw (shown as its message), or the generic one for anything else. */
 export const failure = async (error: unknown): Promise<AuthResult> => {

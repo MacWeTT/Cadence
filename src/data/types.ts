@@ -16,6 +16,12 @@ export type ProfileActionResult = { ok: true; id?: string } | { ok: false; error
 /** What an account change answers: it worked (an import says how much it brought in), or why not. */
 export type AccountActionResult = { ok: true; summary?: BackupSummary } | { ok: false; error: string };
 
+/** What the contact form hears back: it was sent, or why not (and which fields). */
+export type ContactResult = { ok: true } | { ok: false; error: string; fieldErrors?: Record<string, string> };
+
+/** What the register, sign-in and create-account forms hear back: where to go on to, or the message to show. */
+export type AuthResult = { next: string | null; error: string | null };
+
 /** What a focus change answers: what a stopped session left behind (for "I did it"), or why not. */
 export type FocusActionResult = { ok: true; result: FocusResult | null } | { ok: false; error: string };
 
@@ -72,4 +78,14 @@ export interface DataSource {
   importBackup: (form: FormData) => Promise<AccountActionResult>;
   /** Deletes the account and everything in it, after the person has typed their email address. */
   deleteAccount: (email: unknown) => Promise<AccountActionResult>;
+
+  /** Offers the browser's timezone to the account (it is only saved over the UTC default); true when it was saved. */
+  syncTimezone: (browserTimeZone: string) => Promise<boolean>;
+  sendContact: (input: unknown) => Promise<ContactResult>;
+
+  /** Signing in and out, and the first account steps. `next` is where to go afterwards; it is checked again. */
+  signIn: (input: unknown, next: string | null) => Promise<AuthResult>;
+  signUp: (input: unknown, next: string | null) => Promise<AuthResult>;
+  register: (input: unknown, next: string | null) => Promise<AuthResult>;
+  signOut: () => Promise<void>;
 }

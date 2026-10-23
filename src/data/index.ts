@@ -4,6 +4,8 @@ export { remote as dataSource } from '@/data/remote';
 export type {
   AccountActionResult,
   ActionResult,
+  AuthResult,
+  ContactResult,
   DataSource,
   FocusActionResult,
   ProfileActionResult,

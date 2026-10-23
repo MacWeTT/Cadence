@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { syncTimezoneAction } from '@/app/(app)/timezone-actions';
+import { dataSource } from '@/data';
 import { whenVisible } from '@/lib/when-visible';
 
 const FLAG = 'timezone-synced';
@@ -23,7 +23,8 @@ export const TimezoneSync = () => {
       return; // storage unavailable (private mode): skip rather than retry on every page
     }
 
-    syncTimezoneAction(Intl.DateTimeFormat().resolvedOptions().timeZone)
+    dataSource
+      .syncTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)
       .then(saved => {
         // Set the flag only after the server answered, so a failed attempt is retried.
         try {
