@@ -2,7 +2,18 @@
 // be unit-tested. The database decides what a friend may see; this layer also cuts every fact above the habit's level,
 // so a screen can never show more than the level allows, even if a payload carried more.
 import { z } from 'zod';
-import { CIRCLE_COLORS, REACTIONS, reveal, type CircleColor, type Level, type Reaction } from '@/domain/circles';
+import {
+  CIRCLE_COLORS,
+  MISS_DAYS,
+  REACTIONS,
+  isCircleColor,
+  reveal,
+  type CircleColor,
+  type CircleKind,
+  type Level,
+  type Reaction,
+} from '@/domain/circles';
+import { missedDays } from '@/domain/circle-misses';
 import { isCalendarDate, type CalendarDate } from '@/domain/dates';
 import { weekProgress, type WeekProgress } from '@/domain/listing';
 import { currentStreak, type Streak } from '@/domain/streaks';
@@ -30,6 +41,8 @@ const habitSchema = z.object({
   icon: z.string().nullable(),
   level: z.enum(['done_today', 'streaks', 'everything']),
   done: z.boolean(),
+  /** The partner may be shown this habit's off days (a pair, Closer on for both, the owner's tick, Everything). */
+  shows_misses: z.boolean(),
   data: dataSchema.optional(),
 });
 
@@ -44,6 +57,7 @@ const memberSchema = z.object({
   week_starts_on: z.union([z.literal(1), z.literal(7)]),
   allow_cheers: z.boolean(),
   in_week: z.boolean(),
+  closer: z.boolean(),
   avatar_kind: z.enum(['google', 'character', 'emoji', 'initial']),
   avatar_value: z.string().nullable(),
   avatar_color: z.string().nullable(),
@@ -63,6 +77,8 @@ const overviewSchema = z.object({
     week_ticks: z.number(),
     color: z.enum(CIRCLE_COLORS),
     pinned: z.boolean(),
+    kind: z.enum(['group', 'pair']),
+    closer_active: z.boolean(),
   }),
   members: z.array(memberSchema),
 });
@@ -77,6 +93,10 @@ export interface SharedHabitView {
   /** Null when the owner shows "a habit". */
   icon: string | null;
   level: Exclude<Level, 'hidden' | 'showed_up'>;
+  /** The partner may see this habit's off days. Always false outside a pair with Closer on. */
+  showsMisses: boolean;
+  /** The off days, only when `showsMisses`; otherwise null, and no screen works one out. */
+  missed: CalendarDate[] | null;
   /** Done on the owner's today. */
   done: boolean;
   /** At Streaks and Everything, and only above zero. */
@@ -106,6 +126,8 @@ export interface CircleMemberView {
   today: CalendarDate;
   /** Whether their week counts towards the circle's. */
   inWeek: boolean;
+  /** Their own Closer switch (pairs). */
+  closer: boolean;
   avatar: AvatarView;
   allowCheers: boolean;
   showedUpWeek: boolean;
@@ -128,6 +150,10 @@ export interface CircleListItem {
   /** The person's own colour for it, and whether they pinned it. */
   color: CircleColor;
   pinned: boolean;
+  kind: CircleKind;
+  /** For a pair: the partner, once there is one. */
+  partnerName: string | null;
+  partnerTag: string | null;
 }
 
 export interface CircleView {
@@ -136,6 +162,9 @@ export interface CircleView {
   /** The viewer's own colour for the circle, and whether they pinned it. */
   color: CircleColor;
   pinned: boolean;
+  kind: CircleKind;
+  /** A pair whose two people have both turned Closer on. */
+  closerActive: boolean;
   isOwner: boolean;
   /** This week's check-ins across the circle: one number, never per person. */
   weekTicks: number;
@@ -149,9 +178,9 @@ const habitDataOf = (data: z.infer<typeof dataSchema>): HabitData => {
 };
 
 /** A shared habit as the screens see it. The streak and week are worked out here, with the owner's own day and week. */
-const toSharedHabit = (habit: HabitPayload, member: MemberPayload): SharedHabitView => {
-  const { name, icon, level, done, data } = habit;
-  const view: SharedHabitView = { name, icon, level, done, streak: null, week: null };
+const toSharedHabit = (habit: HabitPayload, member: MemberPayload, pair: boolean): SharedHabitView => {
+  const { name, icon, level, done, data, shows_misses } = habit;
+  const view: SharedHabitView = { name, icon, level, done, showsMisses: false, missed: null, streak: null, week: null };
   const { streak: showsStreak, history: showsHistory } = reveal(level);
 
   if (!data || !showsStreak) {
@@ -170,12 +199,19 @@ const toSharedHabit = (habit: HabitPayload, member: MemberPayload): SharedHabitV
     view.ticks = [...data.completions].sort();
   }
 
+  // Off days: only for a partner, with Closer on for both, for a habit the owner ticked at Everything. The database says
+  // so with `shows_misses`; the circle's own state and the level are checked again here, so nothing slips through.
+  if (pair && shows_misses && level === 'everything') {
+    view.showsMisses = true;
+    view.missed = missedDays(habitData, ctx, MISS_DAYS);
+  }
+
   return view;
 };
 
-const toMember = (member: MemberPayload): CircleMemberView => {
+const toMember = (member: MemberPayload, pair: boolean): CircleMemberView => {
   const { user_id, tag, display_name, is_you, is_owner, paused, allow_cheers, showed_up_week, habits } = member;
-  const { cheers_today, today, in_week, reactions } = member;
+  const { cheers_today, today, in_week, reactions, closer } = member;
   const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
 
   return {
@@ -187,11 +223,12 @@ const toMember = (member: MemberPayload): CircleMemberView => {
     paused,
     today,
     inWeek: in_week,
+    closer,
     avatar: { kind: avatar_kind, value: avatar_value, color: avatar_color, url: avatar_url },
     allowCheers: allow_cheers,
     showedUpWeek: showed_up_week,
     habits: habits.map(habit => {
-      return toSharedHabit(habit, member);
+      return toSharedHabit(habit, member, pair);
     }),
     reactions: reactions.map(({ user_id, tag: reactionTag, date, emoji }) => {
       return { userId: user_id, tag: reactionTag, date, emoji };
@@ -207,13 +244,27 @@ const toMember = (member: MemberPayload): CircleMemberView => {
 /** Reads `circle_overview`'s answer. Throws when it is not the shape the database promises. */
 export const toCircleView = (payload: unknown): CircleView => {
   const { circle, members } = overviewSchema.parse(payload);
-  const { id, name, is_owner, week_ticks, color, pinned } = circle;
+  const { id, name, is_owner, week_ticks, color, pinned, kind, closer_active } = circle;
+  const pair = kind === 'pair' && closer_active;
 
-  return { id, name, color, pinned, isOwner: is_owner, weekTicks: week_ticks, members: members.map(toMember) };
+  return {
+    id,
+    name,
+    color,
+    pinned,
+    kind,
+    closerActive: closer_active,
+    isOwner: is_owner,
+    weekTicks: week_ticks,
+    members: members.map(member => {
+      return toMember(member, pair);
+    }),
+  };
 };
 
 const previewSchema = z.object({
   name: z.string(),
+  kind: z.enum(['group', 'pair']),
   full: z.boolean(),
   members: z.array(z.object({ tag: z.string(), display_name: z.string().nullable() })),
 });
@@ -224,4 +275,31 @@ export type InvitePreview = z.infer<typeof previewSchema>;
 /** Reads `circle_invite_preview`'s answer. Throws when it is not the shape the database promises. */
 export const parseInvitePreview = (payload: unknown): InvitePreview => {
   return previewSchema.parse(payload);
+};
+
+/** One row of `my_circles`, as the list shows it. A colour or kind this code does not know is read as the safest one. */
+export const toCircleListItem = (row: {
+  id: string;
+  name: string;
+  is_owner: boolean;
+  member_count: number;
+  color: string;
+  pinned: boolean;
+  kind: string;
+  partner_name: string | null;
+  partner_tag: string | null;
+}): CircleListItem => {
+  const { id, name, is_owner, member_count, color, pinned, kind, partner_name, partner_tag } = row;
+
+  return {
+    id,
+    name,
+    isOwner: is_owner,
+    memberCount: member_count,
+    color: isCircleColor(color) ? color : 'moss',
+    pinned,
+    kind: kind === 'pair' ? 'pair' : 'group',
+    partnerName: partner_name,
+    partnerTag: partner_tag,
+  };
 };

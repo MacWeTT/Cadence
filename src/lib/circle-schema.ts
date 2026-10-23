@@ -53,3 +53,7 @@ export const reactInput = z.object({
   emoji: z.enum(REACTIONS),
   on: z.boolean(),
 });
+
+export const closerInput = z.object({ circleId: z.uuid(), on: z.boolean() });
+
+export const missesInput = z.object({ habitId: z.uuid(), circleId: z.uuid(), on: z.boolean() });

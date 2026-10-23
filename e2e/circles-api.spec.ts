@@ -113,7 +113,13 @@ test('a friend shows only what they chose to share, and nothing about what was m
     expect(body, String(hidden)).not.toContain(hidden);
   }
 
-  expect(body.toLowerCase()).not.toContain('missed');
+  // In an ordinary circle no habit carries an off day: the field is always empty, and nothing else says "missed".
+  expect(body.toLowerCase().replaceAll('"missed":null', '')).not.toContain('missed');
+  expect(
+    sam.habits.every((habit: { showsMisses: boolean; missed: unknown }) => {
+      return habit.showsMisses === false && habit.missed === null;
+    }),
+  ).toBe(true);
 });
 
 test('Streaks gives the streak and not the dates; Everything gives the dates too', async ({ request }) => {

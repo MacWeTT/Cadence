@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { withOverride, withPaused, withShare } from '@/lib/circle-sharing-optimistic';
+import { withMisses, withOverride, withPaused, withShare } from '@/lib/circle-sharing-optimistic';
 import type { SharingView } from '@/server/circle-sharing-view';
 
 const READ = '10000000-0000-4000-8000-000000000001';
@@ -11,13 +11,14 @@ const view = (): SharingView => {
   return {
     paused: false,
     habits: [
-      { id: READ, name: 'Read', icon: '📖', level: 'hidden', label: 'name', overrides: [] },
+      { id: READ, name: 'Read', icon: '📖', level: 'hidden', label: 'name', showsMisses: false, overrides: [] },
       {
         id: WALK,
         name: 'Walk',
         icon: '🚶',
         level: 'done_today',
         label: 'emoji',
+        showsMisses: true,
         overrides: [{ viewerId: SAM, level: 'hidden', label: 'generic' }],
       },
     ],
@@ -85,5 +86,25 @@ describe('withPaused', () => {
     expect(next.paused).toBe(true);
     expect(next.habits).toEqual(view().habits);
     expect(withPaused(next, false).paused).toBe(false);
+  });
+});
+
+describe('withMisses', () => {
+  it('sets the choice to show off days on that habit only', () => {
+    const next = withMisses(view(), READ, true);
+
+    expect(next.habits[0].showsMisses).toBe(true);
+    expect(next.habits[1].showsMisses).toBe(true);
+    expect(withMisses(next, READ, false).habits[0].showsMisses).toBe(false);
+  });
+});
+
+describe('withShare and off days', () => {
+  it('clears the choice when a habit is lowered below Everything, as the database does', () => {
+    const everything = withShare(view(), WALK, 'everything');
+
+    expect(everything.habits[1].showsMisses).toBe(true);
+    expect(withShare(everything, WALK, 'streaks').habits[1].showsMisses).toBe(false);
+    expect(withShare(everything, WALK, 'hidden').habits[1].showsMisses).toBe(false);
   });
 });

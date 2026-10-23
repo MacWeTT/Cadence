@@ -14,6 +14,8 @@ export interface SharedByMeView {
   icon: string;
   level: Level;
   label: Label;
+  /** For a pair: show this partner my off days for it (only meaningful at Everything). */
+  showsMisses: boolean;
   overrides: ShareOverrideView[];
 }
 
@@ -33,6 +35,7 @@ interface ShareRow {
   habit_id: string;
   level: string;
   label: string;
+  shows_misses: boolean;
 }
 
 interface OverrideRow {
@@ -65,16 +68,22 @@ export const toSharingView = (
   return {
     paused,
     habits: habits.map(({ id, name, icon }) => {
-      const { level: shareLevel, label: shareLabel } = shares.find(row => {
+      const {
+        level: shareLevel,
+        label: shareLabel,
+        shows_misses,
+      } = shares.find(row => {
         return row.habit_id === id;
-      }) ?? { level: 'hidden', label: 'name' };
+      }) ?? { level: 'hidden', label: 'name', shows_misses: false };
+      const level = levelOf(shareLevel);
 
       return {
         id,
         name,
         icon,
-        level: levelOf(shareLevel),
+        level,
         label: labelOf(shareLabel, 'name'),
+        showsMisses: shows_misses && level === 'everything',
         overrides: overrides
           .filter(row => {
             return row.habit_id === id;

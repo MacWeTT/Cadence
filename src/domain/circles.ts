@@ -24,6 +24,9 @@ export const REACTION_DAYS = 6;
 export const CIRCLE_COLORS = ['moss', 'clay', 'ochre', 'rose', 'plum', 'teal', 'sky', 'slate'] as const;
 export type CircleColor = (typeof CIRCLE_COLORS)[number];
 
+/** A circle is a group of two to eight people, or a pair: two people who chose each other. */
+export type CircleKind = 'group' | 'pair';
+
 export const CIRCLE_LIMITS = { maxMembers: 8, pairMembers: 2, maxCircles: 10, inviteDays: 7, nameMax: 60 } as const;
 
 /** How many days back a partner can be shown off days (see `missedDays`). */

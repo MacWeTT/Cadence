@@ -1,18 +1,12 @@
 import 'server-only';
 import { connection } from 'next/server';
-import {
-  circleNameProblem,
-  isCircleColor,
-  type CircleColor,
-  type Label,
-  type Level,
-  type Reaction,
-} from '@/domain/circles';
+import { circleNameProblem, type CircleColor, type Label, type Level, type Reaction } from '@/domain/circles';
 import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
 import { circleErrorCode } from '@/server/circle-errors';
 import { toSharingView, type SharingView } from '@/server/circle-sharing-view';
 import {
   parseInvitePreview,
+  toCircleListItem,
   toCircleView,
   type CircleListItem,
   type CircleView,
@@ -42,19 +36,12 @@ const need = <T>(result: { data: T; error: { message: string } | null }): NonNul
   return data;
 };
 
-/** A colour the database holds that this code does not know is shown as the first one. */
-const toColor = (value: string): CircleColor => {
-  return isCircleColor(value) ? value : 'moss';
-};
-
 export const listCircles = async (): Promise<CircleListItem[]> => {
   await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
   const supabase = await createSupabaseServerClient();
   const rows = need(await supabase.rpc('my_circles'));
 
-  return rows.map(({ id, name, is_owner, member_count, color, pinned }) => {
-    return { id, name, isOwner: is_owner, memberCount: member_count, color: toColor(color), pinned };
-  });
+  return rows.map(toCircleListItem);
 };
 
 /** A circle as the caller may see it. Throws `notAMember` when they are not in it. */
@@ -82,7 +69,7 @@ export const getSharing = async (circleId: string): Promise<SharingView> => {
 
   const [habits, shares, overrides, profile] = await Promise.all([
     supabase.from('habits').select('id, name, icon').is('archived_at', null).order('created_at'),
-    supabase.from('habit_shares').select('habit_id, level, label').eq('circle_id', circleId),
+    supabase.from('habit_shares').select('habit_id, level, label, shows_misses').eq('circle_id', circleId),
     supabase.from('habit_share_overrides').select('habit_id, viewer_id, level, label').eq('circle_id', circleId),
     supabase.from('profiles').select('circles_paused').eq('user_id', user.id).single(),
   ]);
@@ -189,6 +176,27 @@ export const setCirclesPaused = async (paused: boolean): Promise<void> => {
   const supabase = await createSupabaseServerClient();
 
   check(await supabase.from('profiles').update({ circles_paused: paused }).eq('user_id', user.id));
+};
+
+/** A pair: a circle for two. The invite link is made as for any circle. */
+export const createPair = async (): Promise<string> => {
+  const supabase = await createSupabaseServerClient();
+
+  return need(await supabase.rpc('create_pair'));
+};
+
+/** Your own Closer switch for a pair. It is on for both only when both have turned it on. */
+export const setCloser = async (circleId: string, on: boolean): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+
+  check(await supabase.rpc('set_closer', { p_circle: circleId, p_on: on }));
+};
+
+/** Whether this partner is shown a habit's off days (a habit shared at Everything in a pair). */
+export const setShareMisses = async (habitId: string, circleId: string, on: boolean): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+
+  check(await supabase.rpc('set_share_misses', { p_habit: habitId, p_circle: circleId, p_on: on }));
 };
 
 /** Your own colour for a circle, and whether it is pinned to the top of your list. Friends never see either. */

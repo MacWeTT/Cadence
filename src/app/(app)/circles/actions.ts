@@ -5,9 +5,11 @@ import { z } from 'zod';
 import {
   cheerInput,
   circleIdInput,
+  closerInput,
   inviteTokenInput,
   overrideInput,
   lookInput,
+  missesInput,
   prefsInput,
   reactInput,
   shareInput,
@@ -16,6 +18,7 @@ import { getUser } from '@/lib/supabase/server';
 import {
   createCircle,
   createInvite,
+  createPair,
   deleteCircle,
   joinCircle,
   leaveCircle,
@@ -23,6 +26,8 @@ import {
   removeMember,
   sendCheer,
   setCircleLook,
+  setCloser,
+  setShareMisses,
   setCirclePrefs,
   setCirclesPaused,
   setShare,
@@ -258,6 +263,45 @@ export const reactAction = async (input: unknown): Promise<CircleActionResult> =
 
   return run(async () => {
     await reactTo(circleId, toUser, forDate, emoji, on);
+
+    return null;
+  });
+};
+
+/** Starts a pair, which is a circle for two. Returns its id. */
+export const createPairAction = async (): Promise<CircleActionResult<string>> => {
+  return run(createPair);
+};
+
+/** Your own Closer switch for a pair. */
+export const setCloserAction = async (input: unknown): Promise<CircleActionResult> => {
+  const { success, data } = closerInput.safeParse(input);
+
+  if (!success) {
+    return fail('generic');
+  }
+
+  const { circleId, on } = data;
+
+  return run(async () => {
+    await setCloser(circleId, on);
+
+    return null;
+  });
+};
+
+/** Whether a partner is shown a habit's off days. */
+export const setShareMissesAction = async (input: unknown): Promise<CircleActionResult> => {
+  const { success, data } = missesInput.safeParse(input);
+
+  if (!success) {
+    return fail('generic');
+  }
+
+  const { habitId, circleId, on } = data;
+
+  return run(async () => {
+    await setShareMisses(habitId, circleId, on);
 
     return null;
   });

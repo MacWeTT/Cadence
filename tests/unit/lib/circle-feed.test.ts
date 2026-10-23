@@ -8,7 +8,17 @@ const KIM = '00000000-0000-4000-8000-0000000000c3';
 const TODAY = '2026-10-14';
 
 const habit = (over: Partial<SharedHabitView> = {}): SharedHabitView => {
-  return { name: 'Walk', icon: '🚶', level: 'done_today', done: true, streak: null, week: null, ...over };
+  return {
+    name: 'Walk',
+    icon: '🚶',
+    level: 'done_today',
+    done: true,
+    streak: null,
+    week: null,
+    showsMisses: false,
+    missed: null,
+    ...over,
+  };
 };
 
 const member = (over: Partial<CircleMemberView>): CircleMemberView => {
@@ -21,6 +31,7 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     paused: false,
     today: TODAY,
     inWeek: true,
+    closer: false,
     avatar: { kind: 'initial', value: null, color: null, url: null },
     allowCheers: true,
     showedUpWeek: true,

@@ -14,7 +14,10 @@ const mapHabit = (view: SharingView, habitId: string, change: (habit: SharedByMe
 /** The screen's guess at the result of `set_share`, shown before the server answers. */
 export const withShare = (view: SharingView, habitId: string, level: Level, label?: Label): SharingView => {
   return mapHabit(view, habitId, habit => {
-    return { ...habit, level, label: label ?? habit.label };
+    const { label: current, showsMisses } = habit;
+
+    // Lowering a habit below Everything takes back the choice to show off days, as the database does.
+    return { ...habit, level, label: label ?? current, showsMisses: level === 'everything' && showsMisses };
   });
 };
 
@@ -45,4 +48,11 @@ export const withOverride = (
 
 export const withPaused = (view: SharingView, paused: boolean): SharingView => {
   return { ...view, paused };
+};
+
+/** The guess at `set_share_misses`: whether this partner is shown the habit's off days. */
+export const withMisses = (view: SharingView, habitId: string, on: boolean): SharingView => {
+  return mapHabit(view, habitId, habit => {
+    return { ...habit, showsMisses: on };
+  });
 };
