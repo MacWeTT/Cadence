@@ -3,6 +3,7 @@ import { connection } from 'next/server';
 import { circleNameProblem, type Label, type Level } from '@/domain/circles';
 import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
 import { circleErrorCode } from '@/server/circle-errors';
+import { toSharingView, type SharingView } from '@/server/circle-sharing-view';
 import {
   parseInvitePreview,
   toCircleView,
@@ -50,6 +51,31 @@ export const getCircle = async (circleId: string): Promise<CircleView> => {
   const supabase = await createSupabaseServerClient();
 
   return toCircleView(need(await supabase.rpc('circle_overview', { p_circle: circleId })));
+};
+
+/** What I share with one circle: my habits, their levels, the per-person overrides, and the pause switch. */
+export const getSharing = async (circleId: string): Promise<SharingView> => {
+  await connection();
+  const user = await getUser();
+
+  if (!user) {
+    throw new HabitError('signIn');
+  }
+
+  const supabase = await createSupabaseServerClient();
+
+  if (!need(await supabase.rpc('is_circle_member', { p_circle: circleId }))) {
+    throw new HabitError('notAMember');
+  }
+
+  const [habits, shares, overrides, profile] = await Promise.all([
+    supabase.from('habits').select('id, name, icon').is('archived_at', null).order('created_at'),
+    supabase.from('habit_shares').select('habit_id, level, label').eq('circle_id', circleId),
+    supabase.from('habit_share_overrides').select('habit_id, viewer_id, level, label').eq('circle_id', circleId),
+    supabase.from('profiles').select('circles_paused').eq('user_id', user.id).single(),
+  ]);
+
+  return toSharingView(need(habits), need(shares), need(overrides), need(profile).circles_paused);
 };
 
 export const createCircle = async (name: string): Promise<string> => {

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { InviteModal } from '@/app/(app)/circles/invite-modal/invite-modal';
 import { MemberRow } from '@/app/(app)/circles/member-row/member-row';
+import { SharingSection } from '@/app/(app)/circles/sharing-section/sharing-section';
 import { RemoveMemberModal } from '@/app/(app)/circles/remove-member-modal/remove-member-modal';
 import { useCircle, useCloseCircle, useLeaveCircle, useRemoveMember } from '@/app/(app)/circles/use-circles';
 import { ConfirmModal } from '@/components/confirm-modal/confirm-modal';
@@ -128,6 +129,9 @@ export const CircleClient = (props: CircleClientProps) => {
   }
 
   const { name, isOwner, members } = circle;
+  const others = members.filter(member => {
+    return !member.isYou;
+  });
 
   return (
     <>
@@ -160,6 +164,8 @@ export const CircleClient = (props: CircleClientProps) => {
           })}
         </ul>
       </section>
+
+      <SharingSection circleId={id} others={others} />
 
       {dialog === 'invite' && <InviteModal circleId={id} onClose={onDialogClose} />}
       {dialog === 'leave' && (

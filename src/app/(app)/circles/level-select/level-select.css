@@ -1,0 +1,5 @@
+@reference '../../../globals.css';
+
+.level-select {
+  @apply min-w-0 rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink focus-visible:outline-2 focus-visible:outline-clay;
+}

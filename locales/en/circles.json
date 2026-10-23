@@ -69,5 +69,42 @@
     "left": "You left the circle",
     "closed": "Circle closed",
     "removed": "Removed from the circle"
+  },
+  "sharing": {
+    "title": "What I share here",
+    "intro": "Nothing is shared until you choose. Pick how much of each habit this circle sees. Misses are never shown.",
+    "pause": "Pause sharing",
+    "pauseText": "While on, nobody in any of your circles sees anything. Your choices are kept.",
+    "noHabits": "You have no habits yet. Add one, then come back to share it.",
+    "levels": {
+      "hidden": "Not shared",
+      "showed_up": "Showed up",
+      "done_today": "Done today",
+      "streaks": "Streaks",
+      "everything": "Everything"
+    },
+    "help": {
+      "hidden": "This circle sees nothing about this habit.",
+      "showed_up": "They only see that you showed up today, not which habit.",
+      "done_today": "They see this habit and whether you did it today.",
+      "streaks": "They also see your current streak.",
+      "everything": "They also see your history."
+    },
+    "labels": {
+      "name": "Show its name",
+      "emoji": "Show only its emoji",
+      "generic": "Just “a habit”"
+    },
+    "inherit": "Same as the circle",
+    "levelFor": "How much of {name} this circle sees",
+    "labelFor": "How {name} is shown to this circle",
+    "customise": "Customise",
+    "customised": "Customised for {count}",
+    "customiseFor": "Customise {name} for one person",
+    "customisedFor": "Customised for {count}: change {name}",
+    "overrideTitle": "{name}, person by person",
+    "overrideText": "Give someone more or less than the rest of the circle. Changes apply right away.",
+    "overrideFor": "What {who} sees",
+    "done": "Done"
   }
 }
