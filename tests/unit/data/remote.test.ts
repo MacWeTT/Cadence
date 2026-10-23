@@ -15,6 +15,12 @@ const actions = vi.hoisted(() => {
     restoreHabitAction: vi.fn(answers),
     deleteHabitAction: vi.fn(answers),
     setCompletionAction: vi.fn(answers),
+    startFocusAction: vi.fn(answers),
+    stopFocusAction: vi.fn(answers),
+    skipBreakAction: vi.fn(answers),
+    pauseFocusAction: vi.fn(answers),
+    resumeFocusAction: vi.fn(answers),
+    discardFocusAction: vi.fn(answers),
   };
 });
 
@@ -23,6 +29,25 @@ vi.mock('@/app/(app)/habits/actions', () => {
   const { createHabitAction, updateHabitAction, archiveHabitAction, restoreHabitAction, deleteHabitAction } = actions;
 
   return { createHabitAction, updateHabitAction, archiveHabitAction, restoreHabitAction, deleteHabitAction };
+});
+vi.mock('@/app/(app)/focus-actions', () => {
+  const {
+    startFocusAction,
+    stopFocusAction,
+    skipBreakAction,
+    pauseFocusAction,
+    resumeFocusAction,
+    discardFocusAction,
+  } = actions;
+
+  return {
+    startFocusAction,
+    stopFocusAction,
+    skipBreakAction,
+    pauseFocusAction,
+    resumeFocusAction,
+    discardFocusAction,
+  };
 });
 vi.mock('@/app/(app)/today/actions', () => {
   return { setCompletionAction: actions.setCompletionAction };
@@ -132,5 +157,33 @@ describe('the remote data source, habits and Today', () => {
     actions.createHabitAction.mockResolvedValueOnce(refusal as never);
 
     await expect(remote.createHabit({})).resolves.toEqual(refusal);
+  });
+});
+
+describe('the remote data source, focus', () => {
+  it('starts a session with what the setup panel chose, as it is', async () => {
+    const input = { habitId: 'h1', mode: 'free', plan: null, soundId: null };
+
+    await expect(remote.startFocus(input)).resolves.toEqual(actions.ok);
+
+    expect(actions.startFocusAction).toHaveBeenCalledWith(input);
+  });
+
+  it('stops, skips a break, pauses and resumes the running session', async () => {
+    await remote.stopFocus();
+    await remote.skipBreak();
+    await remote.pauseFocus();
+    await remote.resumeFocus();
+
+    expect(actions.stopFocusAction).toHaveBeenCalledTimes(1);
+    expect(actions.skipBreakAction).toHaveBeenCalledTimes(1);
+    expect(actions.pauseFocusAction).toHaveBeenCalledTimes(1);
+    expect(actions.resumeFocusAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('drops a finished session by its id', async () => {
+    await remote.discardFocus('s1');
+
+    expect(actions.discardFocusAction).toHaveBeenCalledWith('s1');
   });
 });

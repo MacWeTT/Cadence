@@ -5,6 +5,14 @@ import {
   restoreHabitAction,
   updateHabitAction,
 } from '@/app/(app)/habits/actions';
+import {
+  discardFocusAction,
+  pauseFocusAction,
+  resumeFocusAction,
+  skipBreakAction,
+  startFocusAction,
+  stopFocusAction,
+} from '@/app/(app)/focus-actions';
 import { setCompletionAction } from '@/app/(app)/today/actions';
 import type { DataSource } from '@/data/types';
 import { fetchJson } from '@/lib/query/fetch-json';
@@ -57,5 +65,23 @@ export const remote: DataSource = {
   },
   setCompletion: (habitId, date, done) => {
     return setCompletionAction(habitId, date, done);
+  },
+  startFocus: input => {
+    return startFocusAction(input);
+  },
+  stopFocus: () => {
+    return stopFocusAction();
+  },
+  skipBreak: () => {
+    return skipBreakAction();
+  },
+  pauseFocus: () => {
+    return pauseFocusAction();
+  },
+  resumeFocus: () => {
+    return resumeFocusAction();
+  },
+  discardFocus: sessionId => {
+    return discardFocusAction(sessionId);
   },
 };

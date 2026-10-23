@@ -15,7 +15,6 @@ import { sessionView } from '@/lib/focus-clock';
 import { queryKeys } from '@/lib/query/keys';
 import { useSessionChime } from '@/components/focus-host/use-chime-choice';
 import type { FocusResult } from '@/server/focus';
-import { discardFocusAction } from '@/app/(app)/focus-actions';
 import { dataSource } from '@/data';
 
 interface FocusHostProps {
@@ -176,7 +175,7 @@ export const FocusHost = (props: FocusHostProps) => {
       }
 
       if (!countIt) {
-        const response = await discardFocusAction(sessionId);
+        const response = await dataSource.discardFocus(sessionId);
 
         if (!response.ok) {
           toast.error(response.error);
