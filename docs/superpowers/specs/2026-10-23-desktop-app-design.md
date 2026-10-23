@@ -37,7 +37,7 @@ The existing e2e specs are the proof that the web app did not change.
 **Task list for the seam**, one PR each, none changing the web app's behaviour, each run against the existing e2e specs locally:
 
 - [x] **Reads:** habits, home, today, progress, profile, account, focus.
-- [ ] **Habits and Today:** create, edit, archive, restore, delete, check in (`habits/actions.ts`, `today/actions.ts`).
+- [x] **Habits and Today:** create, edit, archive, restore, delete, check in (`habits/actions.ts`, `today/actions.ts`).
 - [ ] **Focus:** start, stop, skip, pause, resume, discard (`focus-actions.ts`).
 - [ ] **Profile and account:** the eleven profile edits, and export, import and delete (`profile/actions.ts`, `profile/account/actions.ts`).
 - [ ] **Everything else:** timezone sync, contact, sign in, sign up, register, sign out.

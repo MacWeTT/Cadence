@@ -4,7 +4,7 @@ import { useMutation, useMutationState, useQueryClient } from '@tanstack/react-q
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { setCompletionAction } from '@/app/(app)/today/actions';
+import { dataSource } from '@/data';
 import type { CalendarDate } from '@/domain/dates';
 import { queryKeys } from '@/lib/query/keys';
 import { applyToggle, type TodayRow, type TodayView } from '@/server/today-view';
@@ -48,7 +48,7 @@ export const useCachedToggle = (view: TodayView | undefined) => {
   const mutation = useMutation({
     mutationKey,
     mutationFn: async ({ id, date, ticked }: Toggle) => {
-      const result = await setCompletionAction(id, date, ticked);
+      const result = await dataSource.setCompletion(id, date, ticked);
 
       if (!result.ok) {
         throw new SaveError(result.error);

@@ -1,3 +1,11 @@
+import {
+  archiveHabitAction,
+  createHabitAction,
+  deleteHabitAction,
+  restoreHabitAction,
+  updateHabitAction,
+} from '@/app/(app)/habits/actions';
+import { setCompletionAction } from '@/app/(app)/today/actions';
 import type { DataSource } from '@/data/types';
 import { fetchJson } from '@/lib/query/fetch-json';
 import { progressHref } from '@/app/(app)/progress/progress-links';
@@ -9,7 +17,7 @@ import type { ProfileView } from '@/server/profile-view';
 import type { ProgressData } from '@/server/progress';
 import type { TodayData } from '@/server/today';
 
-/** The web app's data: each read is one of the app's own endpoints. */
+/** The web app's data: each read is one of the app's own endpoints, each change a Server Action. */
 export const remote: DataSource = {
   habits: () => {
     return fetchJson<HabitsView>('/api/habits');
@@ -31,5 +39,23 @@ export const remote: DataSource = {
   },
   focus: () => {
     return fetchJson<FocusState>('/api/focus');
+  },
+  createHabit: input => {
+    return createHabitAction(input);
+  },
+  updateHabit: (id, input) => {
+    return updateHabitAction(id, input);
+  },
+  archiveHabit: id => {
+    return archiveHabitAction(id);
+  },
+  restoreHabit: id => {
+    return restoreHabitAction(id);
+  },
+  deleteHabit: id => {
+    return deleteHabitAction(id);
+  },
+  setCompletion: (habitId, date, done) => {
+    return setCompletionAction(habitId, date, done);
   },
 };
