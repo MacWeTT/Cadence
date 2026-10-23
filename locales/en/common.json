@@ -66,5 +66,6 @@
   "limit": {
     "left": "{count, plural, one {{count} character left} other {{count} characters left}}",
     "reached": "Limit reached: {max} characters"
-  }
+  },
+  "appName": "Cadence"
 }

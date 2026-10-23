@@ -8,6 +8,10 @@
   "permissions": [
     "core:default",
     "deep-link:default",
-    "opener:default"
+    "opener:default",
+    "notification:default",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled"
   ]
 }

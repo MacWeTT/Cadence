@@ -132,5 +132,11 @@
   "warnings": {
     "noPassword": "This account has no password yet. Set one to sign in with your tag or email too.",
     "setPassword": "Set a password"
+  },
+  "desktop": {
+    "title": "On this PC",
+    "startOnLogin": "Start Cadence when I sign in to Windows",
+    "startOnLoginHint": "It opens in the background so your reminders arrive.",
+    "failed": "Couldn't change that. Try again."
   }
 }

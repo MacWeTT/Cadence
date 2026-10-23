@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
-import { alertFor, clockIn } from '@/lib/alert';
+import { clockIn } from '@/lib/alert';
+import { homeAlert } from '@/lib/home-alert';
 import { useMsg } from '@/lib/use-msg';
 import { whenVisible } from '@/lib/when-visible';
 import type { HomeData } from '@/server/home';
-import { continuingStreaks } from '@/server/home-view';
 import type { TodayRow } from '@/server/today-view';
 import { HabitDialog } from '@/app/(app)/habits/habit-dialog/habit-dialog';
 import { CheckSection } from '@/app/(app)/today/check-section/check-section';
@@ -67,26 +67,7 @@ export const HomeClient = (props: HomeClientProps) => {
     },
   );
 
-  const alert =
-    clock &&
-    alertFor({
-      ...clock,
-      total,
-      open: todo.map(({ id, name }) => {
-        return { id, name };
-      }),
-      atRisk: atRisk.map(({ id, name, streak: { count, unit } }) => {
-        return { id, name, count, unit };
-      }),
-      continuing: continuingStreaks(
-        finished,
-        new Set(
-          todo.map(row => {
-            return row.id;
-          }),
-        ),
-      ),
-    });
+  const alert = now && homeAlert(data, now);
 
   // A tab left open past local midnight: the lists are yesterday's, so fetch today's once.
   useEffect(() => {

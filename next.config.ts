@@ -53,6 +53,10 @@ const nextConfig: NextConfig = {
           '@/components/service-worker-register/service-worker-register':
             './src/components/service-worker-register/service-worker-register.desktop.tsx',
           '@/components/footer/footer': './src/components/footer/footer.desktop.tsx',
+          '@/lib/notify': './src/lib/notify.desktop.ts',
+          '@/app/(app)/profile/desktop-settings/desktop-settings':
+            './src/app/(app)/profile/desktop-settings/desktop-settings.desktop.tsx',
+          '@/lib/open-links': './src/lib/open-links.desktop.ts',
           '@/components/google-sign-in-button/google-sign-in-button':
             './src/components/google-sign-in-button/google-sign-in-button.desktop.tsx',
           '@/app/(app)/profile/sign-out-form/sign-out-form':
