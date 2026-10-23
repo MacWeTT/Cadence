@@ -20,6 +20,10 @@ export const queryKeys = {
   circle: (id: string) => {
     return ['circles', id] as const;
   },
+  /** What the person shares with one circle (their habits, levels and overrides). */
+  circleSharing: (id: string) => {
+    return ['circles', id, 'sharing'] as const;
+  },
   progressAll: ['progress'] as const,
   /** Progress for one habit filter (`null` is all habits) and one rate window. */
   progress: (habit: string | null, range: number) => {

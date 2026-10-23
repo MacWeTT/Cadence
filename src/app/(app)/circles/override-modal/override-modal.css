@@ -1,0 +1,13 @@
+@reference '../../../globals.css';
+
+.override-modal__list {
+  @apply flex flex-col gap-2;
+}
+
+.override-modal__row {
+  @apply flex items-center justify-between gap-3;
+}
+
+.override-modal__who {
+  @apply min-w-0 wrap-break-word;
+}
