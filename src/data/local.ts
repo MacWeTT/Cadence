@@ -1,3 +1,4 @@
+import { createChanges } from '@/data/local/changes';
 import { migrate } from '@/data/local/migrations';
 import { createReads } from '@/data/local/reads';
 import type { Sql } from '@/data/local/sql';
@@ -35,15 +36,10 @@ const sql: Sql = {
 /** The desktop app's data: the SQLite file on the PC. Nothing here imports server code, which is what the desktop build checks. */
 export const local: DataSource = {
   ...createReads(sql),
+  ...createChanges(sql),
   syncTimezone: deviceTimeZone => {
     return syncTimezone(sql, deviceTimeZone);
   },
-  createHabit: notBuilt,
-  updateHabit: notBuilt,
-  archiveHabit: notBuilt,
-  restoreHabit: notBuilt,
-  deleteHabit: notBuilt,
-  setCompletion: notBuilt,
   startFocus: notBuilt,
   stopFocus: notBuilt,
   skipBreak: notBuilt,
