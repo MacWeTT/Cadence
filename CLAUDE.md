@@ -4,6 +4,7 @@ Read `AGENTS.md` (this Next.js has breaking changes) and `docs/policies.md` (cod
 
 - Follow the policies in every new file: arrow `const` functions with block bodies, named handlers (no inline functions as props), absolute imports (`@/...`), properties destructured once instead of read repeatedly, `props` destructured inside components, one `useState` object, blank lines between logic blocks, state → queries → the rest, CSS classes with `@apply`, no raw user-facing text.
 - Changes land by pull request into `develop`, never into `master` (releases only). Before raising one, run `npm run lint`, `npx tsc --noEmit` and the tests for what you changed, **including the e2e specs and the database tests for what you touched** (the owner's Docker and dev server must be up; ask if they are not): a PR into `develop` only gets the quick checks in CI (format, lint, types, unit tests, build). The full suite (database tests and Playwright) runs on the release PR into `master` and on the deploy, so a break found there is harder to place.
+- Every feature is made for the web app **and** the desktop app (`src/data/local/`): see "The desktop app" in `docs/policies.md` (a `DataSource` method, a local migration, a rule kept only in SQL). The typecheck, the boundary test, the schema-parity test and `build:desktop` catch most gaps; a rule in SQL they cannot catch.
 - Write the failing test first. Unit tests live in `tests/unit/` (mirroring `src/`), never beside the code.
 
 ## How we work
@@ -14,4 +15,3 @@ Read `AGENTS.md` (this Next.js has breaking changes) and `docs/policies.md` (cod
 - Check lightly: write files once, run `eslint --fix` and `prettier --write` on what changed, run the relevant specs only; the release PR and the deploy run the whole suite. Look at the app once, on a production build, when the change is visual (the dev server can serve stale CSS). Keep command output short.
 - The owner runs the dev server and Docker; do not start, stop or restart them. A production build on another port is fine if it is stopped afterwards.
 - Never commit secrets or put them in chat; the changelog is public (features only, no internals).
-

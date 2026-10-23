@@ -97,6 +97,14 @@ const CheckRow = (props: CheckRowProps) => {
 - File names are kebab-case; components are PascalCase; one component per file.
 - Enforced by ESLint `no-restricted-imports` and `max-lines`.
 
+## The desktop app
+The web app and the desktop app (`src-tauri/`, the SQLite file in `src/data/local/`) share the screens, so a change to what a person can do or see is made for both.
+- **A new read or change** is a method on `DataSource` (`src/data/types.ts`), implemented by `remote.ts` and by the local code in `src/data/local/`; the typecheck fails until both exist. Screens call `dataSource`, never `fetch` or a Server Action (`tests/unit/data/desktop-boundary.test.ts` fails otherwise).
+- **A rule** lives once in pure code (`src/domain`, `src/server/*-view.ts`, `src/server/page-data.ts`) where both sides run it. A rule kept only in a database function (a migration in `supabase/migrations/`) must also be written in `src/data/local/` with a unit test, or the PC drifts from the account.
+- **A table or column** on a synced table is also a new entry in `src/data/local/migrations.ts` (never edit a released one); `tests/unit/data/local/schema-parity.test.ts` fails when the two disagree.
+- **A new page** that needs the server (a route handler, Circles, anything signed-in-only) is set aside in `scripts/build-desktop.mjs`; `npm run build:desktop` runs in CI.
+- Local code is tested against the in-memory SQLite (`tests/unit/data/local/memory-sql.ts`) and never imports server-only modules.
+
 ## Testing
 - Write the failing test first; watch it fail; make it pass (TDD). A bug fix starts with a test that reproduces it.
 - Rules and calculations are unit-tested in `tests/unit/`, which mirrors `src/` (`tests/unit/domain/dates.test.ts` tests `src/domain/dates.ts`); shared test helpers are in `tests/support/`. Test files never sit beside the code. Database rules have pgTAP tests in `supabase/tests`. User flows have Playwright tests in `e2e/`.
