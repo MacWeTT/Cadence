@@ -57,19 +57,3 @@
 .conversation-header__heart {
   @apply size-6 fill-current;
 }
-
-/* A small heart between the two of you, in place of the overlap a group's avatars have. */
-.conversation-header__between {
-  @apply size-4 shrink-0;
-  fill: var(--habit-rose);
-  color: var(--habit-rose);
-}
-
-/* A pair's two avatars sit apart with a heart between them, not overlapped like a group's. */
-.conversation-header__stack--pair {
-  @apply items-center gap-1;
-}
-
-.conversation-header__stack--pair .conversation-header__avatar {
-  @apply ml-0;
-}

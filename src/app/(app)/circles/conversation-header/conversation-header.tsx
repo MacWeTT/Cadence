@@ -1,12 +1,10 @@
 import { ChevronLeft, Heart, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Fragment } from 'react';
 import { Avatar } from '@/components/avatar/avatar';
 import { Button } from '@/components/ui/button';
 import { avatarName, toAvatarView } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
-import { cn } from '@/lib/utils';
 import type { CircleView } from '@/server/circles-view';
 import './conversation-header.css';
 
@@ -60,18 +58,16 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
           onClick={onPeople}
           className="conversation-header__people"
         >
-          <span className={cn('conversation-header__stack', pair && 'conversation-header__stack--pair')}>
-            {stacked.map(({ userId, displayName, tag, avatar }, index) => {
+          <span className="conversation-header__stack">
+            {stacked.map(({ userId, displayName, tag, avatar }) => {
               return (
-                <Fragment key={userId}>
-                  {pair && index === 1 && <Heart aria-hidden="true" className="conversation-header__between" />}
-                  <Avatar
-                    avatar={toAvatarView(avatar)}
-                    name={avatarName(displayName, tag)}
-                    size="sm"
-                    className="conversation-header__avatar"
-                  />
-                </Fragment>
+                <Avatar
+                  key={userId}
+                  avatar={toAvatarView(avatar)}
+                  name={avatarName(displayName, tag)}
+                  size="sm"
+                  className="conversation-header__avatar"
+                />
               );
             })}
           </span>
