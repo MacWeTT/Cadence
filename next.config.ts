@@ -68,6 +68,9 @@ const nextConfig: NextConfig = {
             './src/app/(app)/profile/account/export-card/export-card.desktop.tsx',
           '@/app/(app)/profile/account/delete-card/delete-card':
             './src/app/(app)/profile/account/delete-card/delete-card.desktop.tsx',
+          // Circles need a server, so the desktop app has no link to them and no Home card for them.
+          '@/components/nav-links/nav-links': './src/components/nav-links/nav-links.desktop.ts',
+          '@/app/(app)/home/circles-card/circles-card': './src/app/(app)/home/circles-card/circles-card.desktop.tsx',
         }
       : {},
     rules: {

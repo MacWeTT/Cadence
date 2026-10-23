@@ -16,6 +16,7 @@ import { CheckSection } from '@/app/(app)/today/check-section/check-section';
 import { useCachedToggle } from '@/app/(app)/today/use-cached-toggle';
 import { WeekStrip } from '@/app/(app)/today/week-strip/week-strip';
 import { AlertBanner } from '@/app/(app)/home/alert-banner/alert-banner';
+import { CirclesCard } from '@/app/(app)/home/circles-card/circles-card';
 import { HomeHeader } from '@/app/(app)/home/home-header/home-header';
 import { StreaksCard } from '@/app/(app)/home/streaks-card/streaks-card';
 import { useGreeting } from '@/app/(app)/home/use-greeting';
@@ -149,6 +150,7 @@ export const HomeClient = (props: HomeClientProps) => {
             </div>
             <div className="home__side">
               <StreaksCard rows={atRisk} today={today} weekStartsOn={weekStartsOn} />
+              <CirclesCard />
               <section className="home__week">
                 <WeekStrip strip={strip} date={today} today={today} />
               </section>

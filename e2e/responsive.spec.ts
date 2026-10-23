@@ -61,7 +61,7 @@ test('a phone gets a tab bar at the foot of the screen, and no links in the top 
 
   const tabs = page.getByRole('navigation', { name: 'Main' });
 
-  await expect(tabs.getByRole('link')).toHaveText(['Home', 'Today', 'Habits', 'Progress']);
+  await expect(tabs.getByRole('link')).toHaveText(['Home', 'Today', 'Habits', 'Progress', 'Circles']);
   await expect(tabs.getByRole('link', { name: 'Habits' })).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('header.top-bar').getByRole('link', { name: 'Today' })).toBeHidden();
 

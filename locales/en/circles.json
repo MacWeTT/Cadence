@@ -30,7 +30,8 @@
     "removeLabel": "Remove {who} from the circle",
     "notFoundTitle": "Circle not found",
     "notFoundText": "It may have been closed, or you are no longer in it.",
-    "backToList": "Back to your circles"
+    "backToList": "Back to your circles",
+    "week": "{count, plural, =0 {A fresh week: nothing ticked in this circle yet.} one {This week the circle has ticked # habit.} other {This week the circle has ticked # habits.}}"
   },
   "invite": {
     "title": "Invite someone",
@@ -123,5 +124,11 @@
     "cheeredBy": "Cheered today by {who}",
     "countMyWeek": "Count my week with this circle",
     "letFriendsCheer": "Let friends cheer me on"
+  },
+  "home": {
+    "title": "Circles",
+    "empty": "Share your progress with a few close friends, only as much as you choose.",
+    "start": "Start a circle",
+    "all": "All circles"
   }
 }
