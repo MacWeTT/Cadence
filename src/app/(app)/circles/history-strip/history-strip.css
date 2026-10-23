@@ -1,0 +1,21 @@
+@reference '../../../globals.css';
+
+.history-strip {
+  @apply flex gap-0.5;
+}
+
+.history-strip__week {
+  @apply flex flex-col gap-0.5;
+}
+
+.history-strip__day {
+  @apply size-2 rounded-xs bg-heat-0;
+}
+
+.history-strip__day--done {
+  @apply bg-heat-3;
+}
+
+.history-strip__day--future {
+  @apply bg-transparent;
+}

@@ -94,6 +94,10 @@ export interface CircleMemberView {
   /** Started this circle. */
   isOwner: boolean;
   paused: boolean;
+  /** The member's own today: a cheer is for this day. */
+  today: CalendarDate;
+  /** Whether their week counts towards the circle's. */
+  inWeek: boolean;
   avatar: AvatarView;
   allowCheers: boolean;
   showedUpWeek: boolean;
@@ -155,7 +159,7 @@ const toSharedHabit = (habit: HabitPayload, member: MemberPayload): SharedHabitV
 
 const toMember = (member: MemberPayload): CircleMemberView => {
   const { user_id, tag, display_name, is_you, is_owner, paused, allow_cheers, showed_up_week, habits } = member;
-  const { cheers_today } = member;
+  const { cheers_today, today, in_week } = member;
   const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
 
   return {
@@ -165,6 +169,8 @@ const toMember = (member: MemberPayload): CircleMemberView => {
     isYou: is_you,
     isOwner: is_owner,
     paused,
+    today,
+    inWeek: in_week,
     avatar: { kind: avatar_kind, value: avatar_value, color: avatar_color, url: avatar_url },
     allowCheers: allow_cheers,
     showedUpWeek: showed_up_week,

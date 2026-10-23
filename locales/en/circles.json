@@ -106,5 +106,22 @@
     "overrideText": "Give someone more or less than the rest of the circle. Changes apply right away.",
     "overrideFor": "What {who} sees",
     "done": "Done"
+  },
+  "member": {
+    "showedUpWeek": "Showed up this week",
+    "nothingShared": "Nothing shared with you yet.",
+    "paused": "Taking a break from sharing.",
+    "aHabit": "A habit",
+    "doneToday": "Done today",
+    "streakDays": "{count}-day streak",
+    "streakWeeks": "{count}-week streak",
+    "weekProgress": "{done} of {target} this week",
+    "history": "{count} days ticked in the last {weeks} weeks",
+    "cheer": "Cheer",
+    "cheerLabel": "Cheer {who} on",
+    "cheered": "You cheered them today.",
+    "cheeredBy": "Cheered today by {who}",
+    "countMyWeek": "Count my week with this circle",
+    "letFriendsCheer": "Let friends cheer me on"
   }
 }

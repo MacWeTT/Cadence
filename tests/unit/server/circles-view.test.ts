@@ -266,4 +266,10 @@ describe('what each level may show', () => {
     // The same ticks, seen on the member's later today: two days have passed unticked, so the streak is gone.
     expect(one(shared({ level: 'streaks', data: data(days) }), { today: '2026-10-14' }).streak).toBeNull();
   });
+
+  it("carries each member's own today and whether their week counts, for cheers and the preferences", () => {
+    const view = toCircleView(overview([member({ today: '2026-10-13', in_week: false })]));
+
+    expect(view.members[0]).toMatchObject({ today: '2026-10-13', inWeek: false });
+  });
 });

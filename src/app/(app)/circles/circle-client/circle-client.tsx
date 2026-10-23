@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { InviteModal } from '@/app/(app)/circles/invite-modal/invite-modal';
 import { MemberRow } from '@/app/(app)/circles/member-row/member-row';
 import { SharingSection } from '@/app/(app)/circles/sharing-section/sharing-section';
+import { MemberDetails } from '@/app/(app)/circles/member-details/member-details';
 import { RemoveMemberModal } from '@/app/(app)/circles/remove-member-modal/remove-member-modal';
 import { useCircle, useCloseCircle, useLeaveCircle, useRemoveMember } from '@/app/(app)/circles/use-circles';
 import { ConfirmModal } from '@/components/confirm-modal/confirm-modal';
@@ -160,7 +161,11 @@ export const CircleClient = (props: CircleClientProps) => {
           {members.map(member => {
             const { userId, isYou } = member;
 
-            return <MemberRow key={userId} member={member} canRemove={isOwner && !isYou} onRemove={onRemoveClick} />;
+            return (
+              <MemberRow key={userId} member={member} canRemove={isOwner && !isYou} onRemove={onRemoveClick}>
+                <MemberDetails circleId={id} member={member} />
+              </MemberRow>
+            );
           })}
         </ul>
       </section>
