@@ -1,3 +1,7 @@
+use tauri::Manager;
+
+mod db;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -9,8 +13,12 @@ pub fn run() {
             .build(),
         )?;
       }
+
+      app.manage(db::open(app.handle())?);
+
       Ok(())
     })
+    .invoke_handler(tauri::generate_handler![db::sql_select, db::sql_batch])
     .run(tauri::generate_context!())
     .expect("error while building tauri application");
 }

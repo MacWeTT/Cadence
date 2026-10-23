@@ -3,7 +3,8 @@ import { getFocusTotals } from '@/server/focus';
 import type { FocusTotals } from '@/server/focus-view';
 import { loadHabitData } from '@/server/habit-data';
 import type { HabitRow } from '@/server/habit-view';
-import { buildProgress, parseRange, type ProgressView } from '@/server/progress-view';
+import { toProgressData } from '@/server/page-data';
+import type { ProgressView } from '@/server/progress-view';
 
 export interface ProgressData {
   /** `null` when there are no habits at all. */
@@ -15,22 +16,10 @@ export interface ProgressData {
 }
 
 export const getProgressData = async (habit: string | undefined, range: string | undefined): Promise<ProgressData> => {
-  const { entries, ctx, profile } = await loadHabitData();
+  const loaded = await loadHabitData();
+  const { ctx, profile } = loaded;
 
-  if (entries.length === 0) {
-    return { view: null, habits: [], focus: { totalSeconds: 0, byHabit: [] } };
-  }
-
-  const days = parseRange(range);
-  const selected = entries.find(({ habit: { id } }) => {
-    return id === habit;
-  })?.habit.id;
-
-  return {
-    view: buildProgress(entries, habit, days, ctx),
-    focus: await getFocusTotals(selected ?? null, days, ctx.today, profile.timezone),
-    habits: entries.map(({ habit: { id, icon, name } }) => {
-      return { id, icon, name };
-    }),
-  };
+  return toProgressData(loaded, habit, range, (selected, days) => {
+    return getFocusTotals(selected, days, ctx.today, profile.timezone);
+  });
 };

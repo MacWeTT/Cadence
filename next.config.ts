@@ -45,11 +45,13 @@ const nextConfig: NextConfig = {
         },
       }),
   turbopack: {
-    // The desktop build swaps these two modules for versions that carry no server code.
+    // The desktop build swaps these modules for versions that carry no server code.
     resolveAlias: desktop
       ? {
           '@/data/source': './src/data/source.desktop.ts',
           '@/components/user-menu/user-menu': './src/components/user-menu/user-menu.desktop.tsx',
+          '@/components/service-worker-register/service-worker-register':
+            './src/components/service-worker-register/service-worker-register.desktop.tsx',
         }
       : {},
     rules: {

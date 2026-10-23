@@ -1,7 +1,8 @@
 import 'server-only';
 import type { CalendarDate } from '@/domain/dates';
 import { loadHabitData } from '@/server/habit-data';
-import { buildTodayView, earliestDate, parseDateParam, type TodayView } from '@/server/today-view';
+import { toTodayData } from '@/server/page-data';
+import type { TodayView } from '@/server/today-view';
 
 export interface TodayData {
   view: TodayView;
@@ -13,18 +14,5 @@ export interface TodayData {
 }
 
 export const getTodayView = async (dateParam: string | string[] | undefined): Promise<TodayData> => {
-  const { entries, ctx } = await loadHabitData();
-  const { today } = ctx;
-  const date = parseDateParam(dateParam, today);
-
-  if (entries.length === 0) {
-    return { view: { todo: [], done: [], optional: [], strip: [], hasHabits: false }, date, today, earliest: today };
-  }
-
-  return {
-    view: buildTodayView(entries, date, ctx),
-    date,
-    today,
-    earliest: earliestDate(entries, today),
-  };
+  return toTodayData(await loadHabitData(), dateParam);
 };
