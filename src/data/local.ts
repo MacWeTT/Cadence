@@ -1,6 +1,8 @@
 import { createChanges } from '@/data/local/changes';
+import { createAccountChanges } from '@/data/local/backup';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
+import { createProfileChanges } from '@/data/local/profile-changes';
 import { createReads } from '@/data/local/reads';
 import type { Sql } from '@/data/local/sql';
 import { tauriSql } from '@/data/local/tauri-sql';
@@ -39,22 +41,11 @@ export const local: DataSource = {
   ...createReads(sql),
   ...createChanges(sql),
   ...createFocusChanges(sql),
+  ...createProfileChanges(sql),
+  ...createAccountChanges(sql),
   syncTimezone: deviceTimeZone => {
     return syncTimezone(sql, deviceTimeZone);
   },
-  updateName: notBuilt,
-  updateTag: notBuilt,
-  setPassword: notBuilt,
-  updateWeekStart: notBuilt,
-  updateTimezone: notBuilt,
-  updateAvatar: notBuilt,
-  uploadAvatarPhoto: notBuilt,
-  updateAccent: notBuilt,
-  updateSound: notBuilt,
-  uploadSound: notBuilt,
-  removeSound: notBuilt,
-  importBackup: notBuilt,
-  deleteAccount: notBuilt,
   sendContact: notBuilt,
   signIn: notBuilt,
   signUp: notBuilt,

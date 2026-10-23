@@ -6,6 +6,7 @@
   "dateInFuture": "You can't tick a day that hasn't happened yet.",
   "beforeStart": "That day is before the habit started.",
   "signIn": "Please sign in again.",
+  "needsAccount": "That needs an account. Sign in to use it.",
   "generic": "Something went wrong. Please try again.",
   "fixFields": "Please fix the highlighted fields.",
   "habitChanged": "That habit could not be found, or it has already changed.",
