@@ -1,6 +1,7 @@
 import { createTranslator } from 'next-intl';
 import { backupErrorText } from '@/lib/backup-error-text';
-import { parseBackup } from '@/lib/backup';
+import { backupFileName, parseBackup, toJson } from '@/lib/backup';
+import { toCsv } from '@/lib/backup-csv';
 import { BACKUP_LIMITS, type Backup, type BackupError } from '@/lib/backup-types';
 import { getProfile } from '@/data/local/load';
 import { failed } from '@/data/local/outcome';
@@ -134,6 +135,20 @@ export const replaceStatements = (backup: Backup): Statement[] => {
 /** Replaces every habit and its history on the PC with a backup's, all or nothing. */
 export const replaceData = (sql: Sql, backup: Backup): Promise<void> => {
   return sql.batch(replaceStatements(backup));
+};
+
+/** A download of the PC's data: the file's name and text. The PDF report is built on the server, so it is not offered here. */
+export const exportFile = async (
+  sql: Sql,
+  format: 'json' | 'csv',
+): Promise<{ fileName: string; type: string; text: string }> => {
+  const [backup, { today }] = await Promise.all([readBackup(sql), getProfile(sql)]);
+
+  return {
+    fileName: backupFileName(today, format),
+    type: format === 'json' ? 'application/json' : 'text/csv',
+    text: format === 'json' ? toJson(backup) : toCsv(backup),
+  };
 };
 
 const refusal = (error: BackupError): string => {

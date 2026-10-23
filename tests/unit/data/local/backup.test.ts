@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createAccountChanges, readBackup, replaceData } from '@/data/local/backup';
+import { createAccountChanges, exportFile, readBackup, replaceData } from '@/data/local/backup';
 import { createChanges } from '@/data/local/changes';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
 import { createReads } from '@/data/local/reads';
 import { toJson } from '@/lib/backup';
+import { toCsv } from '@/lib/backup-csv';
 import { memorySql } from '@tests/unit/data/local/memory-sql';
 
 const NOW = new Date('2026-10-24T12:00:00Z');
@@ -114,6 +115,22 @@ describe('the local backup', () => {
     expect(await importBackup(fileOf(toJson(backup)))).toMatchObject({ ok: false });
     expect(await importBackup(new FormData())).toMatchObject({ ok: false });
     expect(await sql.select('select id from habits')).toHaveLength(2);
+  });
+
+  it('makes the JSON and CSV files for a download, named for today', async () => {
+    const sql = await filled();
+    const backup = await readBackup(sql);
+
+    expect(await exportFile(sql, 'json')).toEqual({
+      fileName: 'cadence-2026-10-24.json',
+      type: 'application/json',
+      text: toJson(backup),
+    });
+    expect(await exportFile(sql, 'csv')).toEqual({
+      fileName: 'cadence-2026-10-24.csv',
+      type: 'text/csv',
+      text: toCsv(backup),
+    });
   });
 
   it('deletes everything on the PC and puts the settings back to their start', async () => {

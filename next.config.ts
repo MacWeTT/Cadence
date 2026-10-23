@@ -52,6 +52,14 @@ const nextConfig: NextConfig = {
           '@/components/user-menu/user-menu': './src/components/user-menu/user-menu.desktop.tsx',
           '@/components/service-worker-register/service-worker-register':
             './src/components/service-worker-register/service-worker-register.desktop.tsx',
+          '@/components/footer/footer': './src/components/footer/footer.desktop.tsx',
+          '@/components/get-the-app/get-the-app': './src/components/get-the-app/get-the-app.desktop.tsx',
+          '@/app/(app)/profile/account/sign-in-card/sign-in-card':
+            './src/app/(app)/profile/account/sign-in-card/sign-in-card.desktop.tsx',
+          '@/app/(app)/profile/account/export-card/export-card':
+            './src/app/(app)/profile/account/export-card/export-card.desktop.tsx',
+          '@/app/(app)/profile/account/delete-card/delete-card':
+            './src/app/(app)/profile/account/delete-card/delete-card.desktop.tsx',
         }
       : {},
     rules: {

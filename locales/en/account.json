@@ -65,7 +65,12 @@
     "type": "Type your email address to confirm",
     "confirm": "Delete forever",
     "done": "Your account has been deleted.",
-    "placeholder": "you@example.com"
+    "placeholder": "you@example.com",
+    "deviceTitle": "Delete everything on this PC",
+    "deviceIntro": "This permanently deletes every habit, check-in and focus session stored in this app, and puts the settings back to their start. Export your data first if you want to keep it.",
+    "deviceButton": "Delete everything",
+    "deviceModalTitle": "Delete everything on this PC?",
+    "deviceDone": "Everything on this PC has been deleted."
   },
   "report": {
     "subtitle": "Progress report",

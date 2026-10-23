@@ -1,5 +1,5 @@
 import { createChanges } from '@/data/local/changes';
-import { createAccountChanges } from '@/data/local/backup';
+import { createAccountChanges, exportFile } from '@/data/local/backup';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
 import { createProfileChanges } from '@/data/local/profile-changes';
@@ -37,12 +37,15 @@ const sql: Sql = {
 };
 
 /** The desktop app's data: the SQLite file on the PC. Nothing here imports server code, which is what the desktop build checks. */
-export const local: DataSource = {
+export const local: DataSource & { exportFile: (format: 'json' | 'csv') => ReturnType<typeof exportFile> } = {
   ...createReads(sql),
   ...createChanges(sql),
   ...createFocusChanges(sql),
   ...createProfileChanges(sql),
   ...createAccountChanges(sql),
+  exportFile: format => {
+    return exportFile(sql, format);
+  },
   syncTimezone: deviceTimeZone => {
     return syncTimezone(sql, deviceTimeZone);
   },
