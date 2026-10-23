@@ -124,7 +124,8 @@
     "history": "{count} days ticked in the last {weeks} weeks",
     "countMyWeek": "Count my week with this circle",
     "letFriendsCheer": "Let friends react to me",
-    "offDays": "Didn't happen: {names}"
+    "offDays": "Didn't happen: {names}",
+    "done": "Done"
   },
   "home": {
     "title": "Circles",

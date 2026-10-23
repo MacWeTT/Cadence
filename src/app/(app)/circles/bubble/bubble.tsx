@@ -1,4 +1,4 @@
-import { SmilePlus } from 'lucide-react';
+import { Check, SmilePlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ReactionBar } from '@/app/(app)/circles/reaction-bar/reaction-bar';
@@ -66,6 +66,10 @@ export const Bubble = (props: BubbleProps) => {
 
                 return (
                   <li key={index} className="bubble__habit">
+                    <span className="bubble__check">
+                      <Check aria-hidden="true" className="bubble__check-icon" />
+                      <span className="sr-only">{t('done')}</span>
+                    </span>
                     {icon && <span aria-hidden="true">{icon}</span>}
                     <span className="bubble__habit-name">{name ?? (icon ? '' : t('aHabit'))}</span>
                     {streak && (
