@@ -11,7 +11,7 @@ const vendorFiles = ['src/components/ui/**', 'src/lib/supabase/database.types.ts
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'test-results/**']),
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'src-tauri/**', 'next-env.d.ts', 'test-results/**']),
 
   {
     name: 'cadence/code-style',
