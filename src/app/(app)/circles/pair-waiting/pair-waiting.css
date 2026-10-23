@@ -11,3 +11,9 @@
 .pair-waiting__text {
   @apply mb-2 max-w-sm text-ink-muted;
 }
+
+.pair-waiting__heart {
+  @apply size-8;
+  fill: var(--habit-rose);
+  color: var(--habit-rose);
+}

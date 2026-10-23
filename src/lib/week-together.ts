@@ -5,6 +5,8 @@ import type { CircleMemberView } from '@/server/circles-view';
 export interface TogetherDay {
   date: CalendarDate;
   showed: boolean;
+  /** You both showed up this day: drawn as a heart. */
+  both: boolean;
   /** An off day the partner chose to show (see `missedDays`). Never set on your own row, or when nothing was allowed. */
   off: boolean;
 }
@@ -40,36 +42,39 @@ export const weekTogether = (members: CircleMemberView[], today: CalendarDate): 
     return addDays(today, back - (DAYS - 1));
   });
 
-  const rows = [...members]
-    .sort((a, b) => {
-      return Number(b.isYou) - Number(a.isYou);
-    })
-    .map(({ userId, isYou, showedUpDays, habits }) => {
-      const showedUp = new Set(showedUpDays);
-      const off = new Set(
-        isYou
-          ? []
-          : habits.flatMap(({ missed }) => {
-              return missed ?? [];
-            }),
-      );
-
-      return {
-        userId,
-        isYou,
-        days: days.map(date => {
-          const showed = showedUp.has(date);
-
-          return { date, showed, off: !showed && off.has(date) };
-        }),
-      };
+  const ordered = [...members].sort((a, b) => {
+    return Number(b.isYou) - Number(a.isYou);
+  });
+  const showedUp = ordered.map(({ showedUpDays }) => {
+    return new Set(showedUpDays);
+  });
+  const bothOn = days.map(date => {
+    return showedUp.every(set => {
+      return set.has(date);
     });
+  });
 
-  const both = days.filter((_, index) => {
-    return rows.every(({ days: theirs }) => {
-      return theirs[index].showed;
-    });
-  }).length;
+  const rows = ordered.map(({ userId, isYou, habits }, row) => {
+    const off = new Set(
+      isYou
+        ? []
+        : habits.flatMap(({ missed }) => {
+            return missed ?? [];
+          }),
+    );
+
+    return {
+      userId,
+      isYou,
+      days: days.map((date, index) => {
+        const showed = showedUp[row].has(date);
+
+        return { date, showed, both: bothOn[index], off: !showed && off.has(date) };
+      }),
+    };
+  });
+
+  const { length: both } = bothOn.filter(Boolean);
 
   return { days, rows, both };
 };

@@ -1,7 +1,7 @@
 import { Heart, Pin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { circleTitle } from '@/lib/circle-people';
+import { circleColor, circleTitle } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
 import { cn } from '@/lib/utils';
 import type { CircleListItem } from '@/server/circles-view';
@@ -25,7 +25,7 @@ export const RailItem = (props: RailItemProps) => {
 
   const pair = kind === 'pair';
   const title = circleTitle(circle);
-  const style = { '--circle-color': habitColor(color) } as React.CSSProperties;
+  const style = { '--circle-color': habitColor(circleColor(kind, color)) } as React.CSSProperties;
 
   return (
     <li>
@@ -36,7 +36,7 @@ export const RailItem = (props: RailItemProps) => {
         className={cn('rail-item', active && 'rail-item--active')}
       >
         <span aria-hidden="true" className="rail-item__tile">
-          {title === null ? <Heart className="rail-item__heart" /> : title.replace(/^@/, '').charAt(0).toUpperCase()}
+          {pair || title === null ? <Heart className="rail-item__heart" /> : title.charAt(0).toUpperCase()}
         </span>
         <span className="rail-item__body">
           <span className="rail-item__name">{title ?? t('pair.waiting')}</span>

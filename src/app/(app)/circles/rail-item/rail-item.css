@@ -14,7 +14,7 @@
 }
 
 .rail-item__heart {
-  @apply size-5;
+  @apply size-5 fill-current;
 }
 
 .rail-item__body {

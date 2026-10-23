@@ -1,3 +1,4 @@
+import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Scenery } from '@/components/scenery/scenery';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,8 @@ export const PairWaiting = (props: PairWaitingProps) => {
 
   return (
     <div className="pair-waiting">
-      <Scenery variant="scene" />
+      <Scenery variant="scene" tone="pair" />
+      <Heart aria-hidden="true" className="pair-waiting__heart" />
       <h2 className="pair-waiting__title">{t('waiting')}</h2>
       <p className="pair-waiting__text">{t('waitingText')}</p>
       {isOwner && <Button onClick={onInvite}>{t('waitingAction')}</Button>}

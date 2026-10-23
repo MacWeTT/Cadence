@@ -21,7 +21,7 @@ import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { Scenery } from '@/components/scenery/scenery';
 import { Button } from '@/components/ui/button';
 import { buildFeed } from '@/lib/circle-feed';
-import { memberName } from '@/lib/circle-people';
+import { circleColor, memberName } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
 import { HttpError } from '@/lib/query/fetch-json';
 import { weekTogether } from '@/lib/week-together';
@@ -166,19 +166,20 @@ export const CircleClient = (props: CircleClientProps) => {
   const [partner] = others;
   const { displayName: partnerDisplay = null, tag: partnerTag = '' } = partner ?? {};
   const partnerName = partner ? memberName(partnerDisplay, partnerTag) : null;
-  const title = pair ? (partnerName ?? t('pair.waiting')) : name;
+  const title = pair ? (partnerName ? t('pair.title', { name: partnerName }) : t('pair.waiting')) : name;
+  const shownColor = circleColor(kind, color);
   const subtitle = pair
     ? t(closerActive ? 'pair.subtitleCloser' : 'pair.subtitle')
     : t('circle.week', { count: weekTicks });
   const together = pair ? weekTogether(members, today) : null;
-  const style = { '--circle-color': habitColor(color) } as React.CSSProperties;
+  const style = { '--circle-color': habitColor(shownColor) } as React.CSSProperties;
 
   return (
     <>
       <div style={style} className="conversation">
-        <Scenery variant="backdrop" className="conversation__scenery" />
+        <Scenery variant="backdrop" tone={pair ? 'pair' : undefined} className="conversation__scenery" />
         <ConversationHeader
-          circle={circle}
+          circle={{ ...circle, color: shownColor }}
           title={title}
           subtitle={subtitle}
           canInvite={isOwner && (!pair || waiting)}

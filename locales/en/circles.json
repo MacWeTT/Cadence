@@ -177,15 +177,16 @@
     "invite": "Invite a partner",
     "label": "Partner",
     "waiting": "Waiting for your partner",
-    "waitingText": "Send them your invite link. A pair is just the two of you, and nothing is shared until each of you chooses.",
+    "waitingText": "Send them your invite link. It is just the two of you, and nothing is shared until each of you chooses.",
     "waitingAction": "Get the invite link",
-    "subtitle": "Partners",
-    "subtitleCloser": "Partners, with Closer on",
+    "subtitle": "Cheering each other on",
+    "subtitleCloser": "Cheering each other on, with Closer on",
     "end": "End partnership",
     "endTitle": "End your partnership with {name}?",
     "endTitleWaiting": "End this partnership?",
     "endText": "This ends it for both of you. What you each shared here is removed.",
-    "endConfirm": "End partnership"
+    "endConfirm": "End partnership",
+    "title": "You & {name}"
   },
   "together": {
     "title": "Week together",

@@ -1,3 +1,4 @@
+import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Avatar } from '@/components/avatar/avatar';
 import { avatarName, memberName, toAvatarView } from '@/lib/circle-people';
@@ -26,7 +27,10 @@ export const WeekTogether = (props: WeekTogetherProps) => {
     <section aria-label={t('title')} className="week-together">
       <div className="week-together__head">
         <h2 className="week-together__title">{t('title')}</h2>
-        <p className="week-together__summary">{t('summary', { count: both })}</p>
+        <p className="week-together__summary">
+          {both > 0 && <Heart aria-hidden="true" className="week-together__summary-heart" />}
+          {t('summary', { count: both })}
+        </p>
       </div>
       <div className="week-together__grid">
         <span aria-hidden="true" />
@@ -61,7 +65,7 @@ export const WeekTogether = (props: WeekTogetherProps) => {
                 {avatar && <Avatar avatar={toAvatarView(avatar)} name={avatarName(displayName, tag)} size="sm" />}
                 <span className="week-together__name">{name}</span>
               </span>
-              {cells.map(({ date, showed: did, off: wasOff }) => {
+              {cells.map(({ date, showed: did, both: together, off: wasOff }) => {
                 return (
                   <span
                     key={date}
@@ -69,9 +73,12 @@ export const WeekTogether = (props: WeekTogetherProps) => {
                     className={cn(
                       'week-together__cell',
                       did && 'week-together__cell--showed',
+                      did && together && 'week-together__cell--both',
                       wasOff && 'week-together__cell--off',
                     )}
-                  />
+                  >
+                    {did && together && <Heart aria-hidden="true" className="week-together__heart" />}
+                  </span>
                 );
               })}
             </div>

@@ -79,6 +79,20 @@ describe('weekTogether', () => {
     ).toEqual(['2026-10-12', '2026-10-14']);
   });
 
+  it('marks each day both of you showed up, so the panel can draw it as a heart', () => {
+    const sam = member({ showedUpDays: ['2026-10-12', '2026-10-13'] });
+    const together = weekTogether([me, sam], TODAY);
+
+    expect(
+      together?.days.filter((_, index) => {
+        return together.rows.every(row => {
+          return row.days[index].both;
+        });
+      }),
+    ).toEqual(['2026-10-12']);
+    expect(together?.rows[0].days[6].both).toBe(false);
+  });
+
   it('counts the days both of you showed up as one number, never who did more', () => {
     const sam = member({ showedUpDays: ['2026-10-12', '2026-10-13'] });
 

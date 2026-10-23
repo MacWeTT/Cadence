@@ -1,7 +1,8 @@
 @reference '../../../globals.css';
 
 .week-together {
-  @apply relative z-10 flex flex-col gap-3 border-b border-line bg-surface/60 px-4 py-3 sm:px-6;
+  @apply relative z-10 flex flex-col gap-3 border-b border-line px-4 py-3 sm:px-6;
+  background: color-mix(in srgb, var(--habit-rose) 6%, transparent);
 }
 
 .week-together__head {
@@ -13,7 +14,13 @@
 }
 
 .week-together__summary {
-  @apply text-sm text-ink-muted;
+  @apply inline-flex items-center gap-1.5 text-sm text-ink-muted;
+}
+
+.week-together__summary-heart {
+  @apply size-3.5;
+  fill: var(--habit-rose);
+  color: var(--habit-rose);
 }
 
 /* A name column, then seven days. The rows are subgrids of it, so the days line up under their letters. */
@@ -43,6 +50,17 @@
 
 .week-together__cell--showed {
   @apply border-transparent bg-moss;
+}
+
+/* A day you both showed up is a heart, in rose, for the two of you. */
+.week-together__cell--both {
+  @apply flex size-5 items-center justify-center bg-transparent;
+}
+
+.week-together__heart {
+  @apply size-5;
+  fill: var(--habit-rose);
+  color: var(--habit-rose);
 }
 
 /* A day that didn't happen: a short grey dash, never red. */

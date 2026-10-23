@@ -80,7 +80,7 @@ test('a pair is started from the list, waits for the partner, and holds only two
   await expect(sam.page.getByRole('heading', { name: 'Be partners with E2E User?' })).toBeVisible({ timeout: 20_000 });
   await sam.page.getByRole('button', { name: 'Join circle' }).click();
   await expect(sam.page).toHaveURL(/\/circles\/[0-9a-f-]{36}$/);
-  await expect(sam.page.getByRole('heading', { level: 1, name: 'E2E User' })).toBeVisible();
+  await expect(sam.page.getByRole('heading', { level: 1, name: 'You & E2E User' })).toBeVisible();
 
   // The pair is two people: a third who opens the link is told it is full.
   await kim.page.goto(link);
@@ -89,7 +89,7 @@ test('a pair is started from the list, waits for the partner, and holds only two
 
   await page.keyboard.press('Escape');
   await page.reload();
-  await expect(page.getByRole('heading', { level: 1, name: 'Sam' })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('heading', { level: 1, name: 'You & Sam' })).toBeVisible({ timeout: 20_000 });
   await expect(page.getByText('Week together')).toBeVisible();
 
   await page.goto('/circles');

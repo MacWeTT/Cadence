@@ -1,10 +1,12 @@
-import { ChevronLeft, Settings } from 'lucide-react';
+import { ChevronLeft, Heart, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { Fragment } from 'react';
 import { Avatar } from '@/components/avatar/avatar';
 import { Button } from '@/components/ui/button';
 import { avatarName, toAvatarView } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
+import { cn } from '@/lib/utils';
 import type { CircleView } from '@/server/circles-view';
 import './conversation-header.css';
 
@@ -27,7 +29,8 @@ interface ConversationHeaderProps {
 /** The top of a circle: back (on a phone), its colour tile and name, the people, and the buttons. */
 export const ConversationHeader = (props: ConversationHeaderProps) => {
   const { circle, title, subtitle, canInvite, onInvite, onShare, onSettings, onPeople } = props;
-  const { color, members } = circle;
+  const { color, members, kind } = circle;
+  const pair = kind === 'pair';
   const { length: count } = members;
   const stacked = [...members].slice(0, STACK);
 
@@ -43,7 +46,7 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
       </Link>
       <div className="conversation-header__row">
         <span aria-hidden="true" className="conversation-header__tile">
-          {title.replace(/^@/, '').charAt(0).toUpperCase()}
+          {pair ? <Heart className="conversation-header__heart" /> : title.replace(/^@/, '').charAt(0).toUpperCase()}
         </span>
         <div className="conversation-header__titles">
           <h1 className="conversation-header__title">{title}</h1>
@@ -57,16 +60,18 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
           onClick={onPeople}
           className="conversation-header__people"
         >
-          <span className="conversation-header__stack">
-            {stacked.map(({ userId, displayName, tag, avatar }) => {
+          <span className={cn('conversation-header__stack', pair && 'conversation-header__stack--pair')}>
+            {stacked.map(({ userId, displayName, tag, avatar }, index) => {
               return (
-                <Avatar
-                  key={userId}
-                  avatar={toAvatarView(avatar)}
-                  name={avatarName(displayName, tag)}
-                  size="sm"
-                  className="conversation-header__avatar"
-                />
+                <Fragment key={userId}>
+                  {pair && index === 1 && <Heart aria-hidden="true" className="conversation-header__between" />}
+                  <Avatar
+                    avatar={toAvatarView(avatar)}
+                    name={avatarName(displayName, tag)}
+                    size="sm"
+                    className="conversation-header__avatar"
+                  />
+                </Fragment>
               );
             })}
           </span>
