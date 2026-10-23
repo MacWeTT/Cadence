@@ -29,6 +29,9 @@ interface PromptState {
   error: boolean;
 }
 
+/** How often a running app checks the account for changes made elsewhere. */
+const STEP_EVERY_MS = 60_000;
+
 const START: PromptState = { open: null, userId: '', pc: null, account: null, busy: false, error: false };
 
 /**
@@ -62,7 +65,8 @@ export const SyncPrompt = () => {
       const { plan, local: onPc, account: onAccount } = await local.sync.check(id);
 
       if (plan === 'nothing') {
-        await local.sync.link(id);
+        // neither side has habits: the account's settings still win, so the PC's do not overwrite them later
+        await local.sync.pull(id);
       } else if (plan === 'pull') {
         await local.sync.pull(id);
         toast.success(t('pulled'));
@@ -76,6 +80,38 @@ export const SyncPrompt = () => {
       // offline or refused: nothing changed, and it is asked again at the next start
     });
   }, [id, queryClient, t]);
+
+  // Once linked, stay in step: now, when the window is shown again, when the connection returns, and every minute.
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    const round = () => {
+      local
+        .stayInStep(id)
+        .then(({ pulled }) => {
+          if (pulled) {
+            void queryClient.invalidateQueries();
+          }
+        })
+        .catch(() => {
+          // offline: the changes stay marked and go out at the next round
+        });
+    };
+
+    round();
+    window.addEventListener('focus', round);
+    window.addEventListener('online', round);
+
+    const timer = window.setInterval(round, STEP_EVERY_MS);
+
+    return () => {
+      window.removeEventListener('focus', round);
+      window.removeEventListener('online', round);
+      window.clearInterval(timer);
+    };
+  }, [id, queryClient]);
 
   const attempt = async (work: () => Promise<void>, message: string) => {
     setState({ ...state, busy: true, error: false });

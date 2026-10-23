@@ -391,6 +391,18 @@ isOneToOne: false
 "set_share_override":
 { Args: { "p_circle": string,"p_habit": string,"p_label"?: string,"p_level": string,"p_viewer": string }; Returns: undefined
                            },
+"sync_delete_focus":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"sync_delete_habit":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"sync_put_focus":
+{ Args: { "p_session": Json }; Returns: undefined
+                           },
+"sync_put_habit":
+{ Args: { "p_habit": Json }; Returns: undefined
+                           },
 "tag_available":
 { Args: { "p_tag": string }; Returns: boolean
                            },
