@@ -58,6 +58,32 @@ export const makeCircle = async (name: string, ownerId: string, memberIds: strin
   return data.id;
 };
 
+/** A pair (a circle of two) with its two people, made directly. */
+export const makePair = async (ownerId: string, partnerId: string): Promise<string> => {
+  const admin = adminClient();
+  const { data, error } = await admin
+    .from('circles')
+    .insert({ name: 'Partners', owner_id: ownerId, kind: 'pair' })
+    .select('id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  const { error: memberError } = await admin.from('circle_members').insert(
+    [ownerId, partnerId].map(user_id => {
+      return { circle_id: data.id, user_id };
+    }),
+  );
+
+  if (memberError) {
+    throw memberError;
+  }
+
+  return data.id;
+};
+
 /** A daily habit for any person, with the ticks given (dates). */
 export const seedHabitFor = async (o: {
   userId: string;

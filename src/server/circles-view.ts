@@ -58,6 +58,8 @@ const memberSchema = z.object({
   allow_cheers: z.boolean(),
   in_week: z.boolean(),
   closer: z.boolean(),
+  /** For a pair: the days in the last week this person showed up (days only; never which habit). */
+  showed_up_days: z.array(calendarDate),
   avatar_kind: z.enum(['google', 'character', 'emoji', 'initial']),
   avatar_value: z.string().nullable(),
   avatar_color: z.string().nullable(),
@@ -128,6 +130,8 @@ export interface CircleMemberView {
   inWeek: boolean;
   /** Their own Closer switch (pairs). */
   closer: boolean;
+  /** The days of the last week they showed up: only in a pair, empty in a group. */
+  showedUpDays: CalendarDate[];
   avatar: AvatarView;
   allowCheers: boolean;
   showedUpWeek: boolean;
@@ -211,7 +215,7 @@ const toSharedHabit = (habit: HabitPayload, member: MemberPayload, pair: boolean
 
 const toMember = (member: MemberPayload, pair: boolean): CircleMemberView => {
   const { user_id, tag, display_name, is_you, is_owner, paused, allow_cheers, showed_up_week, habits } = member;
-  const { cheers_today, today, in_week, reactions, closer } = member;
+  const { cheers_today, today, in_week, reactions, closer, showed_up_days } = member;
   const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
 
   return {
@@ -224,6 +228,7 @@ const toMember = (member: MemberPayload, pair: boolean): CircleMemberView => {
     today,
     inWeek: in_week,
     closer,
+    showedUpDays: showed_up_days,
     avatar: { kind: avatar_kind, value: avatar_value, color: avatar_color, url: avatar_url },
     allowCheers: allow_cheers,
     showedUpWeek: showed_up_week,

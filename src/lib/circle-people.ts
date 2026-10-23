@@ -29,3 +29,22 @@ export const toAvatarView = (avatar: FriendAvatar): AvatarView => {
 
   return kind === 'initial' ? { kind: 'google', value: null, color: null, url: null } : { kind, value, color, url };
 };
+
+/**
+ * What a circle is called on screen: a group by its name, a pair by the partner (never the stored name, which is only
+ * "Partners"). A pair still waiting for its partner has no name yet, and gives null.
+ */
+export const circleTitle = (circle: {
+  kind: 'group' | 'pair';
+  name: string;
+  partnerName: string | null;
+  partnerTag: string | null;
+}): string | null => {
+  const { kind, name, partnerName, partnerTag } = circle;
+
+  if (kind === 'group') {
+    return name;
+  }
+
+  return partnerTag === null ? null : memberName(partnerName, partnerTag);
+};

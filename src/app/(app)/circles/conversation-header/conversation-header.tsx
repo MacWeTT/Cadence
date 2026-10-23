@@ -12,6 +12,12 @@ const STACK = 4;
 
 interface ConversationHeaderProps {
   circle: CircleView;
+  /** The name of the circle, or the partner for a pair. */
+  title: string;
+  /** The line under the name. */
+  subtitle: string;
+  /** The owner of a group, or of a pair that is still waiting. */
+  canInvite: boolean;
   onInvite: () => void;
   onShare: () => void;
   onSettings: () => void;
@@ -20,8 +26,8 @@ interface ConversationHeaderProps {
 
 /** The top of a circle: back (on a phone), its colour tile and name, the people, and the buttons. */
 export const ConversationHeader = (props: ConversationHeaderProps) => {
-  const { circle, onInvite, onShare, onSettings, onPeople } = props;
-  const { name, color, isOwner, weekTicks, members } = circle;
+  const { circle, title, subtitle, canInvite, onInvite, onShare, onSettings, onPeople } = props;
+  const { color, members } = circle;
   const { length: count } = members;
   const stacked = [...members].slice(0, STACK);
 
@@ -37,11 +43,11 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
       </Link>
       <div className="conversation-header__row">
         <span aria-hidden="true" className="conversation-header__tile">
-          {name.charAt(0).toUpperCase()}
+          {title.replace(/^@/, '').charAt(0).toUpperCase()}
         </span>
         <div className="conversation-header__titles">
-          <h1 className="conversation-header__title">{name}</h1>
-          <p className="conversation-header__week">{t('circle.week', { count: weekTicks })}</p>
+          <h1 className="conversation-header__title">{title}</h1>
+          <p className="conversation-header__week">{subtitle}</p>
         </div>
       </div>
       <div className="conversation-header__actions">
@@ -66,7 +72,7 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
           </span>
           <span className="conversation-header__count">{t('conversation.people', { count })}</span>
         </button>
-        {isOwner && (
+        {canInvite && (
           <Button variant="outline" size="sm" onClick={onInvite}>
             {t('circle.invite')}
           </Button>

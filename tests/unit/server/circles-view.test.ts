@@ -27,6 +27,7 @@ const member = (over: Record<string, unknown> = {}) => {
     allow_cheers: true,
     in_week: true,
     closer: false,
+    showed_up_days: [],
     avatar_kind: 'character',
     avatar_value: 'mage',
     avatar_color: '#6c7d45',
@@ -310,6 +311,14 @@ describe('what each level may show', () => {
 
     expect(view).toMatchObject({ kind: 'pair', closerActive: true });
     expect(view.members[0].closer).toBe(true);
+  });
+
+  it('carries the days a member showed up, for a pair', () => {
+    const view = toCircleView(
+      overview([member({ showed_up_days: ['2026-10-10', '2026-10-12'] })], { kind: 'pair', closer_active: false }),
+    );
+
+    expect(view.members[0].showedUpDays).toEqual(['2026-10-10', '2026-10-12']);
   });
 });
 

@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useCircles } from '@/app/(app)/circles/use-circles';
+import { circleTitle } from '@/lib/circle-people';
 import './circles-card.css';
 
 const SHOWN = 3;
@@ -31,12 +32,16 @@ export const CirclesCard = () => {
       ) : (
         <>
           <ul className="circles-card__list">
-            {circles.slice(0, SHOWN).map(({ id, name, memberCount }) => {
+            {circles.slice(0, SHOWN).map(circle => {
+              const { id, memberCount, kind } = circle;
+
               return (
                 <li key={id}>
                   <Link href={`/circles/${id}`} className="circles-card__item">
-                    <span className="circles-card__name">{name}</span>
-                    <span className="circles-card__count">{t('people', { count: memberCount })}</span>
+                    <span className="circles-card__name">{circleTitle(circle) ?? t('pair.waiting')}</span>
+                    <span className="circles-card__count">
+                      {kind === 'pair' ? t('pair.label') : t('people', { count: memberCount })}
+                    </span>
                   </Link>
                 </li>
               );

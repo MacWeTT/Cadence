@@ -32,6 +32,11 @@
   @apply rounded-full bg-clay/15 px-2 py-0.5 text-xs text-ink;
 }
 
+/* A day that didn't happen, said quietly: grey, small, never red. */
+.bubble__off {
+  @apply mt-2 text-xs text-ink-muted;
+}
+
 /* Your own day sits on the right, like a message you sent, and nobody can react to themselves. */
 .bubble--mine {
   @apply ml-auto flex-row-reverse;

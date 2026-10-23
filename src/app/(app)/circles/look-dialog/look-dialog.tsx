@@ -13,6 +13,8 @@ interface LookDialogProps {
   color: CircleColor;
   pinned: boolean;
   isOwner: boolean;
+  /** A pair has one way out, ending it for both. */
+  pair: boolean;
   onLeave: () => void;
   onCloseCircle: () => void;
   onClose: () => void;
@@ -20,7 +22,7 @@ interface LookDialogProps {
 
 /** Circle settings: your own colour and pin for it (friends never see them), and the ways out: leave, or close it. */
 export const LookDialog = (props: LookDialogProps) => {
-  const { circleId, color, pinned, isOwner, onLeave, onCloseCircle, onClose } = props;
+  const { circleId, color, pinned, isOwner, pair, onLeave, onCloseCircle, onClose } = props;
 
   const t = useTranslations('circles.look');
   const setLook = useSetLook(circleId);
@@ -78,9 +80,9 @@ export const LookDialog = (props: LookDialogProps) => {
         </label>
         <div className="look-dialog__exits">
           <Button variant="outline" onClick={onLeave}>
-            {t('leave')}
+            {pair ? t('end') : t('leave')}
           </Button>
-          {isOwner && (
+          {isOwner && !pair && (
             <Button variant="outline" onClick={onCloseCircle}>
               {t('close')}
             </Button>

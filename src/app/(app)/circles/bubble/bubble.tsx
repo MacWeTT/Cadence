@@ -18,7 +18,7 @@ interface BubbleProps {
 /** A friend's day as a message: their avatar, name, what they did, and the reactions it got. */
 export const Bubble = (props: BubbleProps) => {
   const { circleId, bubble, me } = props;
-  const { member, date, habits, reactions } = bubble;
+  const { member, date, habits, off, reactions } = bubble;
   const { userId, tag, displayName, avatar, allowCheers, isYou } = member;
   const { id: meId, tag: meTag } = me;
 
@@ -53,6 +53,17 @@ export const Bubble = (props: BubbleProps) => {
               );
             })}
           </ul>
+          {off.length > 0 && (
+            <p className="bubble__off">
+              {t('offDays', {
+                names: off
+                  .map(({ name, icon }) => {
+                    return name ?? icon ?? t('aHabit');
+                  })
+                  .join(', '),
+              })}
+            </p>
+          )}
         </div>
         <ReactionBar reactions={reactions} enabled={allowCheers && !isYou} onToggle={onToggle} />
       </div>

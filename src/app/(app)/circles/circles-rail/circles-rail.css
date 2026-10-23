@@ -12,6 +12,10 @@
   @apply font-display text-3xl;
 }
 
+.circles-rail__actions {
+  @apply flex flex-wrap gap-2;
+}
+
 .circles-rail__list {
   @apply flex flex-col gap-1.5;
 }

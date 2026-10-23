@@ -32,6 +32,7 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     today: TODAY,
     inWeek: true,
     closer: false,
+    showedUpDays: [],
     avatar: { kind: 'initial', value: null, color: null, url: null },
     allowCheers: true,
     showedUpWeek: true,
@@ -146,5 +147,23 @@ describe('buildFeed', () => {
     const sam = member({ habits: [], reactions: [{ userId: KIM, tag: 'kim', date: TODAY, emoji: '🔥' }] });
 
     expect(buildFeed([me, sam], TODAY)).toEqual([]);
+  });
+
+  it('adds the habits that did not happen to a day that has a bubble, only where the partner allowed it', () => {
+    const sam = member({
+      habits: [
+        habit(),
+        habit({ name: 'Run', icon: '🏃', done: false, showsMisses: true, missed: [TODAY, '2026-10-13'] }),
+      ],
+    });
+    const [day] = buildFeed([me, sam], TODAY);
+
+    expect(day.bubbles[0].off).toEqual([{ name: 'Run', icon: '🏃' }]);
+  });
+
+  it('has no off days when nothing was allowed', () => {
+    const sam = member({ habits: [habit({ done: true, missed: null })] });
+
+    expect(buildFeed([me, sam], TODAY)[0].bubbles[0].off).toEqual([]);
   });
 });

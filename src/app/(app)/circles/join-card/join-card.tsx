@@ -16,7 +16,10 @@ interface JoinCardProps {
 /** "Join this circle?": its name, who is in it, and Join or No thanks. */
 export const JoinCard = (props: JoinCardProps) => {
   const { token, preview } = props;
-  const { name, full, members } = preview;
+  const { name, kind, full, members } = preview;
+  const [first] = members;
+  const { display_name: firstName = null, tag: firstTag = '' } = first ?? {};
+  const pair = kind === 'pair';
 
   const t = useTranslations('circles.join');
   const router = useRouter();
@@ -37,9 +40,9 @@ export const JoinCard = (props: JoinCardProps) => {
   return (
     <section aria-labelledby="join-title" className="join-card">
       <h1 id="join-title" className="join-card__title">
-        {t('title', { name })}
+        {pair && first ? t('pairTitle', { name: memberName(firstName, firstTag) }) : t('title', { name })}
       </h1>
-      <p className="join-card__text">{t('text', { count: members.length })}</p>
+      <p className="join-card__text">{pair ? t('pairText') : t('text', { count: members.length })}</p>
       <ul aria-label={t('peopleLabel')} className="join-card__people">
         {members.map(({ tag, display_name }) => {
           return (

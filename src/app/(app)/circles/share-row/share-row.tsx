@@ -9,15 +9,18 @@ interface ShareRowProps {
   habit: SharedByMeView;
   /** Nobody to customise for when you are alone in the circle. */
   canCustomise: boolean;
+  /** In a pair with your Closer on: a habit shared at Everything can show its off days. */
+  canShowMisses: boolean;
   onLevel: (habitId: string, level: Level) => void;
   onLabel: (habitId: string, level: Level, label: Label) => void;
   onCustomise: (habit: SharedByMeView) => void;
+  onMisses: (habitId: string, on: boolean) => void;
 }
 
 /** One of your habits: how much of it this circle sees, how it is named to them, and a way to treat one person differently. */
 export const ShareRow = (props: ShareRowProps) => {
-  const { habit, canCustomise, onLevel, onLabel, onCustomise } = props;
-  const { id, name, icon, level, label, overrides } = habit;
+  const { habit, canCustomise, canShowMisses, onLevel, onLabel, onCustomise, onMisses } = props;
+  const { id, name, icon, level, label, overrides, showsMisses } = habit;
   const { length: customised } = overrides;
 
   const t = useTranslations('circles.sharing');
@@ -36,6 +39,10 @@ export const ShareRow = (props: ShareRowProps) => {
     if (isLabel(next)) {
       onLabel(id, level, next);
     }
+  };
+
+  const onMissesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onMisses(id, event.target.checked);
   };
 
   const onCustomiseClick = () => {
@@ -73,6 +80,12 @@ export const ShareRow = (props: ShareRowProps) => {
         )}
       </div>
       <p className="share-row__help">{t(`help.${level}`)}</p>
+      {canShowMisses && level === 'everything' && (
+        <label className="share-row__misses">
+          <input type="checkbox" checked={showsMisses} onChange={onMissesChange} />
+          <span>{t('showMisses')}</span>
+        </label>
+      )}
     </li>
   );
 };

@@ -268,6 +268,13 @@ begin
           'allow_cheers', m.allow_cheers,
           'in_week', m.in_week,
           'closer', m.closer,
+          'showed_up_days', case when c.kind = 'pair' then coalesce((
+            select jsonb_agg(d.day order by d.day) from (
+              select distinct k.completion_date as day
+              from vis v join public.habit_completions k on k.habit_id = v.habit_id
+              where v.user_id = m.user_id and k.completion_date between m.today - 6 and m.today
+            ) d
+          ), '[]'::jsonb) else '[]'::jsonb end,
           'avatar_kind', case when m.avatar_kind = 'photo' then 'initial' else m.avatar_kind end,
           'avatar_value', m.avatar_value,
           'avatar_color', m.avatar_color,

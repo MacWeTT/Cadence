@@ -1,0 +1,17 @@
+@reference '../../../globals.css';
+
+.closer-switch {
+  @apply flex cursor-pointer items-start gap-3 rounded-md border border-line p-3;
+}
+
+.closer-switch__title {
+  @apply block font-semibold;
+}
+
+.closer-switch__text {
+  @apply block text-sm text-ink-muted;
+}
+
+.closer-switch__status {
+  @apply mt-1 block text-sm font-medium text-moss;
+}

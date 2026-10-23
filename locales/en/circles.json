@@ -51,7 +51,9 @@
     "decline": "No thanks",
     "invalidTitle": "This invite does not work",
     "invalidText": "It has expired, or a newer link replaced it. Ask for a new one.",
-    "full": "This circle is full, so no one else can join right now."
+    "full": "This circle is full, so no one else can join right now.",
+    "pairTitle": "Be partners with {name}?",
+    "pairText": "A pair is just the two of you. Nothing is shared until each of you chooses."
   },
   "confirm": {
     "leaveTitle": "Leave {name}?",
@@ -106,7 +108,9 @@
     "overrideTitle": "{name}, person by person",
     "overrideText": "Give someone more or less than the rest of the circle. Changes apply right away.",
     "overrideFor": "What {who} sees",
-    "done": "Done"
+    "done": "Done",
+    "showMisses": "Show my off days for this one",
+    "introPair": "Nothing is shared until you choose. Pick how much of each habit your partner sees. Off days show only when you both turn on Closer and you choose the habit."
   },
   "member": {
     "showedUpWeek": "Showed up this week",
@@ -119,7 +123,8 @@
     "weekProgress": "{done} of {target} this week",
     "history": "{count} days ticked in the last {weeks} weeks",
     "countMyWeek": "Count my week with this circle",
-    "letFriendsCheer": "Let friends react to me"
+    "letFriendsCheer": "Let friends react to me",
+    "offDays": "Didn't happen: {names}"
   },
   "home": {
     "title": "Circles",
@@ -165,6 +170,35 @@
     "pin": "Pin to the top",
     "pinText": "Keeps this circle first in your list.",
     "leave": "Leave circle",
-    "close": "Close circle"
+    "close": "Close circle",
+    "end": "End partnership"
+  },
+  "pair": {
+    "invite": "Invite a partner",
+    "label": "Partner",
+    "waiting": "Waiting for your partner",
+    "waitingText": "Send them your invite link. A pair is just the two of you, and nothing is shared until each of you chooses.",
+    "waitingAction": "Get the invite link",
+    "subtitle": "Partners",
+    "subtitleCloser": "Partners, with Closer on",
+    "end": "End partnership",
+    "endTitle": "End your partnership with {name}?",
+    "endTitleWaiting": "End this partnership?",
+    "endText": "This ends it for both of you. What you each shared here is removed.",
+    "endConfirm": "End partnership"
+  },
+  "together": {
+    "title": "Week together",
+    "summary": "{count, plural, =0 {No shared days yet. There is always today.} one {You both showed up on # day.} other {You both showed up on # days.}}",
+    "you": "You",
+    "rowLabel": "{name} showed up on {count} of the last 7 days.{off, plural, =0 {} one { One day didn't happen.} other { # days didn't happen.}}",
+    "offMark": "Didn't happen"
+  },
+  "closer": {
+    "label": "Let us see each other's off days",
+    "text": "It only works when you both turn it on. Either of you can turn it off, and it ends at once for both of you.",
+    "off": "Off.",
+    "waitingFor": "Waiting for {name} to turn it on too.",
+    "active": "On for both of you. Below, choose which habits show their off days."
   }
 }

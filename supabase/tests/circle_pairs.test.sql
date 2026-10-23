@@ -1,5 +1,5 @@
 begin;
-select plan(26);
+select plan(29);
 
 -- A starts a pair and B joins it; C tries to be a third. D is outside everything.
 insert into auth.users (id, email) values
@@ -77,6 +77,20 @@ select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000
 select set_config('t.ov', public.circle_overview(current_setting('t.p')::uuid)::text, true);
 select is((select (h ->> 'shows_misses')::boolean from jsonb_array_elements((select e -> 'habits' from jsonb_array_elements(current_setting('t.ov')::jsonb -> 'members') e where e ->> 'is_you' = 'false')) h), true, 'with Closer on for both and the tick, the partner may see off days');
 select is(position('missed' in current_setting('t.ov')), 0, 'and the payload still has no field about what was missed');
+
+-- in a pair, the days a partner showed up this week are listed (days only, nothing about which habit)
+reset role;
+insert into public.habit_completions (habit_id, completion_date) values
+  ('10000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date),
+  ('10000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date - 1),
+  ('10000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date - 9);
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated"}', true);
+select set_config('t.days', (select (e -> 'showed_up_days')::text from jsonb_array_elements(public.circle_overview(current_setting('t.p')::uuid) -> 'members') e where e ->> 'is_you' = 'false'), true);
+select is(jsonb_array_length(current_setting('t.days')::jsonb), 2, 'a partner''s days are the last seven only');
+select is((current_setting('t.days')::jsonb ->> 1), ((now() at time zone 'UTC')::date)::text, 'listed oldest first, ending today');
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
+select is((select jsonb_array_length(e -> 'showed_up_days') from jsonb_array_elements(public.circle_overview(current_setting('t.g')::uuid) -> 'members') e where e ->> 'is_you' = 'true'), 0, 'a group never lists the days people showed up');
 
 -- lowering the habit clears the tick
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);

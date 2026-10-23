@@ -19,3 +19,7 @@
 .share-row__help {
   @apply w-full text-sm text-ink-muted;
 }
+
+.share-row__misses {
+  @apply flex w-full cursor-pointer items-center gap-2 text-sm;
+}

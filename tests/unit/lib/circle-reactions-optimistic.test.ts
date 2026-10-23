@@ -18,6 +18,7 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     today: DAY,
     inWeek: true,
     closer: false,
+    showedUpDays: [],
     avatar: { kind: 'initial', value: null, color: null, url: null },
     allowCheers: true,
     showedUpWeek: true,
