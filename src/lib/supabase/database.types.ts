@@ -65,14 +65,14 @@ isOneToOne: false
                   ]
                 },"circle_members": {
                   Row: {
-                    "allow_cheers": boolean,"circle_id": string,"color": string,"in_week": boolean,"joined_at": string,"pinned": boolean,"user_id": string
+                    "allow_cheers": boolean,"circle_id": string,"closer": boolean,"color": string,"in_week": boolean,"joined_at": string,"pinned": boolean,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "allow_cheers"?: boolean,"circle_id": string,"color"?: string,"in_week"?: boolean,"joined_at"?: string,"pinned"?: boolean,"user_id": string
+                    "allow_cheers"?: boolean,"circle_id": string,"closer"?: boolean,"color"?: string,"in_week"?: boolean,"joined_at"?: string,"pinned"?: boolean,"user_id": string
                   }
                   Update: {
-                    "allow_cheers"?: boolean,"circle_id"?: string,"color"?: string,"in_week"?: boolean,"joined_at"?: string,"pinned"?: boolean,"user_id"?: string
+                    "allow_cheers"?: boolean,"circle_id"?: string,"closer"?: boolean,"color"?: string,"in_week"?: boolean,"joined_at"?: string,"pinned"?: boolean,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -85,14 +85,14 @@ isOneToOne: false
                   ]
                 },"circles": {
                   Row: {
-                    "created_at": string,"id": string,"name": string,"owner_id": string | null
+                    "created_at": string,"id": string,"kind": string,"name": string,"owner_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"name": string,"owner_id"?: string | null
+                    "created_at"?: string,"id"?: string,"kind"?: string,"name": string,"owner_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"name"?: string,"owner_id"?: string | null
+                    "created_at"?: string,"id"?: string,"kind"?: string,"name"?: string,"owner_id"?: string | null
                   }
                   Relationships: [
                     
@@ -233,14 +233,14 @@ isOneToOne: false
                   ]
                 },"habit_shares": {
                   Row: {
-                    "circle_id": string,"habit_id": string,"label": string,"level": string
+                    "circle_id": string,"habit_id": string,"label": string,"level": string,"shows_misses": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "circle_id": string,"habit_id": string,"label"?: string,"level": string
+                    "circle_id": string,"habit_id": string,"label"?: string,"level": string,"shows_misses"?: boolean
                   }
                   Update: {
-                    "circle_id"?: string,"habit_id"?: string,"label"?: string,"level"?: string
+                    "circle_id"?: string,"habit_id"?: string,"label"?: string,"level"?: string,"shows_misses"?: boolean
                   }
                   Relationships: [
                     {
@@ -356,6 +356,9 @@ isOneToOne: false
 "create_invite":
 { Args: { "p_circle": string }; Returns: string
                            },
+"create_pair":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "delete_circle":
 { Args: { "p_circle": string }; Returns: undefined
                            },
@@ -381,7 +384,7 @@ isOneToOne: false
                            },
 "my_circles":
 { Args: Record<PropertyKey, never>; Returns: {
-              "color": string,"id": string,"is_owner": boolean,"member_count": number,"name": string,"pinned": boolean
+              "color": string,"id": string,"is_owner": boolean,"kind": string,"member_count": number,"name": string,"partner_name": string,"partner_tag": string,"pinned": boolean
             }[]
                            },
 "react":
@@ -408,11 +411,17 @@ isOneToOne: false
 "set_circle_prefs":
 { Args: { "p_allow_cheers": boolean,"p_circle": string,"p_in_week": boolean }; Returns: undefined
                            },
+"set_closer":
+{ Args: { "p_circle": string,"p_on": boolean }; Returns: undefined
+                           },
 "set_completion":
 { Args: { "p_date": string,"p_done": boolean,"p_habit_id": string,"p_today": string }; Returns: undefined
                            },
 "set_share":
 { Args: { "p_circle": string,"p_habit": string,"p_label"?: string,"p_level": string }; Returns: undefined
+                           },
+"set_share_misses":
+{ Args: { "p_circle": string,"p_habit": string,"p_on": boolean }; Returns: undefined
                            },
 "set_share_override":
 { Args: { "p_circle": string,"p_habit": string,"p_label"?: string,"p_level": string,"p_viewer": string }; Returns: undefined

@@ -10,6 +10,7 @@ import {
   SHARE_LEVELS,
   atLeast,
   circleNameProblem,
+  closerActive,
   isLabel,
   isLevel,
   isReaction,
@@ -20,6 +21,7 @@ import {
 import { COLOR_KEYS } from '@/lib/palette';
 
 const MIGRATION = readFileSync('supabase/migrations/20261019100000_circles.sql', 'utf8');
+const PAIRS_MIGRATION = readFileSync('supabase/migrations/20261025100000_circle_pairs.sql', 'utf8');
 const LOOK_MIGRATION = readFileSync('supabase/migrations/20261025080000_circle_look_and_reactions.sql', 'utf8');
 
 describe('levels', () => {
@@ -138,5 +140,27 @@ describe('reactions and colours', () => {
     expect(LOOK_MIGRATION).toContain(`check (emoji in (${quoted(REACTIONS)}))`);
     expect(LOOK_MIGRATION).toContain(`check (color in (${quoted(CIRCLE_COLORS)}))`);
     expect(LOOK_MIGRATION).toContain(`v_today - ${REACTION_DAYS}`);
+  });
+});
+
+describe('closerActive', () => {
+  it('is on only when both people of a pair have turned it on', () => {
+    expect(closerActive([{ closer: true }, { closer: true }])).toBe(true);
+    expect(closerActive([{ closer: true }, { closer: false }])).toBe(false);
+    expect(closerActive([{ closer: false }, { closer: false }])).toBe(false);
+  });
+
+  it('is never on for one person waiting, or for a group of three', () => {
+    expect(closerActive([{ closer: true }])).toBe(false);
+    expect(closerActive([{ closer: true }, { closer: true }, { closer: true }])).toBe(false);
+    expect(closerActive([])).toBe(false);
+  });
+});
+
+describe('pairs agree with the database', () => {
+  it('holds two people, and a group the same number as before', () => {
+    expect(CIRCLE_LIMITS.pairMembers).toBe(2);
+    expect(PAIRS_MIGRATION).toContain(`'pair' then ${CIRCLE_LIMITS.pairMembers} else ${CIRCLE_LIMITS.maxMembers} end`);
+    expect(PAIRS_MIGRATION).toContain("check (kind in ('group', 'pair'))");
   });
 });
