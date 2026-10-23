@@ -12,14 +12,6 @@
   @apply border-moss bg-moss/15;
 }
 
-.reaction-bar__add {
-  @apply inline-flex size-8 items-center justify-center rounded-full border border-transparent text-ink-muted transition-colors hover:border-line hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-clay;
-}
-
-.reaction-bar__add-icon {
-  @apply size-4;
-}
-
 .reaction-bar__picker {
   @apply flex gap-1 rounded-full border border-line bg-surface px-1.5 py-1 shadow-sm;
 }

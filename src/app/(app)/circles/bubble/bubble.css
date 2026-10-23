@@ -12,6 +12,19 @@
   @apply text-sm font-semibold wrap-break-word;
 }
 
+.bubble__line {
+  @apply flex max-w-full items-center gap-1.5;
+}
+
+/* The react button sits beside the message, faint until it is wanted, like the reaction button of a chat app. */
+.bubble__add {
+  @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink-muted opacity-60 transition-opacity hover:bg-surface hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.bubble__add-icon {
+  @apply size-4;
+}
+
 .bubble__card {
   @apply max-w-full rounded-2xl rounded-tl-sm border border-line bg-surface px-4 py-3 shadow-sm;
 }
