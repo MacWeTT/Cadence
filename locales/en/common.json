@@ -15,7 +15,8 @@
   "account": {
     "fallbackName": "Account",
     "signOut": "Sign out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "signIn": "Sign in"
   },
   "loading": {
     "list": "Loading {title}",

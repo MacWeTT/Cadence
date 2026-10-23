@@ -14,6 +14,8 @@ export const queryKeys = {
   profile: ['profile'] as const,
   /** The running focus session and the last-used numbers per habit. */
   focus: ['focus'] as const,
+  /** Who is signed in on the desktop app (the web app reads it on the server). */
+  session: ['session'] as const,
   /** The circles the person is in. */
   circles: ['circles'] as const,
   /** One circle as the person may see it. */

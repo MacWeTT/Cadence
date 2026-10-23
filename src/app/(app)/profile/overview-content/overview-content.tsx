@@ -1,12 +1,11 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { dataSource } from '@/data';
 import { AvatarModal } from '@/app/(app)/profile/avatar-modal/avatar-modal';
 import { NameModal } from '@/app/(app)/profile/name-modal/name-modal';
 import { TagModal } from '@/app/(app)/profile/tag-modal/tag-modal';
+import { SignOutForm } from '@/app/(app)/profile/sign-out-form/sign-out-form';
 import { SoundModal } from '@/app/(app)/profile/sound-modal/sound-modal';
 import { TimezoneModal } from '@/app/(app)/profile/timezone-modal/timezone-modal';
 import { useProfile } from '@/app/(app)/profile/use-profile';
@@ -32,7 +31,6 @@ export const OverviewContent = () => {
   const [state, setState] = useState<OverviewState>({ open: null });
 
   const t = useTranslations('profile');
-  const ta = useTranslations('common.account');
   const { data, isError, refetch } = useProfile();
 
   const { open } = state;
@@ -115,12 +113,7 @@ export const OverviewContent = () => {
         </SettingRow>
       </div>
 
-      <form action={dataSource.signOut} className="overview-content__sign-out">
-        <Button type="submit" variant="destructive">
-          <LogOut aria-hidden />
-          {ta('signOut')}
-        </Button>
-      </form>
+      <SignOutForm />
 
       {open === 'photo' && <AvatarModal avatar={avatar} name={shownName} onClose={onClose} />}
       {open === 'name' && <NameModal name={name} onClose={onClose} />}

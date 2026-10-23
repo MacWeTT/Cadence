@@ -1,5 +1,9 @@
 import { createChanges } from '@/data/local/changes';
-import { createAccountChanges } from '@/data/local/backup';
+import { openUrl } from '@tauri-apps/plugin-opener';
+import { createAuth, type SignedInUser } from '@/data/local/auth';
+import { createAccountChanges, exportFile } from '@/data/local/backup';
+import { cloud } from '@/data/local/cloud';
+import { createGoogle } from '@/data/local/google';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
 import { createProfileChanges } from '@/data/local/profile-changes';
@@ -37,18 +41,45 @@ const sql: Sql = {
 };
 
 /** The desktop app's data: the SQLite file on the PC. Nothing here imports server code, which is what the desktop build checks. */
-export const local: DataSource = {
+/** What only the desktop app has: its own files for download, and who is signed in. */
+export interface DesktopExtras {
+  exportFile: (format: 'json' | 'csv') => ReturnType<typeof exportFile>;
+  currentUser: () => Promise<SignedInUser | null>;
+  /** What the register screen shows, or `null` when nobody is signed in. */
+  registration: () => Promise<{ email: string; tag: string; registered: boolean } | null>;
+  /** Google sign-in through the system browser: open it, then finish from the `cadence://` link it comes back with. */
+  startGoogle: () => Promise<{ error: string | null }>;
+  finishGoogle: (link: string) => Promise<{ next: string | null; error: string | null } | null>;
+}
+
+const { signIn, signUp, register, registration, signOut, currentUser } = createAuth(cloud);
+
+// The site that hosts `/auth/desktop`, the page Google comes back to (it must be an allowed redirect in Supabase).
+const { start: startGoogle, finish: finishGoogle } = createGoogle(
+  cloud,
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  openUrl,
+);
+
+export const local: DataSource & DesktopExtras = {
   ...createReads(sql),
   ...createChanges(sql),
   ...createFocusChanges(sql),
   ...createProfileChanges(sql),
   ...createAccountChanges(sql),
+  signIn,
+  signUp,
+  register,
+  signOut,
+  currentUser,
+  registration,
+  startGoogle,
+  finishGoogle,
+  exportFile: format => {
+    return exportFile(sql, format);
+  },
   syncTimezone: deviceTimeZone => {
     return syncTimezone(sql, deviceTimeZone);
   },
   sendContact: notBuilt,
-  signIn: notBuilt,
-  signUp: notBuilt,
-  register: notBuilt,
-  signOut: notBuilt,
 };
