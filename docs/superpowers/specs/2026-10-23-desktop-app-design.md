@@ -109,7 +109,8 @@ Notifications (Tauri's notification plugin: the Home alert rules and the focus t
    - Done: the Tauri shell (`src-tauri/`, run with `npm run tauri -- dev`, build with `npm run tauri -- build`). It opens a Cadence window on the static desktop copy; every screen says "Couldn't load" until the local data source below exists. Needs the Rust toolchain and the Visual Studio C++ build tools.
    - Done: the local SQLite file (`src/data/local/`, with the two Rust commands in `src-tauri/src/db.rs`): versioned migrations that refuse a file made by a newer app, the habit, schedule, pause, tick, focus and profile tables, and the reads (Today, Home, Habits, Progress, Profile, Account, Focus), built with the same pure builders the server uses (`src/server/page-data.ts`), plus the timezone sync. Tested against an in-memory SQLite in unit tests. The desktop build removes the web app's service worker (it cannot reach the app's own address).
    - Done: the changes on local rows (`src/data/local/changes.ts`: create, edit, archive, restore, delete and tick, with the rules the server's database functions keep, each change one transaction).
-   - Next: focus, then the profile and account edits.
+   - Done: focus on local rows (`src/data/local/focus-changes.ts`: start, stop, pause, resume, skip, discard, on the device clock).
+   - Next: the profile and account edits.
 3. **Signing in from the app, and the sync at sign-in** (the table above, the choice dialog, the safety copy): a `meta` table in the local file (a migration, with `linked_user_id`), the upload through the backup and the pull straight back, the settings rules, and the prompts at sign-up and sign-in.
 4. **Staying in step**: the change queue, `updated_at`, pulling, conflicts.
 5. **Native features, the installer and the updater**, and the profile's Installer link.
