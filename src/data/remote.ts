@@ -5,6 +5,33 @@ import {
   restoreHabitAction,
   updateHabitAction,
 } from '@/app/(app)/habits/actions';
+import { sendContactAction } from '@/app/(app)/contact/actions';
+import { syncTimezoneAction } from '@/app/(app)/timezone-actions';
+import { signInAction, signUpAction } from '@/app/(auth)/login/actions';
+import { registerAction } from '@/app/(auth)/register/actions';
+import { signOut } from '@/app/auth/actions';
+import {
+  removeSoundAction,
+  setPasswordAction,
+  updateAccentAction,
+  updateAvatarAction,
+  updateNameAction,
+  updateSoundAction,
+  updateTagAction,
+  updateTimezoneAction,
+  updateWeekStartAction,
+  uploadAvatarPhotoAction,
+  uploadSoundAction,
+} from '@/app/(app)/profile/actions';
+import { deleteAccountAction, importBackupAction } from '@/app/(app)/profile/account/actions';
+import {
+  discardFocusAction,
+  pauseFocusAction,
+  resumeFocusAction,
+  skipBreakAction,
+  startFocusAction,
+  stopFocusAction,
+} from '@/app/(app)/focus-actions';
 import { setCompletionAction } from '@/app/(app)/today/actions';
 import type { DataSource } from '@/data/types';
 import { fetchJson } from '@/lib/query/fetch-json';
@@ -57,5 +84,80 @@ export const remote: DataSource = {
   },
   setCompletion: (habitId, date, done) => {
     return setCompletionAction(habitId, date, done);
+  },
+  startFocus: input => {
+    return startFocusAction(input);
+  },
+  stopFocus: () => {
+    return stopFocusAction();
+  },
+  skipBreak: () => {
+    return skipBreakAction();
+  },
+  pauseFocus: () => {
+    return pauseFocusAction();
+  },
+  resumeFocus: () => {
+    return resumeFocusAction();
+  },
+  discardFocus: sessionId => {
+    return discardFocusAction(sessionId);
+  },
+  updateName: input => {
+    return updateNameAction(input);
+  },
+  updateTag: input => {
+    return updateTagAction(input);
+  },
+  setPassword: input => {
+    return setPasswordAction(input);
+  },
+  updateWeekStart: input => {
+    return updateWeekStartAction(input);
+  },
+  updateTimezone: input => {
+    return updateTimezoneAction(input);
+  },
+  updateAvatar: input => {
+    return updateAvatarAction(input);
+  },
+  uploadAvatarPhoto: form => {
+    return uploadAvatarPhotoAction(form);
+  },
+  updateAccent: input => {
+    return updateAccentAction(input);
+  },
+  updateSound: input => {
+    return updateSoundAction(input);
+  },
+  uploadSound: form => {
+    return uploadSoundAction(form);
+  },
+  removeSound: soundId => {
+    return removeSoundAction(soundId);
+  },
+  importBackup: form => {
+    return importBackupAction(form);
+  },
+  deleteAccount: email => {
+    return deleteAccountAction(email);
+  },
+  syncTimezone: browserTimeZone => {
+    return syncTimezoneAction(browserTimeZone);
+  },
+  sendContact: input => {
+    return sendContactAction(input);
+  },
+  signIn: (input, next) => {
+    return signInAction(input, next);
+  },
+  signUp: (input, next) => {
+    return signUpAction(input, next);
+  },
+  register: (input, next) => {
+    return registerAction(input, next);
+  },
+  signOut: () => {
+    return signOut();
   },
 };

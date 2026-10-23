@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { signUpAction } from '@/app/(auth)/login/actions';
+import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -66,7 +66,7 @@ export const SignUpForm = (props: SignUpFormProps) => {
     event.preventDefault();
     setForm({ ...form, busy: true, error: null });
 
-    const { next: goTo, error: refusal } = await signUpAction({ email, tag, password, confirm }, next);
+    const { next: goTo, error: refusal } = await dataSource.signUp({ email, tag, password, confirm }, next);
 
     if (goTo) {
       // a full load, so nothing from before signing in is left in the page

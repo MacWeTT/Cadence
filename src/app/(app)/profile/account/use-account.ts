@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { deleteAccountAction, importBackupAction } from '@/app/(app)/profile/account/actions';
 import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 
@@ -32,7 +31,7 @@ export const useImportBackup = () => {
 
       form.set('file', file);
 
-      const result = await importBackupAction(form);
+      const result = await dataSource.importBackup(form);
 
       if (!result.ok) {
         const { error } = result;
@@ -60,7 +59,7 @@ export const useDeleteAccount = () => {
 
   return useMutation({
     mutationFn: async (email: string) => {
-      const result = await deleteAccountAction(email);
+      const result = await dataSource.deleteAccount(email);
 
       if (!result.ok) {
         const { error } = result;

@@ -1,14 +1,15 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
+import type { AccountActionResult } from '@/data/types';
 import { backupErrorText } from '@/lib/backup-error-text';
-import { BACKUP_LIMITS, type BackupError, type BackupSummary } from '@/lib/backup-types';
+import { BACKUP_LIMITS, type BackupError } from '@/lib/backup-types';
 import { getUser } from '@/lib/supabase/server';
 import { BackupRefused, deleteAccount, importBackup } from '@/server/backup';
 import { ProfileError } from '@/server/profile-storage';
 
 /** What an account action answers: the browser shows the message as an error toast. */
-export type AccountActionResult = { ok: true; summary?: BackupSummary } | { ok: false; error: string };
+export type { AccountActionResult };
 
 const words = async (error: BackupError): Promise<string> => {
   return backupErrorText(await getTranslations('account.import'), error);

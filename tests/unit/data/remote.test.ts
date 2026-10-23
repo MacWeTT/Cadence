@@ -15,6 +15,41 @@ const actions = vi.hoisted(() => {
     restoreHabitAction: vi.fn(answers),
     deleteHabitAction: vi.fn(answers),
     setCompletionAction: vi.fn(answers),
+    startFocusAction: vi.fn(answers),
+    stopFocusAction: vi.fn(answers),
+    skipBreakAction: vi.fn(answers),
+    pauseFocusAction: vi.fn(answers),
+    resumeFocusAction: vi.fn(answers),
+    discardFocusAction: vi.fn(answers),
+    updateNameAction: vi.fn(answers),
+    updateTagAction: vi.fn(answers),
+    setPasswordAction: vi.fn(answers),
+    updateWeekStartAction: vi.fn(answers),
+    updateTimezoneAction: vi.fn(answers),
+    updateAvatarAction: vi.fn(answers),
+    uploadAvatarPhotoAction: vi.fn(answers),
+    updateAccentAction: vi.fn(answers),
+    updateSoundAction: vi.fn(answers),
+    uploadSoundAction: vi.fn(answers),
+    removeSoundAction: vi.fn(answers),
+    importBackupAction: vi.fn(answers),
+    deleteAccountAction: vi.fn(answers),
+    syncTimezoneAction: vi.fn(() => {
+      return Promise.resolve(true);
+    }),
+    sendContactAction: vi.fn(answers),
+    signInAction: vi.fn(() => {
+      return Promise.resolve({ next: '/', error: null });
+    }),
+    signUpAction: vi.fn(() => {
+      return Promise.resolve({ next: '/', error: null });
+    }),
+    registerAction: vi.fn(() => {
+      return Promise.resolve({ next: '/', error: null });
+    }),
+    signOut: vi.fn(() => {
+      return Promise.resolve();
+    }),
   };
 });
 
@@ -23,6 +58,58 @@ vi.mock('@/app/(app)/habits/actions', () => {
   const { createHabitAction, updateHabitAction, archiveHabitAction, restoreHabitAction, deleteHabitAction } = actions;
 
   return { createHabitAction, updateHabitAction, archiveHabitAction, restoreHabitAction, deleteHabitAction };
+});
+vi.mock('@/app/(app)/focus-actions', () => {
+  const {
+    startFocusAction,
+    stopFocusAction,
+    skipBreakAction,
+    pauseFocusAction,
+    resumeFocusAction,
+    discardFocusAction,
+  } = actions;
+
+  return {
+    startFocusAction,
+    stopFocusAction,
+    skipBreakAction,
+    pauseFocusAction,
+    resumeFocusAction,
+    discardFocusAction,
+  };
+});
+vi.mock('@/app/(app)/profile/actions', () => {
+  return {
+    updateNameAction: actions.updateNameAction,
+    updateTagAction: actions.updateTagAction,
+    setPasswordAction: actions.setPasswordAction,
+    updateWeekStartAction: actions.updateWeekStartAction,
+    updateTimezoneAction: actions.updateTimezoneAction,
+    updateAvatarAction: actions.updateAvatarAction,
+    uploadAvatarPhotoAction: actions.uploadAvatarPhotoAction,
+    updateAccentAction: actions.updateAccentAction,
+    updateSoundAction: actions.updateSoundAction,
+    uploadSoundAction: actions.uploadSoundAction,
+    removeSoundAction: actions.removeSoundAction,
+  };
+});
+vi.mock('@/app/(app)/profile/account/actions', () => {
+  return { importBackupAction: actions.importBackupAction, deleteAccountAction: actions.deleteAccountAction };
+});
+vi.mock('@/app/(app)/timezone-actions', () => {
+  return { syncTimezoneAction: actions.syncTimezoneAction };
+});
+vi.mock('@/app/(app)/contact/actions', () => {
+  return { sendContactAction: actions.sendContactAction };
+});
+vi.mock('@/app/(auth)/login/actions', () => {
+  return { signInAction: actions.signInAction, signUpAction: actions.signUpAction };
+});
+vi.mock('@/app/(auth)/register/actions', () => {
+  return { registerAction: actions.registerAction };
+});
+vi.mock('@/app/auth/actions', () => {
+  return { signOut: actions.signOut };
 });
 vi.mock('@/app/(app)/today/actions', () => {
   return { setCompletionAction: actions.setCompletionAction };
@@ -132,5 +219,111 @@ describe('the remote data source, habits and Today', () => {
     actions.createHabitAction.mockResolvedValueOnce(refusal as never);
 
     await expect(remote.createHabit({})).resolves.toEqual(refusal);
+  });
+});
+
+describe('the remote data source, focus', () => {
+  it('starts a session with what the setup panel chose, as it is', async () => {
+    const input = { habitId: 'h1', mode: 'free', plan: null, soundId: null };
+
+    await expect(remote.startFocus(input)).resolves.toEqual(actions.ok);
+
+    expect(actions.startFocusAction).toHaveBeenCalledWith(input);
+  });
+
+  it('stops, skips a break, pauses and resumes the running session', async () => {
+    await remote.stopFocus();
+    await remote.skipBreak();
+    await remote.pauseFocus();
+    await remote.resumeFocus();
+
+    expect(actions.stopFocusAction).toHaveBeenCalledTimes(1);
+    expect(actions.skipBreakAction).toHaveBeenCalledTimes(1);
+    expect(actions.pauseFocusAction).toHaveBeenCalledTimes(1);
+    expect(actions.resumeFocusAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('drops a finished session by its id', async () => {
+    await remote.discardFocus('s1');
+
+    expect(actions.discardFocusAction).toHaveBeenCalledWith('s1');
+  });
+});
+
+describe('the remote data source, profile', () => {
+  it('saves each setting through its action with what the modal holds', async () => {
+    await remote.updateName({ name: 'Mac' });
+    await remote.updateTag({ tag: 'mac' });
+    await remote.setPassword({ password: 'longenough', confirm: 'longenough' });
+    await remote.updateWeekStart({ weekStartsOn: 7 });
+    await remote.updateTimezone({ timezone: 'Asia/Kolkata' });
+    await remote.updateAvatar({ kind: 'emoji', value: '🌱' });
+    await remote.updateAccent({ accent: 'plum', customHex: null });
+    await remote.updateSound({ id: 'bell', volume: 0.6 });
+
+    expect(actions.updateNameAction).toHaveBeenCalledWith({ name: 'Mac' });
+    expect(actions.updateTagAction).toHaveBeenCalledWith({ tag: 'mac' });
+    expect(actions.setPasswordAction).toHaveBeenCalledWith({ password: 'longenough', confirm: 'longenough' });
+    expect(actions.updateWeekStartAction).toHaveBeenCalledWith({ weekStartsOn: 7 });
+    expect(actions.updateTimezoneAction).toHaveBeenCalledWith({ timezone: 'Asia/Kolkata' });
+    expect(actions.updateAvatarAction).toHaveBeenCalledWith({ kind: 'emoji', value: '🌱' });
+    expect(actions.updateAccentAction).toHaveBeenCalledWith({ accent: 'plum', customHex: null });
+    expect(actions.updateSoundAction).toHaveBeenCalledWith({ id: 'bell', volume: 0.6 });
+  });
+
+  it('uploads a photo or a sound as the form it was chosen in, and removes a sound by its id', async () => {
+    const form = new FormData();
+
+    await remote.uploadAvatarPhoto(form);
+    await remote.uploadSound(form);
+    await remote.removeSound('s1');
+
+    expect(actions.uploadAvatarPhotoAction).toHaveBeenCalledWith(form);
+    expect(actions.uploadSoundAction).toHaveBeenCalledWith(form);
+    expect(actions.removeSoundAction).toHaveBeenCalledWith('s1');
+  });
+
+  it('restores a backup from its file and deletes the account after the typed confirmation', async () => {
+    const form = new FormData();
+
+    await remote.importBackup(form);
+    await remote.deleteAccount('me@example.com');
+
+    expect(actions.importBackupAction).toHaveBeenCalledWith(form);
+    expect(actions.deleteAccountAction).toHaveBeenCalledWith('me@example.com');
+  });
+});
+
+describe('the remote data source, the rest', () => {
+  it('offers the browser timezone to the server and says whether it was saved', async () => {
+    await expect(remote.syncTimezone('Asia/Kolkata')).resolves.toBe(true);
+
+    expect(actions.syncTimezoneAction).toHaveBeenCalledWith('Asia/Kolkata');
+  });
+
+  it('sends a contact message as the form holds it', async () => {
+    const input = { message: 'Hello' };
+
+    await remote.sendContact(input);
+
+    expect(actions.sendContactAction).toHaveBeenCalledWith(input);
+  });
+
+  it('signs in, creates an account and registers, each with where to go on to', async () => {
+    const input = { identifier: 'mac' };
+
+    await expect(remote.signIn(input, '/habits')).resolves.toEqual({ next: '/', error: null });
+    await remote.signUp(input, null);
+    await remote.register(input, '/today');
+
+    expect(actions.signInAction).toHaveBeenCalledWith(input, '/habits');
+    expect(actions.signUpAction).toHaveBeenCalledWith(input, null);
+    expect(actions.registerAction).toHaveBeenCalledWith(input, '/today');
+  });
+
+  it('signs out', async () => {
+    await remote.signOut();
+
+    expect(actions.signOut).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,6 +1,7 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
+import type { ProfileActionResult } from '@/data/types';
 import type { z } from 'zod';
 import { passwordChangeSchema } from '@/lib/auth-schema';
 import {
@@ -27,7 +28,7 @@ import { setPassword } from '@/server/registration';
 import { ProfileError } from '@/server/profile-storage';
 
 /** What an edit answers: the browser shows the message as an error toast and puts the old value back. */
-export type ProfileActionResult = { ok: true; id?: string } | { ok: false; error: string };
+export type { ProfileActionResult };
 
 const fail = async (error: unknown): Promise<ProfileActionResult> => {
   const [t, tv] = await Promise.all([getTranslations('errors'), getTranslations('validation')]);
