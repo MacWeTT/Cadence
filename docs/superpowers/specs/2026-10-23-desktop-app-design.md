@@ -54,19 +54,31 @@ The existing e2e specs are the proof that the web app did not change.
 
 ## Signing in, and the sync rule
 
-Signing in on a device that has not been linked to this account yet compares the two sides:
+**The local user.** Until someone signs in, every row in the local file belongs to a built-in local user (`local`), and the profile is one row with placeholder values (tag `me`, no name). Nothing needs an account to work. Ids are made on the device (UUIDs), so rows never clash with the server's when they move.
+
+**When the sync runs.** After a sign-in or a sign-up in the app (including a first Google sign-in, which ends on the register screen), if the file is not yet linked to this account, the two sides are compared. A file is **linked** once it has been through this step: `meta.linked_user_id` records the account, and it is remembered after signing out.
 
 | On the PC | On the account | What happens |
 |---|---|---|
-| has data | has none | The PC's data is **pushed** to the account. |
+| has data | has none (a new account, or an empty one) | The person is told, "You have 12 habits on this PC. Upload them to your account?" **Yes** uploads them (below). **No** leaves them on the PC only. |
 | has none | has data | The account's data is **pulled** to the PC. |
-| has data | has data | The person is **asked which to keep**, shown a count of each side (habits, check-ins, focus sessions, last change). The side they keep **overwrites the other**. |
+| has data | has data | The person is **asked which to keep**, shown a count of each side (habits, check-ins, focus sessions, last change). The side they keep **overwrites the other**, after a safety copy (below). |
 | has none | has none | Nothing to do. |
 
-- **The data of a side is the account backup**: the JSON format and the `replace_my_data` function the Account tab's export and import already use. Pushing is "replace my data with this backup"; pulling is "export, then replace the PC's data". That is the same whole-account snapshot the rule describes, and it already has limits, validation and tests.
-- **Before anything is overwritten**, what is about to be replaced is saved: a JSON file of the PC's data in the app's folder, or (for the account) the person is offered the export first. An overwrite is the one thing that cannot be undone, so it never happens silently.
-- **After linking, the two stay in step.** Changes made on the PC are queued and sent when there is a connection, using the same idempotent database functions the web app calls (`set_completion` and the rest); changes made elsewhere are pulled when the app starts, when it is shown, and on a timer. The same record changed on both sides: **the newest edit wins** (this needs an `updated_at` on the synced tables, a migration of its own). *This part is a default and can be changed: the alternative is to sync only at sign-in.*
-- **Signing out** keeps the PC's data and goes back to local-only. The device stays linked to the account it was linked to, so signing in to a different account on the same PC runs the table above again.
+**How the data moves: the existing backup, with no file.** There is no new format and no file on disk.
+
+- **Upload** builds a backup object in memory from the local rows (the same `Backup` shape the Account tab's export writes, from `src/lib/backup-types.ts`, built by the same code), checks it with the same parser and limits as an import (`parseBackup`, `BACKUP_LIMITS`: 500 habits, 200,000 ticks, 50,000 focus sessions, 5 MB), and sends it to the `replace_my_data` function through `supabase-js`. That function is all-or-nothing in one transaction and applies the tick rules to every row. A backup over a limit stops before anything is sent, and says what is over.
+- **`replace_my_data` replaces everything on the account and always makes new ids.** That is why the upload is only offered for an account with no data, and why the both-have-data case asks first. And because the ids on the server are new, **after an upload the app pulls the account's copy straight back** (replacing the local rows) so both sides hold the same ids. This pull is safe: it is the data that was just uploaded.
+- **Pull** reads the account's data into a backup (the same code as the Account tab's export, run with the person's session) and replaces the local rows with it, in one local transaction (`sql.batch`).
+- **Settings are not part of the backup.** The account's tag and name always win. The device's timezone, week start, sound and accent carry over to the account only while the account's own are still at their defaults, and are otherwise left as the account has them. After a pull, the local profile takes the account's settings.
+- **Safety copy.** Before one side overwrites the other, what is about to be replaced is saved: for the PC, a backup of the local rows in the app's folder; for the account, the person is offered the account's export first. An overwrite is the one thing that cannot be undone, so it never happens silently.
+- **A failure part-way** (no connection, the server refusing) changes nothing: the upload is one call, the pull is one local transaction, and the file is only marked linked after the last step succeeds. The person can try again.
+
+**After linking, the two stay in step** (a later step; it comes before 1.0 too). Changes made on the PC are queued and sent when there is a connection; changes made elsewhere are pulled when the app starts, when it is shown, and on a timer. The same record changed on both sides: **the newest edit wins**. Because the changes name records, this step needs ids that are the same on both sides (which the pull-back above gives) and an id-preserving way to write them: a new database function that adds or updates rows by id (and an `updated_at` on the synced tables), written then, in a migration of its own. The queue uses the same idempotent functions the web app calls (`set_completion` and the rest) wherever one exists. *This part is a default and can be changed: the alternative is to sync only at sign-in.*
+
+**Signing out** keeps the PC's data and goes back to local-only. The file stays linked to the account it was linked to, so signing in to the **same** account again just continues, and signing in to a **different** account on the same PC runs the table above again, comparing the file with that account (the safety copy covers the both-have-data case), so one person's history is never mixed into another's.
+
+**All of this ships before 1.0**, with the desktop app: the changes on local rows, the sign-in from the app, this first-sign-in sync, and staying in step.
 
 ## Sign in from the app
 
@@ -97,7 +109,7 @@ Notifications (Tauri's notification plugin: the Home alert rules and the focus t
    - Done: the Tauri shell (`src-tauri/`, run with `npm run tauri -- dev`, build with `npm run tauri -- build`). It opens a Cadence window on the static desktop copy; every screen says "Couldn't load" until the local data source below exists. Needs the Rust toolchain and the Visual Studio C++ build tools.
    - Done: the local SQLite file (`src/data/local/`, with the two Rust commands in `src-tauri/src/db.rs`): versioned migrations that refuse a file made by a newer app, the habit, schedule, pause, tick, focus and profile tables, and the reads (Today, Home, Habits, Progress, Profile, Account, Focus), built with the same pure builders the server uses (`src/server/page-data.ts`), plus the timezone sync. Tested against an in-memory SQLite in unit tests. The desktop build removes the web app's service worker (it cannot reach the app's own address).
    - Next: the changes on local rows (create, edit, archive, restore, delete, tick, with the rules the server's database functions keep), then focus, then the profile and account edits.
-3. **Signing in from the app, and the sync at sign-in** (the table above, the choice dialog, the safety copy).
+3. **Signing in from the app, and the sync at sign-in** (the table above, the choice dialog, the safety copy): a `meta` table in the local file (a migration, with `linked_user_id`), the upload through the backup and the pull straight back, the settings rules, and the prompts at sign-up and sign-in.
 4. **Staying in step**: the change queue, `updated_at`, pulling, conflicts.
 5. **Native features, the installer and the updater**, and the profile's Installer link.
 
