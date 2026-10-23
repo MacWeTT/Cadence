@@ -4,8 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { deleteAccountAction, importBackupAction } from '@/app/(app)/profile/account/actions';
-import type { BackupSummary } from '@/lib/backup-types';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 
 /** How much the account holds, for the export card (and its warning when an import would refuse it). */
@@ -13,7 +12,7 @@ export const useAccountCounts = () => {
   return useQuery({
     queryKey: queryKeys.account,
     queryFn: () => {
-      return fetchJson<BackupSummary>('/api/account');
+      return dataSource.account();
     },
   });
 };

@@ -12,7 +12,7 @@ import {
 import type { FocusPlan } from '@/domain/focus';
 import { offsetFrom } from '@/lib/focus-clock';
 import { withoutRunning } from '@/lib/focus-optimistic';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import type { FocusResult } from '@/server/focus';
 import type { FocusState } from '@/server/focus-view';
@@ -22,7 +22,7 @@ export const useFocusState = () => {
   return useQuery({
     queryKey: queryKeys.focus,
     queryFn: () => {
-      return fetchJson<FocusState>('/api/focus');
+      return dataSource.focus();
     },
   });
 };

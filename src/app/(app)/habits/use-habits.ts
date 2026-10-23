@@ -9,7 +9,7 @@ import {
   restoreHabitAction,
   type ActionResult,
 } from '@/app/(app)/habits/actions';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import { archiveInView, removeFromView, restoreInView } from '@/server/habits-optimistic';
 import type { HabitsView } from '@/server/habits';
@@ -19,7 +19,7 @@ export const useHabitsView = () => {
   return useQuery({
     queryKey: queryKeys.habits,
     queryFn: () => {
-      return fetchJson<HabitsView>('/api/habits');
+      return dataSource.habits();
     },
   });
 };
