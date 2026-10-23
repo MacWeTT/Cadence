@@ -117,6 +117,10 @@
     "newPassword": "New password",
     "confirm": "Confirm password",
     "hint": "At least 8 characters. There is no password reset, so keep it somewhere safe.",
-    "saved": "Password saved"
+    "saved": "Password saved",
+    "deviceSignedInAs": "Signed in as {email}",
+    "deviceSignedOut": "You are using Cadence on this PC without an account. Sign in to keep your habits on your account too.",
+    "deviceSignIn": "Sign in",
+    "deviceSignOut": "Sign out"
   }
 }

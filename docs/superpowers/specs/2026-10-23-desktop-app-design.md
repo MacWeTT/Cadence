@@ -112,7 +112,8 @@ Notifications (Tauri's notification plugin: the Home alert rules and the focus t
    - Done: focus on local rows (`src/data/local/focus-changes.ts`: start, stop, pause, resume, skip, discard, on the device clock).
    - Done: the profile edits and the Account tab's import and delete on local rows (`profile-changes.ts`, `backup.ts`; `readBackup` and `replaceData` are what the sign-in sync will use). A password, a photo and an uploaded sound need an account and say so. Still open for the desktop screens: the export card (its links are server routes; JSON and CSV can be built on the PC, the PDF cannot) and the delete dialog (it asks for the account's email).
    - Done: the screens' server-only parts in the desktop build, swapped through the same alias as the user menu (`*.desktop.tsx`): the footer without Contact, no "Get the app" menu, no password card, an export card that makes JSON and CSV on the PC (no PDF), and a delete card that empties the PC.
-   - Next: sign-in from the app, then the sync.
+   - Done: email or tag and password sign-in, create account and sign out from the app (`src/data/local/auth.ts`, `supabase-js` straight from the device, the session kept on the PC and read offline), the top bar's Sign in link and avatar, and the Account tab's sign-in card. Needs `NEXT_PUBLIC_SUPABASE_URL` and the publishable key at desktop build time.
+   - Next: Google sign-in through the system browser (deep link), then the sync.
 3. **Signing in from the app, and the sync at sign-in** (the table above, the choice dialog, the safety copy): a `meta` table in the local file (a migration, with `linked_user_id`), the upload through the backup and the pull straight back, the settings rules, and the prompts at sign-up and sign-in.
 4. **Staying in step**: the change queue, `updated_at`, pulling, conflicts.
 5. **Native features, the installer and the updater**, and the profile's Installer link.

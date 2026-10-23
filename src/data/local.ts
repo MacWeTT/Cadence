@@ -1,5 +1,7 @@
 import { createChanges } from '@/data/local/changes';
+import { createAuth, type SignedInUser } from '@/data/local/auth';
 import { createAccountChanges, exportFile } from '@/data/local/backup';
+import { cloud } from '@/data/local/cloud';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
 import { createProfileChanges } from '@/data/local/profile-changes';
@@ -37,12 +39,24 @@ const sql: Sql = {
 };
 
 /** The desktop app's data: the SQLite file on the PC. Nothing here imports server code, which is what the desktop build checks. */
-export const local: DataSource & { exportFile: (format: 'json' | 'csv') => ReturnType<typeof exportFile> } = {
+/** What only the desktop app has: its own files for download, and who is signed in. */
+export interface DesktopExtras {
+  exportFile: (format: 'json' | 'csv') => ReturnType<typeof exportFile>;
+  currentUser: () => Promise<SignedInUser | null>;
+}
+
+const { signIn, signUp, signOut, currentUser } = createAuth(cloud);
+
+export const local: DataSource & DesktopExtras = {
   ...createReads(sql),
   ...createChanges(sql),
   ...createFocusChanges(sql),
   ...createProfileChanges(sql),
   ...createAccountChanges(sql),
+  signIn,
+  signUp,
+  signOut,
+  currentUser,
   exportFile: format => {
     return exportFile(sql, format);
   },
@@ -50,8 +64,5 @@ export const local: DataSource & { exportFile: (format: 'json' | 'csv') => Retur
     return syncTimezone(sql, deviceTimeZone);
   },
   sendContact: notBuilt,
-  signIn: notBuilt,
-  signUp: notBuilt,
   register: notBuilt,
-  signOut: notBuilt,
 };

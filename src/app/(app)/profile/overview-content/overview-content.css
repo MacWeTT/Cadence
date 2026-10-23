@@ -7,7 +7,3 @@
 .overview-content__card {
   @apply overflow-hidden rounded-xl border border-line bg-surface;
 }
-
-.overview-content__sign-out {
-  @apply flex justify-end;
-}
