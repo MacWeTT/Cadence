@@ -1,12 +1,13 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
+import type { ContactResult } from '@/data/types';
 import { contactInputSchema } from '@/lib/contact-schema';
 import { toFieldErrors } from '@/lib/habit-schema';
 import { createSupabaseServerClient, getUser } from '@/lib/supabase/server';
 import { buildContactEmail, sendContactEmail } from '@/server/contact-email';
 
-export type ContactResult = { ok: true } | { ok: false; error: string; fieldErrors?: Record<string, string> };
+export type { ContactResult };
 
 const fail = async (key: 'signIn' | 'contactFailed'): Promise<ContactResult> => {
   const t = await getTranslations('errors');

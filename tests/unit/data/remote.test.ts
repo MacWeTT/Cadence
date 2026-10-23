@@ -34,6 +34,22 @@ const actions = vi.hoisted(() => {
     removeSoundAction: vi.fn(answers),
     importBackupAction: vi.fn(answers),
     deleteAccountAction: vi.fn(answers),
+    syncTimezoneAction: vi.fn(() => {
+      return Promise.resolve(true);
+    }),
+    sendContactAction: vi.fn(answers),
+    signInAction: vi.fn(() => {
+      return Promise.resolve({ next: '/', error: null });
+    }),
+    signUpAction: vi.fn(() => {
+      return Promise.resolve({ next: '/', error: null });
+    }),
+    registerAction: vi.fn(() => {
+      return Promise.resolve({ next: '/', error: null });
+    }),
+    signOut: vi.fn(() => {
+      return Promise.resolve();
+    }),
   };
 });
 
@@ -79,6 +95,21 @@ vi.mock('@/app/(app)/profile/actions', () => {
 });
 vi.mock('@/app/(app)/profile/account/actions', () => {
   return { importBackupAction: actions.importBackupAction, deleteAccountAction: actions.deleteAccountAction };
+});
+vi.mock('@/app/(app)/timezone-actions', () => {
+  return { syncTimezoneAction: actions.syncTimezoneAction };
+});
+vi.mock('@/app/(app)/contact/actions', () => {
+  return { sendContactAction: actions.sendContactAction };
+});
+vi.mock('@/app/(auth)/login/actions', () => {
+  return { signInAction: actions.signInAction, signUpAction: actions.signUpAction };
+});
+vi.mock('@/app/(auth)/register/actions', () => {
+  return { registerAction: actions.registerAction };
+});
+vi.mock('@/app/auth/actions', () => {
+  return { signOut: actions.signOut };
 });
 vi.mock('@/app/(app)/today/actions', () => {
   return { setCompletionAction: actions.setCompletionAction };
@@ -260,5 +291,39 @@ describe('the remote data source, profile', () => {
 
     expect(actions.importBackupAction).toHaveBeenCalledWith(form);
     expect(actions.deleteAccountAction).toHaveBeenCalledWith('me@example.com');
+  });
+});
+
+describe('the remote data source, the rest', () => {
+  it('offers the browser timezone to the server and says whether it was saved', async () => {
+    await expect(remote.syncTimezone('Asia/Kolkata')).resolves.toBe(true);
+
+    expect(actions.syncTimezoneAction).toHaveBeenCalledWith('Asia/Kolkata');
+  });
+
+  it('sends a contact message as the form holds it', async () => {
+    const input = { message: 'Hello' };
+
+    await remote.sendContact(input);
+
+    expect(actions.sendContactAction).toHaveBeenCalledWith(input);
+  });
+
+  it('signs in, creates an account and registers, each with where to go on to', async () => {
+    const input = { identifier: 'mac' };
+
+    await expect(remote.signIn(input, '/habits')).resolves.toEqual({ next: '/', error: null });
+    await remote.signUp(input, null);
+    await remote.register(input, '/today');
+
+    expect(actions.signInAction).toHaveBeenCalledWith(input, '/habits');
+    expect(actions.signUpAction).toHaveBeenCalledWith(input, null);
+    expect(actions.registerAction).toHaveBeenCalledWith(input, '/today');
+  });
+
+  it('signs out', async () => {
+    await remote.signOut();
+
+    expect(actions.signOut).toHaveBeenCalledTimes(1);
   });
 });
