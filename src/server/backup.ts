@@ -3,8 +3,7 @@ import { connection } from 'next/server';
 import { parseBackup } from '@/lib/backup';
 import type { Backup, BackupError, BackupSummary } from '@/lib/backup-types';
 import type { Json } from '@/lib/supabase/database.types';
-import { fetchAll } from '@/server/fetch-all';
-import { buildBackup } from '@/server/backup-view';
+import { countAccount, readAccountBackup } from '@/server/backup-read';
 import { getProfile } from '@/server/habits';
 import { requireOwner } from '@/server/profile';
 import { ProfileError } from '@/server/profile-storage';
@@ -21,84 +20,15 @@ export const getBackup = async (): Promise<Backup> => {
   await connection(); // the Supabase client reads the clock (token expiry); this must only run at request time
   const { supabase, id } = await requireOwner();
 
-  const [{ data: profileRow, error: profileError }, habits, schedules, ticks, pauses, focus] = await Promise.all([
-    supabase.from('profiles').select('display_name, timezone, week_starts_on').eq('user_id', id).single(),
-    fetchAll((from, to) => {
-      return supabase
-        .from('habits')
-        .select('id, name, description, icon, color, start_date, created_at, archived_at, links')
-        .order('created_at')
-        .order('id')
-        .range(from, to);
-    }),
-    fetchAll((from, to) => {
-      return supabase
-        .from('habit_schedules')
-        .select('habit_id, kind, times_per_week, weekdays, effective_from')
-        .order('habit_id')
-        .order('effective_from')
-        .range(from, to);
-    }),
-    fetchAll((from, to) => {
-      return supabase
-        .from('habit_completions')
-        .select('habit_id, completion_date')
-        .order('habit_id')
-        .order('completion_date')
-        .range(from, to);
-    }),
-    fetchAll((from, to) => {
-      return supabase
-        .from('habit_archive_periods')
-        .select('habit_id, archived_on, restored_on')
-        .order('habit_id')
-        .order('archived_on')
-        .range(from, to);
-    }),
-    fetchAll((from, to) => {
-      return supabase
-        .from('focus_sessions')
-        .select('habit_id, started_at, ended_at, mode, plan, skipped_seconds, focus_seconds')
-        .order('started_at')
-        .order('id')
-        .range(from, to);
-    }),
-  ]);
-
-  if (profileError) {
-    throw profileError;
-  }
-
-  return buildBackup({
-    exportedAt: new Date().toISOString(),
-    profile: profileRow,
-    habits,
-    schedules,
-    ticks,
-    pauses,
-    focus,
-  });
+  return readAccountBackup(supabase, id);
 };
 
 /** How much the account holds, for the export card (and its warning when an import would refuse it). */
 export const getAccountCounts = async (): Promise<BackupSummary> => {
   await connection();
   const { supabase } = await requireOwner();
-  const [habits, ticks, focus] = await Promise.all([
-    supabase.from('habits').select('id', { count: 'exact', head: true }),
-    supabase.from('habit_completions').select('id', { count: 'exact', head: true }),
-    supabase.from('focus_sessions').select('id', { count: 'exact', head: true }),
-  ]);
-  const { count: habitCount, error: habitError } = habits;
-  const { count: tickCount, error: tickError } = ticks;
-  const { count: focusCount, error: focusError } = focus;
-  const error = habitError ?? tickError ?? focusError;
 
-  if (error) {
-    throw error;
-  }
-
-  return { habits: habitCount ?? 0, ticks: tickCount ?? 0, focusSessions: focusCount ?? 0 };
+  return countAccount(supabase);
 };
 
 /** What the database says when it refuses a row, as the reason shown to the person. */

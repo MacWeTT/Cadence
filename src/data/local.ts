@@ -1,11 +1,14 @@
 import { createChanges } from '@/data/local/changes';
 import { openUrl } from '@tauri-apps/plugin-opener';
+import { backupFileName, toJson } from '@/lib/backup';
+import { cloudAccount } from '@/data/local/account-port';
 import { createAuth, type SignedInUser } from '@/data/local/auth';
 import { createAccountChanges, exportFile } from '@/data/local/backup';
 import { cloud } from '@/data/local/cloud';
 import { createGoogle } from '@/data/local/google';
 import { createFocusChanges } from '@/data/local/focus-changes';
 import { migrate } from '@/data/local/migrations';
+import { createSync } from '@/data/local/sync';
 import { createProfileChanges } from '@/data/local/profile-changes';
 import { createReads } from '@/data/local/reads';
 import type { Sql } from '@/data/local/sql';
@@ -48,9 +51,15 @@ export interface DesktopExtras {
   /** What the register screen shows, or `null` when nobody is signed in. */
   registration: () => Promise<{ email: string; tag: string; registered: boolean } | null>;
   /** Google sign-in through the system browser: open it, then finish from the `cadence://` link it comes back with. */
+  /** The first-sign-in sync of this PC's file with the signed-in account. */
+  sync: ReturnType<typeof createSync>;
+  /** The account's data as a JSON file, to keep before the PC's copy replaces it. */
+  accountCopy: () => Promise<{ fileName: string; type: string; text: string }>;
   startGoogle: () => Promise<{ error: string | null }>;
   finishGoogle: (link: string) => Promise<{ next: string | null; error: string | null } | null>;
 }
+
+const account = cloudAccount(cloud);
 
 const { signIn, signUp, register, registration, signOut, currentUser } = createAuth(cloud);
 
@@ -73,6 +82,16 @@ export const local: DataSource & DesktopExtras = {
   signOut,
   currentUser,
   registration,
+  sync: createSync(sql, account),
+  accountCopy: async () => {
+    const backup = await account.readBackup();
+
+    return {
+      fileName: backupFileName(backup.exportedAt.slice(0, 10), 'json'),
+      type: 'application/json',
+      text: toJson(backup),
+    };
+  },
   startGoogle,
   finishGoogle,
   exportFile: format => {
