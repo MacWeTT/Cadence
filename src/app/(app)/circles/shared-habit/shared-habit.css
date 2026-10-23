@@ -1,0 +1,21 @@
+@reference '../../../globals.css';
+
+.shared-habit {
+  @apply flex flex-col gap-1.5 py-1.5;
+}
+
+.shared-habit__line {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1;
+}
+
+.shared-habit__name {
+  @apply wrap-break-word;
+}
+
+.shared-habit__badge {
+  @apply rounded-full bg-heat-1 px-2 py-0.5 text-xs text-ink;
+}
+
+.shared-habit__meta {
+  @apply text-sm text-ink-muted;
+}

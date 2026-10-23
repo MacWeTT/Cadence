@@ -1,0 +1,13 @@
+@reference '../../../globals.css';
+
+.member-details {
+  @apply flex flex-col items-start gap-2;
+}
+
+.member-details__week {
+  @apply text-sm font-semibold text-moss;
+}
+
+.member-details__quiet {
+  @apply text-sm text-ink-muted;
+}

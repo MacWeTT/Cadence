@@ -10,11 +10,13 @@ interface MemberRowProps {
   /** Only the person who started the circle can remove someone, and never themselves. */
   canRemove: boolean;
   onRemove: (member: CircleMemberView) => void;
+  /** What they share with you, under their name. */
+  children?: React.ReactNode;
 }
 
 /** One person in a circle: their avatar, name and @tag, who they are to you, and a Remove button when you may. */
 export const MemberRow = (props: MemberRowProps) => {
-  const { member, canRemove, onRemove } = props;
+  const { member, canRemove, onRemove, children } = props;
   const { tag, displayName, isYou, isOwner, avatar } = member;
 
   const t = useTranslations('circles.circle');
@@ -39,6 +41,7 @@ export const MemberRow = (props: MemberRowProps) => {
           {t('remove')}
         </Button>
       )}
+      {children && <div className="member-row__details">{children}</div>}
     </li>
   );
 };
