@@ -1,4 +1,10 @@
 // The one place the screens import their data from. The desktop build swaps this module for the local (SQLite) one
 // with a bundler alias, so none of the server code reaches it.
 export { remote as dataSource } from '@/data/remote';
-export type { ActionResult, DataSource, FocusActionResult } from '@/data/types';
+export type {
+  AccountActionResult,
+  ActionResult,
+  DataSource,
+  FocusActionResult,
+  ProfileActionResult,
+} from '@/data/types';

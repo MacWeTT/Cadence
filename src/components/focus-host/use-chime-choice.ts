@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
-import { updateSoundAction } from '@/app/(app)/profile/actions';
+import { dataSource } from '@/data';
 import { useProfile } from '@/app/(app)/profile/use-profile';
 import { DEFAULT_CHOICE, parseChoice, sessionChoice, type ChimeChoice } from '@/lib/chimes';
 import { queryKeys } from '@/lib/query/keys';
@@ -55,7 +55,7 @@ export const useChimeChoice = (): ChimeChoice => {
     if (untouched) {
       const { id, volume } = parseChoice(raw);
 
-      void updateSoundAction({ id, volume }).then(() => {
+      void dataSource.updateSound({ id, volume }).then(() => {
         return queryClient.invalidateQueries({ queryKey: queryKeys.profile });
       });
     }

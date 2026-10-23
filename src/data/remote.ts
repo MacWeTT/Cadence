@@ -6,6 +6,20 @@ import {
   updateHabitAction,
 } from '@/app/(app)/habits/actions';
 import {
+  removeSoundAction,
+  setPasswordAction,
+  updateAccentAction,
+  updateAvatarAction,
+  updateNameAction,
+  updateSoundAction,
+  updateTagAction,
+  updateTimezoneAction,
+  updateWeekStartAction,
+  uploadAvatarPhotoAction,
+  uploadSoundAction,
+} from '@/app/(app)/profile/actions';
+import { deleteAccountAction, importBackupAction } from '@/app/(app)/profile/account/actions';
+import {
   discardFocusAction,
   pauseFocusAction,
   resumeFocusAction,
@@ -83,5 +97,44 @@ export const remote: DataSource = {
   },
   discardFocus: sessionId => {
     return discardFocusAction(sessionId);
+  },
+  updateName: input => {
+    return updateNameAction(input);
+  },
+  updateTag: input => {
+    return updateTagAction(input);
+  },
+  setPassword: input => {
+    return setPasswordAction(input);
+  },
+  updateWeekStart: input => {
+    return updateWeekStartAction(input);
+  },
+  updateTimezone: input => {
+    return updateTimezoneAction(input);
+  },
+  updateAvatar: input => {
+    return updateAvatarAction(input);
+  },
+  uploadAvatarPhoto: form => {
+    return uploadAvatarPhotoAction(form);
+  },
+  updateAccent: input => {
+    return updateAccentAction(input);
+  },
+  updateSound: input => {
+    return updateSoundAction(input);
+  },
+  uploadSound: form => {
+    return uploadSoundAction(form);
+  },
+  removeSound: soundId => {
+    return removeSoundAction(soundId);
+  },
+  importBackup: form => {
+    return importBackupAction(form);
+  },
+  deleteAccount: email => {
+    return deleteAccountAction(email);
   },
 };

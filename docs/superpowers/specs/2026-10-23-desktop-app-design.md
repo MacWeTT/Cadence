@@ -39,7 +39,7 @@ The existing e2e specs are the proof that the web app did not change.
 - [x] **Reads:** habits, home, today, progress, profile, account, focus.
 - [x] **Habits and Today:** create, edit, archive, restore, delete, check in (`habits/actions.ts`, `today/actions.ts`).
 - [x] **Focus:** start, stop, skip, pause, resume, discard (`focus-actions.ts`).
-- [ ] **Profile and account:** the eleven profile edits, and export, import and delete (`profile/actions.ts`, `profile/account/actions.ts`).
+- [x] **Profile and account:** the eleven profile edits, and export, import and delete (`profile/actions.ts`, `profile/account/actions.ts`).
 - [ ] **Everything else:** timezone sync, contact, sign in, sign up, register, sign out.
 - [ ] **The desktop build flag:** the alias, the settings that differ, and leaving the server-only routes and pages out.
 

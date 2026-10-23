@@ -10,6 +10,12 @@ import type { TodayData } from '@/server/today';
 /** What a change answers: it worked, or why not (and which fields of the form, when it was a form). */
 export type ActionResult = { ok: true } | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
+/** What a profile edit answers: it worked (a new sound has an `id`), or why not. */
+export type ProfileActionResult = { ok: true; id?: string } | { ok: false; error: string };
+
+/** What an account change answers: it worked (an import says how much it brought in), or why not. */
+export type AccountActionResult = { ok: true; summary?: BackupSummary } | { ok: false; error: string };
+
 /** What a focus change answers: what a stopped session left behind (for "I did it"), or why not. */
 export type FocusActionResult = { ok: true; result: FocusResult | null } | { ok: false; error: string };
 
@@ -48,4 +54,22 @@ export interface DataSource {
   resumeFocus: () => Promise<FocusActionResult>;
   /** Removes a finished session so its minutes are not counted. */
   discardFocus: (sessionId: string) => Promise<FocusActionResult>;
+
+  /** The profile's edits. `input` is what the modal holds; it is checked where it is saved. */
+  updateName: (input: unknown) => Promise<ProfileActionResult>;
+  updateTag: (input: unknown) => Promise<ProfileActionResult>;
+  setPassword: (input: unknown) => Promise<ProfileActionResult>;
+  updateWeekStart: (input: unknown) => Promise<ProfileActionResult>;
+  updateTimezone: (input: unknown) => Promise<ProfileActionResult>;
+  updateAvatar: (input: unknown) => Promise<ProfileActionResult>;
+  uploadAvatarPhoto: (form: FormData) => Promise<ProfileActionResult>;
+  updateAccent: (input: unknown) => Promise<ProfileActionResult>;
+  updateSound: (input: unknown) => Promise<ProfileActionResult>;
+  uploadSound: (form: FormData) => Promise<ProfileActionResult>;
+  removeSound: (soundId: unknown) => Promise<ProfileActionResult>;
+
+  /** Replaces all habits and history with the backup file in `form`. */
+  importBackup: (form: FormData) => Promise<AccountActionResult>;
+  /** Deletes the account and everything in it, after the person has typed their email address. */
+  deleteAccount: (email: unknown) => Promise<AccountActionResult>;
 }

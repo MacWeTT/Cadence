@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { setPasswordAction } from '@/app/(app)/profile/actions';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 
 /** A failure the server explained in words, as opposed to a network error. */
@@ -22,7 +22,7 @@ export const useSetPassword = () => {
 
   return useMutation({
     mutationFn: async (input: PasswordInput) => {
-      const result = await setPasswordAction(input);
+      const result = await dataSource.setPassword(input);
 
       if (!result.ok) {
         throw new ActionError(result.error);

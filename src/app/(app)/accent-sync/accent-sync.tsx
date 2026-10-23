@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { updateAccentAction } from '@/app/(app)/profile/actions';
+import { dataSource } from '@/data';
 import { useProfile } from '@/app/(app)/profile/use-profile';
 import { DEFAULT_ACCENT, type Accent } from '@/lib/appearance';
 import { useAppearance } from '@/lib/use-appearance';
@@ -30,7 +30,7 @@ export const AccentSync = () => {
   const push = useCallback((next: Accent, hex: string | null) => {
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
-      void updateAccentAction({ accent: next, customHex: next === 'custom' ? hex : null }).then(result => {
+      void dataSource.updateAccent({ accent: next, customHex: next === 'custom' ? hex : null }).then(result => {
         if (result.ok) {
           known.current = keyOf(next, hex);
         }

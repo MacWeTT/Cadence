@@ -4,18 +4,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
-  removeSoundAction,
-  updateAvatarAction,
-  updateNameAction,
-  updateSoundAction,
-  updateTagAction,
-  updateTimezoneAction,
-  updateWeekStartAction,
-  uploadAvatarPhotoAction,
-  uploadSoundAction,
-  type ProfileActionResult,
-} from '@/app/(app)/profile/actions';
-import {
   withAvatar,
   withName,
   withPhoto,
@@ -26,7 +14,7 @@ import {
   withWeekStart,
 } from '@/lib/profile-optimistic';
 import type { AvatarInput } from '@/lib/profile-schema';
-import { dataSource } from '@/data';
+import { dataSource, type ProfileActionResult } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import { normaliseTag } from '@/lib/tag';
 import { zoneLabel } from '@/lib/zones';
@@ -109,7 +97,7 @@ export const useUpdateName = () => {
 
   return useEdit<string>({
     action: name => {
-      return updateNameAction({ name });
+      return dataSource.updateName({ name });
     },
     apply: withName,
     success: () => {
@@ -124,7 +112,7 @@ export const useUpdateTag = () => {
 
   return useEdit<string>({
     action: tag => {
-      return updateTagAction({ tag });
+      return dataSource.updateTag({ tag });
     },
     apply: withTag,
     success: tag => {
@@ -139,7 +127,7 @@ export const useUpdateWeekStart = () => {
 
   return useEdit<1 | 7>({
     action: weekStartsOn => {
-      return updateWeekStartAction({ weekStartsOn });
+      return dataSource.updateWeekStart({ weekStartsOn });
     },
     apply: withWeekStart,
     success: weekStartsOn => {
@@ -154,7 +142,7 @@ export const useUpdateTimezone = () => {
 
   return useEdit<string>({
     action: timezone => {
-      return updateTimezoneAction({ timezone });
+      return dataSource.updateTimezone({ timezone });
     },
     apply: withTimezone,
     success: timezone => {
@@ -168,7 +156,7 @@ export const useUpdateAvatar = () => {
   const t = useTranslations('profile.toasts');
 
   return useEdit<AvatarInput>({
-    action: updateAvatarAction,
+    action: dataSource.updateAvatar,
     apply: withAvatar,
     success: () => {
       return t('avatar');
@@ -186,7 +174,7 @@ export const useUploadPhoto = () => {
 
       form.set('file', file);
 
-      return uploadAvatarPhotoAction(form);
+      return dataSource.uploadAvatarPhoto(form);
     },
     apply: (view, file) => {
       return withPhoto(view, URL.createObjectURL(file));
@@ -203,7 +191,7 @@ export const useUpdateSound = () => {
 
   return useEdit<{ id: string; volume: number; name: string }>({
     action: ({ id, volume }) => {
-      return updateSoundAction({ id, volume });
+      return dataSource.updateSound({ id, volume });
     },
     apply: (view, { id, volume }) => {
       return withSound(view, { id, volume });
@@ -224,7 +212,7 @@ export const useUploadSound = () => {
       form.set('file', file);
       form.set('durationMs', String(durationMs));
 
-      return uploadSoundAction(form);
+      return dataSource.uploadSound(form);
     },
     success: ({ file }) => {
       return t('soundAdded', { name: file.name });
@@ -237,7 +225,7 @@ export const useRemoveSound = () => {
 
   return useEdit<{ id: string; name: string }>({
     action: ({ id }) => {
-      return removeSoundAction(id);
+      return dataSource.removeSound(id);
     },
     apply: (view, { id }) => {
       return withSoundRemoved(view, id);
