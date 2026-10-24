@@ -12,6 +12,7 @@ import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import { useSession } from '@/lib/query/use-session';
 import './sign-in-card.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 /**
  * The desktop build's sign-in card: who is signed in, with the password and Sign out, or a way to sign in. The password
@@ -21,6 +22,7 @@ export const SignInCard = () => {
   const [open, setOpen] = useState(false);
 
   const t = useTranslations('account.signIn');
+  const tw = useTranslations('common.why');
 
   const queryClient = useQueryClient();
   const { data: user } = useSession();
@@ -53,9 +55,11 @@ export const SignInCard = () => {
             <p className="sign-in-card__label">{t('password')}</p>
             <p className="sign-in-card__status">{passwordSet ? t('isSet') : t('notSet')}</p>
           </div>
-          <Button variant="outline" onClick={onOpen} disabled={!profile}>
-            {passwordSet ? t('changeButton') : t('setButton')}
-          </Button>
+          <WhyDisabled reason={!profile ? tw('loading') : null}>
+            <Button variant="outline" onClick={onOpen} disabled={!profile}>
+              {passwordSet ? t('changeButton') : t('setButton')}
+            </Button>
+          </WhyDisabled>
         </div>
       )}
       <div className="sign-in-card__row">

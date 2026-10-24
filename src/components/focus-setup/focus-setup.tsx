@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { PRESETS, planErrors, totalSeconds, usesLongBreak, type FocusPlan, type PlanField } from '@/domain/focus';
 import { cn } from '@/lib/utils';
 import './focus-setup.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface FocusSetupProps {
   target: FocusTarget;
@@ -49,6 +50,8 @@ export const FocusSetup = (props: FocusSetupProps) => {
   });
 
   const t = useTranslations('focus.setup');
+  const tw = useTranslations('common.why');
+  const te = useTranslations('errors');
 
   const { mode, plan, soundId } = state;
   const invalid = planErrors(plan).length > 0;
@@ -174,9 +177,11 @@ export const FocusSetup = (props: FocusSetupProps) => {
           {error}
         </p>
       )}
-      <Button type="submit" disabled={pending || (pomodoro && invalid)} className="focus-setup__start">
-        {t('start')}
-      </Button>
+      <WhyDisabled reason={pending ? tw('busy') : pomodoro && invalid ? te('focusPlanInvalid') : null}>
+        <Button type="submit" disabled={pending || (pomodoro && invalid)} className="focus-setup__start">
+          {t('start')}
+        </Button>
+      </WhyDisabled>
     </form>
   );
 };

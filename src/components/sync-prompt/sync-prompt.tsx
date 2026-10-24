@@ -17,6 +17,7 @@ import { local } from '@/data/local';
 import type { BackupSummary } from '@/lib/backup-types';
 import { useSession } from '@/lib/query/use-session';
 import './sync-prompt.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 type Case = 'offerUpload' | 'ask';
 
@@ -43,6 +44,7 @@ export const SyncPrompt = () => {
   const [state, setState] = useState<PromptState>(START);
 
   const t = useTranslations('sync');
+  const tw = useTranslations('common.why');
   const queryClient = useQueryClient();
   const { data: user } = useSession();
 
@@ -208,27 +210,39 @@ export const SyncPrompt = () => {
         <DialogFooter className="sync-prompt__actions">
           {open === 'ask' ? (
             <>
-              <Button variant="outline" disabled={busy} onClick={onDownloadAccount}>
-                {t('downloadAccount')}
-              </Button>
-              <Button variant="outline" disabled={busy} onClick={onLater}>
-                {t('later')}
-              </Button>
-              <Button variant="destructive" disabled={busy} onClick={onKeepAccount}>
-                {t('keepAccount')}
-              </Button>
-              <Button variant="destructive" disabled={busy} onClick={onKeepPc}>
-                {t('keepPc')}
-              </Button>
+              <WhyDisabled reason={busy ? tw('busy') : null}>
+                <Button variant="outline" disabled={busy} onClick={onDownloadAccount}>
+                  {t('downloadAccount')}
+                </Button>
+              </WhyDisabled>
+              <WhyDisabled reason={busy ? tw('busy') : null}>
+                <Button variant="outline" disabled={busy} onClick={onLater}>
+                  {t('later')}
+                </Button>
+              </WhyDisabled>
+              <WhyDisabled reason={busy ? tw('busy') : null}>
+                <Button variant="destructive" disabled={busy} onClick={onKeepAccount}>
+                  {t('keepAccount')}
+                </Button>
+              </WhyDisabled>
+              <WhyDisabled reason={busy ? tw('busy') : null}>
+                <Button variant="destructive" disabled={busy} onClick={onKeepPc}>
+                  {t('keepPc')}
+                </Button>
+              </WhyDisabled>
             </>
           ) : (
             <>
-              <Button variant="outline" disabled={busy} onClick={onDecline}>
-                {t('keepOnPc')}
-              </Button>
-              <Button disabled={busy} onClick={onUpload}>
-                {t('upload')}
-              </Button>
+              <WhyDisabled reason={busy ? tw('busy') : null}>
+                <Button variant="outline" disabled={busy} onClick={onDecline}>
+                  {t('keepOnPc')}
+                </Button>
+              </WhyDisabled>
+              <WhyDisabled reason={busy ? tw('busy') : null}>
+                <Button disabled={busy} onClick={onUpload}>
+                  {t('upload')}
+                </Button>
+              </WhyDisabled>
             </>
           )}
         </DialogFooter>

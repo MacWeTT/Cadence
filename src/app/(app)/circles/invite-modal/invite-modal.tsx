@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { inviteUrl } from '@/lib/circle-people';
 import './invite-modal.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface InviteModalProps {
   circleId: string;
@@ -35,6 +36,7 @@ export const InviteModal = (props: InviteModalProps) => {
   const [state, setState] = useState<{ url: string | null }>({ url: null });
 
   const t = useTranslations('circles.invite');
+  const tw = useTranslations('common.why');
   const { mutate, isPending } = useCreateInvite();
   const field = useRef<HTMLInputElement>(null);
   const started = useRef(false);
@@ -106,15 +108,19 @@ export const InviteModal = (props: InviteModalProps) => {
           onFocus={onLinkFocus}
         />
         <DialogFooter>
-          <Button variant="outline" disabled={isPending} onClick={onRenewClick}>
-            {t('renew')}
-          </Button>
+          <WhyDisabled reason={isPending ? tw('busy') : null}>
+            <Button variant="outline" disabled={isPending} onClick={onRenewClick}>
+              {t('renew')}
+            </Button>
+          </WhyDisabled>
           <Button variant="outline" onClick={onClose}>
             {t('done')}
           </Button>
-          <Button disabled={!url || isPending} onClick={onCopyClick}>
-            {t('copy')}
-          </Button>
+          <WhyDisabled reason={!url || isPending ? tw('busy') : null}>
+            <Button disabled={!url || isPending} onClick={onCopyClick}>
+              {t('copy')}
+            </Button>
+          </WhyDisabled>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -5,6 +5,7 @@ import type { FeedReaction } from '@/lib/circle-feed';
 import { cn } from '@/lib/utils';
 import './reaction-bar.css';
 import { Tip } from '@/components/tip/tip';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface ReactionBarProps {
   reactions: FeedReaction[];
@@ -45,23 +46,24 @@ export const ReactionBar = (props: ReactionBarProps) => {
         };
 
         return (
-          <button
-            key={emoji}
-            type="button"
-            disabled={!enabled}
-            aria-pressed={mine}
-            aria-label={t('reactionLabel', { emoji, count })}
-            title={who
-              .map(tag => {
-                return `@${tag}`;
-              })
-              .join(', ')}
-            onClick={onChipClick}
-            className={cn('reaction-bar__chip', mine && 'reaction-bar__chip--mine')}
-          >
-            <span aria-hidden="true">{emoji}</span>
-            <span aria-hidden="true">{count}</span>
-          </button>
+          <WhyDisabled key={emoji} reason={!enabled ? t('reactionsOff') : null}>
+            <button
+              type="button"
+              disabled={!enabled}
+              aria-pressed={mine}
+              aria-label={t('reactionLabel', { emoji, count })}
+              title={who
+                .map(tag => {
+                  return `@${tag}`;
+                })
+                .join(', ')}
+              onClick={onChipClick}
+              className={cn('reaction-bar__chip', mine && 'reaction-bar__chip--mine')}
+            >
+              <span aria-hidden="true">{emoji}</span>
+              <span aria-hidden="true">{count}</span>
+            </button>
+          </WhyDisabled>
         );
       })}
       {open && (

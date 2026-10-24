@@ -155,7 +155,8 @@
     "addReaction": "Add a reaction",
     "pickReaction": "Pick a reaction",
     "reactWith": "React with {emoji}",
-    "reactionLabel": "{emoji} from {count, plural, one {# person} other {# people}}"
+    "reactionLabel": "{emoji} from {count, plural, one {# person} other {# people}}",
+    "reactionsOff": "This person has turned reactions off."
   },
   "look": {
     "title": "Circle settings",

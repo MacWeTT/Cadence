@@ -5,6 +5,7 @@ import type { Level } from '@/domain/circles';
 import { circleTitle } from '@/lib/circle-people';
 import type { CircleListItem } from '@/server/circles-view';
 import './habit-circle-row.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface HabitCircleRowProps {
   habitId: string;
@@ -18,6 +19,7 @@ export const HabitCircleRow = (props: HabitCircleRowProps) => {
 
   const t = useTranslations('circles');
   const th = useTranslations('habits.dialog.circles');
+  const tw = useTranslations('common.why');
   const { data } = useSharing(id);
   const share = useSetShare(id);
 
@@ -35,12 +37,14 @@ export const HabitCircleRow = (props: HabitCircleRowProps) => {
   return (
     <li className="habit-circle-row">
       <span className="habit-circle-row__name">{title}</span>
-      <LevelSelect
-        value={mine?.level ?? 'hidden'}
-        disabled={!data}
-        ariaLabel={th('levelFor', { name: title })}
-        onChange={onChange}
-      />
+      <WhyDisabled reason={!data ? tw('loading') : null}>
+        <LevelSelect
+          value={mine?.level ?? 'hidden'}
+          disabled={!data}
+          ariaLabel={th('levelFor', { name: title })}
+          onChange={onChange}
+        />
+      </WhyDisabled>
     </li>
   );
 };

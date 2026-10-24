@@ -88,6 +88,7 @@
   "why": {
     "busy": "Working on it. One moment.",
     "loading": "Still loading. One moment.",
-    "comingSoon": "This arrives in a later version."
+    "comingSoon": "This arrives in a later version.",
+    "anonymous": "You are sending this anonymously. Turn that off to add your name or email."
   }
 }
