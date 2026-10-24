@@ -36,8 +36,6 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     showedUpDays: [],
     habits: [],
     reactions: [],
-    cheersToday: null,
-    cheeredByYou: null,
     ...over,
   };
 };

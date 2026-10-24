@@ -23,8 +23,6 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     showedUpWeek: true,
     habits: [],
     reactions: [],
-    cheersToday: null,
-    cheeredByYou: false,
     ...over,
   };
 };
@@ -39,11 +37,7 @@ const view = (): CircleView => {
     closerActive: false,
     isOwner: true,
     weekTicks: 3,
-    members: [
-      member({ userId: ME, isYou: true, cheeredByYou: null, cheersToday: [] }),
-      member({ userId: SAM }),
-      member({ userId: KIM, tag: 'kim' }),
-    ],
+    members: [member({ userId: ME, isYou: true }), member({ userId: SAM }), member({ userId: KIM, tag: 'kim' })],
   };
 };
 

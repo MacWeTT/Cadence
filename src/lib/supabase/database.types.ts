@@ -23,27 +23,7 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "cheers": {
-                  Row: {
-                    "circle_id": string,"created_at": string,"for_date": string,"from_user": string,"to_user": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "circle_id": string,"created_at"?: string,"for_date": string,"from_user": string,"to_user": string
-                  }
-                  Update: {
-                    "circle_id"?: string,"created_at"?: string,"for_date"?: string,"from_user"?: string,"to_user"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "cheers_circle_id_fkey"
-      columns: ["circle_id"]
-isOneToOne: false
-      referencedRelation: "circles"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"circle_invites": {
+            "circle_invites": {
                   Row: {
                     "circle_id": string,"created_at": string,"expires_at": string,"id": string,"revoked": boolean,"token_hash": string
                   }
@@ -398,9 +378,6 @@ isOneToOne: false
                            },
 "restore_habit":
 { Args: { "p_habit_id": string,"p_on": string }; Returns: undefined
-                           },
-"send_cheer":
-{ Args: { "p_circle": string,"p_for": string,"p_to": string }; Returns: undefined
                            },
 "server_now":
 { Args: Record<PropertyKey, never>; Returns: string

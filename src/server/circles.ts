@@ -159,12 +159,6 @@ export const setCirclePrefs = async (circleId: string, inWeek: boolean, allowChe
   check(await supabase.rpc('set_circle_prefs', { p_circle: circleId, p_in_week: inWeek, p_allow_cheers: allowCheers }));
 };
 
-export const sendCheer = async (circleId: string, toUser: string, forDate: string): Promise<void> => {
-  const supabase = await createSupabaseServerClient();
-
-  check(await supabase.rpc('send_cheer', { p_circle: circleId, p_to: toUser, p_for: forDate }));
-};
-
 /** The pause-sharing switch: while on, nobody sees anything. The settings are kept. */
 export const setCirclesPaused = async (paused: boolean): Promise<void> => {
   const user = await getUser();

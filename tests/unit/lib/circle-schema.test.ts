@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  cheerInput,
   circleIdInput,
   inviteTokenInput,
   overrideInput,
   prefsInput,
+  reactInput,
   shareInput,
 } from '@/lib/circle-schema';
 
@@ -69,13 +69,27 @@ describe('prefsInput', () => {
   });
 });
 
-describe('cheerInput', () => {
-  it('takes a circle, a person and a calendar date', () => {
-    expect(cheerInput.safeParse({ circleId: ID, toUser: OTHER, forDate: '2026-10-19' }).success).toBe(true);
+describe('reactInput', () => {
+  const valid = { circleId: ID, toUser: OTHER, forDate: '2026-10-19', emoji: '\u{1F525}', on: true };
+
+  it('takes a circle, a person, a calendar date, one of the four emoji, and whether to add or take back', () => {
+    expect(reactInput.safeParse(valid).success).toBe(true);
+    expect(reactInput.safeParse({ ...valid, emoji: '\u2764\uFE0F', on: false }).success).toBe(true);
   });
 
   it('refuses a date that is not a real calendar date', () => {
-    expect(cheerInput.safeParse({ circleId: ID, toUser: OTHER, forDate: '2026-02-30' }).success).toBe(false);
-    expect(cheerInput.safeParse({ circleId: ID, toUser: OTHER, forDate: 'today' }).success).toBe(false);
+    expect(reactInput.safeParse({ ...valid, forDate: '2026-02-30' }).success).toBe(false);
+    expect(reactInput.safeParse({ ...valid, forDate: 'today' }).success).toBe(false);
+  });
+
+  it('refuses an emoji that is not one of the four', () => {
+    expect(reactInput.safeParse({ ...valid, emoji: '\u{1F608}' }).success).toBe(false);
+    expect(reactInput.safeParse({ ...valid, emoji: '\u2764' }).success).toBe(false);
+  });
+
+  it('needs to know whether it adds or takes back', () => {
+    const { circleId, toUser, forDate, emoji } = valid;
+
+    expect(reactInput.safeParse({ circleId, toUser, forDate, emoji }).success).toBe(false);
   });
 });

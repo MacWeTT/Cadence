@@ -1,5 +1,5 @@
 begin;
-select plan(118);
+select plan(104);
 
 -- People: A owns the circle, B joins, C stays outside. D1 to D6 fill the seats. Habits: A has six, B has one.
 insert into auth.users (id, email) values
@@ -23,9 +23,9 @@ insert into public.habits (id, user_id, name, icon, color, start_date) values
 update public.habits set archived_at = now() where id = '10000000-0000-0000-0000-0000000000a5';
 
 -- structure
-select is((select count(*)::int from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname in ('circles', 'circle_members', 'circle_invites', 'habit_shares', 'habit_share_overrides', 'cheers') and c.relrowsecurity), 6, 'row-level security is on for every Circles table');
-select is((select count(*)::int from unnest(array['public.circle_overview(uuid)', 'public.create_circle(text)', 'public.create_invite(uuid)', 'public.circle_invite_preview(text)', 'public.join_circle(text)', 'public.leave_circle(uuid)', 'public.remove_member(uuid,uuid)', 'public.delete_circle(uuid)', 'public.set_share(uuid,uuid,text,text)', 'public.set_share_override(uuid,uuid,uuid,text,text)', 'public.set_circle_prefs(uuid,boolean,boolean)', 'public.send_cheer(uuid,uuid,date)']) s where has_function_privilege('anon', s, 'execute')), 0, 'a signed-out visitor can run none of the Circles functions');
-select is((select count(*)::int from unnest(array['public.circle_overview(uuid)', 'public.create_circle(text)', 'public.create_invite(uuid)', 'public.circle_invite_preview(text)', 'public.join_circle(text)', 'public.leave_circle(uuid)', 'public.remove_member(uuid,uuid)', 'public.delete_circle(uuid)', 'public.set_share(uuid,uuid,text,text)', 'public.set_share_override(uuid,uuid,uuid,text,text)', 'public.set_circle_prefs(uuid,boolean,boolean)', 'public.send_cheer(uuid,uuid,date)']) s where has_function_privilege('authenticated', s, 'execute')), 12, 'a signed-in person can run all of them');
+select is((select count(*)::int from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname in ('circles', 'circle_members', 'circle_invites', 'habit_shares', 'habit_share_overrides') and c.relrowsecurity), 5, 'row-level security is on for every Circles table');
+select is((select count(*)::int from unnest(array['public.circle_overview(uuid)', 'public.create_circle(text)', 'public.create_invite(uuid)', 'public.circle_invite_preview(text)', 'public.join_circle(text)', 'public.leave_circle(uuid)', 'public.remove_member(uuid,uuid)', 'public.delete_circle(uuid)', 'public.set_share(uuid,uuid,text,text)', 'public.set_share_override(uuid,uuid,uuid,text,text)', 'public.set_circle_prefs(uuid,boolean,boolean)']) s where has_function_privilege('anon', s, 'execute')), 0, 'a signed-out visitor can run none of the Circles functions');
+select is((select count(*)::int from unnest(array['public.circle_overview(uuid)', 'public.create_circle(text)', 'public.create_invite(uuid)', 'public.circle_invite_preview(text)', 'public.join_circle(text)', 'public.leave_circle(uuid)', 'public.remove_member(uuid,uuid)', 'public.delete_circle(uuid)', 'public.set_share(uuid,uuid,text,text)', 'public.set_share_override(uuid,uuid,uuid,text,text)', 'public.set_circle_prefs(uuid,boolean,boolean)']) s where has_function_privilege('authenticated', s, 'execute')), 11, 'a signed-in person can run all of them');
 
 -- creating a circle, as A
 set local role authenticated;
@@ -69,7 +69,6 @@ update public.circle_members set in_week = false where user_id = '00000000-0000-
 select is((select count(*)::int from public.circle_members where in_week = false), 0, 'a membership cannot be edited by writing the table');
 delete from public.circle_members where user_id = '00000000-0000-0000-0000-0000000000b2';
 select is((select count(*)::int from public.circle_members where user_id = '00000000-0000-0000-0000-0000000000b2'), 1, 'a membership cannot be deleted by writing the table');
-select throws_ok($$insert into public.cheers (circle_id, from_user, to_user, for_date) values (current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000b2', '00000000-0000-0000-0000-0000000000a1', current_date)$$, '42501', null, 'a cheer cannot be made by writing the table');
 select throws_ok($$insert into public.habit_shares (habit_id, circle_id, level) values ('10000000-0000-0000-0000-0000000000b1', current_setting('t.c1')::uuid, 'done_today')$$, '42501', null, 'a share cannot be made by writing the table');
 
 -- invites expire and are replaced
@@ -224,24 +223,10 @@ delete from public.habit_completions where habit_id in ('10000000-0000-0000-0000
 delete from public.habit_completions where habit_id = '10000000-0000-0000-0000-0000000000a4';
 set local role authenticated;
 
--- cheers
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated"}', true);
-select lives_ok($$select public.send_cheer(current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date)$$, 'a member can cheer a friend');
-select lives_ok($$select public.send_cheer(current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date)$$, 'cheering twice is quietly the same cheer');
-select is((select count(*)::int from public.cheers), 1, 'there is one cheer per person per day');
-select throws_ok($$select public.send_cheer(current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000b2', (now() at time zone 'UTC')::date)$$, 'P0001', 'cannot_cheer_self', 'you cannot cheer yourself');
-select throws_ok($$select public.send_cheer(current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000c3', (now() at time zone 'UTC')::date)$$, 'P0001', 'not_a_member', 'you cannot cheer someone outside the circle');
-select throws_ok($$select public.send_cheer(current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date - 1)$$, 'P0001', 'cheer_date', 'a cheer is for the friend''s today only');
-select is((select (e ->> 'cheered_by_you')::boolean from jsonb_array_elements(public.circle_overview(current_setting('t.c1')::uuid) -> 'members') e where e ->> 'user_id' = '00000000-0000-0000-0000-0000000000a1'), true, 'the sender sees that they cheered');
+-- preferences
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
-select is(jsonb_array_length((select e from jsonb_array_elements(public.circle_overview(current_setting('t.c1')::uuid) -> 'members') e where e ->> 'user_id' = '00000000-0000-0000-0000-0000000000a1') -> 'cheers_today'), 1, 'the receiver sees the cheer on their own card');
-select is((select (e ->> 'cheered_by_you')::boolean from jsonb_array_elements(public.circle_overview(current_setting('t.c1')::uuid) -> 'members') e where e ->> 'user_id' = '00000000-0000-0000-0000-0000000000b2'), false, 'and has not cheered back');
-select is((select count(*)::int from public.cheers), 1, 'the receiver can read the cheer');
 select lives_ok($$select public.set_circle_prefs(current_setting('t.c1')::uuid, true, false)$$, 'a member can turn cheers off');
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000d1","role":"authenticated"}', true);
-select throws_ok($$select public.send_cheer(current_setting('t.c1')::uuid, '00000000-0000-0000-0000-0000000000a1', (now() at time zone 'UTC')::date)$$, 'P0001', 'cheers_off', 'nobody can cheer someone who turned cheers off');
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000c3","role":"authenticated"}', true);
-select is((select count(*)::int from public.cheers), 0, 'someone outside the circle reads no cheers');
 select is((select count(*)::int from public.habit_share_overrides), 0, 'and no overrides');
 
 -- leaving removes what you shared there
@@ -253,7 +238,6 @@ reset role;
 select is((select count(*)::int from public.circle_members where circle_id = current_setting('t.c1')::uuid and user_id = '00000000-0000-0000-0000-0000000000b2'), 0, 'they are no longer a member');
 select is((select count(*)::int from public.habit_shares where habit_id = '10000000-0000-0000-0000-0000000000b1' and circle_id = current_setting('t.c1')::uuid), 0, 'what they shared there is gone');
 select is((select count(*)::int from public.habit_share_overrides where viewer_id = '00000000-0000-0000-0000-0000000000b2'), 0, 'overrides naming them as the viewer are gone');
-select is((select count(*)::int from public.cheers where circle_id = current_setting('t.c1')::uuid), 0, 'the cheers they sent and received there are gone');
 
 -- the last person to leave closes the circle
 set local role authenticated;
