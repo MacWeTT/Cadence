@@ -80,6 +80,19 @@ test('Get the app offers the web app and the Windows installer as a direct downl
   await expect(page.getByRole('menuitem', { name: /Web app/ })).toBeVisible();
 });
 
+test('choosing the installer says what to do about the Windows warning', async ({ page }) => {
+  // the download itself is GitHub's: it is answered here so the test needs no network
+  await page.context().route('https://github.com/**', route => {
+    return route.fulfill({ status: 200, body: 'installer' });
+  });
+  await page.goto('/profile');
+  await page.getByRole('button', { name: 'Get the app' }).click();
+  await page.getByRole('menuitem', { name: /Installer/ }).click();
+
+  await expect(page.getByText(/unknown publisher/)).toBeVisible();
+  await expect(page.getByText(/More info/)).toBeVisible();
+});
+
 test('changing the name shows it at once, with a toast, and saves it', async ({ page }) => {
   await page.goto('/profile');
   await row(page, 'Name').click();
