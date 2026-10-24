@@ -1,6 +1,6 @@
 # The desktop app (1.0), design
 
-Status: proposed, for review. Version: 1.0 (the installer). It is built as a series of PRs, after a short throwaway spike. Nothing here is built yet.
+Status: built, for testing on a real PC. Version: 1.0 (the installer). It was built as a series of PRs (the task lists below record what each one did); what is left is the release itself and the checks that need a real Windows session.
 
 ## Purpose
 

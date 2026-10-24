@@ -53,8 +53,7 @@
       "pauseInvalid": "a pause ends before it starts",
       "archiveInvalid": "the archived date and the pauses don't match",
       "focusInvalid": "a focus session isn't valid"
-    },
-    "reading": "Reading the file…"
+    }
   },
   "delete": {
     "title": "Delete your account",

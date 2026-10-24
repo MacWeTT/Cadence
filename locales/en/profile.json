@@ -21,9 +21,7 @@
     "webAppHint": "Add Cadence to your home screen",
     "installer": "Installer",
     "installerHint": "Desktop app",
-    "comingSoon": "Coming soon",
-    "unavailable": "Not available in this browser",
-    "installerLink": "Download for Windows"
+    "unavailable": "Not available in this browser"
   },
   "rows": {
     "photo": "Photo",
