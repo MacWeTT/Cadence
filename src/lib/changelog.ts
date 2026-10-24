@@ -150,3 +150,20 @@ export const latestUpdate = (entries: ChangelogEntry[]): ChangelogEntry | null =
 
   return newest && Number(newest.title.split('.')[2] ?? 0) > 0 ? newest : null;
 };
+
+/**
+ * The versions from 1.0 on are the releases; the 0.x ones, before 1.0, are the pre-releases, which the What's new page
+ * keeps on a page of their own. Both keep the order they came in (newest first).
+ */
+export const splitReleases = (lines: ChangelogLine[]): { releases: ChangelogLine[]; preReleases: ChangelogLine[] } => {
+  const isPre = ({ line }: ChangelogLine) => {
+    return line.startsWith('0.');
+  };
+
+  return {
+    releases: lines.filter(line => {
+      return !isPre(line);
+    }),
+    preReleases: lines.filter(isPre),
+  };
+};

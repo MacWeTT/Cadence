@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Arrive } from '@/components/arrive/arrive';
 import { InlineText } from '@/components/changelog-entry/inline-text';
+import { LineChanges } from '@/components/line-changes/line-changes';
 import type { ChangelogLine } from '@/lib/changelog';
 import { cn } from '@/lib/utils';
 import './changelog-line-card.css';
@@ -14,14 +14,13 @@ interface ChangelogLineCardProps {
   index: number;
 }
 
-/** A minor line (0.8) as one big card: its headline and highlights, and a way to the full notes of every release in it. */
+/** A version line (0.8) as one card: its headline and highlights, and a window with the notes of every release in it. */
 export const ChangelogLineCard = (props: ChangelogLineCardProps) => {
   const { group, featured, index } = props;
   const { line, releases, from, to, date, headline, highlights } = group;
 
   const t = useTranslations('changelog');
 
-  const [{ title: latestTitle }] = releases;
   const id = `changelog-line-${line}`;
   const span = from === to ? t('version', { version: to }) : t('range', { from, to });
 
@@ -45,9 +44,12 @@ export const ChangelogLineCard = (props: ChangelogLineCardProps) => {
             );
           })}
         </ul>
-        <Link href={`/changelog/all#changelog-${latestTitle}`} className="changelog-line__more">
-          {t('seeLine', { line })}
-        </Link>
+        <LineChanges
+          title={t('line', { line })}
+          openLabel={t('seeLine', { line })}
+          description={t('lineNotes', { line })}
+          releases={releases}
+        />
       </section>
     </Arrive>
   );

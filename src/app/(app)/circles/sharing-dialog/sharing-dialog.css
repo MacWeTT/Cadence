@@ -2,6 +2,7 @@
 
 .sharing-dialog {
   @apply sm:max-w-2xl;
+  --dialog-title: 1.25rem; /* the Close button is centred on the title's line */
 }
 
 .sharing-dialog__title {

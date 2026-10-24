@@ -1,3 +1,4 @@
+import './people-dialog.css';
 import { useTranslations } from 'next-intl';
 import { MemberDetails } from '@/app/(app)/circles/member-details/member-details';
 import { MemberRow } from '@/app/(app)/circles/member-row/member-row';
@@ -27,7 +28,7 @@ export const PeopleDialog = (props: PeopleDialogProps) => {
 
   return (
     <Dialog open onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="people-dialog">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">{t('peopleTitle', { name })}</DialogTitle>
           <DialogDescription>{t('peopleText')}</DialogDescription>

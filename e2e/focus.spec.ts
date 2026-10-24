@@ -49,7 +49,12 @@ test('a Free session stopped under a minute leaves no record and asks nothing', 
   await expect(dialog).toBeHidden();
   await expect(page.getByText('Under a minute, so nothing was saved.')).toBeVisible();
   await expect(bar(page)).toBeHidden();
-  expect(await getFocusSessions(id)).toEqual([]);
+  // the Stop is saved in the background, and a session under a minute is dropped there
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id)).length;
+    })
+    .toBe(0);
 });
 
 test('stopping a session asks "I did it", and yes ticks the habit for the day it started', async ({ page }) => {
@@ -86,8 +91,13 @@ test('unticking "I did it" keeps the focus minutes and ticks nothing', async ({ 
   await page.getByRole('button', { name: 'Done' }).click();
 
   await expect(bar(page)).toBeHidden();
+  // the Stop is saved in the background, so the session shows up in the database a moment after the window closes
+  await expect
+    .poll(async () => {
+      return (await getFocusSessions(id))[0]?.focus_seconds ?? 0;
+    })
+    .toBeGreaterThanOrEqual(300);
   expect(await getCompletions(id)).toEqual([]);
-  expect((await getFocusSessions(id))[0].focus_seconds).toBeGreaterThanOrEqual(300);
 });
 
 test('"Count this time in focus" is ticked by default, and unticking it leaves the minutes out', async ({ page }) => {
@@ -485,9 +495,40 @@ test('Stop takes effect at once, before the server has answered', async ({ page 
   await slowActions(page, 3000);
   await bar(page).getByRole('button', { name: 'Stop' }).click();
 
-  await expect(bar(page)).toBeHidden({ timeout: 1000 });
-  await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10_000 });
+  // both the timer and the "Session finished" window answer at once (well inside the 3 s the server is slowed by); the server catches up behind them
+  await expect(bar(page)).toBeHidden({ timeout: 2000 });
+  await expect(page.getByRole('dialog')).toBeVisible({ timeout: 2000 });
   await expect(page.getByText('Session finished')).toBeVisible();
+  await expect(page.getByText(/You focused for 10 minutes/)).toBeVisible();
+});
+
+test('Done and the two boxes work before the server has answered the Stop: nothing is lost, nothing waits', async ({
+  page,
+}) => {
+  const id = await seedHabit({ name: 'Read', startDate: daysAgo(5) });
+
+  await seedFocusSession({ habitId: id, startedMinutesAgo: 10 });
+  await page.goto('/today');
+  await expect(bar(page)).toBeVisible();
+  await slowActions(page, 2500);
+  await bar(page).getByRole('button', { name: 'Stop' }).click();
+
+  const dialog = page.getByRole('dialog');
+
+  await expect(dialog).toBeVisible({ timeout: 2000 });
+  await dialog.getByLabel('Count this time in focus').uncheck();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await expect(dialog).toBeHidden({ timeout: 2000 });
+
+  // the stop and then the discard run in the background, in that order: the session ends up left out of the focus time
+  await expect
+    .poll(
+      async () => {
+        return (await getFocusSessions(id)).length;
+      },
+      { timeout: 15_000 },
+    )
+    .toBe(0);
 });
 
 test('a Stop that fails puts the session back, still running', async ({ page }) => {
