@@ -84,5 +84,6 @@ test('hovering the open-links button says what it does', async ({ page }) => {
   await expect(page.getByText('Habit saved')).toBeVisible();
 
   await page.getByRole('button', { name: 'Open links for LeetCode' }).hover();
-  await expect(page.getByRole('tooltip')).toContainText('Open all 2 links');
+  // another tooltip (the actions button's) may still be fading out, so ask for this one by its words
+  await expect(page.getByRole('tooltip').filter({ hasText: 'Open all 2 links' })).toBeVisible();
 });
