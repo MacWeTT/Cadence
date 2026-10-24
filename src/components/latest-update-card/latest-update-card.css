@@ -1,0 +1,25 @@
+@reference '../../app/globals.css';
+
+.latest-update {
+  @apply grid gap-3 rounded-3xl border border-line bg-surface p-6;
+}
+
+.latest-update__head {
+  @apply flex items-baseline justify-between gap-4 text-sm text-ink-muted;
+}
+
+.latest-update__title {
+  @apply font-display text-xl text-ink;
+}
+
+.latest-update__note {
+  @apply text-sm text-ink-muted;
+}
+
+.latest-update__items {
+  @apply grid gap-1.5 text-sm;
+}
+
+.latest-update__item {
+  @apply list-disc ms-5;
+}

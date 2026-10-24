@@ -1,10 +1,9 @@
 import type { Cloud } from '@/data/local/auth';
+import { SETTINGS_COLUMNS } from '@/data/local/settings-columns';
 import type { AccountPort, AccountSettings } from '@/data/local/sync';
 import type { Backup } from '@/lib/backup-types';
 import type { Json } from '@/lib/supabase/database.types';
 import { countAccount, readAccountBackup } from '@/server/backup-read';
-
-const COLUMNS = 'display_name, tag, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom';
 
 /** The account, through the person's own Supabase session: row-level security limits every call to their rows. */
 export const cloudAccount = (cloud: Cloud): AccountPort => {
@@ -36,7 +35,7 @@ export const cloudAccount = (cloud: Cloud): AccountPort => {
     settings: async () => {
       const { data, error } = await cloud
         .from('profiles')
-        .select(COLUMNS)
+        .select(SETTINGS_COLUMNS)
         .eq('user_id', await userId())
         .single();
 
@@ -44,7 +43,7 @@ export const cloudAccount = (cloud: Cloud): AccountPort => {
         throw error;
       }
 
-      return data as AccountSettings;
+      return data as unknown as AccountSettings;
     },
     saveSettings: async patch => {
       const { error } = await cloud

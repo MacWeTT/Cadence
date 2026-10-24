@@ -102,7 +102,9 @@ export const useCreateInvite = () => {
 
 /** Starts a pair, a circle for two. The id of the new pair comes back. */
 export const useCreatePair = () => {
-  return useCircleAction(createPairAction);
+  const t = useTranslations('circles.toasts');
+
+  return useCircleAction(createPairAction, t('pairCreated'));
 };
 
 export const useJoinCircle = () => {

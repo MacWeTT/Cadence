@@ -27,3 +27,8 @@
 .sync-prompt__error {
   @apply text-sm text-destructive;
 }
+
+/* Four buttons do not fit in one row of the dialog: they wrap, and each stays whole. */
+.sync-prompt__actions {
+  @apply flex-wrap justify-end;
+}

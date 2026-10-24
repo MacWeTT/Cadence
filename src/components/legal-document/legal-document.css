@@ -1,0 +1,21 @@
+@reference '../../app/globals.css';
+
+.legal-document {
+  @apply mx-auto w-full max-w-2xl;
+}
+
+.legal-document__title {
+  @apply font-display text-3xl;
+}
+
+.legal-document__updated {
+  @apply mt-1 text-sm text-ink-muted;
+}
+
+.legal-document__subtitle {
+  @apply mt-8 font-display text-xl;
+}
+
+.legal-document__text {
+  @apply mt-3 text-ink-muted;
+}

@@ -336,3 +336,35 @@ describe('Google sign-in through the system browser', () => {
     expect(await google.finish('cadence://auth?code=abc123')).toMatchObject({ next: null, error: expect.any(String) });
   });
 });
+
+describe('setting a password from the app', () => {
+  const input = { password: 'longenough', confirm: 'longenough' };
+
+  it('sets it on the account and marks the account as having one', async () => {
+    const cloud = fake();
+
+    expect(await createAuth(cloud).setPassword(input)).toEqual({ ok: true });
+    expect(cloud.auth.updateUser).toHaveBeenCalledWith({ password: 'longenough' });
+    expect(cloud.saved).toEqual([{ password_set: true }]);
+  });
+
+  it('says what is wrong with a password that differs, one Supabase turns down, or no one being signed in', async () => {
+    const rejected = fake();
+    const same = fake();
+    const nobody = fake();
+
+    rejected.auth.updateUser.mockResolvedValue({ error: { code: 'weak_password' } });
+    same.auth.updateUser.mockResolvedValue({ error: { code: 'same_password' } });
+    nobody.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
+
+    expect(await createAuth(fake()).setPassword({ ...input, confirm: 'other' })).toMatchObject({ ok: false });
+    expect(await createAuth(rejected).setPassword(input)).toMatchObject({ ok: false, error: expect.any(String) });
+    expect(rejected.saved).toEqual([]);
+    expect(await createAuth(same).setPassword(input)).toMatchObject({ ok: false, error: expect.any(String) });
+    expect(await createAuth(nobody).setPassword(input)).toMatchObject({
+      ok: false,
+      error: expect.stringContaining('account'),
+    });
+    expect(nobody.auth.updateUser).not.toHaveBeenCalled();
+  });
+});

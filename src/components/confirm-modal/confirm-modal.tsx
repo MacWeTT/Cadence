@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import './confirm-modal.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface ConfirmModalProps {
   title: string;
@@ -20,6 +21,8 @@ interface ConfirmModalProps {
   /** A red confirm button, for something that cannot be undone. */
   destructive?: boolean;
   confirmDisabled?: boolean;
+  /** Why the confirm button is off, said in a tooltip on it. */
+  confirmDisabledReason?: string;
   onConfirm: () => void;
   onClose: () => void;
   children?: React.ReactNode;
@@ -27,7 +30,17 @@ interface ConfirmModalProps {
 
 /** A question with a warning: what will happen, an optional control, and Cancel and a confirm button. */
 export const ConfirmModal = (props: ConfirmModalProps) => {
-  const { title, description, confirmLabel, destructive, confirmDisabled, onConfirm, onClose, children } = props;
+  const {
+    title,
+    description,
+    confirmLabel,
+    destructive,
+    confirmDisabled,
+    confirmDisabledReason,
+    onConfirm,
+    onClose,
+    children,
+  } = props;
 
   const t = useTranslations('profile.modal');
 
@@ -49,9 +62,11 @@ export const ConfirmModal = (props: ConfirmModalProps) => {
           <Button variant="outline" onClick={onClose}>
             {t('cancel')}
           </Button>
-          <Button variant={destructive ? 'destructive' : 'default'} disabled={confirmDisabled} onClick={onConfirm}>
-            {confirmLabel}
-          </Button>
+          <WhyDisabled reason={confirmDisabled ? (confirmDisabledReason ?? null) : null}>
+            <Button variant={destructive ? 'destructive' : 'default'} disabled={confirmDisabled} onClick={onConfirm}>
+              {confirmLabel}
+            </Button>
+          </WhyDisabled>
         </DialogFooter>
       </DialogContent>
     </Dialog>

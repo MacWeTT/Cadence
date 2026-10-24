@@ -19,7 +19,6 @@ type ProfileChanges = Pick<
   DataSource,
   | 'updateName'
   | 'updateTag'
-  | 'setPassword'
   | 'updateWeekStart'
   | 'updateTimezone'
   | 'updateAvatar'
@@ -40,7 +39,7 @@ const invalid = (error: z.ZodError): ProfileActionResult => {
   return say(`validation.${message}` as MessageKey);
 };
 
-/** What needs an account (a password, a photo or sound file stored on the server) answers so, instead of failing quietly. */
+/** What needs an account (a photo or sound file stored on the server) answers so, instead of failing quietly. */
 const needsAccount = (): Promise<ProfileActionResult> => {
   return Promise.resolve(say('errors.needsAccount'));
 };
@@ -111,7 +110,6 @@ export const createProfileChanges = (sql: Sql): ProfileChanges => {
 
       return save([set('timezone = ?', [data.timezone])]);
     },
-    setPassword: needsAccount,
     uploadAvatarPhoto: needsAccount,
     uploadSound: needsAccount,
     removeSound: needsAccount,

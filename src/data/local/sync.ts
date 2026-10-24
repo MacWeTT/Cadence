@@ -1,4 +1,5 @@
 import { readBackup, replaceStatements } from '@/data/local/backup';
+import { SETTINGS_KEYS, toLocalValue } from '@/data/local/settings-columns';
 import type { Sql } from '@/data/local/sql';
 import { summarize } from '@/lib/backup';
 import { BACKUP_LIMITS, type Backup, type BackupSummary } from '@/lib/backup-types';
@@ -13,6 +14,12 @@ export interface AccountSettings {
   sound_volume: number;
   accent: string | null;
   accent_custom: string | null;
+  /** The account's own: whether it has a password, and its avatar (the Google picture's address is `avatar_url`). */
+  password_set: boolean;
+  avatar_kind: string;
+  avatar_value: string | null;
+  avatar_color: string | null;
+  avatar_url: string | null;
 }
 
 /** What the sync needs from the account. In the app it is Supabase; in tests it is in memory. */
@@ -127,14 +134,17 @@ export const createSync = (sql: Sql, account: AccountPort) => {
   /** The account's data and settings onto the PC, replacing what was there, in one transaction. */
   const pullData = async (): Promise<void> => {
     const [backup, settings] = await Promise.all([account.readBackup(), account.settings()]);
-    const { display_name, tag, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom } = settings;
+    const columns = SETTINGS_KEYS.map(key => {
+      return `${key} = ?`;
+    }).join(', ');
 
     await sql.batch([
       ...replaceStatements(backup),
       {
-        query:
-          'update profile set display_name = ?, tag = ?, timezone = ?, week_starts_on = ?, sound_id = ?, sound_volume = ?, accent = ?, accent_custom = ? where id = 1',
-        params: [display_name, tag, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom],
+        query: `update profile set ${columns} where id = 1`,
+        params: SETTINGS_KEYS.map(key => {
+          return toLocalValue(settings[key]);
+        }),
       },
     ]);
   };

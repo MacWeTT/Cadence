@@ -6,10 +6,18 @@
   "version": "Version {version}",
   "line": "Version {line}",
   "range": "Versions {from} to {to}",
-  "latest": "Latest: {version}",
   "seeLine": "All {line} changes",
   "seeAll": "See every change",
   "allTitle": "Every change",
   "allIntro": "Every release in full, newest first.",
-  "back": "Back to What's new"
+  "back": "Back to What's new",
+  "latestUpdate": "Latest update: {version}",
+  "preReleases": "Pre-releases",
+  "preReleasesText": "Everything before 1.0, from {from} to {to}.",
+  "seePreReleases": "See the pre-releases",
+  "preTitle": "Pre-releases",
+  "preIntro": "The versions before 1.0, newest first.",
+  "lineNotes": "The notes of every release in version {line}.",
+  "seeAllChanges": "See all {count} changes",
+  "updateNotes": "The complete list of what changed in version {version}."
 }

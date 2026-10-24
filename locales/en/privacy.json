@@ -1,0 +1,62 @@
+{
+  "pageTitle": "Privacy policy",
+  "title": "Privacy policy",
+  "updated": "24 October 2026",
+  "intro": "Cadence is a small personal habit tracker built by one person. This page says, in plain words, what it keeps about you, where it is kept, and how you can take it back. It is written to be read, not to hide things.",
+  "sections": [
+    {
+      "title": "Who is responsible",
+      "paragraphs": [
+        "Cadence is run by its developer, MacWeTT, as an individual. If you have a question about your data, use the Contact page in the web app, or write through the project's GitHub page."
+      ]
+    },
+    {
+      "title": "What we keep",
+      "paragraphs": [
+        "Your account: your email address, your name and your tag. If you sign in with Google, we receive your email address, name and profile picture from Google, and nothing else.",
+        "What you put in: your habits and their schedules, which days you ticked, pauses, focus sessions, your profile settings (such as your time zone, theme and notifications), the photo you upload as an avatar and the sounds you upload for focus sessions.",
+        "Circles: if you use them, the other members of a circle can see what you choose to share there.",
+        "Messages: if you write to us through the Contact page, we keep your name, your email and your message (or just the message, if you send it anonymously).",
+        "Sign-in attempts: to stop people guessing passwords, we keep a short record of failed sign-ins (the tag and the time) for a while.",
+        "On your device: the browser keeps a sign-in cookie and a few preferences (your theme, whether you have seen the intro). The desktop app also keeps a local database of your habits on your computer, so it works offline, and syncs it with your account when you are signed in."
+      ]
+    },
+    {
+      "title": "What we do not do",
+      "paragraphs": [
+        "We do not sell your data, show ads, or build advertising profiles. Cadence has no analytics or tracking tools."
+      ]
+    },
+    {
+      "title": "Where it is kept",
+      "paragraphs": [
+        "Your data is stored with Supabase, in a database located in Tokyo, Japan. The website runs on Vercel, and messages from the Contact page are delivered by Resend. These services process data for us only to run Cadence. The desktop app is downloaded from GitHub Releases.",
+        "Because these services are in other countries, your data may be handled outside the country you live in."
+      ]
+    },
+    {
+      "title": "Google sign-in",
+      "paragraphs": [
+        "Cadence's use and transfer of information received from Google APIs follows the Google API Services User Data Policy, including the Limited Use requirements. We use your Google details only to create and sign in to your account, and never share them or use them for anything else."
+      ]
+    },
+    {
+      "title": "Your choices",
+      "paragraphs": [
+        "You can download everything Cadence holds about you, and delete your account and all of its data, from the Account tab of your profile. Deleting is permanent.",
+        "You can change your name, tag, photo and settings at any time, and remove sounds you uploaded.",
+        "You can sign out, and clear the site's cookies in your browser, whenever you like. The desktop app's local data is a single file on your computer, and uninstalling the app removes it."
+      ]
+    },
+    {
+      "title": "Children",
+      "paragraphs": ["Cadence is not meant for children under 13, and we do not knowingly collect their data."]
+    },
+    {
+      "title": "Changes",
+      "paragraphs": [
+        "If this policy changes in a way that matters, the date above changes and the new version is announced in What's new."
+      ]
+    }
+  ]
+}

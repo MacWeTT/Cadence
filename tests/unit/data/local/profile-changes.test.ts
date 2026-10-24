@@ -90,12 +90,11 @@ describe('profile edits on local rows', () => {
     });
   });
 
-  it('says what needs an account instead of pretending: a password, a photo, an uploaded sound', async () => {
+  it('says what needs an account instead of pretending: a photo, an uploaded sound', async () => {
     const { profile } = await setup();
     const form = new FormData();
 
     for (const result of [
-      await profile.setPassword({ password: 'longenough1', confirm: 'longenough1' }),
       await profile.uploadAvatarPhoto(form),
       await profile.uploadSound(form),
       await profile.removeSound('5b1d3f0e-2c4a-4a6e-9a4c-0d3f6a2b8c11'),

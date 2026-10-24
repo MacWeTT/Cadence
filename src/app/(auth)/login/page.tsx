@@ -6,6 +6,7 @@ import { AnimatedLogo } from '@/components/animated-logo/animated-logo';
 import { AuthForm } from '@/components/auth-form/auth-form';
 import { GithubSignInButton } from '@/components/github-sign-in-button/github-sign-in-button';
 import { GoogleSignInButton } from '@/components/google-sign-in-button/google-sign-in-button';
+import { LegalNote } from '@/components/legal-note/legal-note';
 import { LoginError } from '@/components/login-error/login-error';
 import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
 import './login-page.css';
@@ -42,6 +43,7 @@ const LoginPage = () => {
           </Suspense>
           <GithubSignInButton />
         </div>
+        <LegalNote />
       </div>
     </main>
   );

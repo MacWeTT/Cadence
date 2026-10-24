@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { groupLines, lineOf, parseChangelog } from '@/lib/changelog';
+import { groupLines, latestUpdate, lineOf, parseChangelog, splitReleases } from '@/lib/changelog';
 
 const SOURCE = `# Changelog
 
@@ -182,5 +182,79 @@ describe('groupLines', () => {
         });
       }),
     ).toEqual(['release', 'release', 'release', 'release']);
+  });
+});
+
+describe('latestUpdate', () => {
+  const log = (...lines: string[]) => {
+    return parseChangelog(lines.join(String.fromCharCode(10)));
+  };
+
+  it('is the newest release when it is a fix on top of a version (1.0.1 after 1.0.0)', () => {
+    const update = latestUpdate(
+      log('## 1.0.1 (2026-10-24)', '', 'Fixes.', '', '- A fix.', '', '## 1.0.0 (2026-10-23)', '', '- The first.'),
+    );
+
+    expect(update?.title).toBe('1.0.1');
+  });
+
+  it('is nothing when the newest release is a version of its own (1.0.0, or 0.9.0): its line card says it all', () => {
+    expect(latestUpdate(log('## 1.0.0 (2026-10-23)', '', '- The first.'))).toBeNull();
+    expect(
+      latestUpdate(log('## 0.9.0 (2026-10-20)', '', '- A feature.', '', '## 0.8.5 (2026-10-18)', '', '- A fix.')),
+    ).toBeNull();
+  });
+
+  it('skips the sections that are not releases, and is nothing for an empty file', () => {
+    expect(latestUpdate(log('## Planned', '', '- Later.', '', '## 1.0.2 (2026-10-25)', '', '- A fix.'))?.title).toBe(
+      '1.0.2',
+    );
+    expect(latestUpdate(log(''))).toBeNull();
+  });
+});
+
+describe('splitReleases', () => {
+  const lines = () => {
+    return groupLines(
+      parseChangelog(
+        [
+          '## 1.0.1 (2026-10-24)',
+          '',
+          '- A fix.',
+          '',
+          '## 1.0.0 (2026-10-23)',
+          '',
+          '- The first.',
+          '',
+          '## 0.8.5 (2026-10-18)',
+          '',
+          '- A fix.',
+          '',
+          '## 0.7.0 (2026-10-12)',
+          '',
+          '- Focus.',
+        ].join(String.fromCharCode(10)),
+      ),
+    );
+  };
+
+  it('keeps the versions from 1.0 on as releases, and the 0.x ones as pre-releases, newest first', () => {
+    const { releases, preReleases } = splitReleases(lines());
+
+    expect(
+      releases.map(({ line }) => {
+        return line;
+      }),
+    ).toEqual(['1.0']);
+    expect(
+      preReleases.map(({ line }) => {
+        return line;
+      }),
+    ).toEqual(['0.8', '0.7']);
+  });
+
+  it('has no pre-releases to show when there are none, and none as releases before 1.0', () => {
+    expect(splitReleases([]).preReleases).toEqual([]);
+    expect(splitReleases(lines().slice(1)).releases).toEqual([]);
   });
 });

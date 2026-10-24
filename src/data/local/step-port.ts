@@ -1,10 +1,9 @@
 import type { Cloud } from '@/data/local/auth';
+import { SETTINGS_COLUMNS } from '@/data/local/settings-columns';
 import { Rejected, type RemoteFocus, type RemoteHabit, type StepPort } from '@/data/local/step-types';
 import type { AccountSettings } from '@/data/local/sync';
 import type { Json } from '@/lib/supabase/database.types';
 import { fetchAll } from '@/server/fetch-all';
-
-const COLUMNS = 'display_name, tag, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom';
 
 /**
  * What the account says for good, as opposed to what a bad connection says: the record named is gone or not the person's
@@ -146,7 +145,7 @@ export const cloudStep = (cloud: Cloud): StepPort => {
             .order('id')
             .range(from, to);
         }),
-        cloud.from('profiles').select(COLUMNS).eq('user_id', id).single(),
+        cloud.from('profiles').select(SETTINGS_COLUMNS).eq('user_id', id).single(),
       ]);
 
       if (error) {
@@ -177,7 +176,7 @@ export const cloudStep = (cloud: Cloud): StepPort => {
         }),
         ticks,
         focus: focus as RemoteFocus[],
-        settings: settings as AccountSettings,
+        settings: settings as unknown as AccountSettings,
       };
     },
   };

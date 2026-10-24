@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { safeNext } from '@/lib/next-path';
 import { supabaseConfig } from '@/lib/supabase/config';
 
-const PUBLIC_PATHS = ['/login', '/auth'];
+const PUBLIC_PATHS = ['/login', '/auth', '/privacy', '/terms'];
 
 /**
  * Refreshes the Supabase session cookie and sends signed-out visitors to /login (and signed-in ones away from

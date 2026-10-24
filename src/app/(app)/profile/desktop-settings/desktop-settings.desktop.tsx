@@ -42,6 +42,7 @@ export const DesktopSettings = () => {
     try {
       await (next ? enable() : disable());
       setState({ ...state, startOnLogin: next });
+      toast.success(next ? t('startOnLoginOn') : t('startOnLoginOff'));
     } catch {
       toast.error(t('failed'));
     }

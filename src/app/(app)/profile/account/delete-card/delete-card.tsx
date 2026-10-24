@@ -59,6 +59,7 @@ export const DeleteCard = () => {
           confirmLabel={t('confirm')}
           destructive
           confirmDisabled={!matches}
+          confirmDisabledReason={t('type')}
           onConfirm={onConfirm}
           onClose={onClose}
         >

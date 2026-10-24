@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import type { Together } from '@/lib/week-together';
 import type { CircleMemberView } from '@/server/circles-view';
 import './week-together.css';
+import { Tip } from '@/components/tip/tip';
 
 interface WeekTogetherState {
   open: boolean;
@@ -44,15 +45,17 @@ export const WeekTogether = (props: WeekTogetherProps) => {
           {both > 0 && <Heart aria-hidden="true" className="week-together__summary-heart" />}
           {t('summary', { count: both })}
         </p>
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-label={t(open ? 'hide' : 'show')}
-          onClick={onToggleClick}
-          className="week-together__toggle"
-        >
-          <ChevronDown aria-hidden="true" className="week-together__chevron" />
-        </button>
+        <Tip label={t(open ? 'hide' : 'show')}>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-label={t(open ? 'hide' : 'show')}
+            onClick={onToggleClick}
+            className="week-together__toggle"
+          >
+            <ChevronDown aria-hidden="true" className="week-together__chevron" />
+          </button>
+        </Tip>
       </div>
       <div className="week-together__grid">
         <span aria-hidden="true" />

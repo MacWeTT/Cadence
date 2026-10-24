@@ -29,6 +29,28 @@ Your profile, your sounds, your own tag, and a timer you can pause.
 - Pause and resume a focus session, and Stop answers at once.
 - Export your data as JSON, CSV or a PDF report, and restore a backup, or delete your account.
 
+## 1.0.12 (2026-10-24)
+
+Fixes and polish.
+
+- A Privacy policy and Terms of use, open to everyone, linked from the footer and under the sign-in options.
+- Stopping a focus session now opens the "Session finished" window straight away, instead of waiting for the server.
+- The website now runs closer to its data, so pages and actions respond faster.
+- Every window has the same padding, and its Close button lines up with the title.
+- Scrollbars match the theme you picked, everywhere, without arrows.
+- The Windows app now shows your own picture and the colour you chose, in the top bar and on your profile, and knows when your account already has a password (the warning goes away). Without an account the app shows a plain picture and an invitation to sign in.
+- Setting or changing your password now works in the Windows app too.
+- Signing in with Google in the Windows app now completes properly.
+- A Show password button on every password field.
+- Every button that is only an icon now says what it does when you hover it, and every button that is switched off says why.
+- Saving a Circles setting now shows a message, like every other save.
+- The picture in the top bar shows the colour you picked for your character or emoji instead of always the app colour.
+- The opening animation on the website now plays before the page shows, instead of after it.
+- The Windows app shows Circles in its menu, switched off and marked as coming soon to the app.
+- A missing page, or a page that fails, now shows a Cadence page with a way back.
+- The Windows app can make the PDF report too, and its export buttons line up. The choice to keep this PC's habits or your account's no longer clips its buttons.
+- What's new has a card for the latest update above the version cards. Fixes for a version are listed under every change.
+
 ## 1.0.0 (2026-10-24)
 
 Cadence for Windows, and Circles.

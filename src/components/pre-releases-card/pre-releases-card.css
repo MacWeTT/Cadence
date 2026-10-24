@@ -1,0 +1,17 @@
+@reference '../../app/globals.css';
+
+.pre-releases-card {
+  @apply grid gap-2 rounded-3xl border border-dashed border-line p-6;
+}
+
+.pre-releases-card__title {
+  @apply font-display text-xl text-ink;
+}
+
+.pre-releases-card__text {
+  @apply text-sm text-ink-muted;
+}
+
+.pre-releases-card__more {
+  @apply mt-1 w-fit text-sm font-medium text-ink underline underline-offset-4 hover:text-ink-muted;
+}

@@ -8,6 +8,7 @@ import { RailItem } from '@/app/(app)/circles/rail-item/rail-item';
 import { useCircles, useCreatePair } from '@/app/(app)/circles/use-circles';
 import { Button } from '@/components/ui/button';
 import './circles-rail.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface RailState {
   creating: boolean;
@@ -18,10 +19,12 @@ export const CirclesRail = () => {
   const [state, setState] = useState<RailState>({ creating: false });
 
   const t = useTranslations('circles');
+  const tw = useTranslations('common.why');
   const pathname = usePathname();
   const { data: circles, isError, refetch } = useCircles();
   const router = useRouter();
   const createPair = useCreatePair();
+  const { isPending: pairing } = createPair;
 
   const { creating } = state;
   const [, , openId] = pathname.split('/');
@@ -56,9 +59,11 @@ export const CirclesRail = () => {
         <Button size="sm" onClick={onNewClick}>
           {t('newCircle')}
         </Button>
-        <Button variant="outline" size="sm" disabled={createPair.isPending} onClick={onPairClick}>
-          {t('pair.invite')}
-        </Button>
+        <WhyDisabled reason={pairing ? tw('busy') : null}>
+          <Button variant="outline" size="sm" disabled={pairing} onClick={onPairClick}>
+            {t('pair.invite')}
+          </Button>
+        </WhyDisabled>
       </div>
       {circles && circles.length > 0 && (
         <ul className="circles-rail__list">

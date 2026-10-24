@@ -13,6 +13,8 @@ import { CUSTOM_SOUND_LIMIT } from '@/lib/sound';
 import { measureSound } from '@/lib/sound-duration';
 import type { SoundView } from '@/server/profile-view';
 import './sound-modal.css';
+import { Tip } from '@/components/tip/tip';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface SoundModalProps {
   sound: { id: string; volume: number };
@@ -185,25 +187,29 @@ export const SoundModal = (props: SoundModalProps) => {
                   </span>
                   <span className="sound-modal__name">{name}</span>
                 </button>
-                <button
-                  type="button"
-                  aria-label={t('remove', { name })}
-                  onClick={onRemove}
-                  className="sound-modal__remove"
-                >
-                  <X aria-hidden />
-                </button>
+                <Tip label={t('remove', { name })}>
+                  <button
+                    type="button"
+                    aria-label={t('remove', { name })}
+                    onClick={onRemove}
+                    className="sound-modal__remove"
+                  >
+                    <X aria-hidden />
+                  </button>
+                </Tip>
               </div>
             );
           })}
         </div>
-        <button type="button" disabled={full} onClick={onUploadClick} className="sound-modal__upload">
-          <Upload aria-hidden className="sound-modal__upload-icon" />
-          <span>
-            {t('upload')}
-            <span className="sound-modal__hint">{full ? t('limit') : t('uploadHint')}</span>
-          </span>
-        </button>
+        <WhyDisabled reason={full ? t('limit') : null}>
+          <button type="button" disabled={full} onClick={onUploadClick} className="sound-modal__upload">
+            <Upload aria-hidden className="sound-modal__upload-icon" />
+            <span>
+              {t('upload')}
+              <span className="sound-modal__hint">{full ? t('limit') : t('uploadHint')}</span>
+            </span>
+          </button>
+        </WhyDisabled>
         <input
           ref={fileInput}
           type="file"

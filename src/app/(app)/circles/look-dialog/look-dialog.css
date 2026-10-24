@@ -35,3 +35,7 @@
 .look-dialog__exits {
   @apply flex flex-wrap gap-2 border-t border-line pt-4;
 }
+
+.look-dialog {
+  --dialog-title: 1.25rem; /* the Close button is centred on the title's line */
+}

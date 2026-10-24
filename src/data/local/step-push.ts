@@ -1,10 +1,8 @@
 import { getProfile } from '@/data/local/load';
 import type { Sql } from '@/data/local/sql';
 import type { Dirty, RemoteFocus, StepPort } from '@/data/local/step-types';
+import { PUSHED_KEYS, SETTINGS_COLUMNS, fromLocalRow } from '@/data/local/settings-columns';
 import type { AccountSettings } from '@/data/local/sync';
-
-export const SETTINGS_COLUMNS =
-  'display_name, tag, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom';
 
 const json = <T>(text: string | null): T | null => {
   return text === null ? null : (JSON.parse(text) as T);
@@ -103,7 +101,13 @@ export const pushOne = async (sql: Sql, port: StepPort, mark: Dirty): Promise<vo
     return pushTick(sql, port, id);
   }
 
-  const [settings] = await sql.select<AccountSettings>(`select ${SETTINGS_COLUMNS} from profile where id = 1`);
+  const [row] = await sql.select<Record<string, unknown>>(`select ${SETTINGS_COLUMNS} from profile where id = 1`);
+  const settings = fromLocalRow(row);
+  const patch = Object.fromEntries(
+    PUSHED_KEYS.map(key => {
+      return [key, settings[key]];
+    }),
+  ) as Partial<AccountSettings>;
 
-  return port.saveSettings(settings);
+  return port.saveSettings(patch);
 };

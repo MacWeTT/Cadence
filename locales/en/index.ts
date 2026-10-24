@@ -14,10 +14,13 @@ import greeting from './greeting.json';
 import habits from './habits.json';
 import home from './home.json';
 import labels from './labels.json';
+import legal from './legal.json';
 import metadata from './metadata.json';
+import privacy from './privacy.json';
 import profile from './profile.json';
 import progress from './progress.json';
 import sync from './sync.json';
+import terms from './terms.json';
 import today from './today.json';
 import validation from './validation.json';
 
@@ -39,10 +42,13 @@ const en = {
   habits,
   home,
   labels,
+  legal,
   metadata,
+  privacy,
   profile,
   progress,
   sync,
+  terms,
   today,
   validation,
 };
