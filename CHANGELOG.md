@@ -29,10 +29,15 @@ Your profile, your sounds, your own tag, and a timer you can pause.
 - Pause and resume a focus session, and Stop answers at once.
 - Export your data as JSON, CSV or a PDF report, and restore a backup, or delete your account.
 
-## 1.0.10 (2026-10-24)
+## 1.0.12 (2026-10-24)
 
 Fixes and polish.
 
+- A Privacy policy and Terms of use, open to everyone, linked from the footer and under the sign-in options.
+- Stopping a focus session now opens the "Session finished" window straight away, instead of waiting for the server.
+- The website now runs closer to its data, so pages and actions respond faster.
+- Every window has the same padding, and its Close button lines up with the title.
+- Scrollbars match the theme you picked, everywhere, without arrows.
 - The Windows app now shows your own picture and the colour you chose, in the top bar and on your profile, and knows when your account already has a password (the warning goes away). Without an account the app shows a plain picture and an invitation to sign in.
 - Setting or changing your password now works in the Windows app too.
 - Signing in with Google in the Windows app now completes properly.

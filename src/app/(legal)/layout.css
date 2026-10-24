@@ -1,0 +1,25 @@
+@reference '../globals.css';
+
+.legal-layout {
+  @apply mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-6;
+}
+
+.legal-layout__header {
+  @apply flex items-center justify-between pb-8;
+}
+
+.legal-layout__back {
+  @apply font-medium text-ink-muted hover:text-ink;
+}
+
+.legal-layout__main {
+  @apply flex-1;
+}
+
+.legal-layout__footer {
+  @apply mt-12 flex gap-6 border-t border-line pt-4 text-sm text-ink-muted;
+}
+
+.legal-layout__link {
+  @apply hover:text-ink;
+}

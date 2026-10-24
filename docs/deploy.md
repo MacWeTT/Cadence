@@ -27,6 +27,7 @@ You do these once. Nothing here can be done from the repository.
 - Framework: Next.js. Production branch: `master` (Settings → Git).
 - Turn **off** the automatic Git deployments (Settings → Git → "Ignored Build Step" set to `exit 0`, or disconnect the Git integration after importing). The GitHub workflow deploys, so the migrations always go first.
 - Environment variables (Production): `NEXT_PUBLIC_SUPABASE_URL` (the project's API URL) and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (its publishable key). Do not add the service role key.
+- The server code runs in **Tokyo** (`hnd1`, set in `vercel.json`), next to the Supabase database; the default region is Washington, which made every database call cross the Pacific. After a deploy, `curl -sI <site>/login` should show `x-vercel-id: …::hnd1::…`.
 - Create a **token** (Account Settings → Tokens). Note the **Org ID** and **Project ID** (Project Settings, or `.vercel/project.json` after `npx vercel link`).
 
 **4. GitHub** (Settings → Secrets and variables → Actions)
