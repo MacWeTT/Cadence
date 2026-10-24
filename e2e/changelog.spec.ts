@@ -19,6 +19,12 @@ test("the footer's What's new link opens the changelog: a card for each version 
   await expect(newest).toContainText('Cadence for Windows, and Circles');
   await expect(newest).toContainText('A Windows app');
 
+  // The newest release is a run of fixes, so it has its own card above the version cards, with its fixes in full.
+  const update = page.getByRole('region', { name: 'Latest update: 1.0.10' });
+
+  await expect(update).toContainText('Fixes and polish');
+  await expect(update).toContainText('Show password');
+
   // The older lines are cards with their highlights, and no card of their own for a patch.
   await expect(page.getByRole('region', { name: 'Version 0.8', exact: true })).toContainText(
     'Your profile, your sounds',
