@@ -9,7 +9,7 @@ const get = (): Cloud => {
 
   // The session is kept on the PC and refreshed on its own; there is no page address to read a sign-in from here.
   client ??= createClient(url, key, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+    auth: { flowType: 'pkce', persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
   });
 
   return client;
