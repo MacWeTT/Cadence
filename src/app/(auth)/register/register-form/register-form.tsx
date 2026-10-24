@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { registerInputSchema } from '@/lib/auth-schema';
 import { TAG_MAX } from '@/lib/tag';
@@ -93,9 +94,8 @@ export const RegisterForm = (props: RegisterFormProps) => {
       </div>
       <div className="register-form__field">
         <Label htmlFor="register-password">{t('password')}</Label>
-        <Input
+        <PasswordInput
           id="register-password"
-          type="password"
           value={password}
           autoComplete="new-password"
           onChange={onPasswordChange}
@@ -104,13 +104,7 @@ export const RegisterForm = (props: RegisterFormProps) => {
       </div>
       <div className="register-form__field">
         <Label htmlFor="register-confirm">{t('confirm')}</Label>
-        <Input
-          id="register-confirm"
-          type="password"
-          value={confirm}
-          autoComplete="new-password"
-          onChange={onConfirmChange}
-        />
+        <PasswordInput id="register-confirm" value={confirm} autoComplete="new-password" onChange={onConfirmChange} />
       </div>
       {error && (
         <p role="alert" className="register-form__error">

@@ -30,6 +30,11 @@ const SETTINGS: AccountSettings = {
   sound_volume: 0.6,
   accent: null,
   accent_custom: null,
+  password_set: false,
+  avatar_kind: 'google',
+  avatar_value: null,
+  avatar_color: null,
+  avatar_url: 'https://lh3.example/photo.jpg',
 };
 
 /** An account in memory that obeys the same rules as the database functions: the newest edit wins, ticks need a habit. */
@@ -41,6 +46,7 @@ const server = () => {
     settings: { ...SETTINGS },
     down: false,
     calls: [] as string[],
+    savedKeys: [] as string[],
   };
 
   const guard = (call: string) => {
@@ -112,6 +118,7 @@ const server = () => {
     },
     saveSettings: patch => {
       guard('saveSettings');
+      state.savedKeys.push(...Object.keys(patch));
       state.settings = { ...state.settings, ...patch };
 
       return Promise.resolve();
@@ -390,6 +397,37 @@ describe('staying in step with the account', () => {
 
     expect(await step.run('someone-else')).toEqual({ pushed: 0, pulled: false });
     expect(remote.state.calls).toEqual([]);
+  });
+
+  it('takes the avatar and the password flag changed elsewhere, without sending them back', async () => {
+    const { sql, remote, step } = await linked();
+
+    remote.state.settings = {
+      ...remote.state.settings,
+      password_set: true,
+      avatar_kind: 'character',
+      avatar_value: 'ghost',
+      avatar_color: '#112233',
+    };
+    await step.run('u1');
+
+    expect(await sql.select('select avatar_kind, avatar_value, avatar_color, password_set from profile')).toEqual([
+      { avatar_kind: 'character', avatar_value: 'ghost', avatar_color: '#112233', password_set: 1 },
+    ]);
+    expect(await dirty(sql)).toEqual([]);
+    expect(await step.run('u1')).toMatchObject({ pushed: 0, pulled: false });
+  });
+
+  it('sends an avatar chosen on the PC, but never the password flag or the Google picture address', async () => {
+    const { remote, profile, step } = await linked();
+
+    await profile.updateAvatar({ kind: 'emoji', value: '🔥', color: '#ff8800' });
+    await step.run('u1');
+
+    expect(remote.state.settings).toMatchObject({ avatar_kind: 'emoji', avatar_value: '🔥', avatar_color: '#ff8800' });
+    expect(remote.state.settings).toMatchObject({ password_set: false, avatar_url: 'https://lh3.example/photo.jpg' });
+    expect(remote.state.savedKeys).not.toContain('password_set');
+    expect(remote.state.savedKeys).not.toContain('avatar_url');
   });
 
   it('does not run twice at once', async () => {

@@ -124,14 +124,24 @@ describe('the local backup', () => {
     expect(await exportFile(sql, 'json')).toEqual({
       fileName: 'cadence-2026-10-24.json',
       type: 'application/json',
-      text: toJson(backup),
+      data: toJson(backup),
     });
     expect(await exportFile(sql, 'csv')).toEqual({
       fileName: 'cadence-2026-10-24.csv',
       type: 'text/csv',
-      text: toCsv(backup),
+      data: toCsv(backup),
     });
   });
+
+  it('makes the PDF report on the PC too, named for today, as real PDF bytes', async () => {
+    const sql = await filled();
+    const pdf = await exportFile(sql, 'pdf');
+
+    expect(pdf.fileName).toBe('cadence-2026-10-24.pdf');
+    expect(pdf.type).toBe('application/pdf');
+    expect(pdf.data).toBeInstanceOf(Uint8Array);
+    expect(new TextDecoder().decode((pdf.data as Uint8Array).slice(0, 5))).toBe('%PDF-');
+  }, 30_000);
 
   it('deletes everything on the PC and puts the settings back to their start', async () => {
     const sql = await filled();

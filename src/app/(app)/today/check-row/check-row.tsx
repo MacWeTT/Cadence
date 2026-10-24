@@ -12,6 +12,7 @@ import { streakMsg, weekMsg, yearMsg } from '@/lib/today-labels';
 import { cn } from '@/lib/utils';
 import type { TodayRow } from '@/server/today-view';
 import './check-row.css';
+import { Tip } from '@/components/tip/tip';
 
 interface CheckRowProps {
   row: TodayRow;
@@ -42,19 +43,21 @@ export const CheckRow = (props: CheckRowProps) => {
       transition={{ type: 'spring', stiffness: 500, damping: 42 }}
       className="check-row"
     >
-      <button
-        type="button"
-        role="checkbox"
-        id={`check-${id}`}
-        aria-checked={ticked}
-        aria-label={ticked ? t('markNotDone', { name: name }) : t('markDone', { name: name })}
-        // aria-disabled, not disabled: a disabled button drops keyboard focus; the toggle ignores taps while saving.
-        aria-disabled={disabled}
-        onClick={onClick}
-        className={cn('check-row__box', ticked && 'check-row__box--done')}
-      >
-        {ticked && <Check className="check-row__check" aria-hidden />}
-      </button>
+      <Tip label={ticked ? t('markNotDone', { name: name }) : t('markDone', { name: name })}>
+        <button
+          type="button"
+          role="checkbox"
+          id={`check-${id}`}
+          aria-checked={ticked}
+          aria-label={ticked ? t('markNotDone', { name: name }) : t('markDone', { name: name })}
+          // aria-disabled, not disabled: a disabled button drops keyboard focus; the toggle ignores taps while saving.
+          aria-disabled={disabled}
+          onClick={onClick}
+          className={cn('check-row__box', ticked && 'check-row__box--done')}
+        >
+          {ticked && <Check className="check-row__check" aria-hidden />}
+        </button>
+      </Tip>
       <span
         aria-hidden
         className="check-row__icon"

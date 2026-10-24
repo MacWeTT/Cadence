@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { reactAction, setCircleLookAction, setCirclePrefsAction, setCloserAction } from '@/app/(app)/circles/actions';
 import { useOptimisticCircleAction } from '@/app/(app)/circles/use-optimistic-circle-action';
 import type { CircleColor, Reaction } from '@/domain/circles';
@@ -37,6 +38,8 @@ interface PrefsInput {
 
 /** Whether your week counts towards the circle's, and whether friends can react to you. */
 export const useSetPrefs = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<CircleView, PrefsInput>(
     queryKeys.circle(circleId),
     setCirclePrefsAction,
@@ -45,6 +48,7 @@ export const useSetPrefs = (circleId: string) => {
 
       return withPrefs(view, inWeek, allowCheers);
     },
+    t('saved'),
   );
 };
 
@@ -56,12 +60,15 @@ interface LookInput {
 
 /** Your own colour for a circle, and whether it is pinned to the top of your list. */
 export const useSetLook = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<CircleView, LookInput>(
     queryKeys.circle(circleId),
     setCircleLookAction,
     (view, { color, pinned }) => {
       return withLook(view, color, pinned);
     },
+    t('saved'),
   );
 };
 
@@ -72,11 +79,14 @@ interface CloserInput {
 
 /** Your own Closer switch for a pair. It shows at once, and is on for both only when both have turned it on. */
 export const useSetCloser = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<CircleView, CloserInput>(
     queryKeys.circle(circleId),
     setCloserAction,
     (view, { on }) => {
       return withCloser(view, on);
     },
+    t('saved'),
   );
 };

@@ -7,15 +7,32 @@ const MISMATCH = "That tag or email and password don't match.";
 
 const signInByTag = async (page: Page, tag: string, password: string) => {
   await page.getByLabel('Tag').fill(tag);
-  await page.getByLabel('Password').fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 };
+
+test('a password can be shown while typing, and hidden again', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByRole('tab', { name: 'Email', exact: true }).click();
+
+  const field = page.getByLabel('Password', { exact: true });
+
+  await field.fill('my-secret-1');
+  await expect(field).toHaveAttribute('type', 'password');
+
+  await page.getByRole('button', { name: 'Show password' }).click();
+  await expect(field).toHaveAttribute('type', 'text');
+  await expect(field).toHaveValue('my-secret-1');
+
+  await page.getByRole('button', { name: 'Hide password' }).click();
+  await expect(field).toHaveAttribute('type', 'password');
+});
 
 test('signing in by email works, and lands on Home', async ({ page }) => {
   await page.goto('/login');
   await page.getByRole('tab', { name: 'Email', exact: true }).click();
   await page.getByLabel('Email').fill(E2E_USER.email);
-  await page.getByLabel('Password').fill(E2E_USER.password);
+  await page.getByLabel('Password', { exact: true }).fill(E2E_USER.password);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
   await expect(page).toHaveURL(/localhost:\d+\/$/);
@@ -40,7 +57,7 @@ test('a wrong password and an unknown tag get the same answer', async ({ page })
 
   await page.getByRole('tab', { name: 'Email', exact: true }).click();
   await page.getByLabel('Email').fill(E2E_USER.email);
-  await page.getByLabel('Password').fill('not-the-password');
+  await page.getByLabel('Password', { exact: true }).fill('not-the-password');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.locator('.auth-form__error')).toHaveText(MISMATCH);
 });
@@ -54,7 +71,7 @@ test('the Sign in button waits for something to be typed, and there is a note ab
   await expect(page.getByText('There is no password reset')).toBeVisible();
   await page.getByLabel('Tag').fill('e2e');
   await expect(button).toBeDisabled();
-  await page.getByLabel('Password').fill('x');
+  await page.getByLabel('Password', { exact: true }).fill('x');
   await expect(button).toBeEnabled();
 });
 

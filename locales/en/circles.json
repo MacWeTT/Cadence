@@ -71,7 +71,9 @@
     "joined": "You joined the circle",
     "left": "You left the circle",
     "closed": "Circle closed",
-    "removed": "Removed from the circle"
+    "removed": "Removed from the circle",
+    "saved": "Saved",
+    "pairCreated": "Partner circle created"
   },
   "sharing": {
     "title": "What I share here",

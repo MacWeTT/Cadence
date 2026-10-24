@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { signInInputSchema } from '@/lib/auth-schema';
 import { cn } from '@/lib/utils';
@@ -106,9 +107,8 @@ export const SignInForm = (props: SignInFormProps) => {
       </div>
       <div className="auth-form__field">
         <Label htmlFor="sign-in-password">{t('password')}</Label>
-        <Input
+        <PasswordInput
           id="sign-in-password"
-          type="password"
           value={password}
           autoComplete="current-password"
           onChange={onPasswordChange}

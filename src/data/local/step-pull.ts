@@ -1,5 +1,5 @@
 import type { Sql, Statement } from '@/data/local/sql';
-import { SETTINGS_COLUMNS } from '@/data/local/step-push';
+import { SETTINGS_COLUMNS, fromLocalRow, toLocalValue } from '@/data/local/settings-columns';
 import type { Dirty, RemoteHabit, RemoteState } from '@/data/local/step-types';
 import type { AccountSettings } from '@/data/local/sync';
 
@@ -13,17 +13,17 @@ export interface LocalSnapshot {
 }
 
 export const loadLocal = async (sql: Sql): Promise<LocalSnapshot> => {
-  const [habits, ticks, focus, marks, [settings]] = await Promise.all([
+  const [habits, ticks, focus, marks, [settingsRow]] = await Promise.all([
     sql.select<{ id: string; updated_at: string }>('select id, updated_at from habits'),
     sql.select<{ habit_id: string; completion_date: string }>(
       'select habit_id, completion_date from habit_completions',
     ),
     sql.select<{ id: string }>('select id from focus_sessions where ended_at is not null'),
     sql.select<Dirty>('select kind, id, seq from dirty'),
-    sql.select<AccountSettings>(`select ${SETTINGS_COLUMNS} from profile where id = 1`),
+    sql.select<Record<string, unknown>>(`select ${SETTINGS_COLUMNS} from profile where id = 1`),
   ]);
 
-  return { habits, ticks, focus, marks, settings };
+  return { habits, ticks, focus, marks, settings: fromLocalRow(settingsRow) };
 };
 
 const newer = (a: string, b: string): boolean => {
@@ -241,7 +241,7 @@ const settingsStatements = (remote: RemoteState, local: LocalSnapshot, held: Set
         })
         .join(', ')} where id = 1`,
       params: changed.map(key => {
-        return theirs[key];
+        return toLocalValue(theirs[key]);
       }),
     },
   ];

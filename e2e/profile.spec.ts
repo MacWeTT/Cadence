@@ -226,6 +226,30 @@ test('a character avatar can be chosen with a colour', async ({ page }) => {
     .toEqual(['character', 'robot', '#a8512b']);
 });
 
+test('the avatar in the top bar wears the colour that was chosen, not the app colour', async ({ page }) => {
+  await page.goto('/profile');
+  await row(page, 'Photo').click();
+  await page.getByRole('button', { name: 'Ghost' }).click();
+  await page.getByRole('button', { name: 'Plum' }).click();
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Avatar updated')).toBeVisible();
+
+  const colour = (selector: string) => {
+    return page
+      .locator(selector)
+      .first()
+      .evaluate(element => {
+        return getComputedStyle(element).backgroundColor;
+      });
+  };
+
+  await expect
+    .poll(() => {
+      return colour('.user-menu__trigger .avatar');
+    })
+    .toBe(await colour('.avatar--xl'));
+});
+
 test('the chosen character is named under the picture', async ({ page }) => {
   await page.goto('/profile');
   await row(page, 'Photo').click();

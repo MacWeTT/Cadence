@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import './emoji-field.css';
+import { Tip } from '@/components/tip/tip';
 
 const CategoryHeader = (props: EmojiPickerListCategoryHeaderProps) => {
   const { category, ...rest } = props;
@@ -61,11 +62,13 @@ export const EmojiField = (props: EmojiFieldProps) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button type="button" aria-label={t('choose')} className="emoji-field__trigger">
-          {value}
-        </button>
-      </PopoverTrigger>
+      <Tip label={t('choose')}>
+        <PopoverTrigger asChild>
+          <button type="button" aria-label={t('choose')} className="emoji-field__trigger">
+            {value}
+          </button>
+        </PopoverTrigger>
+      </Tip>
       <PopoverContent align="start" className="emoji-field__popover">
         <EmojiPicker.Root className="emoji-field__root" onEmojiSelect={onEmojiSelect}>
           <EmojiPicker.Search

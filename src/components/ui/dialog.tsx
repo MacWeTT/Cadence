@@ -5,6 +5,7 @@ import { cn } from 'cn';
 import { useTranslations } from 'next-intl';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
 
@@ -63,14 +64,21 @@ function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
-              <XIcon />
-              <span className="sr-only">
-                <CloseLabel />
-              </span>
-            </Button>
-          </DialogPrimitive.Close>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogPrimitive.Close data-slot="dialog-close" asChild>
+                <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
+                  <XIcon />
+                  <span className="sr-only">
+                    <CloseLabel />
+                  </span>
+                </Button>
+              </DialogPrimitive.Close>
+            </TooltipTrigger>
+            <TooltipContent>
+              <CloseLabel />
+            </TooltipContent>
+          </Tooltip>
         )}
       </DialogPrimitive.Content>
     </DialogPortal>

@@ -13,7 +13,7 @@ import { cloudStep } from '@/data/local/step-port';
 import { createSync } from '@/data/local/sync';
 import { createProfileChanges } from '@/data/local/profile-changes';
 import { createReads } from '@/data/local/reads';
-import type { Sql } from '@/data/local/sql';
+import { execute, type Sql } from '@/data/local/sql';
 import { tauriSql } from '@/data/local/tauri-sql';
 import { syncTimezone } from '@/data/local/timezone';
 import type { DataSource } from '@/data/types';
@@ -48,7 +48,7 @@ const sql: Sql = {
 /** The desktop app's data: the SQLite file on the PC. Nothing here imports server code, which is what the desktop build checks. */
 /** What only the desktop app has: its own files for download, and who is signed in. */
 export interface DesktopExtras {
-  exportFile: (format: 'json' | 'csv') => ReturnType<typeof exportFile>;
+  exportFile: (format: 'json' | 'csv' | 'pdf') => ReturnType<typeof exportFile>;
   currentUser: () => Promise<SignedInUser | null>;
   /** What the register screen shows, or `null` when nobody is signed in. */
   registration: () => Promise<{ email: string; tag: string; registered: boolean } | null>;
@@ -67,7 +67,7 @@ const account = cloudAccount(cloud);
 
 const stayInStep = createStayInStep(sql, cloudStep(cloud));
 
-const { signIn, signUp, register, registration, signOut, currentUser } = createAuth(cloud);
+const { signIn, signUp, register, setPassword, registration, signOut, currentUser } = createAuth(cloud);
 
 // The site that hosts `/auth/desktop`, the page Google comes back to (it must be an allowed redirect in Supabase).
 const { start: startGoogle, finish: finishGoogle } = createGoogle(
@@ -85,6 +85,16 @@ export const local: DataSource & DesktopExtras = {
   signIn,
   signUp,
   register,
+  setPassword: async input => {
+    const result = await setPassword(input);
+
+    // the PC's profile says the account has a password too, so the warning goes
+    if (result.ok) {
+      await execute(sql, 'update profile set password_set = 1 where id = 1');
+    }
+
+    return result;
+  },
   signOut,
   currentUser,
   registration,

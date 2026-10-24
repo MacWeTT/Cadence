@@ -36,7 +36,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "createUpdaterArtifacts": true
+    "createUpdaterArtifacts": true,
+    "publisher": "MacWeTT",
+    "copyright": "Copyright (c) MacWeTT",
+    "shortDescription": "Cadence, the habit tracker"
   },
   "plugins": {
     "deep-link": {

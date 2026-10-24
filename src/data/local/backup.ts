@@ -1,6 +1,7 @@
 import { createTranslator } from 'next-intl';
 import { backupErrorText } from '@/lib/backup-error-text';
 import { backupFileName, parseBackup, toJson } from '@/lib/backup';
+import { translateMsg } from '@/lib/message';
 import { toCsv } from '@/lib/backup-csv';
 import { BACKUP_LIMITS, type Backup, type BackupError } from '@/lib/backup-types';
 import { getProfile } from '@/data/local/load';
@@ -8,6 +9,9 @@ import { failed } from '@/data/local/outcome';
 import type { Sql, Statement } from '@/data/local/sql';
 import type { DataSource } from '@/data/types';
 import { buildBackup } from '@/server/backup-view';
+import { buildReportLabels } from '@/server/report-labels-build';
+import { buildReport } from '@/server/report-model';
+import { renderReportPdf } from '@/server/report-pdf';
 import en from '@locales/en';
 
 type AccountChanges = Pick<DataSource, 'importBackup' | 'deleteAccount'>;
@@ -137,18 +141,39 @@ export const replaceData = (sql: Sql, backup: Backup): Promise<void> => {
   return sql.batch(replaceStatements(backup));
 };
 
-/** A download of the PC's data: the file's name and text. The PDF report is built on the server, so it is not offered here. */
-export const exportFile = async (
-  sql: Sql,
-  format: 'json' | 'csv',
-): Promise<{ fileName: string; type: string; text: string }> => {
-  const [backup, { today }] = await Promise.all([readBackup(sql), getProfile(sql)]);
+/** A download of the PC's data: the file's name, its type, and its content (text, or the PDF's bytes). */
+export interface ExportFile {
+  fileName: string;
+  type: string;
+  data: string | Uint8Array;
+}
 
-  return {
-    fileName: backupFileName(today, format),
-    type: format === 'json' ? 'application/json' : 'text/csv',
-    text: format === 'json' ? toJson(backup) : toCsv(backup),
-  };
+const TYPES = { json: 'application/json', csv: 'text/csv', pdf: 'application/pdf' } as const;
+
+/** The same PDF report the website makes, built here from the PC's own file (the report needs no server). */
+const reportPdf = async (backup: Backup, today: string): Promise<Uint8Array> => {
+  const { profile } = backup;
+  const { name, weekStartsOn } = profile;
+  const all = createTranslator({ locale: 'en', messages: en });
+  const say = createTranslator({ locale: 'en', messages: en, namespace: 'account.report' });
+  const labels = buildReportLabels(
+    say as never,
+    m => {
+      return translateMsg(all, m);
+    },
+    name,
+    today,
+  );
+
+  return renderReportPdf(buildReport(backup, today, weekStartsOn), labels);
+};
+
+/** What the Account tab downloads, made on the PC from its own file: JSON, CSV or the PDF report. */
+export const exportFile = async (sql: Sql, format: 'json' | 'csv' | 'pdf'): Promise<ExportFile> => {
+  const [backup, { today }] = await Promise.all([readBackup(sql), getProfile(sql)]);
+  const data = format === 'pdf' ? await reportPdf(backup, today) : format === 'json' ? toJson(backup) : toCsv(backup);
+
+  return { fileName: backupFileName(today, format), type: TYPES[format], data };
 };
 
 const refusal = (error: BackupError): string => {

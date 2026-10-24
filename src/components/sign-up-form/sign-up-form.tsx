@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { signUpInputSchema } from '@/lib/auth-schema';
 import { TAG_MAX, tagFromEmail } from '@/lib/tag';
@@ -113,24 +114,12 @@ export const SignUpForm = (props: SignUpFormProps) => {
       </div>
       <div className="auth-form__field">
         <Label htmlFor="sign-up-password">{t('password')}</Label>
-        <Input
-          id="sign-up-password"
-          type="password"
-          value={password}
-          autoComplete="new-password"
-          onChange={onPasswordChange}
-        />
+        <PasswordInput id="sign-up-password" value={password} autoComplete="new-password" onChange={onPasswordChange} />
         <p className="auth-form__hint">{t('passwordHint')}</p>
       </div>
       <div className="auth-form__field">
         <Label htmlFor="sign-up-confirm">{t('confirm')}</Label>
-        <Input
-          id="sign-up-confirm"
-          type="password"
-          value={confirm}
-          autoComplete="new-password"
-          onChange={onConfirmChange}
-        />
+        <PasswordInput id="sign-up-confirm" value={confirm} autoComplete="new-password" onChange={onConfirmChange} />
       </div>
       {error && (
         <p role="alert" className="auth-form__error">

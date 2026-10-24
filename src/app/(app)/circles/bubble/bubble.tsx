@@ -10,6 +10,7 @@ import { haptic } from '@/lib/haptics';
 import { avatarName, memberName, toAvatarView } from '@/lib/circle-people';
 import { cn } from '@/lib/utils';
 import './bubble.css';
+import { Tip } from '@/components/tip/tip';
 
 interface BubbleProps {
   circleId: string;
@@ -99,15 +100,17 @@ export const Bubble = (props: BubbleProps) => {
             )}
           </div>
           {enabled && (
-            <button
-              type="button"
-              aria-label={tr('addReaction')}
-              aria-expanded={picking}
-              onClick={onPickClick}
-              className="bubble__add"
-            >
-              <SmilePlus aria-hidden="true" className="bubble__add-icon" />
-            </button>
+            <Tip label={tr('addReaction')}>
+              <button
+                type="button"
+                aria-label={tr('addReaction')}
+                aria-expanded={picking}
+                onClick={onPickClick}
+                className="bubble__add"
+              >
+                <SmilePlus aria-hidden="true" className="bubble__add-icon" />
+              </button>
+            </Tip>
           )}
         </div>
         <ReactionBar

@@ -147,6 +147,7 @@ export const SyncPrompt = () => {
   const onDecline = async () => {
     await local.sync.decline(userId);
     setState(START);
+    toast.success(t('declined'));
   };
 
   const onLater = () => {
@@ -204,7 +205,7 @@ export const SyncPrompt = () => {
             {t('failed')}
           </p>
         )}
-        <DialogFooter>
+        <DialogFooter className="sync-prompt__actions">
           {open === 'ask' ? (
             <>
               <Button variant="outline" disabled={busy} onClick={onDownloadAccount}>

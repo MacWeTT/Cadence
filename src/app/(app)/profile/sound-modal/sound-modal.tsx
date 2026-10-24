@@ -13,6 +13,7 @@ import { CUSTOM_SOUND_LIMIT } from '@/lib/sound';
 import { measureSound } from '@/lib/sound-duration';
 import type { SoundView } from '@/server/profile-view';
 import './sound-modal.css';
+import { Tip } from '@/components/tip/tip';
 
 interface SoundModalProps {
   sound: { id: string; volume: number };
@@ -185,14 +186,16 @@ export const SoundModal = (props: SoundModalProps) => {
                   </span>
                   <span className="sound-modal__name">{name}</span>
                 </button>
-                <button
-                  type="button"
-                  aria-label={t('remove', { name })}
-                  onClick={onRemove}
-                  className="sound-modal__remove"
-                >
-                  <X aria-hidden />
-                </button>
+                <Tip label={t('remove', { name })}>
+                  <button
+                    type="button"
+                    aria-label={t('remove', { name })}
+                    onClick={onRemove}
+                    className="sound-modal__remove"
+                  >
+                    <X aria-hidden />
+                  </button>
+                </Tip>
               </div>
             );
           })}

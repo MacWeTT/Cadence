@@ -3,12 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { SPLASH_KEY } from '@/lib/appearance';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { cn } from '@/lib/utils';
 import { AnimatedLogo } from '@/components/animated-logo/animated-logo';
 import './app-splash.css';
 
-const KEY = 'cadence:splash';
 const DESCRIPTION_MS = 1500; // how long the description stays once it is there
 
 const noopSubscribe = () => {
@@ -21,7 +21,7 @@ let decided: boolean | null = null;
 const shouldPlay = () => {
   if (decided === null) {
     try {
-      decided = !window.sessionStorage.getItem(KEY);
+      decided = !window.sessionStorage.getItem(SPLASH_KEY);
     } catch {
       decided = false; // blocked storage: skip it rather than replay on every page
     }
@@ -54,10 +54,15 @@ export const AppSplash = () => {
 
   const { described, leaving, finished } = state;
 
+  // The page was covered from the first paint (see the boot script); the splash, or the page if there is none, takes over.
+  useEffect(() => {
+    document.documentElement.removeAttribute('data-splash');
+  }, []);
+
   useEffect(() => {
     if (play) {
       try {
-        window.sessionStorage.setItem(KEY, '1');
+        window.sessionStorage.setItem(SPLASH_KEY, '1');
       } catch {
         // nothing to remember it in; the splash just plays again next time
       }

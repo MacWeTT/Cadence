@@ -80,5 +80,14 @@
     "text": "That page couldn't be shown. Try again, or go back to Cadence.",
     "retry": "Try again",
     "home": "Back to Cadence"
+  },
+  "password": {
+    "show": "Show password",
+    "hide": "Hide password"
+  },
+  "why": {
+    "busy": "Working on it. One moment.",
+    "loading": "Still loading. One moment.",
+    "comingSoon": "This arrives in a later version."
   }
 }
