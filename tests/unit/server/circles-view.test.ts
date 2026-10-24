@@ -30,6 +30,7 @@ const member = (over: Record<string, unknown> = {}) => {
     avatar_url: null,
     showed_up_week: true,
     habits: [],
+    reactions: [],
     cheers_today: null,
     cheered_by_you: false,
     ...over,
@@ -43,6 +44,8 @@ const overview = (members: unknown[] = [member()], circle: Record<string, unknow
       name: 'Study group',
       is_owner: true,
       week_ticks: 7,
+      color: 'moss',
+      pinned: false,
       ...circle,
     },
     members,
@@ -271,5 +274,27 @@ describe('what each level may show', () => {
     const view = toCircleView(overview([member({ today: '2026-10-13', in_week: false })]));
 
     expect(view.members[0]).toMatchObject({ today: '2026-10-13', inWeek: false });
+  });
+
+  it("carries the viewer's own colour and pin for the circle", () => {
+    const view = toCircleView(overview([member()], { color: 'sky', pinned: true }));
+
+    expect(view).toMatchObject({ color: 'sky', pinned: true });
+  });
+
+  it('carries the reactions on each member, with who gave them', () => {
+    const reactions = [{ user_id: ME, tag: 'me', date: TODAY, emoji: '\u{1F525}' }];
+    const view = toCircleView(overview([member({ reactions })]));
+
+    expect(view.members[0].reactions).toEqual([{ userId: ME, tag: 'me', date: TODAY, emoji: '\u{1F525}' }]);
+  });
+
+  it('refuses an emoji or a colour it does not know, rather than showing something unexpected', () => {
+    expect(() => {
+      return toCircleView(overview([member({ reactions: [{ user_id: ME, tag: 'me', date: TODAY, emoji: 'x' }] })]));
+    }).toThrow();
+    expect(() => {
+      return toCircleView(overview([member()], { color: 'neon' }));
+    }).toThrow();
   });
 });

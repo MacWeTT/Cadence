@@ -1,0 +1,37 @@
+@reference '../../../globals.css';
+
+.look-dialog__title {
+  @apply font-display text-xl;
+}
+
+.look-dialog__swatches {
+  @apply flex flex-wrap gap-2;
+}
+
+.look-dialog__swatch {
+  @apply size-8 rounded-full bg-(--swatch) ring-offset-2 ring-offset-popover transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.look-dialog__swatch--selected {
+  @apply ring-2 ring-ink;
+}
+
+.look-dialog__pin {
+  @apply flex cursor-pointer items-start gap-3 rounded-md border border-line p-3;
+}
+
+.look-dialog__pin-title {
+  @apply flex items-center gap-1.5 font-semibold;
+}
+
+.look-dialog__pin-icon {
+  @apply size-4;
+}
+
+.look-dialog__pin-text {
+  @apply block text-sm text-ink-muted;
+}
+
+.look-dialog__exits {
+  @apply flex flex-wrap gap-2 border-t border-line pt-4;
+}

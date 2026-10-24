@@ -65,14 +65,14 @@ isOneToOne: false
                   ]
                 },"circle_members": {
                   Row: {
-                    "allow_cheers": boolean,"circle_id": string,"in_week": boolean,"joined_at": string,"user_id": string
+                    "allow_cheers": boolean,"circle_id": string,"color": string,"in_week": boolean,"joined_at": string,"pinned": boolean,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "allow_cheers"?: boolean,"circle_id": string,"in_week"?: boolean,"joined_at"?: string,"user_id": string
+                    "allow_cheers"?: boolean,"circle_id": string,"color"?: string,"in_week"?: boolean,"joined_at"?: string,"pinned"?: boolean,"user_id": string
                   }
                   Update: {
-                    "allow_cheers"?: boolean,"circle_id"?: string,"in_week"?: boolean,"joined_at"?: string,"user_id"?: string
+                    "allow_cheers"?: boolean,"circle_id"?: string,"color"?: string,"in_week"?: boolean,"joined_at"?: string,"pinned"?: boolean,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -299,6 +299,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"reactions": {
+                  Row: {
+                    "circle_id": string,"created_at": string,"emoji": string,"for_date": string,"from_user": string,"to_user": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "circle_id": string,"created_at"?: string,"emoji": string,"for_date": string,"from_user": string,"to_user": string
+                  }
+                  Update: {
+                    "circle_id"?: string,"created_at"?: string,"emoji"?: string,"for_date"?: string,"from_user"?: string,"to_user"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reactions_circle_id_fkey"
+      columns: ["circle_id"]
+isOneToOne: false
+      referencedRelation: "circles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -361,8 +381,11 @@ isOneToOne: false
                            },
 "my_circles":
 { Args: Record<PropertyKey, never>; Returns: {
-              "id": string,"is_owner": boolean,"member_count": number,"name": string
+              "color": string,"id": string,"is_owner": boolean,"member_count": number,"name": string,"pinned": boolean
             }[]
+                           },
+"react":
+{ Args: { "p_circle": string,"p_emoji": string,"p_for": string,"p_on": boolean,"p_to": string }; Returns: undefined
                            },
 "remove_member":
 { Args: { "p_circle": string,"p_user": string }; Returns: undefined
@@ -378,6 +401,9 @@ isOneToOne: false
                            },
 "server_now":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"set_circle_look":
+{ Args: { "p_circle": string,"p_color": string,"p_pinned": boolean }; Returns: undefined
                            },
 "set_circle_prefs":
 { Args: { "p_allow_cheers": boolean,"p_circle": string,"p_in_week": boolean }; Returns: undefined

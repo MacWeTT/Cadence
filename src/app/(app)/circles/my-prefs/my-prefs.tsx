@@ -8,10 +8,10 @@ interface MyPrefsProps {
   member: CircleMemberView;
 }
 
-/** Your own card: who cheered you today, and the two choices that are about you. */
+/** The two choices that are about you in this circle: whether your week counts, and whether friends can react to you. */
 export const MyPrefs = (props: MyPrefsProps) => {
   const { circleId, member } = props;
-  const { inWeek, allowCheers, cheersToday } = member;
+  const { inWeek, allowCheers } = member;
 
   const t = useTranslations('circles.member');
   const setPrefs = useSetPrefs(circleId);
@@ -26,17 +26,6 @@ export const MyPrefs = (props: MyPrefsProps) => {
 
   return (
     <div className="my-prefs">
-      {cheersToday && cheersToday.length > 0 && (
-        <p className="my-prefs__cheers">
-          {t('cheeredBy', {
-            who: cheersToday
-              .map(({ tag }) => {
-                return `@${tag}`;
-              })
-              .join(', '),
-          })}
-        </p>
-      )}
       <label className="my-prefs__option">
         <input type="checkbox" checked={inWeek} onChange={onInWeekChange} />
         <span>{t('countMyWeek')}</span>

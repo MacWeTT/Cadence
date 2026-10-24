@@ -1,20 +1,26 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  CIRCLE_COLORS,
   CIRCLE_LIMITS,
   LABELS,
   LEVELS,
+  REACTIONS,
+  REACTION_DAYS,
   SHARE_LEVELS,
   atLeast,
   circleNameProblem,
   isLabel,
   isLevel,
+  isReaction,
   isShareLevel,
   levelRank,
   reveal,
 } from '@/domain/circles';
+import { COLOR_KEYS } from '@/lib/palette';
 
 const MIGRATION = readFileSync('supabase/migrations/20261019100000_circles.sql', 'utf8');
+const LOOK_MIGRATION = readFileSync('supabase/migrations/20261025080000_circle_look_and_reactions.sql', 'utf8');
 
 describe('levels', () => {
   it('are ordered from nothing to everything', () => {
@@ -104,5 +110,33 @@ describe('limits and levels agree with the database', () => {
     expect(MIGRATION).toContain(`check (level in (${quoted(SHARE_LEVELS)}))`);
     expect(MIGRATION).toContain(`check (level in (${quoted(LEVELS)}))`);
     expect(MIGRATION).toContain(`check (label in (${quoted(LABELS)}))`);
+  });
+});
+
+describe('reactions and colours', () => {
+  it('has four reactions, and recognises only those', () => {
+    expect([...REACTIONS]).toEqual(['\u{1F44F}', '\u{1F525}', '\u{1F4AA}', '\u2764\uFE0F']);
+    expect(isReaction('\u{1F525}')).toBe(true);
+    expect(isReaction('\u2764')).toBe(false); // without the emoji variation selector it is another character
+    expect(isReaction('\u{1F608}')).toBe(false);
+    expect(isReaction(undefined)).toBe(false);
+  });
+
+  it('uses the same colours as the habits, so a circle can be given any of them', () => {
+    expect([...CIRCLE_COLORS]).toEqual([...COLOR_KEYS]);
+  });
+
+  it('agrees with the database on the emoji, the colours and the days a reaction stays open', () => {
+    const quoted = (values: readonly string[]) => {
+      return values
+        .map(value => {
+          return `'${value}'`;
+        })
+        .join(', ');
+    };
+
+    expect(LOOK_MIGRATION).toContain(`check (emoji in (${quoted(REACTIONS)}))`);
+    expect(LOOK_MIGRATION).toContain(`check (color in (${quoted(CIRCLE_COLORS)}))`);
+    expect(LOOK_MIGRATION).toContain(`v_today - ${REACTION_DAYS}`);
   });
 });

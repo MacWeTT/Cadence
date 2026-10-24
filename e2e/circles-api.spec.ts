@@ -59,6 +59,17 @@ test('the list shows the circles you are in', async ({ request }) => {
   expect(list).toEqual([expect.objectContaining({ id: circle, name: 'Study group', isOwner: false, memberCount: 2 })]);
 });
 
+test('a circle carries your own colour and pin, which start as moss and not pinned', async ({ request }) => {
+  const { circle } = await friendsCircle();
+
+  const list = await (await request.get('/api/circles')).json();
+  const view = await (await request.get(`/api/circles/${circle}`)).json();
+
+  expect(list).toEqual([expect.objectContaining({ color: 'moss', pinned: false })]);
+  expect(view).toMatchObject({ color: 'moss', pinned: false });
+  expect(JSON.stringify(view)).not.toContain('"cheers"');
+});
+
 test('a friend shows only what they chose to share, and nothing about what was missed', async ({ request }) => {
   const { me, friend, circle } = await friendsCircle();
   const today = daysAgo(0);

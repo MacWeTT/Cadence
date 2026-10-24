@@ -62,11 +62,7 @@ export const SharingSection = (props: SharingSectionProps) => {
   });
 
   return (
-    <section aria-labelledby="circle-sharing" className="sharing-section">
-      <h2 id="circle-sharing" className="sharing-section__title">
-        {t('title')}
-      </h2>
-      <p className="sharing-section__intro">{t('intro')}</p>
+    <section aria-label={t('title')} className="sharing-section">
       {data && (
         <>
           <label className="sharing-section__pause">

@@ -144,7 +144,7 @@ select is((select count(*)::int from jsonb_array_elements(current_setting('t.a')
 select is(position('missed' in current_setting('t.ov')), 0, 'the overview has no field about misses');
 select is(position('10000000-0000-0000-0000-0000000000a' in current_setting('t.ov')), 0, 'habit ids are never sent');
 select is((current_setting('t.a')::jsonb ->> 'showed_up_week')::boolean, true, 'ticking a shared habit this week shows as showed up');
-select is(jsonb_array_length(current_setting('t.b')::jsonb -> 'habits'), 0, 'your own entry carries no habits');
+select is(jsonb_array_length(current_setting('t.b')::jsonb -> 'habits'), 1, 'your own entry shows your habits as the circle sees them');
 select is((current_setting('t.b')::jsonb ->> 'is_you')::boolean, true, 'your own entry is marked as you');
 select is((current_setting('t.ov')::jsonb -> 'circle' ->> 'week_ticks')::int, 3, 'the circle week sums the ticks of habits shared at Done today or higher');
 select is((select count(*)::int from jsonb_array_elements(current_setting('t.ov')::jsonb -> 'members') e where e ->> 'tag' is not null), 8, 'every member shows their tag');

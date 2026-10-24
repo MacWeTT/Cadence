@@ -13,6 +13,17 @@ export type ShareLevel = (typeof SHARE_LEVELS)[number];
 export const LABELS = ['name', 'emoji', 'generic'] as const;
 export type Label = (typeof LABELS)[number];
 
+/** The reactions on a friend's day. The heart carries U+FE0F, the emoji variation selector, as the database's check does. */
+export const REACTIONS = ['\u{1F44F}', '\u{1F525}', '\u{1F4AA}', '\u2764\uFE0F'] as const;
+export type Reaction = (typeof REACTIONS)[number];
+
+/** A reaction can be given to a friend's today and the days before it, this many back. */
+export const REACTION_DAYS = 6;
+
+/** The colours a person can give a circle: the same as the habit colours (a test checks it). */
+export const CIRCLE_COLORS = ['moss', 'clay', 'ochre', 'rose', 'plum', 'teal', 'sky', 'slate'] as const;
+export type CircleColor = (typeof CIRCLE_COLORS)[number];
+
 export const CIRCLE_LIMITS = { maxMembers: 8, maxCircles: 10, inviteDays: 7, nameMax: 60 } as const;
 
 export const isLevel = (value: unknown): value is Level => {
@@ -30,6 +41,18 @@ export const isShareLevel = (value: unknown): value is ShareLevel => {
 export const isLabel = (value: unknown): value is Label => {
   return LABELS.some(label => {
     return label === value;
+  });
+};
+
+export const isReaction = (value: unknown): value is Reaction => {
+  return REACTIONS.some(reaction => {
+    return reaction === value;
+  });
+};
+
+export const isCircleColor = (value: unknown): value is CircleColor => {
+  return CIRCLE_COLORS.some(color => {
+    return color === value;
   });
 };
 

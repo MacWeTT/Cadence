@@ -1,4 +1,4 @@
-import { adminClient } from '@e2e/support/data';
+import { adminClient, ensureE2EUser } from '@e2e/support/data';
 
 // Setup for the Circles specs. It writes straight to the database with the service role, which is how a second
 // person's circles, habits and shares exist without a second browser. Never import this from application code.
@@ -133,4 +133,11 @@ export const cleanUp = async (made: { circles: string[]; users: string[] }): Pro
 /** Removes every circle whose name starts with the prefix: the ones a spec made by clicking through the screens. */
 export const cleanUpByName = async (prefix: string): Promise<void> => {
   await adminClient().from('circles').delete().like('name', `${prefix}%`);
+};
+
+/** Takes the e2e user off pause, which a spec may have switched on. */
+export const resumeSharing = async (): Promise<void> => {
+  const me = await ensureE2EUser();
+
+  await adminClient().from('profiles').update({ circles_paused: false }).eq('user_id', me);
 };

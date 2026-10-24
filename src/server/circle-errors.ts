@@ -16,6 +16,7 @@ export const CIRCLE_DB_CODES: Record<string, ErrorCode> = {
   too_many_circles: 'tooManyCircles',
   cheers_off: 'cheersOff',
   cheer_date: 'cheerDate',
+  react_date: 'reactDate',
   use_leave: 'generic',
   cannot_cheer_self: 'generic',
   not_your_habit: 'generic',
@@ -23,6 +24,9 @@ export const CIRCLE_DB_CODES: Record<string, ErrorCode> = {
   invalid_viewer: 'generic',
   invalid_level: 'generic',
   invalid_label: 'generic',
+  invalid_color: 'generic',
+  invalid_emoji: 'generic',
+  cannot_react_self: 'generic',
 };
 
 export const circleErrorCode = (message: string): ErrorCode => {

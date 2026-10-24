@@ -118,17 +118,53 @@
     "streakWeeks": "{count}-week streak",
     "weekProgress": "{done} of {target} this week",
     "history": "{count} days ticked in the last {weeks} weeks",
-    "cheer": "Cheer",
-    "cheerLabel": "Cheer {who} on",
-    "cheered": "You cheered them today.",
-    "cheeredBy": "Cheered today by {who}",
     "countMyWeek": "Count my week with this circle",
-    "letFriendsCheer": "Let friends cheer me on"
+    "letFriendsCheer": "Let friends react to me"
   },
   "home": {
     "title": "Circles",
     "empty": "Share your progress with a few close friends, only as much as you choose.",
     "start": "Start a circle",
     "all": "All circles"
+  },
+  "loading": "Loading your circles…",
+  "pinned": "Pinned",
+  "welcomeTitle": "Pick a circle",
+  "conversation": {
+    "people": "{count, plural, one {# person} other {# people}}",
+    "peopleLabel": "See the {count, plural, one {# person} other {# people}} in this circle",
+    "peopleTitle": "People in {name}",
+    "peopleText": "Everyone in the circle, and what each of them shares with you.",
+    "share": "What I share",
+    "settings": "Circle settings",
+    "feedLabel": "What your friends shared",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "emptyTitle": "A quiet day so far",
+    "emptyText": "When friends share a habit and do it, it shows up here, and you can cheer them on. Choose what you share to join in.",
+    "emptyAction": "Choose what I share",
+    "addReaction": "Add a reaction",
+    "pickReaction": "Pick a reaction",
+    "reactWith": "React with {emoji}",
+    "reactionLabel": "{emoji} from {count, plural, one {# person} other {# people}}"
+  },
+  "look": {
+    "title": "Circle settings",
+    "description": "Only you see these choices. Friends see their own.",
+    "color": "Colour",
+    "colors": {
+      "moss": "Moss",
+      "clay": "Clay",
+      "ochre": "Ochre",
+      "rose": "Rose",
+      "plum": "Plum",
+      "teal": "Teal",
+      "sky": "Sky",
+      "slate": "Slate"
+    },
+    "pin": "Pin to the top",
+    "pinText": "Keeps this circle first in your list.",
+    "leave": "Leave circle",
+    "close": "Close circle"
   }
 }

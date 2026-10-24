@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import { cleanUp, makeCircle, makeFriend, makeLoginFriend } from '@e2e/support/circles';
+import { cleanUp, makeCircle, makeFriend, makeLoginFriend, resumeSharing } from '@e2e/support/circles';
 import { daysAgo, ensureE2EUser, resetUserData, seedHabit } from '@e2e/support/data';
 import { signInState } from '@e2e/support/session';
 
@@ -16,6 +16,7 @@ test.afterEach(async () => {
   }
 
   await cleanUp(made);
+  await resumeSharing();
   made.circles = [];
   made.users = [];
   await resetUserData();
@@ -37,6 +38,12 @@ const setup = async (browser: Browser, baseURL: string | undefined) => {
   return { me, circle, friend: await context.newPage() };
 };
 
+/** Opens "What I share", which is a window of its own on the circle page. */
+const openSharing = async (page: Page) => {
+  await page.getByRole('button', { name: 'What I share', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'What I share here' })).toBeVisible({ timeout: 20_000 }); // the page compiles on first use
+};
+
 /** The habits of mine that Sam sees in the circle, read as Sam. */
 const whatSamSees = async (friend: Page, circle: string, me: string) => {
   const response = await friend.request.get(`/api/circles/${circle}`);
@@ -54,8 +61,8 @@ test('nothing is shared until the person chooses, and the page says so', async (
   const { me, circle, friend } = await setup(browser, baseURL);
 
   await page.goto(`/circles/${circle}`);
+  await openSharing(page);
 
-  await expect(page.getByRole('heading', { name: 'What I share here' })).toBeVisible();
   await expect(page.getByLabel('How much of Read this circle sees')).toHaveValue('hidden');
   await expect(page.getByText('This circle sees nothing about this habit.')).toBeVisible();
   expect(await whatSamSees(friend, circle, me)).toEqual([]);
@@ -69,6 +76,7 @@ test('choosing a level shows that much of the habit to the circle, and taking it
   const { me, circle, friend } = await setup(browser, baseURL);
 
   await page.goto(`/circles/${circle}`);
+  await openSharing(page);
   await page.getByLabel('How much of Read this circle sees').selectOption('done_today');
 
   await expect(page.getByText('They see this habit and whether you did it today.')).toBeVisible();
@@ -79,6 +87,7 @@ test('choosing a level shows that much of the habit to the circle, and taking it
     .toEqual([{ name: 'Read', icon: '📖', level: 'done_today' }]);
 
   await page.reload();
+  await openSharing(page);
   await expect(page.getByLabel('How much of Read this circle sees')).toHaveValue('done_today');
 
   await page.getByLabel('How much of Read this circle sees').selectOption('hidden');
@@ -93,6 +102,7 @@ test('a habit can be shown by its emoji only, or as just a habit', async ({ page
   const { me, circle, friend } = await setup(browser, baseURL);
 
   await page.goto(`/circles/${circle}`);
+  await openSharing(page);
   await page.getByLabel('How much of Read this circle sees').selectOption('done_today');
   await page.getByLabel('How Read is shown to this circle').selectOption('emoji');
   await expect
@@ -117,6 +127,7 @@ test('one person can be given more or less than the rest, and the circle level a
   const { me, circle, friend } = await setup(browser, baseURL);
 
   await page.goto(`/circles/${circle}`);
+  await openSharing(page);
   await page.getByLabel('How much of Read this circle sees').selectOption('done_today');
   await page.getByRole('button', { name: 'Customise Read for one person' }).click();
   await page.getByLabel('What Sam sees').selectOption('hidden');
@@ -142,6 +153,7 @@ test('pausing hides everything from the circle and keeps the choices', async ({ 
   const { me, circle, friend } = await setup(browser, baseURL);
 
   await page.goto(`/circles/${circle}`);
+  await openSharing(page);
   await page.getByLabel('How much of Read this circle sees').selectOption('streaks');
   await expect
     .poll(() => {
@@ -149,7 +161,7 @@ test('pausing hides everything from the circle and keeps the choices', async ({ 
     })
     .toHaveLength(1);
 
-  await page.getByRole('switch', { name: /Pause sharing/ }).check();
+  await page.getByRole('switch', { name: /Pause sharing/ }).click();
   await expect
     .poll(() => {
       return whatSamSees(friend, circle, me);
@@ -157,10 +169,11 @@ test('pausing hides everything from the circle and keeps the choices', async ({ 
     .toEqual([]);
 
   await page.reload();
+  await openSharing(page);
   await expect(page.getByRole('switch', { name: /Pause sharing/ })).toBeChecked();
   await expect(page.getByLabel('How much of Read this circle sees')).toHaveValue('streaks');
 
-  await page.getByRole('switch', { name: /Pause sharing/ }).uncheck();
+  await page.getByRole('switch', { name: /Pause sharing/ }).click();
   await expect
     .poll(() => {
       return whatSamSees(friend, circle, me);
@@ -174,6 +187,7 @@ test('a very long habit name still fits a phone-width screen', async ({ page, br
   await seedHabit({ name: 'Read a chapter of something wonderfully long and winding', startDate: daysAgo(3) });
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto(`/circles/${circle}`);
+  await openSharing(page);
   await page
     .getByLabel('How much of Read a chapter of something wonderfully long and winding this circle sees')
     .selectOption('everything');
