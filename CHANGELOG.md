@@ -5,16 +5,19 @@ This file is shown on the app's What's new page, so it is for people using Caden
 ## Planned
 
 - A photo cropper for your avatar.
-- Create an account with an email, a tag and a password, and sign in with your tag or your email.
-- Choose your own tag and a password when you first sign in with Google.
 - Sign in with GitHub, and link Google or GitHub to your account so you never lose it.
 - Reminders: push notifications in your browser.
-- A desktop app, with native notifications and an option to start on login.
-- Circles: small, private groups of close friends or classmates. Nothing is shared until you choose, and then only as much of each habit as you like. See friends showing up as a conversation, react with an emoji, and give each circle a colour or pin it to the top.
-- Partners: a circle for just two of you. Turn on Closer together to see each other's off days, for the habits each of you chooses, and see your week side by side.
 - XP: points for showing up, coming after Circles.
 
 ## Known issues
+
+## Highlights 1.0
+
+Cadence for Windows, and Circles.
+
+- A Windows app that works without internet and without an account, and keeps your habits in step with your account when you sign in.
+- Circles: small, private groups of friends or classmates, where nothing is shared until you choose.
+- Create an account with an email, a tag and a password, and sign in with your tag or your email.
 
 ## Highlights 0.8
 
@@ -25,6 +28,16 @@ Your profile, your sounds, your own tag, and a timer you can pause.
 - A tag of your own, like @yourname, on your profile.
 - Pause and resume a focus session, and Stop answers at once.
 - Export your data as JSON, CSV or a PDF report, and restore a backup, or delete your account.
+
+## 1.0.0 (2026-10-24)
+
+Cadence for Windows, and Circles.
+
+- A Windows app, installed from "Get the app" on your profile. It works without internet and without an account. Sign in, and your habits, check-ins and focus sessions are kept in step with your account, so what you do on your PC and on the web is the same everywhere. Sign in with your email or tag, or with Google.
+- The app sends you notifications (the end of a focus phase, and a warning in the evening when a streak is at risk), can start when you sign in to Windows, lives in the tray with a way to start a focus session, and opens all of a habit's links in your browser at once. It updates itself.
+- Circles: small, private groups of close friends or classmates. Nothing is shared until you choose, and then only as much of each habit as you like. See friends showing up as a conversation, react with an emoji, and give each circle a colour or pin it to the top.
+- Partners: a circle for just two of you. Turn on Closer together to see each other's off days, for the habits each of you chooses, and see your week side by side.
+- Create an account with an email, a tag and a password, and sign in with your tag or your email. After your first Google sign-in, choose your own tag and a password.
 
 ## 0.8.5 (2026-10-18)
 
