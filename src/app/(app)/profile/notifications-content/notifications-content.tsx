@@ -1,6 +1,7 @@
 import { Bell, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import './notifications-content.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 const CHANNELS = [
   { key: 'push', Icon: Bell },
@@ -10,6 +11,7 @@ const CHANNELS = [
 /** Reminders arrive in a later version: the switches are here, off and disabled, so people can see what is coming. */
 export const NotificationsContent = () => {
   const t = useTranslations('profile.notifications');
+  const tw = useTranslations('common.why');
 
   return (
     <section className="notifications-content">
@@ -23,14 +25,16 @@ export const NotificationsContent = () => {
                 <span id={`notify-${key}`}>{t(key)}</span>
                 <span className="notifications-content__soon">{t('comingSoon')}</span>
               </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked="false"
-                aria-labelledby={`notify-${key}`}
-                disabled
-                className="notifications-content__switch"
-              />
+              <WhyDisabled reason={tw('comingSoon')}>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked="false"
+                  aria-labelledby={`notify-${key}`}
+                  disabled
+                  className="notifications-content__switch"
+                />
+              </WhyDisabled>
             </div>
           );
         })}

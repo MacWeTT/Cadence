@@ -5,9 +5,11 @@ import { useState } from 'react';
 import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { signInInputSchema } from '@/lib/auth-schema';
 import { cn } from '@/lib/utils';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface SignInFormProps {
   /** Where to go once signed in. */
@@ -33,9 +35,14 @@ export const SignInForm = (props: SignInFormProps) => {
   const [form, setForm] = useState<FormState>({ mode: 'tag', identifier: '', password: '', error: null, busy: false });
 
   const t = useTranslations('auth.form');
+  const tv = useTranslations('validation');
+  const tw = useTranslations('common.why');
 
   const { mode, identifier, password, error, busy } = form;
-  const valid = signInInputSchema.safeParse({ mode, identifier, password }).success;
+  const checked = signInInputSchema.safeParse({ mode, identifier, password });
+  const valid = checked.success;
+  // why the button is off, in words: the first thing wrong with the form, or that it is already working
+  const reason = busy ? tw('busy') : checked.success ? null : tv(checked.error.issues[0].message as 'passwordShort');
 
   const onModeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setForm({ ...form, mode: event.currentTarget.value as Mode, identifier: '', error: null });
@@ -106,9 +113,8 @@ export const SignInForm = (props: SignInFormProps) => {
       </div>
       <div className="auth-form__field">
         <Label htmlFor="sign-in-password">{t('password')}</Label>
-        <Input
+        <PasswordInput
           id="sign-in-password"
-          type="password"
           value={password}
           autoComplete="current-password"
           onChange={onPasswordChange}
@@ -120,9 +126,11 @@ export const SignInForm = (props: SignInFormProps) => {
           {error}
         </p>
       )}
-      <Button type="submit" disabled={!valid || busy} className="auth-form__submit">
-        {busy ? t('signingIn') : t('signInButton')}
-      </Button>
+      <WhyDisabled reason={reason}>
+        <Button type="submit" disabled={!valid || busy} className="auth-form__submit">
+          {busy ? t('signingIn') : t('signInButton')}
+        </Button>
+      </WhyDisabled>
     </form>
   );
 };

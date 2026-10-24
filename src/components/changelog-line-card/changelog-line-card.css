@@ -37,18 +37,6 @@
   @apply relative pl-5 before:absolute before:top-2.5 before:left-0 before:size-1.5 before:rounded-full before:bg-moss;
 }
 
-.changelog-line__latest {
-  @apply grid gap-2 rounded-2xl border border-line bg-surface p-4;
-}
-
-.changelog-line__latest-title {
-  @apply font-semibold text-ink;
-}
-
-.changelog-line__latest-note {
-  @apply text-ink-muted;
-}
-
 .changelog-line__more {
   @apply min-h-11 w-fit self-start rounded-full border border-line px-4 py-2.5 text-sm font-medium hover:bg-line;
 }

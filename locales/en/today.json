@@ -11,7 +11,9 @@
     "label": "Choose day",
     "previous": "Previous day",
     "next": "Next day",
-    "today": "Today"
+    "today": "Today",
+    "previousStopped": "This is where your habits begin.",
+    "nextStopped": "That day has not happened yet."
   },
   "card": {
     "label": "Progress",

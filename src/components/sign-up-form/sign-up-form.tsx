@@ -5,9 +5,11 @@ import { useState } from 'react';
 import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { signUpInputSchema } from '@/lib/auth-schema';
 import { TAG_MAX, tagFromEmail } from '@/lib/tag';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface SignUpFormProps {
   /** Where to go once the account is made. */
@@ -40,9 +42,14 @@ export const SignUpForm = (props: SignUpFormProps) => {
   });
 
   const t = useTranslations('auth.form');
+  const tv = useTranslations('validation');
+  const tw = useTranslations('common.why');
 
   const { email, tag, tagTouched, password, confirm, error, busy } = form;
-  const valid = signUpInputSchema.safeParse({ email, tag, password, confirm }).success;
+  const checked = signUpInputSchema.safeParse({ email, tag, password, confirm });
+  const valid = checked.success;
+  // why the button is off, in words: the first thing wrong with the form, or that it is already working
+  const reason = busy ? tw('busy') : checked.success ? null : tv(checked.error.issues[0].message as 'passwordShort');
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -113,33 +120,23 @@ export const SignUpForm = (props: SignUpFormProps) => {
       </div>
       <div className="auth-form__field">
         <Label htmlFor="sign-up-password">{t('password')}</Label>
-        <Input
-          id="sign-up-password"
-          type="password"
-          value={password}
-          autoComplete="new-password"
-          onChange={onPasswordChange}
-        />
+        <PasswordInput id="sign-up-password" value={password} autoComplete="new-password" onChange={onPasswordChange} />
         <p className="auth-form__hint">{t('passwordHint')}</p>
       </div>
       <div className="auth-form__field">
         <Label htmlFor="sign-up-confirm">{t('confirm')}</Label>
-        <Input
-          id="sign-up-confirm"
-          type="password"
-          value={confirm}
-          autoComplete="new-password"
-          onChange={onConfirmChange}
-        />
+        <PasswordInput id="sign-up-confirm" value={confirm} autoComplete="new-password" onChange={onConfirmChange} />
       </div>
       {error && (
         <p role="alert" className="auth-form__error">
           {error}
         </p>
       )}
-      <Button type="submit" disabled={!valid || busy} className="auth-form__submit">
-        {busy ? t('creating') : t('signUpButton')}
-      </Button>
+      <WhyDisabled reason={reason}>
+        <Button type="submit" disabled={!valid || busy} className="auth-form__submit">
+          {busy ? t('creating') : t('signUpButton')}
+        </Button>
+      </WhyDisabled>
     </form>
   );
 };

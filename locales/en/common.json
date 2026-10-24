@@ -6,7 +6,8 @@
     "today": "Today",
     "habits": "Habits",
     "progress": "Progress",
-    "circles": "Circles"
+    "circles": "Circles",
+    "soonInApp": "Coming soon to the app"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -80,5 +81,15 @@
     "text": "That page couldn't be shown. Try again, or go back to Cadence.",
     "retry": "Try again",
     "home": "Back to Cadence"
+  },
+  "password": {
+    "show": "Show password",
+    "hide": "Hide password"
+  },
+  "why": {
+    "busy": "Working on it. One moment.",
+    "loading": "Still loading. One moment.",
+    "comingSoon": "This arrives in a later version.",
+    "anonymous": "You are sending this anonymously. Turn that off to add your name or email."
   }
 }

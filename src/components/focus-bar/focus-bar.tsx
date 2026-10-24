@@ -8,6 +8,7 @@ import { habitColor } from '@/lib/palette';
 import { toColorKey } from '@/server/habit-view';
 import type { FocusSession } from '@/server/focus-view';
 import './focus-bar.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface RunningBarProps {
   session: FocusSession;
@@ -19,6 +20,7 @@ const RunningBar = (props: RunningBarProps) => {
   const { name, icon, color } = session.habit;
 
   const t = useTranslations('focus.bar');
+  const tw = useTranslations('common.why');
   const { openRunning, stop, pause, resume, pending } = useFocusApi();
   const { paused, phase: current } = view;
   const phase = usePhaseLabel(view);
@@ -39,13 +41,17 @@ const RunningBar = (props: RunningBarProps) => {
           <span className="focus-bar__time">{formatClock(view.clock)}</span>
         </button>
         {current !== 'done' && (
-          <button type="button" className="focus-bar__pause" onClick={paused ? resume : pause} disabled={pending}>
-            {paused ? t('resume') : t('pause')}
-          </button>
+          <WhyDisabled reason={pending ? tw('busy') : null}>
+            <button type="button" className="focus-bar__pause" onClick={paused ? resume : pause} disabled={pending}>
+              {paused ? t('resume') : t('pause')}
+            </button>
+          </WhyDisabled>
         )}
-        <button type="button" className="focus-bar__stop" onClick={stop} disabled={pending}>
-          {t('stop')}
-        </button>
+        <WhyDisabled reason={pending ? tw('busy') : null}>
+          <button type="button" className="focus-bar__stop" onClick={stop} disabled={pending}>
+            {t('stop')}
+          </button>
+        </WhyDisabled>
       </div>
     </section>
   );

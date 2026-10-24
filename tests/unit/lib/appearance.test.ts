@@ -427,3 +427,68 @@ describe('custom accent', () => {
     expect(ACCENTS[ACCENTS.length - 1]).toBe('custom');
   });
 });
+
+describe('BOOT_SCRIPT and the splash cover', () => {
+  const root = () => {
+    const attrs = new Map<string, string>();
+
+    return {
+      attrs,
+      setAttribute: (name: string, value: string) => {
+        attrs.set(name, value);
+      },
+      removeAttribute: (name: string) => {
+        attrs.delete(name);
+      },
+      style: { setProperty: () => {} },
+    };
+  };
+
+  const run = (visit: { seen: boolean; path: string; blocked?: boolean }) => {
+    const element = root();
+    const timers: (() => void)[] = [];
+    const session = {
+      getItem: () => {
+        if (visit.blocked) {
+          throw new Error('blocked');
+        }
+
+        return visit.seen ? '1' : null;
+      },
+    };
+
+    new Function('document', 'localStorage', 'sessionStorage', 'location', 'setTimeout', BOOT_SCRIPT)(
+      { documentElement: element },
+      makeStorage({}),
+      session,
+      { pathname: visit.path },
+      (callback: () => void) => {
+        return timers.push(callback);
+      },
+    );
+
+    return { element, timers };
+  };
+
+  it('covers the page from the first paint on the first app page of a session, so it never shows before the splash', () => {
+    const { element } = run({ seen: false, path: '/' });
+
+    expect(element.attrs.get('data-splash')).toBe('1');
+  });
+
+  it('puts no cover where there is no splash: a visit already seen, the login page, or storage that is blocked', () => {
+    expect(run({ seen: true, path: '/' }).element.attrs.has('data-splash')).toBe(false);
+    expect(run({ seen: false, path: '/login' }).element.attrs.has('data-splash')).toBe(false);
+    expect(run({ seen: false, path: '/', blocked: true }).element.attrs.has('data-splash')).toBe(false);
+  });
+
+  it('takes the cover away on its own if the splash never arrives', () => {
+    const { element, timers } = run({ seen: false, path: '/today' });
+
+    timers.forEach(callback => {
+      callback();
+    });
+
+    expect(element.attrs.has('data-splash')).toBe(false);
+  });
+});

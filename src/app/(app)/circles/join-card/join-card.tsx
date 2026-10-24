@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { memberName } from '@/lib/circle-people';
 import type { InvitePreview } from '@/server/circles-view';
 import './join-card.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface JoinCardProps {
   token: string;
@@ -22,8 +23,10 @@ export const JoinCard = (props: JoinCardProps) => {
   const pair = kind === 'pair';
 
   const t = useTranslations('circles.join');
+  const tw = useTranslations('common.why');
   const router = useRouter();
   const join = useJoinCircle();
+  const { isPending: joining } = join;
 
   const onJoinClick = () => {
     join.mutate(token, {
@@ -54,9 +57,11 @@ export const JoinCard = (props: JoinCardProps) => {
       </ul>
       {full && <p className="join-card__full">{t('full')}</p>}
       <div className="join-card__actions">
-        <Button disabled={full || join.isPending} onClick={onJoinClick}>
-          {t('join')}
-        </Button>
+        <WhyDisabled reason={full ? t('full') : joining ? tw('busy') : null}>
+          <Button disabled={full || joining} onClick={onJoinClick}>
+            {t('join')}
+          </Button>
+        </WhyDisabled>
         <Button variant="outline" onClick={onDeclineClick}>
           {t('decline')}
         </Button>

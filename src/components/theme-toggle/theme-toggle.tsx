@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import './theme-toggle.css';
+import { Tip } from '@/components/tip/tip';
 
 const noopSubscribe = () => {
   return () => {};
@@ -46,20 +47,22 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <button type="button" aria-label={label} disabled={!mounted} onClick={onToggle} className="theme-toggle">
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={isDark ? 'sun' : 'moon'}
-          aria-hidden
-          className="theme-toggle__glyph"
-          initial={reduceMotion ? false : { rotate: -90, scale: 0.5, opacity: 0 }}
-          animate={{ rotate: 0, scale: 1, opacity: 1 }}
-          exit={reduceMotion ? undefined : { rotate: 90, scale: 0.5, opacity: 0 }}
-          transition={{ duration: 0.18, ease: 'easeOut' }}
-        >
-          <Icon className="theme-toggle__icon" />
-        </motion.span>
-      </AnimatePresence>
-    </button>
+    <Tip label={label}>
+      <button type="button" aria-label={label} disabled={!mounted} onClick={onToggle} className="theme-toggle">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={isDark ? 'sun' : 'moon'}
+            aria-hidden
+            className="theme-toggle__glyph"
+            initial={reduceMotion ? false : { rotate: -90, scale: 0.5, opacity: 0 }}
+            animate={{ rotate: 0, scale: 1, opacity: 1 }}
+            exit={reduceMotion ? undefined : { rotate: 90, scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            <Icon className="theme-toggle__icon" />
+          </motion.span>
+        </AnimatePresence>
+      </button>
+    </Tip>
   );
 };

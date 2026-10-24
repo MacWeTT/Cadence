@@ -12,12 +12,14 @@ class ActionError extends Error {}
 
 /**
  * Runs a Circles action and shows its result on screen at once, before the server answers. If the server refuses, the screen goes
- * back to what it was and a toast says why; after any outcome the circles are read again.
+ * back to what it was and a toast says why; when it works, `success` (if given) is the toast. After any outcome the circles
+ * are read again.
  */
 export const useOptimisticCircleAction = <Data, Input>(
   key: QueryKey,
   action: (input: Input) => Promise<CircleActionResult>,
   apply: (data: Data, input: Input) => Data,
+  success?: string,
 ) => {
   const queryClient = useQueryClient();
   const t = useTranslations('errors');
@@ -45,6 +47,11 @@ export const useOptimisticCircleAction = <Data, Input>(
       queryClient.setQueryData(key, context?.previous);
       haptic('error');
       toast.error(error instanceof ActionError ? error.message : t('generic'));
+    },
+    onSuccess: () => {
+      if (success) {
+        toast.success(success);
+      }
     },
     onSettled: () => {
       return queryClient.invalidateQueries({ queryKey: queryKeys.circles });

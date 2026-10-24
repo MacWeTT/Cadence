@@ -7,6 +7,7 @@ import { formatClock, type SessionView } from '@/lib/focus-clock';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { cn } from '@/lib/utils';
 import './focus-running.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface FocusRunningProps {
   view: SessionView;
@@ -29,6 +30,7 @@ export const FocusRunning = (props: FocusRunningProps) => {
   const { phase, round, rounds, clock, phaseLength, paused } = view;
 
   const t = useTranslations('focus.running');
+  const tw = useTranslations('common.why');
   const reduced = useReducedMotion();
 
   const left = phaseLength > 0 ? clock / phaseLength : 1;
@@ -76,18 +78,24 @@ export const FocusRunning = (props: FocusRunningProps) => {
         </ol>
       )}
       <div className="focus-running__actions">
-        <Button onClick={onStop} disabled={pending}>
-          {t('stop')}
-        </Button>
-        {phase !== 'done' && (
-          <Button variant="outline" onClick={paused ? onResume : onPause} disabled={pending}>
-            {paused ? t('resume') : t('pause')}
+        <WhyDisabled reason={pending ? tw('busy') : null}>
+          <Button onClick={onStop} disabled={pending}>
+            {t('stop')}
           </Button>
+        </WhyDisabled>
+        {phase !== 'done' && (
+          <WhyDisabled reason={pending ? tw('busy') : null}>
+            <Button variant="outline" onClick={paused ? onResume : onPause} disabled={pending}>
+              {paused ? t('resume') : t('pause')}
+            </Button>
+          </WhyDisabled>
         )}
         {phase === 'break' && !paused && (
-          <Button variant="outline" onClick={onSkip} disabled={pending}>
-            {t('skipBreak')}
-          </Button>
+          <WhyDisabled reason={pending ? tw('busy') : null}>
+            <Button variant="outline" onClick={onSkip} disabled={pending}>
+              {t('skipBreak')}
+            </Button>
+          </WhyDisabled>
         )}
       </div>
     </div>

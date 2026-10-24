@@ -13,7 +13,7 @@
 }
 
 .export-card__format {
-  @apply flex items-start gap-3 rounded-xl border border-line px-3 py-3 transition-colors hover:bg-line/40;
+  @apply flex w-full cursor-pointer items-start gap-3 rounded-xl text-left border border-line px-3 py-3 transition-colors hover:bg-line/40;
 }
 
 .export-card__icon {
