@@ -35,8 +35,6 @@ const member = (over: Record<string, unknown> = {}) => {
     showed_up_week: true,
     habits: [],
     reactions: [],
-    cheers_today: null,
-    cheered_by_you: false,
     ...over,
   };
 };
@@ -91,7 +89,7 @@ const one = (habit: Record<string, unknown>, over: Record<string, unknown> = {})
 
 describe('toCircleView', () => {
   it('maps the circle and a member to what the screens use', () => {
-    const view = toCircleView(overview([member({ is_you: true, cheers_today: [] })]));
+    const view = toCircleView(overview([member({ is_you: true })]));
 
     expect(view).toMatchObject({
       id: '20000000-0000-4000-8000-000000000001',
@@ -108,7 +106,6 @@ describe('toCircleView', () => {
       allowCheers: true,
       showedUpWeek: true,
       habits: [],
-      cheersToday: [],
     });
   });
 
@@ -131,20 +128,6 @@ describe('toCircleView', () => {
     expect(avatars[0]).toEqual({ kind: 'google', value: null, color: null, url: 'https://example.com/a.png' });
     expect(avatars[1]).toEqual({ kind: 'emoji', value: '🦊', color: '#b8643c', url: null });
     expect(avatars[2].kind).toBe('initial');
-  });
-
-  it('keeps who cheered you on your own card, and whether you cheered on theirs', () => {
-    const view = toCircleView(
-      overview([
-        member({ user_id: ME, is_you: true, cheers_today: [{ user_id: SAM, tag: 'sam' }], cheered_by_you: null }),
-        member({ cheered_by_you: true }),
-      ]),
-    );
-
-    expect(view.members[0].cheersToday).toEqual([{ userId: SAM, tag: 'sam' }]);
-    expect(view.members[0].cheeredByYou).toBeNull();
-    expect(view.members[1].cheersToday).toBeNull();
-    expect(view.members[1].cheeredByYou).toBe(true);
   });
 
   it('says who started the circle, on that member only', () => {
@@ -278,7 +261,7 @@ describe('what each level may show', () => {
     expect(one(shared({ level: 'streaks', data: data(days) }), { today: '2026-10-14' }).streak).toBeNull();
   });
 
-  it("carries each member's own today and whether their week counts, for cheers and the preferences", () => {
+  it("carries each member's own today and whether their week counts, for reactions and the preferences", () => {
     const view = toCircleView(overview([member({ today: '2026-10-13', in_week: false })]));
 
     expect(view.members[0]).toMatchObject({ today: '2026-10-13', inWeek: false });

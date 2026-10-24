@@ -7,6 +7,7 @@ interface LevelSelectProps {
   value: Level | 'inherit';
   /** Adds "Same as the circle", which removes a person's own level. */
   allowInherit?: boolean;
+  disabled?: boolean;
   ariaLabel?: string;
   onChange: (value: Level | 'inherit') => void;
 }
@@ -22,7 +23,7 @@ const isChoice = (value: string): value is Level | 'inherit' => {
 
 /** The levels in plain words, as a native select so it works with a keyboard and on a phone. */
 export const LevelSelect = (props: LevelSelectProps) => {
-  const { id, value, allowInherit, ariaLabel, onChange } = props;
+  const { id, value, allowInherit, disabled, ariaLabel, onChange } = props;
 
   const t = useTranslations('circles.sharing');
 
@@ -35,7 +36,14 @@ export const LevelSelect = (props: LevelSelectProps) => {
   };
 
   return (
-    <select id={id} className="level-select" value={value} aria-label={ariaLabel} onChange={onSelectChange}>
+    <select
+      id={id}
+      className="level-select"
+      value={value}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      onChange={onSelectChange}
+    >
       {allowInherit && <option value="inherit">{t('inherit')}</option>}
       {LEVELS.map(level => {
         return (

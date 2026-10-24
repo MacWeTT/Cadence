@@ -20,3 +20,12 @@
 .circles-shell--index .circles-shell__content {
   @apply max-lg:hidden;
 }
+
+/* Touch: no grey flash on a tap, no double-tap delay, and a long press selects no label (messages stay selectable). */
+.circles-shell button,
+.circles-shell a {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}

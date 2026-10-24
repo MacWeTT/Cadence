@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { useSetCloser } from '@/app/(app)/circles/use-circle-social';
+import { haptic } from '@/lib/haptics';
 import './closer-switch.css';
 
 interface CloserSwitchProps {
@@ -20,7 +21,13 @@ export const CloserSwitch = (props: CloserSwitchProps) => {
   const setCloser = useSetCloser(circleId);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCloser.mutate({ circleId, on: event.target.checked });
+    const { checked } = event.target;
+
+    if (checked) {
+      haptic('toggle');
+    }
+
+    setCloser.mutate({ circleId, on: checked });
   };
 
   const status = active ? t('active') : on ? t('waitingFor', { name: partner }) : t('off');

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient, type QueryKey } from '@tanstack/react-quer
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import type { CircleActionResult } from '@/app/(app)/circles/actions';
+import { haptic } from '@/lib/haptics';
 import { queryKeys } from '@/lib/query/keys';
 
 /** A failure the server explained in words, as opposed to a network error. */
@@ -42,6 +43,7 @@ export const useOptimisticCircleAction = <Data, Input>(
     },
     onError: (error, _input, context) => {
       queryClient.setQueryData(key, context?.previous);
+      haptic('error');
       toast.error(error instanceof ActionError ? error.message : t('generic'));
     },
     onSettled: () => {

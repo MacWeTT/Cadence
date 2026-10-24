@@ -3,7 +3,6 @@
 import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 import {
-  cheerInput,
   circleIdInput,
   closerInput,
   inviteTokenInput,
@@ -24,7 +23,6 @@ import {
   leaveCircle,
   reactTo,
   removeMember,
-  sendCheer,
   setCircleLook,
   setCloser,
   setShareMisses,
@@ -197,23 +195,6 @@ export const setCirclePrefsAction = async (input: unknown): Promise<CircleAction
 
   return run(async () => {
     await setCirclePrefs(circleId, inWeek, allowCheers);
-
-    return null;
-  });
-};
-
-/** A cheer for a friend's day (their own today). */
-export const sendCheerAction = async (input: unknown): Promise<CircleActionResult> => {
-  const { success, data } = cheerInput.safeParse(input);
-
-  if (!success) {
-    return fail('generic');
-  }
-
-  const { circleId, toUser, forDate } = data;
-
-  return run(async () => {
-    await sendCheer(circleId, toUser, forDate);
 
     return null;
   });

@@ -16,6 +16,7 @@ import {
 import { fetchJson, HttpError } from '@/lib/query/fetch-json';
 import { queryKeys } from '@/lib/query/keys';
 import type { CircleListItem, CircleView } from '@/server/circles-view';
+import type { ShowedUpFriend } from '@/server/showed-up-view';
 
 /** The person's circles: shown from the cache at once when it is there, and refreshed in the background. */
 export const useCircles = () => {
@@ -23,6 +24,16 @@ export const useCircles = () => {
     queryKey: queryKeys.circles,
     queryFn: () => {
       return fetchJson<CircleListItem[]>('/api/circles');
+    },
+  });
+};
+
+/** The friends who showed up today, for Home: refreshed in the background, shown from the cache at once. */
+export const useShowedUpToday = () => {
+  return useQuery({
+    queryKey: queryKeys.circlesToday,
+    queryFn: () => {
+      return fetchJson<ShowedUpFriend[]>('/api/circles/today');
     },
   });
 };

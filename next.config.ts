@@ -71,6 +71,8 @@ const nextConfig: NextConfig = {
           // Circles need a server, so the desktop app has no link to them and no Home card for them.
           '@/components/nav-links/nav-links': './src/components/nav-links/nav-links.desktop.ts',
           '@/app/(app)/home/circles-card/circles-card': './src/app/(app)/home/circles-card/circles-card.desktop.tsx',
+          '@/app/(app)/habits/habit-circles/habit-circles':
+            './src/app/(app)/habits/habit-circles/habit-circles.desktop.tsx',
         }
       : {},
     rules: {

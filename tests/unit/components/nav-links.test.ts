@@ -30,11 +30,15 @@ describe('the navigation links', () => {
   });
 
   it('are swapped for the desktop ones, and the Home card for an empty one, by the desktop build', () => {
-    const config = readFileSync('next.config.ts', 'utf8');
+    // The config is formatted by prettier, which may wrap a long line, so compare it with its spaces collapsed.
+    const config = readFileSync('next.config.ts', 'utf8').replaceAll(/\s+/g, ' ');
 
     expect(config).toContain("'@/components/nav-links/nav-links': './src/components/nav-links/nav-links.desktop.ts'");
     expect(config).toContain(
       "'@/app/(app)/home/circles-card/circles-card': './src/app/(app)/home/circles-card/circles-card.desktop.tsx'",
+    );
+    expect(config).toContain(
+      "'@/app/(app)/habits/habit-circles/habit-circles': './src/app/(app)/habits/habit-circles/habit-circles.desktop.tsx'",
     );
   });
 });

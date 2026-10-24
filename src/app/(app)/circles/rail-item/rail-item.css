@@ -1,7 +1,7 @@
 @reference '../../../globals.css';
 
 .rail-item {
-  @apply flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-clay;
+  @apply flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 transition-colors hover:bg-surface active:bg-surface focus-visible:outline-2 focus-visible:outline-clay;
 }
 
 .rail-item--active {

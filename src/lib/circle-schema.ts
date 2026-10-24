@@ -33,12 +33,6 @@ export const prefsInput = z.object({
   allowCheers: z.boolean(),
 });
 
-export const cheerInput = z.object({
-  circleId: z.uuid(),
-  toUser: z.uuid(),
-  forDate: z.string().refine(isCalendarDate),
-});
-
 export const lookInput = z.object({
   circleId: z.uuid(),
   color: z.enum(CIRCLE_COLORS),

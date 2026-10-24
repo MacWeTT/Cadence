@@ -25,6 +25,7 @@ import { ColorPicker } from '@/app/(app)/habits/color-picker/color-picker';
 import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
 import { FieldError } from '@/app/(app)/habits/field-error/field-error';
 import { habitInput, initialHabitForm, scheduleChanged, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { HabitCircles } from '@/app/(app)/habits/habit-circles/habit-circles';
 import { LinksField } from '@/app/(app)/habits/links-field/links-field';
 import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
@@ -225,6 +226,8 @@ export const HabitDialog = (props: HabitDialogProps) => {
           />
 
           <LinksField links={links} onChange={onLinksChange} error={linksError} />
+
+          {habit && <HabitCircles habit={habit} />}
 
           <div>
             <Label htmlFor="habit-start" className="habit-dialog__label">

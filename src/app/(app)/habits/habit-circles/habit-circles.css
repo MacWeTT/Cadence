@@ -1,0 +1,17 @@
+@reference '../../../globals.css';
+
+.habit-circles {
+  @apply min-w-0 rounded-md border border-line p-3;
+}
+
+.habit-circles__title {
+  @apply px-1 text-sm font-medium;
+}
+
+.habit-circles__text {
+  @apply mb-1 text-sm text-ink-muted;
+}
+
+.habit-circles__link {
+  @apply font-semibold text-clay hover:underline focus-visible:outline-2 focus-visible:outline-clay;
+}

@@ -67,8 +67,6 @@ const memberSchema = z.object({
   showed_up_week: z.boolean(),
   habits: z.array(habitSchema),
   reactions: z.array(z.object({ user_id: z.uuid(), tag: z.string(), date: calendarDate, emoji: z.enum(REACTIONS) })),
-  cheers_today: z.array(z.object({ user_id: z.uuid(), tag: z.string() })).nullable(),
-  cheered_by_you: z.boolean().nullable(),
 });
 
 const overviewSchema = z.object({
@@ -124,7 +122,7 @@ export interface CircleMemberView {
   /** Started this circle. */
   isOwner: boolean;
   paused: boolean;
-  /** The member's own today: a cheer is for this day. */
+  /** The member's own today: a reaction is for this day or the six before it. */
   today: CalendarDate;
   /** Whether their week counts towards the circle's. */
   inWeek: boolean;
@@ -138,10 +136,6 @@ export interface CircleMemberView {
   habits: SharedHabitView[];
   /** The reactions on this person's days, from everyone in the circle, for today and the six days before. */
   reactions: { userId: string; tag: string; date: CalendarDate; emoji: Reaction }[];
-  /** Who cheered you today: only on your own card. */
-  cheersToday: { userId: string; tag: string }[] | null;
-  /** Whether you cheered this person today: not on your own card. */
-  cheeredByYou: boolean | null;
 }
 
 /** One of the person's circles, for the list. */
@@ -215,8 +209,8 @@ const toSharedHabit = (habit: HabitPayload, member: MemberPayload, pair: boolean
 
 const toMember = (member: MemberPayload, pair: boolean): CircleMemberView => {
   const { user_id, tag, display_name, is_you, is_owner, paused, allow_cheers, showed_up_week, habits } = member;
-  const { cheers_today, today, in_week, reactions, closer, showed_up_days } = member;
-  const { avatar_kind, avatar_value, avatar_color, avatar_url, cheered_by_you } = member;
+  const { today, in_week, reactions, closer, showed_up_days } = member;
+  const { avatar_kind, avatar_value, avatar_color, avatar_url } = member;
 
   return {
     userId: user_id,
@@ -238,11 +232,6 @@ const toMember = (member: MemberPayload, pair: boolean): CircleMemberView => {
     reactions: reactions.map(({ user_id, tag: reactionTag, date, emoji }) => {
       return { userId: user_id, tag: reactionTag, date, emoji };
     }),
-    cheersToday:
-      cheers_today?.map(({ user_id: userId, tag: cheerTag }) => {
-        return { userId, tag: cheerTag };
-      }) ?? null,
-    cheeredByYou: cheered_by_you,
   };
 };
 

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useCircles } from '@/app/(app)/circles/use-circles';
+import { useCircles, useShowedUpToday } from '@/app/(app)/circles/use-circles';
 import { circleTitle } from '@/lib/circle-people';
 import './circles-card.css';
 
@@ -12,16 +12,27 @@ const SHOWN = 3;
 export const CirclesCard = () => {
   const t = useTranslations('circles');
   const { data: circles } = useCircles();
+  const { data: showedUp } = useShowedUpToday();
 
   if (!circles) {
     return null;
   }
+
+  const [first, second, third] = (showedUp ?? []).map(({ name }) => {
+    return name;
+  });
+  const { length: showedUpCount } = showedUp ?? [];
 
   return (
     <section aria-labelledby="circles-card-heading" className="circles-card">
       <h2 id="circles-card-heading" className="circles-card__title">
         {t('home.title')}
       </h2>
+      {showedUpCount > 0 && (
+        <p className="circles-card__showed-up">
+          {t('home.showedUp', { count: showedUpCount, a: first, b: second, c: third, rest: showedUpCount - 2 })}
+        </p>
+      )}
       {circles.length === 0 ? (
         <>
           <p className="circles-card__text">{t('home.empty')}</p>
