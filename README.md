@@ -31,3 +31,7 @@ Changes land by pull request into `develop` (see [`docs/policies.md`](docs/polic
 - [`docs/rules.md`](docs/rules.md): how streaks, rates and the Home banner are counted
 - [`docs/superpowers/specs/`](docs/superpowers/specs/): the design of each milestone
 - [`AGENTS.md`](AGENTS.md): notes for coding agents (this Next.js version has breaking changes)
+
+## License
+
+[MIT](LICENSE): free to use, copy, modify and share, as long as the copyright notice stays with it. The code is by MacWeTT and the people listed on the About page.
