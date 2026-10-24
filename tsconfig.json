@@ -23,6 +23,7 @@
       "@tests/*": ["./tests/*"],
       "@package": ["./package.json"],
       "@e2e/*": ["./e2e/*"],
+      "@scripts/*": ["./scripts/*"],
       "@locales/*": ["./locales/*"]
     }
   },

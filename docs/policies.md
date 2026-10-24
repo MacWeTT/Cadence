@@ -20,7 +20,7 @@ Run everything with `npm run verify` before opening a PR.
 | 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
 | 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `locales/<language>/<area>.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
 | 9 | **No anonymous functions as props.** A handler passed to a component or element is a named `const` declared above the `return` (`onHabitClose`, `onNameChange`), never an inline `() => {...}`. Pass it by name. (Callbacks for `.map`, `.filter` and hooks stay inline.) | ESLint `no-restricted-syntax` |
-| 10 | **Absolute imports.** Import with `@/...` (src), `@tests/...`, `@e2e/...` and `@locales/...`, never `./x` or `../x`. A component's own stylesheet (`import './x.css'`) is the one relative import. | ESLint `no-restricted-syntax` |
+| 10 | **Absolute imports.** Import with `@/...` (src), `@tests/...`, `@e2e/...`, `@scripts/...` and `@locales/...`, never `./x` or `../x`. A component's own stylesheet (`import './x.css'`) is the one relative import. | ESLint `no-restricted-syntax` |
 | 11 | **Read an object's properties once.** When the same object's properties are read two or more times, destructure it once (`const { week, streak } = row`). Checks like `result.ok`, `action.kind` that narrow a union, calls (`x.method()`), assignments, a ref's `.current` and optional chains (`a?.b`) are not counted. | ESLint `cadence/destructure-repeated-reads` |
 
 ```tsx

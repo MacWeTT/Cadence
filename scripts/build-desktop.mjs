@@ -4,74 +4,46 @@
 // whether or not the build worked: the route handlers, the proxy, the manifest route, the sign-in callback, Circles (it
 // needs the server), the contact page (it sends mail from a server). The screens reach their data through
 // `src/data`, which next.config.ts points at the local data source for this build.
-import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, renameSync, rmSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+//
+// The files are put back when the build ends, when it is interrupted (Ctrl+C), and, if the process was killed outright,
+// at the start of the next run (see desktop-hold.mjs), so a stopped build never leaves the project missing folders.
+import { spawn } from 'node:child_process';
+import { createHold } from './desktop-hold.mjs';
 
-const HOLD = '.desktop-hold';
-const WEB_ONLY = [
-  'src/app/api',
-  'src/app/auth',
-  'src/app/manifest.ts',
-  'src/app/(app)/circles',
-  'src/app/(app)/contact',
-  'src/proxy.ts',
-];
+const hold = createHold('.', {
+  webOnly: [
+    'src/app/api',
+    'src/app/auth',
+    'src/app/manifest.ts',
+    'src/app/(app)/circles',
+    'src/app/(app)/contact',
+    'src/proxy.ts',
+  ],
+  // Pages whose desktop version stands in for them while it builds: [the page, its desktop version].
+  swaps: [['src/app/(auth)/register/page.tsx', 'src/app/(auth)/register/page.desktop.tsx']],
+});
 
-// Pages whose desktop version stands in for them while it builds: [the page, its desktop version].
-const SWAPS = [['src/app/(auth)/register/page.tsx', 'src/app/(auth)/register/page.desktop.tsx']];
+// A build that was killed before leaves its files in the hold folder: put them back before starting.
+const healed = hold.restore();
 
-const move = (from, to) => {
-  mkdirSync(dirname(to), { recursive: true });
-  renameSync(from, to);
-};
-
-const setAside = () => {
-  return WEB_ONLY.filter(path => {
-    return existsSync(path);
-  }).map(path => {
-    move(path, join(HOLD, path));
-
-    return path;
-  });
-};
-
-const putBack = held => {
-  held.forEach(path => {
-    move(join(HOLD, path), path);
-  });
-  rmSync(HOLD, { recursive: true, force: true });
-};
-
-const swapIn = () => {
-  return SWAPS.map(([page, desktopPage]) => {
-    move(page, join(HOLD, page));
-    copyFileSync(desktopPage, page);
-
-    return page;
-  });
-};
-
-const swapOut = swapped => {
-  swapped.forEach(page => {
-    rmSync(page, { force: true });
-    move(join(HOLD, page), page);
-  });
-};
-
-let held = [];
-let swapped = [];
-let status = 1;
-
-try {
-  held = setAside();
-  swapped = swapIn();
-  status =
-    spawnSync('npx', ['next', 'build'], { stdio: 'inherit', shell: true, env: { ...process.env, DESKTOP: '1' } })
-      .status ?? 1;
-} finally {
-  swapOut(swapped);
-  putBack(held);
+if (healed.length > 0) {
+  console.warn(`Left aside by an earlier build and in place already, so kept in .desktop-hold: ${healed.join(', ')}`);
 }
 
-process.exit(status);
+hold.setAside();
+process.on('exit', hold.restore);
+
+const build = spawn('npx', ['next', 'build'], { stdio: 'inherit', shell: true, env: { ...process.env, DESKTOP: '1' } });
+
+const stop = signal => {
+  build.kill(signal);
+  hold.restore();
+  process.exit(1);
+};
+
+process.on('SIGINT', stop);
+process.on('SIGTERM', stop);
+
+build.on('close', code => {
+  process.exit(code ?? 1);
+});
