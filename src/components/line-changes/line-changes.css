@@ -1,0 +1,63 @@
+@reference '../../app/globals.css';
+
+.line-changes {
+  @apply sm:max-w-lg;
+  --dialog-title: 1.5rem; /* the Close button is centred on the title's line */
+}
+
+.line-changes__open {
+  @apply min-h-11 w-fit cursor-pointer self-start rounded-full border border-line px-4 py-2.5 text-sm font-medium hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay;
+}
+
+.line-changes__title {
+  @apply pe-10 font-display text-2xl;
+}
+
+.line-changes__list {
+  @apply grid gap-6;
+}
+
+.line-changes__head {
+  @apply flex items-baseline justify-between gap-4 text-sm text-ink-muted;
+}
+
+.line-changes__version {
+  @apply font-display text-lg text-ink;
+}
+
+.line-changes__note {
+  @apply mt-1 text-sm text-ink-muted;
+}
+
+.line-changes__items {
+  @apply mt-3 grid gap-2 text-sm leading-relaxed;
+}
+
+.line-changes__item {
+  @apply list-disc ms-5;
+}
+
+.line-changes__tabs {
+  @apply mb-5 flex flex-wrap gap-2;
+}
+
+.line-changes__tab {
+  @apply min-h-9 cursor-pointer rounded-full border border-line px-3 py-1 text-sm font-medium text-ink-muted hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+}
+
+.line-changes__tab[data-state='active'] {
+  @apply border-primary/40 bg-primary/15 text-ink;
+}
+
+.line-changes--tabbed {
+  @apply h-136 max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-y-hidden;
+}
+
+.line-changes__tabs-root {
+  @apply flex min-h-0 flex-col;
+}
+
+/* The tabs stay put; a long release scrolls inside its panel. */
+.line-changes__panel {
+  @apply min-h-0 flex-1 overflow-y-auto pe-3 outline-none;
+}

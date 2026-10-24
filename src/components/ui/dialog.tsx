@@ -65,7 +65,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 grid w-full grid-cols-[minmax(0,1fr)] max-h-[calc(100dvh-2rem)] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+          'fixed top-1/2 left-1/2 z-50 grid w-full grid-cols-[minmax(0,1fr)] max-h-[calc(100dvh-2rem)] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 overflow-y-auto rounded-xl bg-popover p-(--dialog-pad) [--dialog-pad:1.5rem] sm:[--dialog-pad:2rem] [--dialog-title:1.125rem] text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
           className,
         )}
         {...props}
@@ -75,7 +75,11 @@ function DialogContent({
           <Tooltip>
             <TooltipTrigger asChild onFocus={keepTooltipClosedOnFocus}>
               <DialogPrimitive.Close data-slot="dialog-close" asChild>
-                <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
+                <Button
+                  variant="ghost"
+                  className="absolute top-[calc(var(--dialog-pad)+var(--dialog-title)/2-0.875rem)] right-(--dialog-pad)"
+                  size="icon-sm"
+                >
                   <XIcon />
                   <span className="sr-only">
                     <CloseLabel />
@@ -109,7 +113,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        '-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end',
+        '-mx-(--dialog-pad) -mb-(--dialog-pad) flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 px-(--dialog-pad) py-4 sm:flex-row sm:justify-end',
         className,
       )}
       {...props}

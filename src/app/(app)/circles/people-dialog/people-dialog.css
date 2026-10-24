@@ -1,0 +1,6 @@
+@reference '../../../globals.css';
+
+.people-dialog {
+  @apply sm:max-w-lg;
+  --dialog-title: 1.25rem; /* the Close button is centred on the title's line */
+}

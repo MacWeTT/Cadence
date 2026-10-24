@@ -9,13 +9,14 @@ import { tickedIn } from '@/components/focus-host/ticked-in';
 import { usePhaseChime } from '@/components/focus-host/use-phase-chime';
 import { useTabTitle } from '@/components/focus-host/use-tab-title';
 import { useFocusActions, useFocusState, useServerNow, type StartInput } from '@/components/focus-host/use-focus';
+import { applyEnding } from '@/components/focus-host/apply-ending';
+import { expectedResult, timezoneOf } from '@/components/focus-host/expected-result';
 import { FocusPanel } from '@/components/focus-panel/focus-panel';
 import { playChime, unlockAudio } from '@/lib/chimes';
 import { sessionView } from '@/lib/focus-clock';
 import { queryKeys } from '@/lib/query/keys';
 import { useSessionChime } from '@/components/focus-host/use-chime-choice';
 import type { FocusResult } from '@/server/focus';
-import { dataSource } from '@/data';
 
 interface FocusHostProps {
   children: React.ReactNode;
@@ -52,6 +53,8 @@ export const FocusHost = (props: FocusHostProps) => {
   const { start, stop, skip, pause, resume } = useFocusActions();
 
   const stopping = useRef(false);
+  /** The Stop in flight (it resolves, never fails): Done waits on it in the background, never on screen. */
+  const stopped = useRef<Promise<unknown>>(Promise.resolve());
   /** Set when a stop failed, so a session that ran out is not retried in a loop; the Stop button still works. */
   const gaveUp = useRef(false);
   /** Set when the person skips a break, so the jump to the next round is not announced as a phase that ended. */
@@ -84,6 +87,17 @@ export const FocusHost = (props: FocusHostProps) => {
 
   usePhaseChime(phaseKey, phase, name, choice, quiet);
 
+  /** Whether the habit is ticked for the day in what the pages have read so far. */
+  const isTicked = (habitId: string) => {
+    return tickedIn(
+      [
+        ...queryClient.getQueriesData({ queryKey: queryKeys.todayAll }),
+        ...queryClient.getQueriesData({ queryKey: queryKeys.home }),
+      ],
+      habitId,
+    );
+  };
+
   const finish = (finished: FocusResult | null, habitName: string) => {
     if (finished && !finished.saved) {
       toast.message(t('ending.tooShort'));
@@ -100,13 +114,7 @@ export const FocusHost = (props: FocusHostProps) => {
     const { habitId } = finished;
 
     playChime(choice, 'done');
-    const ticked = tickedIn(
-      [
-        ...queryClient.getQueriesData({ queryKey: queryKeys.todayAll }),
-        ...queryClient.getQueriesData({ queryKey: queryKeys.home }),
-      ],
-      habitId,
-    );
+    const ticked = isTicked(habitId);
 
     setState(current => {
       return {
@@ -120,30 +128,50 @@ export const FocusHost = (props: FocusHostProps) => {
   };
 
   const onStop = () => {
-    const habitName = session?.habit.name ?? '';
+    if (!session) {
+      return;
+    }
+
+    const { habit } = session;
+    const habitName = habit.name;
     const wasOpen = panelOpen;
 
     gaveUp.current = false;
-    // the session is already gone from the cache; the panel closes with it and the ending panel opens when the server answers
-    setState(current => {
-      return { ...current, panelOpen: false };
-    });
+    // Everything answers at once: the timer is already gone from the cache, and the "Session finished" window opens now with
+    // the result worked out here. The server catches up behind it, and its answer only confirms or corrects the window.
+    finish(expectedResult(session, now, timezoneOf(queryClient)), habitName);
 
-    stop.mutate(undefined, {
-      onSuccess: finished => {
-        finish(finished, habitName);
-      },
-      onError: e => {
+    const request = stop.mutateAsync();
+
+    stopped.current = request.catch(() => {
+      return null;
+    });
+    request
+      .then(finished => {
+        if (!finished || !finished.saved) {
+          finish(finished, habitName);
+
+          return;
+        }
+
+        const { habitId } = finished;
+
+        setState(current => {
+          const { result: shown } = current;
+
+          return shown ? { ...current, result: { ...shown, ...finished, ticked: isTicked(habitId) } } : current;
+        });
+      })
+      .catch((e: Error) => {
         gaveUp.current = true;
         setState(current => {
-          return { ...current, panelOpen: wasOpen };
+          return { ...current, panelOpen: wasOpen, result: null };
         });
         toast.error(e.message);
-      },
-      onSettled: () => {
+      })
+      .finally(() => {
         stopping.current = false;
-      },
-    });
+      });
   };
 
   // A plan that has run out (or the free cap) ends by itself, once.
@@ -160,39 +188,15 @@ export const FocusHost = (props: FocusHostProps) => {
 
   // Closing the ending panel, by Done, the X or Escape, applies both boxes as they stand. "I did it" ticks the habit for
   // the day; "Count this time in focus", when unticked, drops the session so its minutes are not counted. They are independent.
-  const confirm = async () => {
-    if (result) {
-      const { habitId, date, sessionId, ticked } = result;
-
-      if (didIt && !ticked) {
-        const response = await dataSource.setCompletion(habitId, date, true);
-
-        if (!response.ok) {
-          toast.error(response.error);
-
-          return;
-        }
-      }
-
-      if (!countIt) {
-        const response = await dataSource.discardFocus(sessionId);
-
-        if (!response.ok) {
-          toast.error(response.error);
-
-          return;
-        }
-      }
-
-      void queryClient.invalidateQueries({ queryKey: queryKeys.todayAll });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.home });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.progressAll });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.focus });
-    }
-
+  const confirm = () => {
     setState(current => {
       return { ...current, panelOpen: false, result: null };
     });
+
+    if (result) {
+      // the window is already closed: both boxes are applied in the background, after the Stop they depend on has landed
+      void applyEnding(queryClient, result, { didIt, countIt }, stopped.current);
+    }
   };
 
   const onError = (e: Error) => {
@@ -233,7 +237,7 @@ export const FocusHost = (props: FocusHostProps) => {
     },
     closePanel: () => {
       if (result) {
-        void confirm();
+        confirm();
 
         return;
       }

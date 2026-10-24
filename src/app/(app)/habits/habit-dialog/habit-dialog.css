@@ -2,6 +2,7 @@
 
 .habit-dialog {
   @apply max-w-[min(32rem,calc(100%-2rem))];
+  --dialog-title: 1.5rem; /* the Close button is centred on the title's line */
 }
 
 .habit-dialog__title {
