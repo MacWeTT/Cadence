@@ -13,20 +13,23 @@ test("the footer's What's new link opens the changelog: a card for each version 
   await expect(page.getByRole('region', { name: 'Coming soon' })).toContainText('Reminders');
   await expect(page.getByRole('region', { name: 'Known issues' })).toHaveCount(0); // none listed: the card is hidden
 
-  // The newest line is the big card: its highlights, and the notes of its latest release.
-  const newest = page.getByRole('region', { name: 'Version 0.8', exact: true });
+  // The newest line is the big card: its headline and highlights.
+  const newest = page.getByRole('region', { name: 'Version 1.0', exact: true });
 
-  await expect(newest).toContainText('Your profile, your sounds');
-  await expect(newest).toContainText('Latest: 0.8.5');
-  await expect(newest).toContainText('A new look for What');
+  await expect(newest).toContainText('Cadence for Windows, and Circles');
+  await expect(newest).toContainText('A Windows app');
 
   // The older lines are cards with their highlights, and no card of their own for a patch.
+  await expect(page.getByRole('region', { name: 'Version 0.8', exact: true })).toContainText(
+    'Your profile, your sounds',
+  );
   await expect(page.getByRole('region', { name: 'Version 0.7', exact: true })).toContainText('Focus on a habit');
   await expect(page.getByRole('region', { name: 'Version 0.6', exact: true })).toContainText('Install Cadence');
   await expect(page.getByRole('region', { name: 'Version 0.5', exact: true })).toContainText('Links on a habit');
   await expect(page.getByRole('region', { name: 'Version 0.4', exact: true })).toContainText('Pages open instantly');
   await expect(page.getByRole('region', { name: 'Version 0.3', exact: true })).toContainText('contact form');
   await expect(page.getByRole('region', { name: 'Version 0.8.5', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Version 1.0.0', exact: true })).toHaveCount(0);
 });
 
 test('See every change opens every release in full, and a line card leads to its own releases', async ({ page }) => {

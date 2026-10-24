@@ -19,19 +19,20 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.8.2 | A sound for each focus session (your own sounds included, the profile sound as the default), and a box to leave a session's minutes out of the focus time |
 | 0.8.3 | Pause and resume on the focus timer (the server keeps the paused time, so the minutes are right on every device), a tag of your own (`@name`) on every account, and the splash tagline |
 | 0.8.5 | What's new as cards: one big card for each version line with its highlights (the newest also shows its latest release), and a page with every change in full |
+| 1.0.0 | The desktop app for Windows (offline, no account needed, in step with the account once signed in, notifications, start on login, tray, installer and updater), Circles and Partners, and accounts with an email, a tag and a password |
 
 ## Scheduled
 
 | Version | Feature | Notes |
 |---|---|---|
-| 1.0 | Desktop app (Tauri), the installer | A Windows app that works offline and without an account, and syncs when signed in (the PC's data and the account's are brought together by a rule: push, pull, or ask which to keep). Native notifications, start on login, opens habit links without the popup limit. Google sign-in through the browser. See `docs/superpowers/specs/2026-10-23-desktop-app-design.md` |
-| 1.0 | First release: accounts, Circles, bug fixes and flow revisions | The public release. **Accounts:** no mail is sent (no confirmation, no forgot password, no 2FA). A first sign-in with Google or GitHub ends on a register screen: the email (locked), a tag (the only word for a username) and a password. Sign up with an email, a tag and a password; sign in with a tag or an email and a password. Existing accounts are not forced to register; the profile page, and only it, warns when no password is set or no Google or GitHub is linked (a forgotten password is gone, so link one). Sign-in methods and linking in the Account tab, a password modal, and delete-account for accounts with no email. GitHub sign-in. See `docs/superpowers/specs/2026-10-12-accounts-design.md`. **Circles:** friends-only sharing, six PRs by their author (`docs/superpowers/specs/2026-10-12-circles-design.md`). Then the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) and the desktop installer. Later releases fix and refine, to be planned after it |
+| 1.1 | Accessibility, privacy page and terms, GitHub sign-in | The items under *Next (1.1)* below |
 
-## Before 1.0
+## Next (1.1)
 
 - The accessibility pass and the dark-theme contrast check left over from the original milestone 7.
 - A privacy page and terms before strangers sign up. Google also needs them (with a home page) to verify the app's name, so the sign-in screen can say Cadence instead of the Supabase address.
-- 1.0 is the first release: bug fixes, flow revisions and the installer, on top of everything scheduled above it.
+- GitHub sign-in, and linking Google or GitHub to an account (the button is there, switched off).
+- Bug fixes from using 1.0, and a flow review of the whole app.
 
 ## Later, when there are enough users to justify the cost
 
