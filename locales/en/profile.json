@@ -22,7 +22,8 @@
     "installer": "Installer",
     "installerHint": "Desktop app",
     "comingSoon": "Coming soon",
-    "unavailable": "Not available in this browser"
+    "unavailable": "Not available in this browser",
+    "installerLink": "Download for Windows"
   },
   "rows": {
     "photo": "Photo",
@@ -137,6 +138,14 @@
     "title": "On this PC",
     "startOnLogin": "Start Cadence when I sign in to Windows",
     "startOnLoginHint": "It opens in the background so your reminders arrive.",
-    "failed": "Couldn't change that. Try again."
+    "failed": "Couldn't change that. Try again.",
+    "updates": "Updates",
+    "updatesHint": "Cadence looks for a newer version when it starts.",
+    "checkUpdates": "Check for updates",
+    "checking": "Checking...",
+    "upToDate": "Cadence is up to date.",
+    "updateAvailable": "Version {version} is available.",
+    "install": "Install and restart",
+    "updateFailed": "Couldn't update. Try again later."
   }
 }

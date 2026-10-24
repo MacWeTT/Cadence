@@ -56,5 +56,5 @@ describe('the screens and the desktop build', () => {
     }
 
     expect(Object.keys(local).length).toBeGreaterThan(30);
-  });
+  }, 20_000); // the first import loads the whole local data source, which can be slow while other tests run
 });

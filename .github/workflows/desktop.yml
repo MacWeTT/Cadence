@@ -1,0 +1,45 @@
+name: Desktop
+
+# The Windows installer of the desktop app (docs/superpowers/specs/2026-10-23-desktop-app-design.md, "Installing and
+# updating"). On a release PR into master it only builds, to prove the installer still builds; when a GitHub release is
+# published it builds again and attaches the installer and the updater's latest.json to that release. The first build
+# needs the repository secret and variables listed in docs/deploy.md ("The desktop app").
+on:
+  pull_request:
+    branches: [master]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    name: Windows installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The update key: it signs the installer so installed apps accept the update. Never printed, never in the repo.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # The desktop build bakes in the public settings the app signs in with (the same ones the website has).
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.APP_URL }}
+        with:
+          # Empty outside a release, which makes the action build without uploading anything.
+          releaseId: ${{ github.event.release.id }}
+          uploadUpdaterJson: ${{ github.event_name == 'release' }}

@@ -49,6 +49,17 @@ Two long-lived branches, both protected (changes only by PR with the CI checks p
 - A fix that cannot wait for the next release (data loss, security) goes the same way: PR into `develop`, then a patch release into `master`.
 - To go back to a release in a hurry, use Instant Rollback (above). To go back in the code, open a PR into `develop` that reverts the bad merge: `git revert -m 1 <merge-sha>`, and release it. Compare with the last tag to see what changed: `git diff v0.4.0..develop`.
 
+## The desktop app
+
+The Windows installer is built by `.github/workflows/desktop.yml` on a Windows runner. On a release PR into `master` it only builds (to prove it still does); when you **publish a GitHub release** (`gh release create ...`) it builds again and attaches the installer (`Cadence_<version>_x64-setup.exe`) and the updater's `latest.json` to that release. The profile's **Installer** link opens the releases page. Installed apps look for a newer version when they start (and tell the person), by reading `releases/latest/download/latest.json`, so updates reach people from the latest release that is not a pre-release.
+
+One-time setup (GitHub, Settings, Secrets and variables, Actions):
+- Secret `TAURI_SIGNING_PRIVATE_KEY`: the content of the update key file made by `npx tauri signer generate` (kept in `%USERPROFILE%\.tauri\cadence-updater.key`; its public half is in `src-tauri/tauri.conf.json`). If a password was set, also `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Losing the key means installed apps can no longer be updated: keep a copy somewhere safe, and never in the repo or in chat.
+- Variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (the same public values the website has), and `APP_URL` (already there, used as the site the app signs in through).
+- Supabase, Authentication, URL Configuration: add `<APP_URL>/auth/desktop` to the redirect URLs, or Google sign-in from the app cannot come back.
+
+The installer is not code-signed, so Windows SmartScreen shows "unknown publisher" the first time. Updates are signed with the update key above, which is separate and free.
+
 ## Sign-in mail (Gmail SMTP)
 
 Sign-up confirmation and password reset are 6-digit codes sent by Supabase Auth. Supabase's own mailer reaches only team addresses (about 2 an hour), so production sends through a dedicated Gmail account, which costs nothing and needs no domain.
