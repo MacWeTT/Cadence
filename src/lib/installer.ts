@@ -1,2 +1,2 @@
-/** Where the Windows installer of each release is attached (the releases page, so it works before any release is the latest). */
-export const INSTALLER_URL = 'https://github.com/MacWeTT/Cadence/releases';
+/** The newest release's Windows installer, attached under this fixed name by the Desktop workflow. It downloads at once. */
+export const INSTALLER_URL = 'https://github.com/MacWeTT/Cadence/releases/latest/download/Cadence-Setup.exe';
