@@ -1,29 +1,50 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { TAB_LINKS as WEB_TAB, TOP_LINKS as WEB_TOP } from '@/components/nav-links/nav-links';
-import { TAB_LINKS as APP_TAB, TOP_LINKS as APP_TOP } from '@/components/nav-links/nav-links.desktop';
+import { TAB_LINKS, TOP_LINKS } from '@/components/nav-links/nav-links';
+import {
+  TAB_LINKS as DESKTOP_TAB_LINKS,
+  TOP_LINKS as DESKTOP_TOP_LINKS,
+} from '@/components/nav-links/nav-links.desktop';
 
-const names = (links: readonly { name: string }[]) => {
-  return links.map(({ name }) => {
-    return name;
+const hrefs = (links: readonly { href: string }[]): string[] => {
+  return links.map(({ href }) => {
+    return href;
   });
 };
 
-const soon = (links: readonly object[]) => {
-  return links.filter(link => {
-    return 'soon' in link;
-  });
-};
-
-describe('the navigation of the website and of the desktop app', () => {
-  it('lists the same pages on both, so nothing is missing in the app without being said', () => {
-    expect(names(APP_TOP)).toEqual(names(WEB_TOP));
-    expect(names(APP_TAB)).toEqual(names(WEB_TAB));
+describe('the navigation links', () => {
+  it('include Circles on the web, in the top bar and the phone tab bar', () => {
+    expect(hrefs(TOP_LINKS)).toContain('/circles');
+    expect(hrefs(TAB_LINKS)).toContain('/circles');
   });
 
-  it('switches off Circles in the app (coming soon), and nothing else', () => {
-    expect(soon(WEB_TOP)).toEqual([]);
-    expect(soon(WEB_TAB)).toEqual([]);
-    expect(soon(APP_TOP)).toEqual([{ href: '/circles', name: 'circles', soon: true }]);
-    expect(soon(APP_TAB)).toHaveLength(1);
+  it('keep Circles in the desktop app but switched off, coming soon, and change nothing else', () => {
+    const soon = (links: readonly object[]) => {
+      return links.filter(link => {
+        return 'soon' in link;
+      });
+    };
+
+    // the same pages, in the same order, as on the web
+    expect(hrefs(DESKTOP_TOP_LINKS)).toEqual(hrefs(TOP_LINKS));
+    expect(hrefs(DESKTOP_TAB_LINKS)).toEqual(hrefs(TAB_LINKS));
+    // only Circles is switched off, and only in the app
+    expect(soon(TOP_LINKS)).toEqual([]);
+    expect(soon(TAB_LINKS)).toEqual([]);
+    expect(soon(DESKTOP_TOP_LINKS)).toEqual([{ href: '/circles', name: 'circles', soon: true }]);
+    expect(soon(DESKTOP_TAB_LINKS)).toHaveLength(1);
+  });
+
+  it('are swapped for the desktop ones, and the Home card for an empty one, by the desktop build', () => {
+    // The config is formatted by prettier, which may wrap a long line, so compare it with its spaces collapsed.
+    const config = readFileSync('next.config.ts', 'utf8').replaceAll(/\s+/g, ' ');
+
+    expect(config).toContain("'@/components/nav-links/nav-links': './src/components/nav-links/nav-links.desktop.ts'");
+    expect(config).toContain(
+      "'@/app/(app)/home/circles-card/circles-card': './src/app/(app)/home/circles-card/circles-card.desktop.tsx'",
+    );
+    expect(config).toContain(
+      "'@/app/(app)/habits/habit-circles/habit-circles': './src/app/(app)/habits/habit-circles/habit-circles.desktop.tsx'",
+    );
   });
 });
