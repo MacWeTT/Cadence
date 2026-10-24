@@ -16,14 +16,19 @@ describe('toSharingView', () => {
     expect(toSharingView(habits, [], [], false)).toEqual({
       paused: false,
       habits: [
-        { id: READ, name: 'Read', icon: '📖', level: 'hidden', label: 'name', overrides: [] },
-        { id: WALK, name: 'Walk', icon: '🚶', level: 'hidden', label: 'name', overrides: [] },
+        { id: READ, name: 'Read', icon: '📖', level: 'hidden', label: 'name', showsMisses: false, overrides: [] },
+        { id: WALK, name: 'Walk', icon: '🚶', level: 'hidden', label: 'name', showsMisses: false, overrides: [] },
       ],
     });
   });
 
   it("uses the circle's share for the level and how the habit is shown", () => {
-    const view = toSharingView(habits, [{ habit_id: WALK, level: 'streaks', label: 'emoji' }], [], false);
+    const view = toSharingView(
+      habits,
+      [{ habit_id: WALK, level: 'streaks', label: 'emoji', shows_misses: false }],
+      [],
+      false,
+    );
 
     expect(view.habits[0]).toMatchObject({ id: READ, level: 'hidden', label: 'name' });
     expect(view.habits[1]).toMatchObject({ id: WALK, level: 'streaks', label: 'emoji' });
@@ -63,7 +68,7 @@ describe('toSharingView', () => {
   it('ignores shares and overrides for a habit that is not in the list, such as an archived one', () => {
     const view = toSharingView(
       habits,
-      [{ habit_id: '10000000-0000-4000-8000-0000000000ff', level: 'everything', label: 'name' }],
+      [{ habit_id: '10000000-0000-4000-8000-0000000000ff', level: 'everything', label: 'name', shows_misses: true }],
       [{ habit_id: '10000000-0000-4000-8000-0000000000ff', viewer_id: SAM, level: 'hidden', label: 'name' }],
       false,
     );
@@ -78,12 +83,27 @@ describe('toSharingView', () => {
   it('treats a level or label it does not know as hidden and by name, rather than guessing', () => {
     const view = toSharingView(
       habits,
-      [{ habit_id: READ, level: 'bogus', label: 'bogus' }],
+      [{ habit_id: READ, level: 'bogus', label: 'bogus', shows_misses: true }],
       [{ habit_id: READ, viewer_id: SAM, level: 'bogus', label: 'bogus' }],
       false,
     );
 
     expect(view.habits[0]).toMatchObject({ level: 'hidden', label: 'name' });
     expect(view.habits[0].overrides).toEqual([{ viewerId: SAM, level: 'hidden', label: 'generic' }]);
+  });
+
+  it('carries the choice to show off days, for a habit shared at Everything only', () => {
+    const view = toSharingView(
+      habits,
+      [
+        { habit_id: READ, level: 'everything', label: 'name', shows_misses: true },
+        { habit_id: WALK, level: 'streaks', label: 'name', shows_misses: true },
+      ],
+      [],
+      false,
+    );
+
+    expect(view.habits[0].showsMisses).toBe(true);
+    expect(view.habits[1].showsMisses).toBe(false);
   });
 });

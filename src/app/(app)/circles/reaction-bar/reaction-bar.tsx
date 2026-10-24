@@ -1,6 +1,5 @@
-import { SmilePlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { REACTIONS, type Reaction } from '@/domain/circles';
 import type { FeedReaction } from '@/lib/circle-feed';
 import { cn } from '@/lib/utils';
@@ -10,23 +9,19 @@ interface ReactionBarProps {
   reactions: FeedReaction[];
   /** False when the friend is not taking reactions: what is there is shown, and nothing can be added. */
   enabled: boolean;
-  onToggle: (emoji: Reaction, on: boolean) => void;
-}
-
-interface ReactionBarState {
+  /** The emoji picker is open (the message's own button opens it). */
   picking: boolean;
+  onToggle: (emoji: Reaction, on: boolean) => void;
+  /** An emoji was chosen from the picker, so it can close. */
+  onPicked: () => void;
 }
 
-/** The emoji a day has got, as chips you can tap to add yours or take it back, and a button for the other emoji. */
+/** The emoji a day has got, as chips you can tap to add yours or take it back, and the picker for the other emoji. */
 export const ReactionBar = (props: ReactionBarProps) => {
-  const { reactions, enabled, onToggle } = props;
-
-  const [state, setState] = useState<ReactionBarState>({ picking: false });
+  const { reactions, enabled, picking, onToggle, onPicked } = props;
 
   const t = useTranslations('circles.conversation');
   const picker = useRef<HTMLDivElement>(null);
-
-  const { picking } = state;
 
   // The picker opens under the last message, so bring it into view.
   useEffect(() => {
@@ -35,9 +30,11 @@ export const ReactionBar = (props: ReactionBarProps) => {
     }
   }, [picking]);
 
-  const onPickClick = () => {
-    setState({ picking: !picking });
-  };
+  const open = enabled && picking;
+
+  if (reactions.length === 0 && !open) {
+    return null;
+  }
 
   return (
     <div className="reaction-bar">
@@ -66,18 +63,7 @@ export const ReactionBar = (props: ReactionBarProps) => {
           </button>
         );
       })}
-      {enabled && (
-        <button
-          type="button"
-          aria-label={t('addReaction')}
-          aria-expanded={picking}
-          onClick={onPickClick}
-          className="reaction-bar__add"
-        >
-          <SmilePlus aria-hidden="true" className="reaction-bar__add-icon" />
-        </button>
-      )}
-      {enabled && picking && (
+      {open && (
         <div ref={picker} role="group" aria-label={t('pickReaction')} className="reaction-bar__picker">
           {REACTIONS.map(emoji => {
             const mine = reactions.some(({ emoji: given, mine: byMe }) => {
@@ -86,7 +72,7 @@ export const ReactionBar = (props: ReactionBarProps) => {
 
             const onPickEmoji = () => {
               onToggle(emoji, !mine);
-              setState({ picking: false });
+              onPicked();
             };
 
             return (

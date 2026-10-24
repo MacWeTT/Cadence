@@ -24,7 +24,13 @@ export const REACTION_DAYS = 6;
 export const CIRCLE_COLORS = ['moss', 'clay', 'ochre', 'rose', 'plum', 'teal', 'sky', 'slate'] as const;
 export type CircleColor = (typeof CIRCLE_COLORS)[number];
 
-export const CIRCLE_LIMITS = { maxMembers: 8, maxCircles: 10, inviteDays: 7, nameMax: 60 } as const;
+/** A circle is a group of two to eight people, or a pair: two people who chose each other. */
+export type CircleKind = 'group' | 'pair';
+
+export const CIRCLE_LIMITS = { maxMembers: 8, pairMembers: 2, maxCircles: 10, inviteDays: 7, nameMax: 60 } as const;
+
+/** How many days back a partner can be shown off days (see `missedDays`). */
+export const MISS_DAYS = 14;
 
 export const isLevel = (value: unknown): value is Level => {
   return LEVELS.some(level => {
@@ -84,6 +90,19 @@ export const reveal = (level: Level): Reveal => {
     streak: atLeast(level, 'streaks'),
     history: level === 'everything',
   };
+};
+
+/**
+ * Closer is on only when both people of a pair have turned it on. One person waiting, or any other number of people,
+ * is never closer: it is a pair thing, and it needs both.
+ */
+export const closerActive = (members: readonly { closer: boolean }[]): boolean => {
+  return (
+    members.length === 2 &&
+    members.every(({ closer }) => {
+      return closer;
+    })
+  );
 };
 
 /** What is wrong with a circle's name, or null when it is fine. The name is trimmed first. */

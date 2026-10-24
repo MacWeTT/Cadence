@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { avatarName, inviteUrl, memberName, toAvatarView } from '@/lib/circle-people';
+import { avatarName, circleColor, circleTitle, inviteUrl, memberName, toAvatarView } from '@/lib/circle-people';
 
 describe('memberName', () => {
   it('uses the name a person gave, trimmed', () => {
@@ -48,5 +48,34 @@ describe('toAvatarView', () => {
       color: null,
       url: null,
     });
+  });
+});
+
+describe('circleTitle', () => {
+  it('is the circle name for a group', () => {
+    expect(circleTitle({ kind: 'group', name: 'Study group', partnerName: null, partnerTag: null })).toBe(
+      'Study group',
+    );
+  });
+
+  it('is the partner for a pair, by name or else by @tag', () => {
+    expect(circleTitle({ kind: 'pair', name: 'Partners', partnerName: ' Sam ', partnerTag: 'sam' })).toBe('Sam');
+    expect(circleTitle({ kind: 'pair', name: 'Partners', partnerName: null, partnerTag: 'sam' })).toBe('@sam');
+  });
+
+  it('is nothing for a pair still waiting for its partner, so the screen can say so', () => {
+    expect(circleTitle({ kind: 'pair', name: 'Partners', partnerName: null, partnerTag: null })).toBeNull();
+  });
+});
+
+describe('circleColor', () => {
+  it('shows a group in the colour its person chose', () => {
+    expect(circleColor('group', 'moss')).toBe('moss');
+    expect(circleColor('group', 'sky')).toBe('sky');
+  });
+
+  it('warms a pair that has not been given a colour to rose, and keeps one that has', () => {
+    expect(circleColor('pair', 'moss')).toBe('rose');
+    expect(circleColor('pair', 'plum')).toBe('plum');
   });
 });

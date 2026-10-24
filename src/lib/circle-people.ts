@@ -1,5 +1,6 @@
 import type { AvatarView } from '@/server/profile-view';
 import type { AvatarView as FriendAvatar } from '@/server/circles-view';
+import type { CircleColor, CircleKind } from '@/domain/circles';
 
 /** The name a person goes by in a circle: the name they gave, or their @tag when they gave none. */
 export const memberName = (displayName: string | null, tag: string): string => {
@@ -28,4 +29,31 @@ export const toAvatarView = (avatar: FriendAvatar): AvatarView => {
   const { kind, value, color, url } = avatar;
 
   return kind === 'initial' ? { kind: 'google', value: null, color: null, url: null } : { kind, value, color, url };
+};
+
+/**
+ * What a circle is called on screen: a group by its name, a pair by the partner (never the stored name, which is only
+ * "Partners"). A pair still waiting for its partner has no name yet, and gives null.
+ */
+export const circleTitle = (circle: {
+  kind: 'group' | 'pair';
+  name: string;
+  partnerName: string | null;
+  partnerTag: string | null;
+}): string | null => {
+  const { kind, name, partnerName, partnerTag } = circle;
+
+  if (kind === 'group') {
+    return name;
+  }
+
+  return partnerTag === null ? null : memberName(partnerName, partnerTag);
+};
+
+/**
+ * The colour a circle is shown in. A pair nobody has coloured yet is rose, to feel warm; once its person picks a colour,
+ * that colour is used. (The first colour, moss, is the default every circle starts with.)
+ */
+export const circleColor = (kind: CircleKind, color: CircleColor): CircleColor => {
+  return kind === 'pair' && color === 'moss' ? 'rose' : color;
 };

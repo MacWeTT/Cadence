@@ -19,12 +19,20 @@ export interface FeedReaction {
   who: string[];
 }
 
+/** A habit a partner allowed off days for, on a day it didn't happen. */
+export interface FeedOff {
+  name: string | null;
+  icon: string | null;
+}
+
 /** A friend's day as one message: what they did, and the reactions it got. */
 export interface FeedBubble {
   key: string;
   member: CircleMemberView;
   date: CalendarDate;
   habits: FeedHabit[];
+  /** Only for a partner who allowed it, and only on a day they also did something. */
+  off: FeedOff[];
   reactions: FeedReaction[];
 }
 
@@ -44,6 +52,17 @@ const habitsOn = (member: CircleMemberView, date: CalendarDate): FeedHabit[] => 
     })
     .map(({ name, icon, streak }) => {
       return { name, icon, streak: date === today ? streak : null };
+    });
+};
+
+/** The habits that didn't happen on `date`, where the owner allowed off days for them (otherwise none, ever). */
+const offOn = (member: CircleMemberView, date: CalendarDate): FeedOff[] => {
+  return member.habits
+    .filter(({ missed }) => {
+      return missed?.includes(date) ?? false;
+    })
+    .map(({ name, icon }) => {
+      return { name, icon };
     });
 };
 
@@ -108,7 +127,14 @@ export const buildFeed = (members: CircleMemberView[], today: CalendarDate): Fee
         continue;
       }
 
-      const bubble = { key: `${userId}-${date}`, member, date, habits, reactions: reactionsOn(member, date, meId) };
+      const bubble = {
+        key: `${userId}-${date}`,
+        member,
+        date,
+        habits,
+        off: offOn(member, date),
+        reactions: reactionsOn(member, date, meId),
+      };
 
       days.set(date, [...(days.get(date) ?? []), bubble]);
     }

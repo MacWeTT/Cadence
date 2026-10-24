@@ -12,6 +12,19 @@
   @apply text-sm font-semibold wrap-break-word;
 }
 
+.bubble__line {
+  @apply flex max-w-full items-center gap-1.5;
+}
+
+/* The react button sits beside the message, faint until it is wanted, like the reaction button of a chat app. */
+.bubble__add {
+  @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink-muted opacity-60 transition-opacity hover:bg-surface hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.bubble__add-icon {
+  @apply size-4;
+}
+
 .bubble__card {
   @apply max-w-full rounded-2xl rounded-tl-sm border border-line bg-surface px-4 py-3 shadow-sm;
 }
@@ -24,12 +37,25 @@
   @apply flex flex-wrap items-center gap-x-2 gap-y-0.5;
 }
 
+.bubble__check {
+  @apply inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-moss text-bg;
+}
+
+.bubble__check-icon {
+  @apply size-3 stroke-3;
+}
+
 .bubble__habit-name {
   @apply wrap-break-word;
 }
 
 .bubble__streak {
   @apply rounded-full bg-clay/15 px-2 py-0.5 text-xs text-ink;
+}
+
+/* A day that didn't happen, said quietly: grey, small, never red. */
+.bubble__off {
+  @apply mt-2 text-xs text-ink-muted;
 }
 
 /* Your own day sits on the right, like a message you sent, and nobody can react to themselves. */

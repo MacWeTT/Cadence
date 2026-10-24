@@ -211,6 +211,13 @@ test('your colour and pin are your own: the pinned circle comes first for you, a
   await page.getByRole('switch', { name: /Pin to the top/ }).click();
   await expect(page.getByRole('switch', { name: /Pin to the top/ })).toBeChecked();
 
+  // Wait until it is saved, so the reload below cannot cut the save short.
+  await expect
+    .poll(async () => {
+      return (await (await page.request.get(`/api/circles/${second}`)).json()).pinned;
+    })
+    .toBe(true);
+
   await page.reload();
   await page.getByRole('button', { name: 'Circle settings' }).click();
   await expect(page.getByRole('radio', { name: 'Sky' })).toHaveAttribute('aria-checked', 'true');

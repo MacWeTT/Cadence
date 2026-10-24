@@ -4,6 +4,8 @@ import './scenery.css';
 interface SceneryProps {
   /** `backdrop` fills a panel from behind, `banner` is a strip, `scene` is a larger picture for an empty page. */
   variant: 'backdrop' | 'banner' | 'scene';
+  /** `pair` swaps the greens for rose and the sprouts for hearts. */
+  tone?: 'pair';
   className?: string;
 }
 
@@ -13,6 +15,7 @@ const HILLS = {
   near: 'M0 214 C 130 190 250 206 380 216 S 600 228 700 204 S 770 196 800 200 L800 240 L0 240 Z',
 };
 const PATH = 'M392 240 C 380 222 420 214 404 198 S 432 182 424 168';
+const HEART = 'M0 -4 C -4 -12 -16 -8 -12 2 C -9 8 -2 12 0 15 C 2 12 9 8 12 2 C 16 -8 4 -12 0 -4 Z';
 const SPROUTS = [
   { x: 70, y: 214 },
   { x: 168, y: 206 },
@@ -25,7 +28,7 @@ const SPROUTS = [
  * without anything competing with the content. It is decoration only, and follows the light and dark themes.
  */
 export const Scenery = (props: SceneryProps) => {
-  const { variant, className } = props;
+  const { variant, tone, className } = props;
   const { far, mid, near } = HILLS;
 
   return (
@@ -33,7 +36,7 @@ export const Scenery = (props: SceneryProps) => {
       aria-hidden
       viewBox="0 0 800 240"
       preserveAspectRatio="xMidYMax slice"
-      className={cn('scenery', `scenery--${variant}`, className)}
+      className={cn('scenery', `scenery--${variant}`, tone && `scenery--${tone}`, className)}
     >
       <circle cx={640} cy={78} r={46} className="scenery__halo" />
       <circle cx={640} cy={78} r={26} className="scenery__sun" />
@@ -44,9 +47,15 @@ export const Scenery = (props: SceneryProps) => {
       {SPROUTS.map(({ x, y }) => {
         return (
           <g key={x} transform={`translate(${x} ${y})`} className="scenery__sprout">
-            <path d="M0 0 V-14" />
-            <path d="M0 -8 C -8 -10 -10 -16 -9 -18 C -3 -18 0 -14 0 -8 Z" />
-            <path d="M0 -11 C 8 -13 10 -19 9 -21 C 3 -21 0 -17 0 -11 Z" />
+            {tone === 'pair' ? (
+              <path d={HEART} className="scenery__heart" />
+            ) : (
+              <>
+                <path d="M0 0 V-14" />
+                <path d="M0 -8 C -8 -10 -10 -16 -9 -18 C -3 -18 0 -14 0 -8 Z" />
+                <path d="M0 -11 C 8 -13 10 -19 9 -21 C 3 -21 0 -17 0 -11 Z" />
+              </>
+            )}
           </g>
         );
       })}

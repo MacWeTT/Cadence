@@ -2,14 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { weekProgress } from '@/domain/listing';
 import { currentStreak } from '@/domain/streaks';
 import type { HabitData } from '@/domain/types';
-import { toCircleView } from '@/server/circles-view';
+import { addDays } from '@/domain/dates';
+import { MISS_DAYS } from '@/domain/circles';
+import { parseInvitePreview, toCircleListItem, toCircleView } from '@/server/circles-view';
 
 const ME = '00000000-0000-4000-8000-0000000000a1';
 const SAM = '00000000-0000-4000-8000-0000000000b2';
 const TODAY = '2026-10-12';
 
 const shared = (over: Record<string, unknown> = {}) => {
-  return { name: 'Read', icon: '📖', level: 'done_today', done: true, ...over };
+  return { name: 'Read', icon: '📖', level: 'done_today', done: true, shows_misses: false, ...over };
 };
 
 const member = (over: Record<string, unknown> = {}) => {
@@ -24,6 +26,8 @@ const member = (over: Record<string, unknown> = {}) => {
     week_starts_on: 1,
     allow_cheers: true,
     in_week: true,
+    closer: false,
+    showed_up_days: [],
     avatar_kind: 'character',
     avatar_value: 'mage',
     avatar_color: '#6c7d45',
@@ -46,6 +50,8 @@ const overview = (members: unknown[] = [member()], circle: Record<string, unknow
       week_ticks: 7,
       color: 'moss',
       pinned: false,
+      kind: 'group',
+      closer_active: false,
       ...circle,
     },
     members,
@@ -191,6 +197,8 @@ describe('what each level may show', () => {
       icon: '📖',
       level: 'done_today',
       done: true,
+      showsMisses: false,
+      missed: null,
       streak: null,
       week: null,
     });
@@ -296,5 +304,128 @@ describe('what each level may show', () => {
     expect(() => {
       return toCircleView(overview([member()], { color: 'neon' }));
     }).toThrow();
+  });
+
+  it('says whether a circle is a pair, and whether Closer is on, and what each member chose', () => {
+    const view = toCircleView(overview([member({ closer: true })], { kind: 'pair', closer_active: true }));
+
+    expect(view).toMatchObject({ kind: 'pair', closerActive: true });
+    expect(view.members[0].closer).toBe(true);
+  });
+
+  it('carries the days a member showed up, for a pair', () => {
+    const view = toCircleView(
+      overview([member({ showed_up_days: ['2026-10-10', '2026-10-12'] })], { kind: 'pair', closer_active: false }),
+    );
+
+    expect(view.members[0].showedUpDays).toEqual(['2026-10-10', '2026-10-12']);
+  });
+});
+
+/** Every day of the window before `today`, ticked except the days given. */
+const ticksExcept = (skipped: string[]): string[] => {
+  return Array.from({ length: 40 }, (_, back) => {
+    return addDays(TODAY, -(back + 1));
+  }).filter(date => {
+    return !skipped.includes(date);
+  });
+};
+
+const pairView = (habit: Record<string, unknown>, circle: Record<string, unknown> = {}) => {
+  const view = toCircleView(overview([member({ habits: [habit] })], { kind: 'pair', closer_active: true, ...circle }));
+
+  return view.members[0].habits[0];
+};
+
+describe('off days (partners)', () => {
+  const everything = (over: Record<string, unknown> = {}) => {
+    return shared({
+      level: 'everything',
+      shows_misses: true,
+      data: data(ticksExcept(['2026-10-08', '2026-10-10'])),
+      ...over,
+    });
+  };
+
+  it('are worked out only when the partner may see them, and are then the days that went unticked', () => {
+    const habit = pairView(everything());
+
+    expect(habit.showsMisses).toBe(true);
+    expect(habit.missed).toEqual(['2026-10-08', '2026-10-10']);
+  });
+
+  it('use the same window as the database and the rules say', () => {
+    const habit = pairView(everything({ data: data([]) }));
+
+    expect(habit.missed).toHaveLength(MISS_DAYS);
+  });
+
+  it('are never worked out without the owner choosing them for this habit', () => {
+    expect(pairView(everything({ shows_misses: false })).missed).toBeNull();
+  });
+
+  it('are never worked out while Closer is off, however the payload is flagged', () => {
+    expect(pairView(everything(), { closer_active: false }).missed).toBeNull();
+  });
+
+  it('are never worked out in a group, however the payload is flagged', () => {
+    const view = toCircleView(overview([member({ habits: [everything()] })], { kind: 'group', closer_active: true }));
+
+    expect(view.members[0].habits[0].missed).toBeNull();
+  });
+
+  it('are never worked out below Everything, even if the payload carried the dates and the flag', () => {
+    expect(pairView(everything({ level: 'streaks' })).missed).toBeNull();
+    expect(pairView(everything({ level: 'done_today', data: undefined })).missed).toBeNull();
+  });
+});
+
+describe('the list and the invite', () => {
+  it('shows a pair under the partner and a group under its name', () => {
+    expect(
+      toCircleListItem({
+        id: '20000000-0000-4000-8000-000000000001',
+        name: 'Partners',
+        is_owner: true,
+        member_count: 2,
+        color: 'sky',
+        pinned: true,
+        kind: 'pair',
+        partner_name: 'Sam',
+        partner_tag: 'sam',
+      }),
+    ).toEqual({
+      id: '20000000-0000-4000-8000-000000000001',
+      name: 'Partners',
+      isOwner: true,
+      memberCount: 2,
+      color: 'sky',
+      pinned: true,
+      kind: 'pair',
+      partnerName: 'Sam',
+      partnerTag: 'sam',
+    });
+  });
+
+  it('knows a colour or kind it does not know as the first colour and a group', () => {
+    const item = toCircleListItem({
+      id: '20000000-0000-4000-8000-000000000001',
+      name: 'x',
+      is_owner: false,
+      member_count: 1,
+      color: 'neon',
+      pinned: false,
+      kind: 'weird',
+      partner_name: null,
+      partner_tag: null,
+    });
+
+    expect(item).toMatchObject({ color: 'moss', kind: 'group', partnerName: null, partnerTag: null });
+  });
+
+  it('carries what an invite is for', () => {
+    expect(parseInvitePreview({ name: 'Partners', kind: 'pair', full: false, members: [] })).toMatchObject({
+      kind: 'pair',
+    });
   });
 });

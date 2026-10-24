@@ -54,3 +54,33 @@
   stroke-width: 2;
   stroke-linecap: round;
 }
+
+/* A pair is warm: rose hills, a rose sun, a path of dashes, and hearts where the sprouts were. */
+.scenery--pair .scenery__halo {
+  fill: color-mix(in srgb, var(--habit-rose) 15%, transparent);
+}
+
+.scenery--pair .scenery__sun {
+  fill: color-mix(in srgb, var(--habit-rose) 35%, transparent);
+}
+
+.scenery--pair .scenery__hill--far {
+  fill: color-mix(in srgb, var(--habit-rose) 8%, transparent);
+}
+
+.scenery--pair .scenery__hill--mid {
+  fill: color-mix(in srgb, var(--habit-rose) 12%, transparent);
+}
+
+.scenery--pair .scenery__hill--near {
+  fill: color-mix(in srgb, var(--habit-rose) 18%, transparent);
+}
+
+.scenery--pair .scenery__path {
+  stroke: color-mix(in srgb, var(--habit-rose) 40%, transparent);
+}
+
+.scenery--pair .scenery__sprout {
+  fill: color-mix(in srgb, var(--habit-rose) 45%, transparent);
+  stroke: none;
+}

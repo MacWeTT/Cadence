@@ -8,10 +8,12 @@ import { ConversationHeader } from '@/app/(app)/circles/conversation-header/conv
 import { Feed } from '@/app/(app)/circles/feed/feed';
 import { InviteModal } from '@/app/(app)/circles/invite-modal/invite-modal';
 import { LookDialog } from '@/app/(app)/circles/look-dialog/look-dialog';
+import { PairWaiting } from '@/app/(app)/circles/pair-waiting/pair-waiting';
 import { PeopleDialog } from '@/app/(app)/circles/people-dialog/people-dialog';
 import { RemoveMemberModal } from '@/app/(app)/circles/remove-member-modal/remove-member-modal';
 import { SharingDialog } from '@/app/(app)/circles/sharing-dialog/sharing-dialog';
 import { useSharing } from '@/app/(app)/circles/use-sharing';
+import { WeekTogether } from '@/app/(app)/circles/week-together/week-together';
 import { useCircle, useCloseCircle, useLeaveCircle, useRemoveMember } from '@/app/(app)/circles/use-circles';
 import { ConfirmModal } from '@/components/confirm-modal/confirm-modal';
 import { EmptyState } from '@/components/empty-state/empty-state';
@@ -19,8 +21,10 @@ import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
 import { Scenery } from '@/components/scenery/scenery';
 import { Button } from '@/components/ui/button';
 import { buildFeed } from '@/lib/circle-feed';
+import { circleColor, memberName } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
 import { HttpError } from '@/lib/query/fetch-json';
+import { weekTogether } from '@/lib/week-together';
 import type { CircleMemberView } from '@/server/circles-view';
 import './circle-client.css';
 
@@ -148,7 +152,7 @@ export const CircleClient = (props: CircleClientProps) => {
     );
   }
 
-  const { name, color, pinned, isOwner, members } = circle;
+  const { name, color, pinned, isOwner, members, kind, closerActive, weekTicks } = circle;
   const me = members.find(member => {
     return member.isYou;
   });
@@ -157,30 +161,60 @@ export const CircleClient = (props: CircleClientProps) => {
   });
   const { userId: meId = '', tag: meTag = '', today = members[0].today } = me ?? {};
   const days = buildFeed(members, today);
-  const style = { '--circle-color': habitColor(color) } as React.CSSProperties;
+  const pair = kind === 'pair';
+  const waiting = pair && others.length === 0;
+  const [partner] = others;
+  const { displayName: partnerDisplay = null, tag: partnerTag = '' } = partner ?? {};
+  const partnerName = partner ? memberName(partnerDisplay, partnerTag) : null;
+  const title = pair ? (partnerName ? t('pair.title', { name: partnerName }) : t('pair.waiting')) : name;
+  const shownColor = circleColor(kind, color);
+  const subtitle = pair
+    ? t(closerActive ? 'pair.subtitleCloser' : 'pair.subtitle')
+    : t('circle.week', { count: weekTicks });
+  const together = pair ? weekTogether(members, today) : null;
+  const style = { '--circle-color': habitColor(shownColor) } as React.CSSProperties;
 
   return (
     <>
       <div style={style} className="conversation">
-        <Scenery variant="backdrop" className="conversation__scenery" />
+        <Scenery variant="backdrop" tone={pair ? 'pair' : undefined} className="conversation__scenery" />
         <ConversationHeader
-          circle={circle}
+          circle={{ ...circle, color: shownColor }}
+          title={title}
+          subtitle={subtitle}
+          canInvite={isOwner && (!pair || waiting)}
           onInvite={onInviteClick}
           onShare={onShareClick}
           onSettings={onSettingsClick}
           onPeople={onPeopleClick}
         />
-        <Feed circleId={id} days={days} me={{ id: meId, tag: meTag }} onShare={onShareClick} />
+        {waiting ? (
+          <PairWaiting isOwner={isOwner} onInvite={onInviteClick} />
+        ) : (
+          <>
+            {together && <WeekTogether together={together} members={members} />}
+            <Feed circleId={id} days={days} me={{ id: meId, tag: meTag }} onShare={onShareClick} />
+          </>
+        )}
       </div>
 
       {dialog === 'invite' && <InviteModal circleId={id} onClose={onDialogClose} />}
-      {dialog === 'share' && me && <SharingDialog circleId={id} me={me} others={others} onClose={onDialogClose} />}
+      {dialog === 'share' && me && (
+        <SharingDialog
+          circleId={id}
+          me={me}
+          others={others}
+          pair={pair ? { closerActive, partner: partnerName ?? t('pair.waiting') } : null}
+          onClose={onDialogClose}
+        />
+      )}
       {dialog === 'look' && (
         <LookDialog
           circleId={id}
           color={color}
           pinned={pinned}
           isOwner={isOwner}
+          pair={pair}
           onLeave={onLeaveClick}
           onCloseCircle={onCloseCircleClick}
           onClose={onDialogClose}
@@ -198,9 +232,15 @@ export const CircleClient = (props: CircleClientProps) => {
       {dialog === 'leave' && (
         <ConfirmModal
           destructive
-          title={t('confirm.leaveTitle', { name })}
-          description={t('confirm.leaveText')}
-          confirmLabel={t('confirm.leaveConfirm')}
+          title={
+            pair
+              ? partnerName
+                ? t('pair.endTitle', { name: partnerName })
+                : t('pair.endTitleWaiting')
+              : t('confirm.leaveTitle', { name })
+          }
+          description={pair ? t('pair.endText') : t('confirm.leaveText')}
+          confirmLabel={pair ? t('pair.endConfirm') : t('confirm.leaveConfirm')}
           onConfirm={onLeaveConfirm}
           onClose={onDialogClose}
         />

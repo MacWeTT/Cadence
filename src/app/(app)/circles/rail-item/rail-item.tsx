@@ -1,6 +1,7 @@
-import { Pin } from 'lucide-react';
+import { Heart, Pin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { circleColor, circleTitle } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
 import { cn } from '@/lib/utils';
 import type { CircleListItem } from '@/server/circles-view';
@@ -12,14 +13,19 @@ interface RailItemProps {
   active: boolean;
 }
 
-/** One circle in the list: a tile in its colour with its first letter, its name, how many are in it, and a pin if pinned. */
+/**
+ * One circle in the list: a tile in its colour, its name, how many are in it, and a pin if pinned. A pair is listed
+ * under the partner (or "Waiting for your partner") with a Partner mark.
+ */
 export const RailItem = (props: RailItemProps) => {
   const { circle, active } = props;
-  const { id, name, memberCount, color, pinned } = circle;
+  const { id, memberCount, color, pinned, kind } = circle;
 
   const t = useTranslations('circles');
 
-  const style = { '--circle-color': habitColor(color) } as React.CSSProperties;
+  const pair = kind === 'pair';
+  const title = circleTitle(circle);
+  const style = { '--circle-color': habitColor(circleColor(kind, color)) } as React.CSSProperties;
 
   return (
     <li>
@@ -30,11 +36,11 @@ export const RailItem = (props: RailItemProps) => {
         className={cn('rail-item', active && 'rail-item--active')}
       >
         <span aria-hidden="true" className="rail-item__tile">
-          {name.charAt(0).toUpperCase()}
+          {pair || title === null ? <Heart className="rail-item__heart" /> : title.charAt(0).toUpperCase()}
         </span>
         <span className="rail-item__body">
-          <span className="rail-item__name">{name}</span>
-          <span className="rail-item__meta">{t('people', { count: memberCount })}</span>
+          <span className="rail-item__name">{title ?? t('pair.waiting')}</span>
+          <span className="rail-item__meta">{pair ? t('pair.label') : t('people', { count: memberCount })}</span>
         </span>
         {pinned && <Pin aria-label={t('pinned')} className="rail-item__pin" />}
       </Link>

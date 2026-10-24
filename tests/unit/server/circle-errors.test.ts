@@ -5,6 +5,7 @@ import { CIRCLE_DB_CODES, circleErrorCode } from '@/server/circle-errors';
 const MIGRATION = [
   'supabase/migrations/20261019100000_circles.sql',
   'supabase/migrations/20261025080000_circle_look_and_reactions.sql',
+  'supabase/migrations/20261025100000_circle_pairs.sql',
 ]
   .map(file => {
     return readFileSync(file, 'utf8');
@@ -39,6 +40,8 @@ describe('circleErrorCode', () => {
       'invalid_label',
       'invalid_color',
       'invalid_emoji',
+      'not_a_pair',
+      'level_not_everything',
       'cannot_react_self',
     ]) {
       expect(circleErrorCode(code), code).toBe('generic');

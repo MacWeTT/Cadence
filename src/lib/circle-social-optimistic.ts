@@ -1,4 +1,4 @@
-import type { CircleColor, Reaction } from '@/domain/circles';
+import { closerActive, type CircleColor, type Reaction } from '@/domain/circles';
 import type { CalendarDate } from '@/domain/dates';
 import type { CircleView } from '@/server/circles-view';
 
@@ -47,4 +47,13 @@ export const withReaction = (view: CircleView, change: ReactionChange): CircleVi
 /** The guess at `set_circle_look`: your own colour and pin for the circle. */
 export const withLook = (view: CircleView, color: CircleColor, pinned: boolean): CircleView => {
   return { ...view, color, pinned };
+};
+
+/** The guess at `set_closer`: your own switch, and whether Closer is now on for both. */
+export const withCloser = (view: CircleView, on: boolean): CircleView => {
+  const members = view.members.map(member => {
+    return member.isYou ? { ...member, closer: on } : member;
+  });
+
+  return { ...view, members, closerActive: view.kind === 'pair' && closerActive(members) };
 };

@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { NewCircleModal } from '@/app/(app)/circles/new-circle-modal/new-circle-modal';
 import { RailItem } from '@/app/(app)/circles/rail-item/rail-item';
-import { useCircles } from '@/app/(app)/circles/use-circles';
+import { useCircles, useCreatePair } from '@/app/(app)/circles/use-circles';
 import { Button } from '@/components/ui/button';
 import './circles-rail.css';
 
@@ -20,6 +20,8 @@ export const CirclesRail = () => {
   const t = useTranslations('circles');
   const pathname = usePathname();
   const { data: circles, isError, refetch } = useCircles();
+  const router = useRouter();
+  const createPair = useCreatePair();
 
   const { creating } = state;
   const [, , openId] = pathname.split('/');
@@ -32,6 +34,15 @@ export const CirclesRail = () => {
     setState({ creating: false });
   };
 
+  // A pair is made at once; its page is where the invite link comes from.
+  const onPairClick = () => {
+    createPair.mutate(undefined, {
+      onSuccess: id => {
+        router.push(`/circles/${id}`);
+      },
+    });
+  };
+
   const onRetry = () => {
     void refetch();
   };
@@ -40,8 +51,13 @@ export const CirclesRail = () => {
     <nav aria-label={t('listLabel')} className="circles-rail">
       <div className="circles-rail__header">
         <h1 className="circles-rail__title">{t('title')}</h1>
+      </div>
+      <div className="circles-rail__actions">
         <Button size="sm" onClick={onNewClick}>
           {t('newCircle')}
+        </Button>
+        <Button variant="outline" size="sm" disabled={createPair.isPending} onClick={onPairClick}>
+          {t('pair.invite')}
         </Button>
       </div>
       {circles && circles.length > 0 && (

@@ -1,10 +1,15 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { setCirclesPausedAction, setShareAction, setShareOverrideAction } from '@/app/(app)/circles/actions';
+import {
+  setCirclesPausedAction,
+  setShareAction,
+  setShareMissesAction,
+  setShareOverrideAction,
+} from '@/app/(app)/circles/actions';
 import { useOptimisticCircleAction } from '@/app/(app)/circles/use-optimistic-circle-action';
 import type { Label, Level } from '@/domain/circles';
-import { withOverride, withPaused, withShare } from '@/lib/circle-sharing-optimistic';
+import { withMisses, withOverride, withPaused, withShare } from '@/lib/circle-sharing-optimistic';
 import { fetchJson } from '@/lib/query/fetch-json';
 import { queryKeys } from '@/lib/query/keys';
 import type { SharingView } from '@/server/circle-sharing-view';
@@ -64,5 +69,22 @@ export const useSetPaused = (circleId: string) => {
     queryKeys.circleSharing(circleId),
     setCirclesPausedAction,
     withPaused,
+  );
+};
+
+interface MissesInput {
+  habitId: string;
+  circleId: string;
+  on: boolean;
+}
+
+/** Whether a partner is shown this habit's off days. */
+export const useSetShareMisses = (circleId: string) => {
+  return useOptimisticCircleAction<SharingView, MissesInput>(
+    queryKeys.circleSharing(circleId),
+    setShareMissesAction,
+    (view, { habitId, on }) => {
+      return withMisses(view, habitId, on);
+    },
   );
 };

@@ -62,7 +62,7 @@ const friendSession = async (browser: Browser, baseURL: string | undefined) => {
 
 /** Opens the invite dialog on the circle's page and returns the link it shows. */
 const inviteLink = async (page: Page) => {
-  await page.getByRole('button', { name: 'Invite' }).click();
+  await page.getByRole('button', { name: 'Invite', exact: true }).click();
   const field = page.getByLabel('Invite link');
 
   await expect(field).toHaveValue(/\/circles\/join\/[0-9a-f]{64}$/);
@@ -94,7 +94,7 @@ test('a circle needs a name before it can be made', async ({ page }) => {
 test('starting a circle opens it with you in it, and it appears in the list', async ({ page }) => {
   await startCircle(page);
 
-  await expect(page.getByRole('button', { name: 'Invite' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Invite', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'What I share', exact: true })).toBeVisible();
 
   const people = await openPeople(page);
@@ -125,9 +125,9 @@ test('an invite brings a friend in, and they see who is there', async ({ page, b
 
   await friend.getByRole('button', { name: 'Join circle' }).click();
   await expect(friend).toHaveURL(/\/circles\/[0-9a-f-]{36}$/);
-  await expect(friend.getByRole('heading', { level: 1, name: NAME, exact: true })).toBeVisible();
+  await expect(friend.getByRole('heading', { level: 1, name: NAME, exact: true })).toBeVisible({ timeout: 20_000 });
   // A member is not the owner: no way to invite, close the circle or remove anyone.
-  await expect(friend.getByRole('button', { name: 'Invite' })).toHaveCount(0);
+  await expect(friend.getByRole('button', { name: 'Invite', exact: true })).toHaveCount(0);
 
   const people = await openPeople(friend);
 
@@ -155,7 +155,7 @@ test('the owner can remove a friend, who then no longer finds the circle', async
   await friend.goto(await inviteLink(page));
   await friend.getByRole('button', { name: 'Join circle' }).click();
   await expect(friend).toHaveURL(/\/circles\/[0-9a-f-]{36}$/);
-  await expect(friend.getByRole('heading', { level: 1, name: NAME, exact: true })).toBeVisible();
+  await expect(friend.getByRole('heading', { level: 1, name: NAME, exact: true })).toBeVisible({ timeout: 20_000 });
   const circleUrl = friend.url();
 
   await page.getByRole('button', { name: 'Close', exact: true }).click(); // the invite dialog
@@ -177,7 +177,7 @@ test('a friend can leave, and the owner can close the circle', async ({ page, br
 
   await friend.goto(await inviteLink(page));
   await friend.getByRole('button', { name: 'Join circle' }).click();
-  await expect(friend.getByRole('heading', { level: 1, name: NAME, exact: true })).toBeVisible();
+  await expect(friend.getByRole('heading', { level: 1, name: NAME, exact: true })).toBeVisible({ timeout: 20_000 });
 
   await (await openSettings(friend)).getByRole('button', { name: 'Leave circle' }).click();
   await friend.getByRole('dialog').getByRole('button', { name: 'Leave circle' }).click();

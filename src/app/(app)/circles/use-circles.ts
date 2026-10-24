@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import {
   createCircleAction,
   createInviteAction,
+  createPairAction,
   deleteCircleAction,
   joinCircleAction,
   leaveCircleAction,
@@ -86,6 +87,11 @@ export const useCreateCircle = () => {
 /** A new invite link; the old ones stop working. */
 export const useCreateInvite = () => {
   return useCircleAction(createInviteAction);
+};
+
+/** Starts a pair, a circle for two. The id of the new pair comes back. */
+export const useCreatePair = () => {
+  return useCircleAction(createPairAction);
 };
 
 export const useJoinCircle = () => {

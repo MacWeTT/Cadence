@@ -13,6 +13,10 @@
   background: color-mix(in srgb, var(--circle-color) 18%, transparent);
 }
 
+.rail-item__heart {
+  @apply size-5 fill-current;
+}
+
 .rail-item__body {
   @apply flex min-w-0 flex-col;
 }

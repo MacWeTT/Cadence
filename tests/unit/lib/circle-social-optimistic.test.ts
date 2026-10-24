@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { withLook, withPrefs } from '@/lib/circle-social-optimistic';
+import { withCloser, withLook, withPrefs } from '@/lib/circle-social-optimistic';
 import type { CircleMemberView, CircleView } from '@/server/circles-view';
 
 const ME = '00000000-0000-4000-8000-0000000000a1';
@@ -16,6 +16,8 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     paused: false,
     today: '2026-10-14',
     inWeek: true,
+    closer: false,
+    showedUpDays: [],
     avatar: { kind: 'initial', value: null, color: null, url: null },
     allowCheers: true,
     showedUpWeek: true,
@@ -33,6 +35,8 @@ const view = (): CircleView => {
     name: 'Study group',
     color: 'moss',
     pinned: false,
+    kind: 'group',
+    closerActive: false,
     isOwner: true,
     weekTicks: 3,
     members: [
@@ -66,5 +70,37 @@ describe('withLook', () => {
     withLook(before, 'rose', true);
 
     expect(before).toEqual(view());
+  });
+});
+
+describe('withCloser', () => {
+  const pair = (): CircleView => {
+    return {
+      ...view(),
+      kind: 'pair',
+      members: [member({ userId: ME, isYou: true }), member({ userId: SAM, closer: true })],
+    };
+  };
+
+  it('sets your own switch, and Closer is on once both are', () => {
+    const next = withCloser(pair(), true);
+
+    expect(next.members[0].closer).toBe(true);
+    expect(next.members[1].closer).toBe(true);
+    expect(next.closerActive).toBe(true);
+  });
+
+  it('turning yours off ends it at once, and leaves your partner switch as it was', () => {
+    const on = withCloser(pair(), true);
+    const off = withCloser(on, false);
+
+    expect(off.closerActive).toBe(false);
+    expect(off.members[1].closer).toBe(true);
+  });
+
+  it('is never on until your partner has turned theirs on', () => {
+    const waiting = { ...pair(), members: [member({ userId: ME, isYou: true }), member({ userId: SAM })] };
+
+    expect(withCloser(waiting, true).closerActive).toBe(false);
   });
 });

@@ -17,6 +17,8 @@ const member = (over: Partial<CircleMemberView>): CircleMemberView => {
     paused: false,
     today: DAY,
     inWeek: true,
+    closer: false,
+    showedUpDays: [],
     avatar: { kind: 'initial', value: null, color: null, url: null },
     allowCheers: true,
     showedUpWeek: true,
@@ -34,6 +36,8 @@ const view = (): CircleView => {
     name: 'Study group',
     color: 'moss',
     pinned: false,
+    kind: 'group',
+    closerActive: false,
     isOwner: true,
     weekTicks: 0,
     members: [

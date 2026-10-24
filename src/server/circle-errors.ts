@@ -26,6 +26,8 @@ export const CIRCLE_DB_CODES: Record<string, ErrorCode> = {
   invalid_label: 'generic',
   invalid_color: 'generic',
   invalid_emoji: 'generic',
+  not_a_pair: 'generic',
+  level_not_everything: 'generic',
   cannot_react_self: 'generic',
 };
 

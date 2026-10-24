@@ -53,3 +53,7 @@
 .conversation-header__count {
   @apply text-sm text-ink-muted max-sm:hidden;
 }
+
+.conversation-header__heart {
+  @apply size-6 fill-current;
+}
