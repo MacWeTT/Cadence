@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { AlertNotifier } from '@/components/alert-notifier/alert-notifier';
+import { TrayBridge } from '@/components/tray-bridge/tray-bridge';
 import { SyncPrompt } from '@/components/sync-prompt/sync-prompt';
 import { UpdateNotifier } from '@/components/update-notifier/update-notifier';
 import { UserMenuAvatar } from '@/components/user-menu-avatar/user-menu-avatar';
@@ -22,6 +23,7 @@ export const UserMenu = () => {
   return (
     <>
       <AlertNotifier />
+      <TrayBridge />
       <UpdateNotifier />
       {user === null && (
         <Link href="/login" className="user-menu__sign-in">
