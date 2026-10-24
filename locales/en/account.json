@@ -25,6 +25,7 @@
     "modalTitle": "Replace your data?",
     "contents": "This file has {habits, plural, one {# habit} other {# habits}}, {ticks, plural, one {# check-in} other {# check-ins}} and {focusSessions, plural, one {# focus session} other {# focus sessions}}.",
     "warning": "This replaces all your current habits and history with what is in this file. It can't be undone.",
+    "circlesNote": "What you share in your circles is reset too, because the habits are replaced. You can choose again afterwards.",
     "understand": "I understand",
     "confirm": "Replace my data",
     "done": "Restored {habits, plural, one {# habit} other {# habits}} and {ticks, plural, one {# check-in} other {# check-ins}}.",

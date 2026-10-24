@@ -1,0 +1,33 @@
+@reference '../../../globals.css';
+
+.circles-card {
+  @apply rounded-2xl border border-line bg-surface p-5;
+}
+
+.circles-card__title {
+  @apply mb-3 text-xs font-medium tracking-wider text-ink-muted uppercase;
+}
+
+.circles-card__text {
+  @apply mb-3 text-sm text-ink-muted;
+}
+
+.circles-card__list {
+  @apply mb-3 space-y-1;
+}
+
+.circles-card__item {
+  @apply flex min-w-0 items-center justify-between gap-3 rounded-lg px-2 py-2 hover:bg-heat-0 focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.circles-card__name {
+  @apply font-semibold wrap-break-word;
+}
+
+.circles-card__count {
+  @apply shrink-0 text-sm text-ink-muted;
+}
+
+.circles-card__link {
+  @apply rounded-md text-sm font-semibold text-clay hover:underline focus-visible:outline-2 focus-visible:outline-clay;
+}

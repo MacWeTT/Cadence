@@ -129,7 +129,7 @@ export const CircleClient = (props: CircleClientProps) => {
     );
   }
 
-  const { name, isOwner, members } = circle;
+  const { name, isOwner, members, weekTicks } = circle;
   const others = members.filter(member => {
     return !member.isYou;
   });
@@ -153,6 +153,7 @@ export const CircleClient = (props: CircleClientProps) => {
           )}
         </div>
       </div>
+      <p className="circle__week">{t('circle.week', { count: weekTicks })}</p>
       <section aria-labelledby="circle-members" className="circle__members">
         <h2 id="circle-members" className="circle__subtitle">
           {t('circle.members')}

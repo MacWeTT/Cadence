@@ -23,3 +23,7 @@
 .circle__subtitle {
   @apply mb-2 font-display text-xl;
 }
+
+.circle__week {
+  @apply mb-6 max-w-2xl text-sm text-ink-muted;
+}
