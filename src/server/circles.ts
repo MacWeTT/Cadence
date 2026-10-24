@@ -13,6 +13,7 @@ import {
   type InvitePreview,
 } from '@/server/circles-view';
 import { HabitError } from '@/server/habits';
+import { toShowedUpToday, type ShowedUpFriend } from '@/server/showed-up-view';
 
 /** The database raises short codes; a known one becomes a message, anything else the generic failure. */
 const check = <T>(result: { data: T; error: { message: string } | null }): T => {
@@ -42,6 +43,14 @@ export const listCircles = async (): Promise<CircleListItem[]> => {
   const rows = need(await supabase.rpc('my_circles'));
 
   return rows.map(toCircleListItem);
+};
+
+/** The friends who showed up today, across all your circles, as far as each of them shares it with you. */
+export const listShowedUpToday = async (): Promise<ShowedUpFriend[]> => {
+  await connection();
+  const supabase = await createSupabaseServerClient();
+
+  return toShowedUpToday(need(await supabase.rpc('circles_showed_up_today')));
 };
 
 /** A circle as the caller may see it. Throws `notAMember` when they are not in it. */

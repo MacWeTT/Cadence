@@ -18,6 +18,8 @@ export const queryKeys = {
   session: ['session'] as const,
   /** The circles the person is in. */
   circles: ['circles'] as const,
+  /** The friends who showed up today, across your circles (for Home). */
+  circlesToday: ['circles', 'today'] as const,
   /** One circle as the person may see it. */
   circle: (id: string) => {
     return ['circles', id] as const;

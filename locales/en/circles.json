@@ -131,7 +131,8 @@
     "title": "Circles",
     "empty": "Share your progress with a few close friends, only as much as you choose.",
     "start": "Start a circle",
-    "all": "All circles"
+    "all": "All circles",
+    "showedUp": "{count, plural, =1 {{a} showed up today.} =2 {{a} and {b} showed up today.} =3 {{a}, {b} and {c} showed up today.} other {{a}, {b} and {rest} others showed up today.}}"
   },
   "loading": "Loading your circles…",
   "pinned": "Pinned",

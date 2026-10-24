@@ -31,3 +31,7 @@
 .circles-card__link {
   @apply rounded-md text-sm font-semibold text-clay hover:underline focus-visible:outline-2 focus-visible:outline-clay;
 }
+
+.circles-card__showed-up {
+  @apply mb-3 text-sm font-medium text-moss;
+}

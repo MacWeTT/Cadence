@@ -325,6 +325,11 @@ isOneToOne: false
 "circle_overview":
 { Args: { "p_circle": string }; Returns: Json
                            },
+"circles_showed_up_today":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "display_name": string,"tag": string,"user_id": string
+            }[]
+                           },
 "create_circle":
 { Args: { "p_name": string }; Returns: string
                            },
