@@ -1,0 +1,9 @@
+@reference '../../app/globals.css';
+
+.legal-note {
+  @apply mt-6 text-xs text-ink-muted;
+}
+
+.legal-note__link {
+  @apply underline underline-offset-2 hover:text-ink;
+}

@@ -1,6 +1,8 @@
 {
   "about": "About",
   "contact": "Contact",
+  "privacy": "Privacy policy",
+  "terms": "Terms of use",
   "developedBy": "Developed by",
   "version": "Version {version}",
   "whatsNew": "What's new"

@@ -1,0 +1,46 @@
+{
+  "pageTitle": "Terms of use",
+  "title": "Terms of use",
+  "updated": "24 October 2026",
+  "intro": "These are the ground rules for using Cadence, the website and the desktop app. By creating an account or using Cadence you agree to them. They are short on purpose.",
+  "sections": [
+    {
+      "title": "What Cadence is",
+      "paragraphs": [
+        "Cadence is a free personal habit tracker, built and run by an individual developer. It is offered as it is."
+      ]
+    },
+    {
+      "title": "Your account",
+      "paragraphs": [
+        "You are responsible for what happens under your account, and for keeping your password safe. Give accurate details and do not use someone else's account."
+      ]
+    },
+    {
+      "title": "Using it fairly",
+      "paragraphs": [
+        "Do not use Cadence to harm others, to harass people in a circle, to upload anything unlawful, or to attack, overload or probe the service. Do not try to get into other people's data.",
+        "You keep ownership of what you put into Cadence. You allow us to store and show it as needed to run the service for you and for the circles you join."
+      ]
+    },
+    {
+      "title": "No promises about availability",
+      "paragraphs": [
+        "Cadence may be slow, change, break or be paused, and features can be added or removed. We try hard to keep it working and your data safe, but we cannot promise it will always be available or free of mistakes. Download your data from the Account tab whenever you want a copy.",
+        "To the extent the law allows, Cadence is provided without warranties and we are not liable for losses that come from using it or not being able to."
+      ]
+    },
+    {
+      "title": "Ending things",
+      "paragraphs": [
+        "You can stop using Cadence and delete your account at any time. We may suspend or remove accounts that break these terms."
+      ]
+    },
+    {
+      "title": "Privacy and changes",
+      "paragraphs": [
+        "How we handle your data is in the Privacy policy. If these terms change in a way that matters, the date above changes and the new version is announced in What's new. Continuing to use Cadence after that means you accept the new terms."
+      ]
+    }
+  ]
+}

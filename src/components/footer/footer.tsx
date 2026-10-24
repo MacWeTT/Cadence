@@ -28,6 +28,12 @@ export const Footer = () => {
           <NavLink href="/contact" group="footer-nav">
             {t('contact')}
           </NavLink>
+          <NavLink href="/privacy" group="footer-nav">
+            {t('privacy')}
+          </NavLink>
+          <NavLink href="/terms" group="footer-nav">
+            {t('terms')}
+          </NavLink>
         </nav>
         <div className="footer__legal">
           <p>
