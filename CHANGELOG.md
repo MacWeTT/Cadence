@@ -41,6 +41,7 @@ Fixes and polish.
 - Saving a Circles setting now shows a message, like every other save.
 - The picture in the top bar shows the colour you picked for your character or emoji instead of always the app colour.
 - The opening animation on the website now plays before the page shows, instead of after it.
+- The Windows app shows Circles in its menu, switched off and marked as coming soon to the app.
 - A missing page, or a page that fails, now shows a Cadence page with a way back.
 - The Windows app can make the PDF report too, and its export buttons line up. The choice to keep this PC's habits or your account's no longer clips its buttons.
 - What's new has a card for the latest update above the version cards. Fixes for a version are listed under every change.
