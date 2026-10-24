@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { AlertNotifier } from '@/components/alert-notifier/alert-notifier';
 import { SyncPrompt } from '@/components/sync-prompt/sync-prompt';
+import { UpdateNotifier } from '@/components/update-notifier/update-notifier';
 import { UserMenuAvatar } from '@/components/user-menu-avatar/user-menu-avatar';
 import { useSession } from '@/lib/query/use-session';
 import './user-menu.css';
@@ -21,6 +22,7 @@ export const UserMenu = () => {
   return (
     <>
       <AlertNotifier />
+      <UpdateNotifier />
       {user === null && (
         <Link href="/login" className="user-menu__sign-in">
           {t('signIn')}

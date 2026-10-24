@@ -69,11 +69,14 @@ test('push and email reminders are switched off and disabled, marked coming soon
   await expect(page.getByText('Coming soon')).toHaveCount(2);
 });
 
-test('Get the app offers the web app and a disabled Installer', async ({ page }) => {
+test('Get the app offers the web app and the Windows installer from the releases page', async ({ page }) => {
   await page.goto('/profile');
   await page.getByRole('button', { name: 'Get the app' }).click();
 
-  await expect(page.getByRole('menuitem', { name: /Installer/ })).toBeDisabled();
+  await expect(page.getByRole('menuitem', { name: /Installer/ })).toHaveAttribute(
+    'href',
+    'https://github.com/MacWeTT/Cadence/releases',
+  );
   await expect(page.getByRole('menuitem', { name: /Web app/ })).toBeVisible();
 });
 

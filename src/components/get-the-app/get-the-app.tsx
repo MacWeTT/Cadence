@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { INSTALLER_URL } from '@/lib/installer';
 import { hasInstallPrompt, isIosDevice, promptInstall, subscribeInstallPrompt } from '@/lib/install-prompt';
 import './get-the-app.css';
 
@@ -83,12 +84,14 @@ export const GetTheApp = () => {
             <span className="get-the-app__hint">{webAppAvailable ? t('webAppHint') : t('unavailable')}</span>
           </span>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <Monitor aria-hidden />
-          <span className="get-the-app__item">
-            {t('installer')}
-            <span className="get-the-app__hint">{t('comingSoon')}</span>
-          </span>
+        <DropdownMenuItem asChild>
+          <a href={INSTALLER_URL} target="_blank" rel="noreferrer">
+            <Monitor aria-hidden />
+            <span className="get-the-app__item">
+              {t('installer')}
+              <span className="get-the-app__hint">{t('installerHint')}</span>
+            </span>
+          </a>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
