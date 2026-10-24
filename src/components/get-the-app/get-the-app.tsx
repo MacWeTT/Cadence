@@ -43,7 +43,7 @@ const serverPrompt = () => {
 
 /**
  * "Get the app", in the profile header: the Web app (the browser's own install prompt, or on iPhone and iPad, which
- * have none, a hint to use Share) and the desktop Installer, which is not built yet. Nothing when Cadence already runs
+ * have none, a hint to use Share) and the Windows Installer (a link to the releases page). Nothing when Cadence already runs
  * as an installed app.
  */
 export const GetTheApp = () => {

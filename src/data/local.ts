@@ -18,9 +18,9 @@ import { tauriSql } from '@/data/local/tauri-sql';
 import { syncTimezone } from '@/data/local/timezone';
 import type { DataSource } from '@/data/types';
 
-/** Stands in for every change until it is built (the desktop data source grows a slice at a time). */
-const notBuilt = (): Promise<never> => {
-  return Promise.reject(new Error('The desktop data source is not built yet.'));
+/** The contact form sends mail from a server; the desktop build leaves its page out, so nothing calls this. */
+const needsServer = (): Promise<never> => {
+  return Promise.reject(new Error('This needs the server, which the desktop app does not have.'));
 };
 
 /** The file, brought up to the latest schema once, the first time anything asks for it. */
@@ -107,5 +107,5 @@ export const local: DataSource & DesktopExtras = {
   syncTimezone: deviceTimeZone => {
     return syncTimezone(sql, deviceTimeZone);
   },
-  sendContact: notBuilt,
+  sendContact: needsServer,
 };
