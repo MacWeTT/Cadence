@@ -9,9 +9,7 @@ pub fn run() {
   tauri::Builder::default()
     // Must come first: a second launch (the `cadence://` link back from the browser) hands over to the running app.
     .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-      if let Some(window) = app.get_webview_window("main") {
-        let _ = window.set_focus();
-      }
+      tray::show(app);
     }))
     .plugin(tauri_plugin_deep_link::init())
     .plugin(tauri_plugin_opener::init())
@@ -37,7 +35,16 @@ pub fn run() {
 
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![db::sql_select, db::sql_batch])
+    // Closing the window hides it to the tray, so reminders and notifications keep coming; Quit is in the tray menu.
+    .on_window_event(|window, event| {
+      if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+        if window.label() == "main" {
+          api.prevent_close();
+          let _ = window.hide();
+        }
+      }
+    })
+    .invoke_handler(tauri::generate_handler![db::sql_select, db::sql_batch, tray::set_tray_habits])
     .run(tauri::generate_context!())
     .expect("error while building tauri application");
 }
