@@ -61,6 +61,11 @@ export const GetTheApp = () => {
     }
   };
 
+  const onInstaller = () => {
+    // Windows will not know who made the installer; saying what to do at this moment is when it helps
+    toast.info(ti('installerNote'), { duration: 12_000 });
+  };
+
   if (device === 'installed') {
     return null;
   }
@@ -84,7 +89,7 @@ export const GetTheApp = () => {
             <span className="get-the-app__hint">{webAppAvailable ? t('webAppHint') : t('unavailable')}</span>
           </span>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild onSelect={onInstaller}>
           <a href={INSTALLER_URL} target="_blank" rel="noreferrer">
             <Monitor aria-hidden />
             <span className="get-the-app__item">

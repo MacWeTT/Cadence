@@ -37,7 +37,8 @@
     "newHabit": "New habit"
   },
   "install": {
-    "iosHelp": "In Safari, tap the Share button, then \"Add to Home Screen\"."
+    "iosHelp": "In Safari, tap the Share button, then \"Add to Home Screen\".",
+    "installerNote": "Download started. If Windows warns about an unknown publisher, choose \"More info\", then \"Run anyway\"."
   },
   "links": {
     "open": "Open links for {name}",
