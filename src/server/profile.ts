@@ -10,7 +10,7 @@ import { toProfileView, type ProfileView } from '@/server/profile-view';
 import { ProfileError, removeFiles, signedUrls } from '@/server/profile-storage';
 
 const COLUMNS =
-  'display_name, tag, avatar_url, avatar_kind, avatar_value, avatar_color, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom';
+  'display_name, tag, avatar_url, avatar_kind, avatar_value, avatar_color, timezone, week_starts_on, sound_id, sound_volume, accent, accent_custom, password_set';
 
 /** The signed-in person's id and a client, or the error that sends them to sign in again. */
 export const requireOwner = async () => {

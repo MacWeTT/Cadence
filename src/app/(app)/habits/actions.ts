@@ -1,6 +1,7 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
+import type { ActionResult } from '@/data/types';
 import { habitInputSchema, toFieldErrors, type FieldIssue } from '@/lib/habit-schema';
 import { getUser } from '@/lib/supabase/server';
 import {
@@ -14,7 +15,7 @@ import {
   updateHabit,
 } from '@/server/habits';
 
-export type ActionResult = { ok: true } | { ok: false; error: string; fieldErrors?: Record<string, string> };
+export type { ActionResult };
 
 /** Turns a failure's codes into the sentences the user reads. */
 const describe = async (code: ErrorCode, fieldIssues?: Record<string, FieldIssue>): Promise<ActionResult> => {

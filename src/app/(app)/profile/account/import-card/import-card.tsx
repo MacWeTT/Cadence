@@ -115,6 +115,7 @@ export const ImportCard = () => {
           <p role="alert" className="import-card__warning">
             {t('warning')}
           </p>
+          <p className="import-card__warning">{t('circlesNote')}</p>
           <label className={clsx('import-card__understand')}>
             <input type="checkbox" checked={understood} onChange={onUnderstoodChange} />
             {t('understand')}

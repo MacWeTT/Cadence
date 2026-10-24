@@ -1,0 +1,25 @@
+@reference '../../../globals.css';
+
+.share-row {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line px-1 py-3;
+}
+
+.share-row__habit {
+  @apply flex min-w-0 items-center gap-2;
+}
+
+.share-row__name {
+  @apply font-semibold wrap-break-word;
+}
+
+.share-row__controls {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.share-row__help {
+  @apply w-full text-sm text-ink-muted;
+}
+
+.share-row__misses {
+  @apply flex w-full cursor-pointer items-center gap-2 text-sm;
+}

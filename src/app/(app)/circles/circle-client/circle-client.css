@@ -1,0 +1,10 @@
+@reference '../../../globals.css';
+
+/* The conversation fills the window below the top bar (and above the phone tab bar), and its messages scroll inside it. */
+.conversation {
+  @apply relative isolate flex h-[calc(100dvh-8.5rem)] min-h-96 flex-col overflow-hidden rounded-2xl border border-line bg-surface max-sm:h-[calc(100dvh-10.5rem)];
+}
+
+.conversation__scenery {
+  @apply z-0;
+}

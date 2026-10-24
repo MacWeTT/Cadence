@@ -1,0 +1,29 @@
+@reference '../../app/globals.css';
+
+.sync-prompt {
+  @apply sm:max-w-lg;
+}
+
+.sync-prompt__title {
+  @apply font-display text-lg;
+}
+
+.sync-prompt__description {
+  @apply text-sm text-ink-muted;
+}
+
+.sync-prompt__sides {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.sync-prompt__side {
+  @apply rounded-lg border border-line p-3 text-sm;
+}
+
+.sync-prompt__side-name {
+  @apply mb-1 font-semibold;
+}
+
+.sync-prompt__error {
+  @apply text-sm text-destructive;
+}

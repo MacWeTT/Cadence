@@ -1,0 +1,86 @@
+@reference '../../../globals.css';
+
+.week-together {
+  @apply relative z-10 flex flex-col gap-3 border-b border-line px-4 py-3 sm:px-6;
+  background: color-mix(in srgb, var(--habit-rose) 6%, transparent);
+}
+
+.week-together__head {
+  @apply relative flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 max-sm:pr-10;
+}
+
+/* On a phone the week folds away to its summary line, so the conversation gets the room. */
+.week-together__toggle {
+  @apply absolute top-0 right-0 inline-flex size-9 items-center justify-center rounded-full text-ink-muted hover:bg-surface focus-visible:outline-2 focus-visible:outline-clay sm:hidden;
+}
+
+.week-together__chevron {
+  @apply size-5 transition-transform;
+}
+
+.week-together--open .week-together__chevron {
+  @apply rotate-180;
+}
+
+.week-together__title {
+  @apply font-display text-lg;
+}
+
+.week-together__summary {
+  @apply inline-flex items-center gap-1.5 text-sm text-ink-muted;
+}
+
+.week-together__summary-heart {
+  @apply size-3.5;
+  fill: var(--habit-rose);
+  color: var(--habit-rose);
+}
+
+/* A name column, then seven days. The rows are subgrids of it, so the days line up under their letters. */
+.week-together:not(.week-together--open) .week-together__grid {
+  @apply max-sm:hidden;
+}
+
+.week-together__grid {
+  @apply grid grid-cols-[minmax(5rem,9rem)_repeat(7,minmax(0,1fr))] items-center gap-x-1 gap-y-2;
+}
+
+.week-together__day {
+  @apply text-center text-xs text-ink-muted;
+}
+
+.week-together__row {
+  @apply col-span-full grid grid-cols-subgrid items-center;
+}
+
+.week-together__who {
+  @apply flex min-w-0 items-center gap-2;
+}
+
+.week-together__name {
+  @apply truncate text-sm font-semibold;
+}
+
+.week-together__cell {
+  @apply mx-auto size-3.5 rounded-full border border-line;
+}
+
+.week-together__cell--showed {
+  @apply border-transparent bg-moss;
+}
+
+/* A day you both showed up is a heart, in rose, for the two of you. */
+.week-together__cell--both {
+  @apply flex size-5 items-center justify-center bg-transparent;
+}
+
+.week-together__heart {
+  @apply size-5;
+  fill: var(--habit-rose);
+  color: var(--habit-rose);
+}
+
+/* A day that didn't happen: a short grey dash, never red. */
+.week-together__cell--off {
+  @apply h-0.5 w-3.5 rounded-none border-0 bg-ink-muted/60;
+}

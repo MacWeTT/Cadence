@@ -1,7 +1,9 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
+import type { ProfileActionResult } from '@/data/types';
 import type { z } from 'zod';
+import { passwordChangeSchema } from '@/lib/auth-schema';
 import {
   accentInputSchema,
   avatarInputSchema,
@@ -22,10 +24,11 @@ import {
   updateWeekStart,
 } from '@/server/profile';
 import { removeSound, uploadAvatarPhoto, uploadSound } from '@/server/profile-files';
+import { setPassword } from '@/server/registration';
 import { ProfileError } from '@/server/profile-storage';
 
 /** What an edit answers: the browser shows the message as an error toast and puts the old value back. */
-export type ProfileActionResult = { ok: true; id?: string } | { ok: false; error: string };
+export type { ProfileActionResult };
 
 const fail = async (error: unknown): Promise<ProfileActionResult> => {
   const [t, tv] = await Promise.all([getTranslations('errors'), getTranslations('validation')]);
@@ -88,6 +91,20 @@ export const updateTagAction = async (input: unknown): Promise<ProfileActionResu
 
   return run(() => {
     return updateTag(tag);
+  });
+};
+
+export const setPasswordAction = async (input: unknown): Promise<ProfileActionResult> => {
+  const { success, data, error } = passwordChangeSchema.safeParse(input);
+
+  if (!success) {
+    return invalid(error);
+  }
+
+  const { password } = data;
+
+  return run(() => {
+    return setPassword(password);
   });
 };
 

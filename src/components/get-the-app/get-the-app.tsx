@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { INSTALLER_URL } from '@/lib/installer';
 import { hasInstallPrompt, isIosDevice, promptInstall, subscribeInstallPrompt } from '@/lib/install-prompt';
 import './get-the-app.css';
 
@@ -42,7 +43,7 @@ const serverPrompt = () => {
 
 /**
  * "Get the app", in the profile header: the Web app (the browser's own install prompt, or on iPhone and iPad, which
- * have none, a hint to use Share) and the desktop Installer, which is not built yet. Nothing when Cadence already runs
+ * have none, a hint to use Share) and the Windows Installer (a link to the releases page). Nothing when Cadence already runs
  * as an installed app.
  */
 export const GetTheApp = () => {
@@ -83,12 +84,14 @@ export const GetTheApp = () => {
             <span className="get-the-app__hint">{webAppAvailable ? t('webAppHint') : t('unavailable')}</span>
           </span>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <Monitor aria-hidden />
-          <span className="get-the-app__item">
-            {t('installer')}
-            <span className="get-the-app__hint">{t('comingSoon')}</span>
-          </span>
+        <DropdownMenuItem asChild>
+          <a href={INSTALLER_URL} target="_blank" rel="noreferrer">
+            <Monitor aria-hidden />
+            <span className="get-the-app__item">
+              {t('installer')}
+              <span className="get-the-app__hint">{t('installerHint')}</span>
+            </span>
+          </a>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

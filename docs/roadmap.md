@@ -19,20 +19,20 @@ The internal list of everything planned or considered, so no feature is lost. Th
 | 0.8.2 | A sound for each focus session (your own sounds included, the profile sound as the default), and a box to leave a session's minutes out of the focus time |
 | 0.8.3 | Pause and resume on the focus timer (the server keeps the paused time, so the minutes are right on every device), a tag of your own (`@name`) on every account, and the splash tagline |
 | 0.8.5 | What's new as cards: one big card for each version line with its highlights (the newest also shows its latest release), and a page with every change in full |
+| 1.0.0 | The desktop app for Windows (offline, no account needed, in step with the account once signed in, notifications, start on login, tray, installer and updater), Circles and Partners, and accounts with an email, a tag and a password |
 
 ## Scheduled
 
 | Version | Feature | Notes |
 |---|---|---|
-| 0.9 | Accounts (**next**) | **Sign in:** GitHub next to Google, and sign up or sign in with an email and a password. **Email:** signing up is confirmed by a 6-digit code, and a forgotten password is reset by one, both sent by Supabase Auth through a dedicated Gmail account as custom SMTP (₹0, no domain; to be tested with outside addresses before friends are invited). A person can **link Google or GitHub** and **change their password** in the Account tab. The account tab's delete-account flow must cover every kind of account, including one with no email (GitHub can hide it). Build order: email sign-up with codes and forgot password, sign-in methods and change password, GitHub sign-in, then the release. Tags and the pause timer shipped in 0.8.3; the avatar ring is still to be confirmed on screen |
-| 1.0 | Desktop app (Tauri), the installer | native notifications, start on login; opens habit links without the popup limit |
-| 1.0 | First release: bug fixes, flow revisions, and the installer | The public release. Everything from 0.8 to 0.9 ships first; 1.0 is the pass over the whole app (the known-issue fixes, the flows reviewed end to end, the privacy page and terms, the accessibility pass) plus the desktop installer. Later releases fix and refine, to be planned after it |
+| 1.1 | Accessibility, privacy page and terms, GitHub sign-in | The items under *Next (1.1)* below |
 
-## Before 1.0
+## Next (1.1)
 
 - The accessibility pass and the dark-theme contrast check left over from the original milestone 7.
 - A privacy page and terms before strangers sign up. Google also needs them (with a home page) to verify the app's name, so the sign-in screen can say Cadence instead of the Supabase address.
-- 1.0 is the first release: bug fixes, flow revisions and the installer, on top of everything scheduled above it.
+- GitHub sign-in, and linking Google or GitHub to an account (the button is there, switched off).
+- Bug fixes from using 1.0, and a flow review of the whole app.
 
 ## Later, when there are enough users to justify the cost
 
@@ -45,8 +45,7 @@ Deferred on purpose: Cadence stays free until people actually use it.
 ## After 1.0 (in scope, not yet versioned)
 
 - **Two-factor sign-in:** authenticator-app codes (TOTP, native to Supabase), when there are enough users to want it.
-- **Circles:** a friends-only way to share habits, without pressure. Proposed by a contributor in issue #64; to be designed when it is next. It replaces the old "viewing other people's streaks" idea below.
-- **User XP:** points for showing up, introduced together with Circles (it is part of that release, not a later one). Design with Circles.
+- **User XP:** points for showing up, follows Circles (the Circles release is the 1.0 one). Design with Circles.
 
 ## Considered, not scheduled
 

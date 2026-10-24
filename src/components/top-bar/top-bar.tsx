@@ -3,14 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { Logo } from '@/components/logo/logo';
 import { NavLink } from '@/components/nav-link/nav-link';
+import { TOP_LINKS } from '@/components/nav-links/nav-links';
 import { ThemeToggle } from '@/components/theme-toggle/theme-toggle';
 import './top-bar.css';
-
-const links = [
-  { href: '/today', name: 'today' },
-  { href: '/habits', name: 'habits' },
-  { href: '/progress', name: 'progress' },
-] as const;
 
 interface TopBarProps {
   menu?: React.ReactNode;
@@ -28,7 +23,7 @@ export const TopBar = (props: TopBarProps) => {
           <Logo />
         </NavLink>
         <nav className="top-bar__nav">
-          {links.map(({ href, name }) => {
+          {TOP_LINKS.map(({ href, name }) => {
             return (
               <NavLink key={href} href={href} group="top-nav">
                 {t(`nav.${name}`)}

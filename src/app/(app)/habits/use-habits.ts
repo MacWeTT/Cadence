@@ -3,13 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import {
-  archiveHabitAction,
-  deleteHabitAction,
-  restoreHabitAction,
-  type ActionResult,
-} from '@/app/(app)/habits/actions';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource, type ActionResult } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import { archiveInView, removeFromView, restoreInView } from '@/server/habits-optimistic';
 import type { HabitsView } from '@/server/habits';
@@ -19,7 +13,7 @@ export const useHabitsView = () => {
   return useQuery({
     queryKey: queryKeys.habits,
     queryFn: () => {
-      return fetchJson<HabitsView>('/api/habits');
+      return dataSource.habits();
     },
   });
 };
@@ -82,7 +76,7 @@ export const useArchiveHabit = () => {
   const t = useTranslations('habits.toasts');
 
   return useChange({
-    action: archiveHabitAction,
+    action: dataSource.archiveHabit,
     apply: (view, id) => {
       return archiveInView(view, id, new Date().toISOString());
     },
@@ -93,11 +87,11 @@ export const useArchiveHabit = () => {
 export const useDeleteHabit = () => {
   const t = useTranslations('habits.toasts');
 
-  return useChange({ action: deleteHabitAction, apply: removeFromView, success: t('deleted') });
+  return useChange({ action: dataSource.deleteHabit, apply: removeFromView, success: t('deleted') });
 };
 
 export const useRestoreHabit = () => {
   const t = useTranslations('habits.toasts');
 
-  return useChange({ action: restoreHabitAction, apply: restoreInView, success: t('restored') });
+  return useChange({ action: dataSource.restoreHabit, apply: restoreInView, success: t('restored') });
 };

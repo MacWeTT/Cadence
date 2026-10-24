@@ -1,0 +1,13 @@
+@reference '../../../globals.css';
+
+.invite-modal {
+  @apply sm:max-w-md;
+}
+
+.invite-modal__title {
+  @apply font-display text-lg;
+}
+
+.invite-modal__description {
+  @apply text-sm text-ink-muted;
+}

@@ -20,7 +20,7 @@ Run everything with `npm run verify` before opening a PR.
 | 7b | **One folder per component**, named after it, holding the component and its own CSS file: `check-row/check-row.tsx` and `check-row/check-row.css`. Route files (`page.tsx`, `layout.tsx`, `actions.ts`) stay in their route folder with their own `page.css` or `layout.css`. | Review |
 | 8 | **Localise everything.** No raw user-facing text in components, helpers or actions; text lives in `locales/<language>/<area>.json` and is read with `next-intl`. | ESLint `react/jsx-no-literals` and `no-restricted-syntax` + types |
 | 9 | **No anonymous functions as props.** A handler passed to a component or element is a named `const` declared above the `return` (`onHabitClose`, `onNameChange`), never an inline `() => {...}`. Pass it by name. (Callbacks for `.map`, `.filter` and hooks stay inline.) | ESLint `no-restricted-syntax` |
-| 10 | **Absolute imports.** Import with `@/...` (src), `@tests/...`, `@e2e/...` and `@locales/...`, never `./x` or `../x`. A component's own stylesheet (`import './x.css'`) is the one relative import. | ESLint `no-restricted-syntax` |
+| 10 | **Absolute imports.** Import with `@/...` (src), `@tests/...`, `@e2e/...`, `@scripts/...` and `@locales/...`, never `./x` or `../x`. A component's own stylesheet (`import './x.css'`) is the one relative import. | ESLint `no-restricted-syntax` |
 | 11 | **Read an object's properties once.** When the same object's properties are read two or more times, destructure it once (`const { week, streak } = row`). Checks like `result.ok`, `action.kind` that narrow a union, calls (`x.method()`), assignments, a ref's `.current` and optional chains (`a?.b`) are not counted. | ESLint `cadence/destructure-repeated-reads` |
 
 ```tsx
@@ -96,6 +96,14 @@ const CheckRow = (props: CheckRowProps) => {
 - Files stay under 250 lines (blank lines and comments excluded). Split by responsibility when they grow.
 - File names are kebab-case; components are PascalCase; one component per file.
 - Enforced by ESLint `no-restricted-imports` and `max-lines`.
+
+## The desktop app
+The web app and the desktop app (`src-tauri/`, the SQLite file in `src/data/local/`) share the screens, so a change to what a person can do or see is made for both.
+- **A new read or change** is a method on `DataSource` (`src/data/types.ts`), implemented by `remote.ts` and by the local code in `src/data/local/`; the typecheck fails until both exist. Screens call `dataSource`, never `fetch` or a Server Action (`tests/unit/data/desktop-boundary.test.ts` fails otherwise).
+- **A rule** lives once in pure code (`src/domain`, `src/server/*-view.ts`, `src/server/page-data.ts`) where both sides run it. A rule kept only in a database function (a migration in `supabase/migrations/`) must also be written in `src/data/local/` with a unit test, or the PC drifts from the account.
+- **A table or column** on a synced table is also a new entry in `src/data/local/migrations.ts` (never edit a released one); `tests/unit/data/local/schema-parity.test.ts` fails when the two disagree.
+- **A new page** that needs the server (a route handler, Circles, anything signed-in-only) is set aside in `scripts/build-desktop.mjs`; `npm run build:desktop` runs in CI.
+- Local code is tested against the in-memory SQLite (`tests/unit/data/local/memory-sql.ts`) and never imports server-only modules.
 
 ## Testing
 - Write the failing test first; watch it fail; make it pass (TDD). A bug fix starts with a test that reproduces it.

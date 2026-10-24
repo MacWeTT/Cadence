@@ -1,0 +1,64 @@
+@reference '../../app/globals.css';
+
+/* The classes of the sign-in and create-account forms too: they are only ever shown inside this one. */
+
+.auth-form {
+  @apply grid gap-4 text-left;
+}
+
+.auth-form__tabs {
+  @apply grid grid-cols-2 gap-1 rounded-full bg-line p-1;
+}
+
+.auth-form__tab {
+  @apply min-h-11 rounded-full text-sm font-medium;
+}
+
+.auth-form__tab--on {
+  @apply bg-surface shadow-sm;
+}
+
+.auth-form__form {
+  @apply grid gap-4;
+}
+
+/* Tag or Email: tabs like the profile's, each taking half the width. */
+.auth-form__subtabs {
+  @apply grid grid-cols-2 border-b border-line;
+}
+
+.auth-form__subtab {
+  @apply border-b-2 border-transparent py-2.5 text-center text-ink-muted transition-colors hover:text-ink;
+}
+
+.auth-form__subtab--on {
+  @apply border-primary text-ink;
+}
+
+.auth-form__field {
+  @apply grid gap-1.5;
+}
+
+.auth-form__hint {
+  @apply text-xs text-ink-muted;
+}
+
+.auth-form__tag {
+  @apply relative;
+}
+
+.auth-form__at {
+  @apply pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-muted;
+}
+
+.auth-form__tag-input {
+  @apply pl-7;
+}
+
+.auth-form__error {
+  @apply rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger;
+}
+
+.auth-form__submit {
+  @apply min-h-11;
+}

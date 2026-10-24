@@ -6,6 +6,7 @@
   "dateInFuture": "You can't tick a day that hasn't happened yet.",
   "beforeStart": "That day is before the habit started.",
   "signIn": "Please sign in again.",
+  "needsAccount": "That needs an account. Sign in to use it.",
   "generic": "Something went wrong. Please try again.",
   "fixFields": "Please fix the highlighted fields.",
   "habitChanged": "That habit could not be found, or it has already changed.",
@@ -15,5 +16,15 @@
   "focusRunning": "A focus session is already running. Stop it first.",
   "focusPlanInvalid": "Check the focus numbers.",
   "emailMismatch": "That doesn't match your email address.",
-  "focusSoundInvalid": "That sound isn't available any more. Choose another."
+  "focusSoundInvalid": "That sound isn't available any more. Choose another.",
+  "circleNameInvalid": "Give the circle a name of up to 60 characters.",
+  "circleFull": "This circle is full. A circle holds up to 8 people.",
+  "tooManyCircles": "You can be in up to 10 circles.",
+  "inviteInvalid": "This invite has expired or is no longer valid. Ask for a new one.",
+  "alreadyMember": "You are already in this circle.",
+  "notOwner": "Only the person who started the circle can do that.",
+  "notAMember": "You are not in this circle.",
+  "cheersOff": "This person is not taking cheers right now.",
+  "cheerDate": "A cheer is for someone's today only.",
+  "reactDate": "You can react to the last week only."
 }

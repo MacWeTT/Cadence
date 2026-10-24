@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { MESSAGE_LIMIT } from '@/lib/contact-schema';
-import { sendContactAction } from '@/app/(app)/contact/actions';
+import { dataSource } from '@/data';
 import { CharacterLimit } from '@/components/character-limit/character-limit';
 import { AnimatedError } from '@/components/animated-error/animated-error';
 import { Button } from '@/components/ui/button';
@@ -88,7 +88,7 @@ export const ContactForm = (props: ContactFormProps) => {
     event.preventDefault();
 
     startTransition(async () => {
-      const result = await sendContactAction({
+      const result = await dataSource.sendContact({
         message,
         anonymous,
         name: nameValue,

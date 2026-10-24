@@ -9,9 +9,8 @@ import { EmptyState } from '@/components/empty-state/empty-state';
 import { Button } from '@/components/ui/button';
 import { addDays } from '@/domain/dates';
 import { ListSkeleton } from '@/components/list-skeleton/list-skeleton';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
-import type { TodayData } from '@/server/today';
 import type { TodayRow } from '@/server/today-view';
 import { formatCalendarDate } from '@/lib/format';
 import { CheckSection } from '@/app/(app)/today/check-section/check-section';
@@ -49,7 +48,7 @@ export const TodayClient = () => {
         void queryClient.prefetchQuery({
           queryKey: queryKeys.today(neighbour === todayDate ? undefined : neighbour),
           queryFn: () => {
-            return fetchJson<TodayData>(neighbour === todayDate ? '/api/today' : `/api/today?date=${neighbour}`);
+            return dataSource.today(neighbour === todayDate ? undefined : neighbour);
           },
         });
       });

@@ -20,11 +20,12 @@ import type { WeekStart } from '@/domain/dates';
 import { nextEditDate } from '@/domain/schedule';
 import { formatCalendarDate } from '@/lib/format';
 import type { HabitListItem } from '@/server/habit-view';
-import { createHabitAction, updateHabitAction } from '@/app/(app)/habits/actions';
+import { dataSource } from '@/data';
 import { ColorPicker } from '@/app/(app)/habits/color-picker/color-picker';
 import { EmojiField } from '@/app/(app)/habits/emoji-field/emoji-field';
 import { FieldError } from '@/app/(app)/habits/field-error/field-error';
 import { habitInput, initialHabitForm, scheduleChanged, type HabitFormState } from '@/app/(app)/habits/habit-form';
+import { HabitCircles } from '@/app/(app)/habits/habit-circles/habit-circles';
 import { LinksField } from '@/app/(app)/habits/links-field/links-field';
 import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
@@ -90,7 +91,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
     startTransition(async () => {
       const input = habitInput(form);
-      const result = habit ? await updateHabitAction(habit.id, input) : await createHabitAction(input);
+      const result = habit ? await dataSource.updateHabit(habit.id, input) : await dataSource.createHabit(input);
 
       if (result.ok) {
         toast.success(habit ? t('toasts.saved') : t('toasts.created'));
@@ -225,6 +226,8 @@ export const HabitDialog = (props: HabitDialogProps) => {
           />
 
           <LinksField links={links} onChange={onLinksChange} error={linksError} />
+
+          {habit && <HabitCircles habit={habit} />}
 
           <div>
             <Label htmlFor="habit-start" className="habit-dialog__label">

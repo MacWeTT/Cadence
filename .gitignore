@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+# `npm run build:desktop` moves web-only folders here while it builds, and puts them back
+/.desktop-hold/
 
 # production
 /build

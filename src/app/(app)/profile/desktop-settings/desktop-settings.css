@@ -1,0 +1,38 @@
+@reference '../../../globals.css';
+
+.desktop-settings {
+  @apply mt-6 flex flex-col gap-3;
+}
+
+.desktop-settings__title {
+  @apply font-display text-lg;
+}
+
+.desktop-settings__row {
+  @apply flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3.5;
+}
+
+.desktop-settings__text {
+  @apply flex flex-1 flex-col;
+}
+
+.desktop-settings__hint {
+  @apply text-sm text-ink-muted;
+}
+
+.desktop-settings__switch {
+  @apply relative h-6 w-11 shrink-0 cursor-pointer rounded-full bg-line;
+}
+
+.desktop-settings__switch::after {
+  content: '';
+  @apply absolute top-1 left-1 size-4 rounded-full bg-surface transition-transform;
+}
+
+.desktop-settings__switch--on {
+  @apply bg-primary;
+}
+
+.desktop-settings__switch--on::after {
+  @apply translate-x-5;
+}

@@ -2,17 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useSyncExternalStore } from 'react';
-import {
-  pauseFocusAction,
-  resumeFocusAction,
-  skipBreakAction,
-  startFocusAction,
-  stopFocusAction,
-} from '@/app/(app)/focus-actions';
 import type { FocusPlan } from '@/domain/focus';
 import { offsetFrom } from '@/lib/focus-clock';
 import { withoutRunning } from '@/lib/focus-optimistic';
-import { fetchJson } from '@/lib/query/fetch-json';
+import { dataSource } from '@/data';
 import { queryKeys } from '@/lib/query/keys';
 import type { FocusResult } from '@/server/focus';
 import type { FocusState } from '@/server/focus-view';
@@ -22,7 +15,7 @@ export const useFocusState = () => {
   return useQuery({
     queryKey: queryKeys.focus,
     queryFn: () => {
-      return fetchJson<FocusState>('/api/focus');
+      return dataSource.focus();
     },
   });
 };
@@ -76,7 +69,7 @@ export const useFocusActions = () => {
     void queryClient.invalidateQueries({ queryKey: queryKeys.progressAll });
   };
 
-  const run = async (work: () => ReturnType<typeof stopFocusAction>): Promise<FocusResult | null> => {
+  const run = async (work: () => ReturnType<typeof dataSource.stopFocus>): Promise<FocusResult | null> => {
     const response = await work();
 
     if (!response.ok) {
@@ -93,7 +86,7 @@ export const useFocusActions = () => {
   const start = useMutation({
     mutationFn: (input: StartInput) => {
       return run(() => {
-        return startFocusAction(input);
+        return dataSource.startFocus(input);
       });
     },
   });
@@ -101,7 +94,7 @@ export const useFocusActions = () => {
   // If the stop fails, the session goes back as it was, with the time it was fetched at so the clock does not jump.
   const stop = useMutation({
     mutationFn: () => {
-      return run(stopFocusAction);
+      return run(dataSource.stopFocus);
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: queryKeys.focus });
@@ -123,18 +116,18 @@ export const useFocusActions = () => {
   });
   const skip = useMutation({
     mutationFn: () => {
-      return run(skipBreakAction);
+      return run(dataSource.skipBreak);
     },
   });
 
   const pause = useMutation({
     mutationFn: () => {
-      return run(pauseFocusAction);
+      return run(dataSource.pauseFocus);
     },
   });
   const resume = useMutation({
     mutationFn: () => {
-      return run(resumeFocusAction);
+      return run(dataSource.resumeFocus);
     },
   });
 

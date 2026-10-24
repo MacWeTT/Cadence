@@ -1,0 +1,59 @@
+@reference '../../../globals.css';
+
+.conversation-header {
+  @apply relative z-10 flex flex-col gap-3 border-b border-line px-4 py-4 sm:px-6;
+  background: color-mix(in srgb, var(--circle-color) 8%, var(--color-surface));
+}
+
+.conversation-header__back {
+  @apply inline-flex w-fit items-center rounded-md text-sm text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-clay lg:hidden;
+}
+
+.conversation-header__back-icon {
+  @apply -ml-1 size-4;
+}
+
+.conversation-header__row {
+  @apply flex min-w-0 items-center gap-3;
+}
+
+.conversation-header__tile {
+  @apply flex size-12 shrink-0 items-center justify-center rounded-xl font-display text-xl text-(--circle-color);
+  background: color-mix(in srgb, var(--circle-color) 20%, transparent);
+}
+
+.conversation-header__titles {
+  @apply min-w-0;
+}
+
+.conversation-header__title {
+  @apply font-display text-2xl wrap-break-word sm:text-3xl;
+}
+
+.conversation-header__week {
+  @apply text-sm text-ink-muted;
+}
+
+.conversation-header__actions {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.conversation-header__people {
+  @apply mr-auto inline-flex items-center gap-2 rounded-full py-1 pr-3 pl-1 hover:bg-bg focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.conversation-header__stack {
+  @apply flex;
+}
+
+.conversation-header__avatar {
+  @apply -ml-2 ring-2 ring-surface first:ml-0;
+}
+
+.conversation-header__count {
+  @apply text-sm text-ink-muted max-sm:hidden;
+}
+
+.conversation-header__heart {
+  @apply size-6 fill-current;
+}

@@ -5,7 +5,8 @@
     "home": "Home",
     "today": "Today",
     "habits": "Habits",
-    "progress": "Progress"
+    "progress": "Progress",
+    "circles": "Circles"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -15,7 +16,8 @@
   "account": {
     "fallbackName": "Account",
     "signOut": "Sign out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "signIn": "Sign in"
   },
   "loading": {
     "list": "Loading {title}",
@@ -65,5 +67,6 @@
   "limit": {
     "left": "{count, plural, one {{count} character left} other {{count} characters left}}",
     "reached": "Limit reached: {max} characters"
-  }
+  },
+  "appName": "Cadence"
 }

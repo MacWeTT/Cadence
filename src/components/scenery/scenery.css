@@ -1,0 +1,86 @@
+@reference '../../app/globals.css';
+
+.scenery {
+  @apply pointer-events-none block w-full;
+}
+
+.scenery--backdrop {
+  @apply absolute inset-x-0 bottom-0 h-56 sm:h-72;
+}
+
+.scenery--banner {
+  @apply h-20 rounded-xl;
+}
+
+.scenery--scene {
+  @apply mx-auto h-48 max-w-lg;
+}
+
+.scenery__halo {
+  @apply fill-clay/10;
+}
+
+.scenery__sun {
+  @apply fill-clay/30;
+}
+
+/* Stretched behind a panel the sun would sit under the content, so only the hills are kept there. */
+.scenery--backdrop .scenery__halo,
+.scenery--backdrop .scenery__sun {
+  @apply hidden;
+}
+
+.scenery__hill--far {
+  @apply fill-moss/8;
+}
+
+.scenery__hill--mid {
+  @apply fill-moss/12;
+}
+
+.scenery__hill--near {
+  @apply fill-moss/18;
+}
+
+.scenery__path {
+  @apply fill-none stroke-clay/30;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 2 9;
+}
+
+.scenery__sprout {
+  @apply fill-moss/40 stroke-moss/50;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* A pair is warm: rose hills, a rose sun, a path of dashes, and hearts where the sprouts were. */
+.scenery--pair .scenery__halo {
+  fill: color-mix(in srgb, var(--habit-rose) 15%, transparent);
+}
+
+.scenery--pair .scenery__sun {
+  fill: color-mix(in srgb, var(--habit-rose) 35%, transparent);
+}
+
+.scenery--pair .scenery__hill--far {
+  fill: color-mix(in srgb, var(--habit-rose) 8%, transparent);
+}
+
+.scenery--pair .scenery__hill--mid {
+  fill: color-mix(in srgb, var(--habit-rose) 12%, transparent);
+}
+
+.scenery--pair .scenery__hill--near {
+  fill: color-mix(in srgb, var(--habit-rose) 18%, transparent);
+}
+
+.scenery--pair .scenery__path {
+  stroke: color-mix(in srgb, var(--habit-rose) 40%, transparent);
+}
+
+.scenery--pair .scenery__sprout {
+  fill: color-mix(in srgb, var(--habit-rose) 45%, transparent);
+  stroke: none;
+}

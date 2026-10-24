@@ -48,6 +48,13 @@
       "label": "Link {number}",
       "remove": "Remove link {number}",
       "hint": "\"Open links\" on the habit opens them all at once. Your browser may ask you to allow pop-ups the first time."
+    },
+    "circles": {
+      "title": "Share with circles",
+      "text": "Choose how much of this habit each circle sees. These changes apply at once, without saving.",
+      "empty": "You are not in a circle yet.",
+      "open": "Open Circles",
+      "levelFor": "How much of this habit {name} sees"
     }
   },
   "emoji": {

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, type RefObject } from 'react';
 import type { FocusPhase } from '@/domain/focus';
 import { playChime, type ChimeChoice } from '@/lib/chimes';
+import { notify } from '@/lib/notify';
 
 /**
  * A chime, and a notification if allowed, at every phase change after the first one seen for a session. `quiet` is set
@@ -48,11 +49,9 @@ export const usePhaseChime = (
       playChime(choice, previous.split(':')[1] === 'break' ? 'break' : 'focus');
     }
 
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const body =
-        phase === 'break' ? t('notify.focusDone') : phase === 'done' ? t('notify.allDone') : t('notify.breakDone');
-
-      new Notification(name, { body });
-    }
+    notify(
+      name,
+      phase === 'break' ? t('notify.focusDone') : phase === 'done' ? t('notify.allDone') : t('notify.breakDone'),
+    );
   }, [phaseKey, phase, name, choice, t, quietRef]);
 };

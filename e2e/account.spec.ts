@@ -119,6 +119,7 @@ test('a JSON backup replaces everything, after a warning', async ({ page }) => {
 
   await expect(dialog.getByText('This file has 1 habit, 2 check-ins and 0 focus sessions.')).toBeVisible();
   await expect(dialog.getByText(/replaces all your current habits and history/)).toBeVisible();
+  await expect(dialog.getByText(/What you share in your circles is reset too/)).toBeVisible();
 
   const confirm = dialog.getByRole('button', { name: 'Replace my data' });
 

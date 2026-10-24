@@ -18,6 +18,7 @@ export interface ProfileRow {
   sound_volume: number;
   accent: string | null;
   accent_custom: string | null;
+  password_set: boolean;
 }
 
 export interface SoundRow {
@@ -60,6 +61,8 @@ export interface ProfileView {
   customSounds: SoundView[];
   /** Null until the person has chosen an accent on any device. */
   accent: AccentView | null;
+  /** Whether the account has a password (a Google account made before passwords has none). */
+  passwordSet: boolean;
 }
 
 interface ProfileInput {
@@ -110,7 +113,7 @@ const toAccent = (row: ProfileRow): AccentView | null => {
 
 export const toProfileView = (input: ProfileInput): ProfileView => {
   const { row, email, sounds, urls } = input;
-  const { display_name, tag, timezone, week_starts_on, sound_id, sound_volume } = row;
+  const { display_name, tag, timezone, week_starts_on, sound_id, sound_volume, password_set } = row;
 
   const customSounds = sounds.map(({ id, name, path, duration_ms }) => {
     return { id, name, durationMs: duration_ms, url: urls[path] ?? null };
@@ -131,5 +134,6 @@ export const toProfileView = (input: ProfileInput): ProfileView => {
     sound: { id: known ? sound_id : 'bell', volume: Math.min(1, Math.max(0, sound_volume)) },
     customSounds,
     accent: toAccent(row),
+    passwordSet: password_set,
   };
 };

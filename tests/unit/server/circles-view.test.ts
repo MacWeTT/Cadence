@@ -1,0 +1,414 @@
+import { describe, expect, it } from 'vitest';
+import { weekProgress } from '@/domain/listing';
+import { currentStreak } from '@/domain/streaks';
+import type { HabitData } from '@/domain/types';
+import { addDays } from '@/domain/dates';
+import { MISS_DAYS } from '@/domain/circles';
+import { parseInvitePreview, toCircleListItem, toCircleView } from '@/server/circles-view';
+
+const ME = '00000000-0000-4000-8000-0000000000a1';
+const SAM = '00000000-0000-4000-8000-0000000000b2';
+const TODAY = '2026-10-12';
+
+const shared = (over: Record<string, unknown> = {}) => {
+  return { name: 'Read', icon: '📖', level: 'done_today', done: true, shows_misses: false, ...over };
+};
+
+const member = (over: Record<string, unknown> = {}) => {
+  return {
+    user_id: SAM,
+    tag: 'sam',
+    display_name: 'Sam',
+    is_you: false,
+    is_owner: false,
+    paused: false,
+    today: TODAY,
+    week_starts_on: 1,
+    allow_cheers: true,
+    in_week: true,
+    closer: false,
+    showed_up_days: [],
+    avatar_kind: 'character',
+    avatar_value: 'mage',
+    avatar_color: '#6c7d45',
+    avatar_url: null,
+    showed_up_week: true,
+    habits: [],
+    reactions: [],
+    ...over,
+  };
+};
+
+const overview = (members: unknown[] = [member()], circle: Record<string, unknown> = {}) => {
+  return {
+    circle: {
+      id: '20000000-0000-4000-8000-000000000001',
+      name: 'Study group',
+      is_owner: true,
+      week_ticks: 7,
+      color: 'moss',
+      pinned: false,
+      kind: 'group',
+      closer_active: false,
+      ...circle,
+    },
+    members,
+  };
+};
+
+const data = (completions: string[], over: Record<string, unknown> = {}) => {
+  return {
+    start_date: '2026-01-01',
+    schedules: [{ kind: 'daily', times_per_week: null, weekdays: null, effective_from: '2026-01-01' }],
+    pauses: [],
+    completions,
+    ...over,
+  };
+};
+
+const habitData = (completions: string[], over: Partial<HabitData> = {}): HabitData => {
+  return {
+    startDate: '2026-01-01',
+    schedules: [{ kind: 'daily', effectiveFrom: '2026-01-01' }],
+    pauses: [],
+    completions: new Set(completions),
+    ...over,
+  };
+};
+
+/** The streak the app shows: the domain's, and nothing when it is zero. */
+const shownStreak = (h: HabitData, today: string, weekStartsOn: 1 | 7 = 1) => {
+  const streak = currentStreak(h, { today, weekStartsOn });
+
+  return streak.count > 0 ? streak : null;
+};
+
+const one = (habit: Record<string, unknown>, over: Record<string, unknown> = {}) => {
+  return toCircleView(overview([member({ habits: [habit], ...over })])).members[0].habits[0];
+};
+
+describe('toCircleView', () => {
+  it('maps the circle and a member to what the screens use', () => {
+    const view = toCircleView(overview([member({ is_you: true })]));
+
+    expect(view).toMatchObject({
+      id: '20000000-0000-4000-8000-000000000001',
+      name: 'Study group',
+      isOwner: true,
+      weekTicks: 7,
+    });
+    expect(view.members[0]).toMatchObject({
+      userId: SAM,
+      tag: 'sam',
+      displayName: 'Sam',
+      isYou: true,
+      paused: false,
+      allowCheers: true,
+      showedUpWeek: true,
+      habits: [],
+    });
+  });
+
+  it('maps every kind of avatar, with a photo already turned into an initial', () => {
+    const avatars = toCircleView(
+      overview([
+        member({
+          avatar_kind: 'google',
+          avatar_url: 'https://example.com/a.png',
+          avatar_value: null,
+          avatar_color: null,
+        }),
+        member({ avatar_kind: 'emoji', avatar_value: '🦊', avatar_color: '#b8643c' }),
+        member({ avatar_kind: 'initial', avatar_value: null, avatar_color: null }),
+      ]),
+    ).members.map(m => {
+      return m.avatar;
+    });
+
+    expect(avatars[0]).toEqual({ kind: 'google', value: null, color: null, url: 'https://example.com/a.png' });
+    expect(avatars[1]).toEqual({ kind: 'emoji', value: '🦊', color: '#b8643c', url: null });
+    expect(avatars[2].kind).toBe('initial');
+  });
+
+  it('says who started the circle, on that member only', () => {
+    const view = toCircleView(overview([member({ is_owner: true }), member({ user_id: ME, is_you: true })]));
+
+    expect(
+      view.members.map(m => {
+        return m.isOwner;
+      }),
+    ).toEqual([true, false]);
+  });
+
+  it('keeps a paused member with no habits', () => {
+    expect(toCircleView(overview([member({ paused: true, showed_up_week: false })])).members[0]).toMatchObject({
+      paused: true,
+      showedUpWeek: false,
+      habits: [],
+    });
+  });
+
+  it('refuses a payload that is not what the database promises', () => {
+    expect(() => {
+      return toCircleView(null);
+    }).toThrow();
+    expect(() => {
+      return toCircleView({ circle: { id: 'x' }, members: [] });
+    }).toThrow();
+    expect(() => {
+      return toCircleView(overview([member({ habits: [shared({ level: 'hidden' })] })]));
+    }).toThrow();
+    expect(() => {
+      return toCircleView(overview([member({ today: '2026-02-30' })]));
+    }).toThrow();
+    expect(() => {
+      return toCircleView(overview([member({ avatar_kind: 'robot' })]));
+    }).toThrow();
+  });
+
+  it('ignores a field it does not know, so the database can grow', () => {
+    expect(() => {
+      return toCircleView(overview([member({ something_new: 1 })]));
+    }).not.toThrow();
+  });
+});
+
+describe('what each level may show', () => {
+  it('shows a habit and its day at Done today, and nothing more', () => {
+    expect(one(shared())).toEqual({
+      name: 'Read',
+      icon: '📖',
+      level: 'done_today',
+      done: true,
+      showsMisses: false,
+      missed: null,
+      streak: null,
+      week: null,
+    });
+  });
+
+  it('keeps the name and emoji as the owner chose to show them', () => {
+    expect(one(shared({ name: null, icon: '📖' }))).toMatchObject({ name: null, icon: '📖' });
+    expect(one(shared({ name: null, icon: null }))).toMatchObject({ name: null, icon: null });
+  });
+
+  it('drops any facts that arrive above the level, even if the database sent them', () => {
+    const habit = one(shared({ level: 'done_today', data: data(['2026-10-10', '2026-10-11', TODAY]) }));
+
+    expect(habit.streak).toBeNull();
+    expect(habit.week).toBeNull();
+    expect(habit).not.toHaveProperty('ticks');
+  });
+
+  it('shows the streak at Streaks, worked out by the same rules as the owner, and never the dates', () => {
+    const days = ['2026-10-10', '2026-10-11', TODAY];
+    const habit = one(shared({ level: 'streaks', data: data(days) }));
+
+    expect(habit.streak).toEqual(shownStreak(habitData(days), TODAY));
+    expect(habit.streak).toEqual({ unit: 'day', count: 3 });
+    expect(habit).not.toHaveProperty('ticks');
+  });
+
+  it('adds the ticks, oldest first, only at Everything', () => {
+    const habit = one(shared({ level: 'everything', data: data([TODAY, '2026-10-10', '2026-10-11']) }));
+
+    expect(habit).toMatchObject({ ticks: ['2026-10-10', '2026-10-11', TODAY], streak: { unit: 'day', count: 3 } });
+  });
+
+  it('shows no streak when there is none, never a streak of nothing', () => {
+    expect(one(shared({ level: 'streaks', done: false, data: data(['2026-10-01']) })).streak).toBeNull();
+  });
+
+  it('gives a weekly habit its week and a streak counted in weeks', () => {
+    const sunday = '2026-10-18';
+    const days = ['2026-10-12', '2026-10-14', '2026-10-16'];
+    const weekly = data(days, {
+      schedules: [{ kind: 'weekly_count', times_per_week: 3, weekdays: null, effective_from: '2026-01-01' }],
+    });
+    const habit = one(shared({ level: 'streaks', data: weekly }), { today: sunday });
+    const expected = habitData(days, {
+      schedules: [{ kind: 'weekly_count', timesPerWeek: 3, effectiveFrom: '2026-01-01' }],
+    });
+
+    expect(habit.week).toEqual(weekProgress(expected, sunday, { today: sunday, weekStartsOn: 1 }));
+    expect(habit.week).toEqual({ done: 3, target: 3, goalMet: true });
+    expect(habit.streak).toEqual(shownStreak(expected, sunday));
+    expect(habit.streak).toMatchObject({ unit: 'week' });
+  });
+
+  it('reads a fixed-weekday habit and an archive pause exactly as the domain does', () => {
+    const days = ['2026-10-05', '2026-10-07', '2026-10-12'];
+    const fixed = data(days, {
+      schedules: [{ kind: 'weekdays', times_per_week: null, weekdays: [1, 3, 5], effective_from: '2026-01-01' }],
+      pauses: [{ from: '2026-10-08', to: '2026-10-10' }],
+    });
+    const expected = habitData(days, {
+      schedules: [{ kind: 'weekdays', days: [1, 3, 5], effectiveFrom: '2026-01-01' }],
+      pauses: [{ from: '2026-10-08', to: '2026-10-10' }],
+    });
+
+    expect(one(shared({ level: 'streaks', data: fixed })).streak).toEqual(shownStreak(expected, TODAY));
+  });
+
+  it("uses the member's own today and week start, not the viewer's", () => {
+    const days = ['2026-10-11', TODAY];
+
+    expect(one(shared({ level: 'streaks', data: data(days) }), { today: TODAY }).streak).toEqual({
+      unit: 'day',
+      count: 2,
+    });
+    // The same ticks, seen on the member's later today: two days have passed unticked, so the streak is gone.
+    expect(one(shared({ level: 'streaks', data: data(days) }), { today: '2026-10-14' }).streak).toBeNull();
+  });
+
+  it("carries each member's own today and whether their week counts, for reactions and the preferences", () => {
+    const view = toCircleView(overview([member({ today: '2026-10-13', in_week: false })]));
+
+    expect(view.members[0]).toMatchObject({ today: '2026-10-13', inWeek: false });
+  });
+
+  it("carries the viewer's own colour and pin for the circle", () => {
+    const view = toCircleView(overview([member()], { color: 'sky', pinned: true }));
+
+    expect(view).toMatchObject({ color: 'sky', pinned: true });
+  });
+
+  it('carries the reactions on each member, with who gave them', () => {
+    const reactions = [{ user_id: ME, tag: 'me', date: TODAY, emoji: '\u{1F525}' }];
+    const view = toCircleView(overview([member({ reactions })]));
+
+    expect(view.members[0].reactions).toEqual([{ userId: ME, tag: 'me', date: TODAY, emoji: '\u{1F525}' }]);
+  });
+
+  it('refuses an emoji or a colour it does not know, rather than showing something unexpected', () => {
+    expect(() => {
+      return toCircleView(overview([member({ reactions: [{ user_id: ME, tag: 'me', date: TODAY, emoji: 'x' }] })]));
+    }).toThrow();
+    expect(() => {
+      return toCircleView(overview([member()], { color: 'neon' }));
+    }).toThrow();
+  });
+
+  it('says whether a circle is a pair, and whether Closer is on, and what each member chose', () => {
+    const view = toCircleView(overview([member({ closer: true })], { kind: 'pair', closer_active: true }));
+
+    expect(view).toMatchObject({ kind: 'pair', closerActive: true });
+    expect(view.members[0].closer).toBe(true);
+  });
+
+  it('carries the days a member showed up, for a pair', () => {
+    const view = toCircleView(
+      overview([member({ showed_up_days: ['2026-10-10', '2026-10-12'] })], { kind: 'pair', closer_active: false }),
+    );
+
+    expect(view.members[0].showedUpDays).toEqual(['2026-10-10', '2026-10-12']);
+  });
+});
+
+/** Every day of the window before `today`, ticked except the days given. */
+const ticksExcept = (skipped: string[]): string[] => {
+  return Array.from({ length: 40 }, (_, back) => {
+    return addDays(TODAY, -(back + 1));
+  }).filter(date => {
+    return !skipped.includes(date);
+  });
+};
+
+const pairView = (habit: Record<string, unknown>, circle: Record<string, unknown> = {}) => {
+  const view = toCircleView(overview([member({ habits: [habit] })], { kind: 'pair', closer_active: true, ...circle }));
+
+  return view.members[0].habits[0];
+};
+
+describe('off days (partners)', () => {
+  const everything = (over: Record<string, unknown> = {}) => {
+    return shared({
+      level: 'everything',
+      shows_misses: true,
+      data: data(ticksExcept(['2026-10-08', '2026-10-10'])),
+      ...over,
+    });
+  };
+
+  it('are worked out only when the partner may see them, and are then the days that went unticked', () => {
+    const habit = pairView(everything());
+
+    expect(habit.showsMisses).toBe(true);
+    expect(habit.missed).toEqual(['2026-10-08', '2026-10-10']);
+  });
+
+  it('use the same window as the database and the rules say', () => {
+    const habit = pairView(everything({ data: data([]) }));
+
+    expect(habit.missed).toHaveLength(MISS_DAYS);
+  });
+
+  it('are never worked out without the owner choosing them for this habit', () => {
+    expect(pairView(everything({ shows_misses: false })).missed).toBeNull();
+  });
+
+  it('are never worked out while Closer is off, however the payload is flagged', () => {
+    expect(pairView(everything(), { closer_active: false }).missed).toBeNull();
+  });
+
+  it('are never worked out in a group, however the payload is flagged', () => {
+    const view = toCircleView(overview([member({ habits: [everything()] })], { kind: 'group', closer_active: true }));
+
+    expect(view.members[0].habits[0].missed).toBeNull();
+  });
+
+  it('are never worked out below Everything, even if the payload carried the dates and the flag', () => {
+    expect(pairView(everything({ level: 'streaks' })).missed).toBeNull();
+    expect(pairView(everything({ level: 'done_today', data: undefined })).missed).toBeNull();
+  });
+});
+
+describe('the list and the invite', () => {
+  it('shows a pair under the partner and a group under its name', () => {
+    expect(
+      toCircleListItem({
+        id: '20000000-0000-4000-8000-000000000001',
+        name: 'Partners',
+        is_owner: true,
+        member_count: 2,
+        color: 'sky',
+        pinned: true,
+        kind: 'pair',
+        partner_name: 'Sam',
+        partner_tag: 'sam',
+      }),
+    ).toEqual({
+      id: '20000000-0000-4000-8000-000000000001',
+      name: 'Partners',
+      isOwner: true,
+      memberCount: 2,
+      color: 'sky',
+      pinned: true,
+      kind: 'pair',
+      partnerName: 'Sam',
+      partnerTag: 'sam',
+    });
+  });
+
+  it('knows a colour or kind it does not know as the first colour and a group', () => {
+    const item = toCircleListItem({
+      id: '20000000-0000-4000-8000-000000000001',
+      name: 'x',
+      is_owner: false,
+      member_count: 1,
+      color: 'neon',
+      pinned: false,
+      kind: 'weird',
+      partner_name: null,
+      partner_tag: null,
+    });
+
+    expect(item).toMatchObject({ color: 'moss', kind: 'group', partnerName: null, partnerTag: null });
+  });
+
+  it('carries what an invite is for', () => {
+    expect(parseInvitePreview({ name: 'Partners', kind: 'pair', full: false, members: [] })).toMatchObject({
+      kind: 'pair',
+    });
+  });
+});

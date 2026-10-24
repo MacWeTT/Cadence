@@ -30,5 +30,16 @@
   "soundLimit": "You can keep up to 6 sounds. Remove one to add another.",
   "accentInvalid": "Choose one of the accent colours, or a colour of your own",
   "tagInvalid": "Use 3 to 30 lowercase letters, digits or underscores, and not a reserved word.",
-  "tagTaken": "That tag is taken. Try another."
+  "tagTaken": "That tag is taken. Try another.",
+  "passwordShort": "Use at least 8 characters for the password.",
+  "passwordLong": "Keep the password to 72 characters or fewer.",
+  "passwordMismatch": "The two passwords do not match.",
+  "passwordRejected": "That password was not accepted. Try a longer or less common one.",
+  "passwordSame": "Choose a password that is different from the current one.",
+  "signInFailed": "That tag or email and password don't match.",
+  "signInLocked": "Too many tries. Wait 15 minutes, or sign in with Google.",
+  "emailTaken": "An account with that email already exists. Sign in instead, or continue with Google.",
+  "authEmailInvalid": "Enter a valid email address.",
+  "identifierRequired": "Enter your tag or email.",
+  "passwordRequired": "Enter your password."
 }

@@ -25,6 +25,7 @@
     "modalTitle": "Replace your data?",
     "contents": "This file has {habits, plural, one {# habit} other {# habits}}, {ticks, plural, one {# check-in} other {# check-ins}} and {focusSessions, plural, one {# focus session} other {# focus sessions}}.",
     "warning": "This replaces all your current habits and history with what is in this file. It can't be undone.",
+    "circlesNote": "What you share in your circles is reset too, because the habits are replaced. You can choose again afterwards.",
     "understand": "I understand",
     "confirm": "Replace my data",
     "done": "Restored {habits, plural, one {# habit} other {# habits}} and {ticks, plural, one {# check-in} other {# check-ins}}.",
@@ -53,8 +54,7 @@
       "pauseInvalid": "a pause ends before it starts",
       "archiveInvalid": "the archived date and the pauses don't match",
       "focusInvalid": "a focus session isn't valid"
-    },
-    "reading": "Reading the file…"
+    }
   },
   "delete": {
     "title": "Delete your account",
@@ -65,7 +65,12 @@
     "type": "Type your email address to confirm",
     "confirm": "Delete forever",
     "done": "Your account has been deleted.",
-    "placeholder": "you@example.com"
+    "placeholder": "you@example.com",
+    "deviceTitle": "Delete everything on this PC",
+    "deviceIntro": "This permanently deletes every habit, check-in and focus session stored in this app, and puts the settings back to their start. Export your data first if you want to keep it.",
+    "deviceButton": "Delete everything",
+    "deviceModalTitle": "Delete everything on this PC?",
+    "deviceDone": "Everything on this PC has been deleted."
   },
   "report": {
     "subtitle": "Progress report",
@@ -98,5 +103,24 @@
     "duration": "{hours} h {minutes} m",
     "bestStreak": "on {name}",
     "pageOf": "Page {page} of {total}"
+  },
+  "signIn": {
+    "title": "Sign-in",
+    "intro": "How you get into this account.",
+    "password": "Password",
+    "isSet": "Set",
+    "notSet": "Not set",
+    "setButton": "Set a password",
+    "changeButton": "Change password",
+    "modalSet": "Set a password",
+    "modalChange": "Change your password",
+    "newPassword": "New password",
+    "confirm": "Confirm password",
+    "hint": "At least 8 characters. There is no password reset, so keep it somewhere safe.",
+    "saved": "Password saved",
+    "deviceSignedInAs": "Signed in as {email}",
+    "deviceSignedOut": "You are using Cadence on this PC without an account. Sign in to keep your habits on your account too.",
+    "deviceSignIn": "Sign in",
+    "deviceSignOut": "Sign out"
   }
 }

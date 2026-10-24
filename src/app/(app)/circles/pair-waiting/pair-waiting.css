@@ -1,0 +1,19 @@
+@reference '../../../globals.css';
+
+.pair-waiting {
+  @apply relative z-10 flex flex-1 flex-col items-center justify-center gap-3 px-6 py-8 text-center;
+}
+
+.pair-waiting__title {
+  @apply font-display text-2xl;
+}
+
+.pair-waiting__text {
+  @apply mb-2 max-w-sm text-ink-muted;
+}
+
+.pair-waiting__heart {
+  @apply size-8;
+  fill: var(--habit-rose);
+  color: var(--habit-rose);
+}

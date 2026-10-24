@@ -1,0 +1,9 @@
+@reference '../../../globals.css';
+
+.my-prefs {
+  @apply flex flex-col gap-1.5 text-sm;
+}
+
+.my-prefs__option {
+  @apply flex cursor-pointer items-center gap-2;
+}

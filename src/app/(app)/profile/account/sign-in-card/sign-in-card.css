@@ -1,0 +1,13 @@
+@reference '../../../../globals.css';
+
+.sign-in-card__row {
+  @apply flex items-center justify-between gap-4;
+}
+
+.sign-in-card__label {
+  @apply font-medium;
+}
+
+.sign-in-card__status {
+  @apply text-sm text-ink-muted;
+}

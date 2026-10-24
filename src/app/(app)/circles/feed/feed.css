@@ -1,0 +1,35 @@
+@reference '../../../globals.css';
+
+.feed {
+  @apply relative z-10 flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 py-5 focus-visible:outline-2 focus-visible:outline-clay sm:px-6;
+  /* A message scrolled half out of view fades away at the top edge instead of being cut. */
+  mask-image: linear-gradient(to bottom, transparent 0, black 1.5rem);
+}
+
+.feed--empty {
+  @apply items-center justify-center gap-3 text-center;
+}
+
+.feed__empty-title {
+  @apply font-display text-2xl;
+}
+
+.feed__empty-text {
+  @apply mb-2 max-w-sm text-ink-muted;
+}
+
+.feed__day {
+  @apply flex flex-col gap-4;
+}
+
+.feed__divider {
+  @apply flex justify-center;
+}
+
+.feed__divider-label {
+  @apply rounded-full bg-surface px-3 py-1 text-xs font-medium tracking-wide text-ink-muted shadow-sm ring-1 ring-line;
+}
+
+.feed__bubbles {
+  @apply flex flex-col gap-4;
+}

@@ -4,6 +4,7 @@ import alert from './alert.json';
 import appearance from './appearance.json';
 import auth from './auth.json';
 import changelog from './changelog.json';
+import circles from './circles.json';
 import common from './common.json';
 import contact from './contact.json';
 import errors from './errors.json';
@@ -16,6 +17,7 @@ import labels from './labels.json';
 import metadata from './metadata.json';
 import profile from './profile.json';
 import progress from './progress.json';
+import sync from './sync.json';
 import today from './today.json';
 import validation from './validation.json';
 
@@ -27,6 +29,7 @@ const en = {
   appearance,
   auth,
   changelog,
+  circles,
   common,
   contact,
   errors,
@@ -39,6 +42,7 @@ const en = {
   metadata,
   profile,
   progress,
+  sync,
   today,
   validation,
 };

@@ -1,0 +1,34 @@
+@reference '../../../globals.css';
+
+.rail-item {
+  @apply flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 transition-colors hover:bg-surface active:bg-surface focus-visible:outline-2 focus-visible:outline-clay;
+}
+
+.rail-item--active {
+  @apply border-line bg-surface;
+}
+
+.rail-item__tile {
+  @apply flex size-11 shrink-0 items-center justify-center rounded-xl font-display text-lg text-(--circle-color);
+  background: color-mix(in srgb, var(--circle-color) 18%, transparent);
+}
+
+.rail-item__heart {
+  @apply size-5 fill-current;
+}
+
+.rail-item__body {
+  @apply flex min-w-0 flex-col;
+}
+
+.rail-item__name {
+  @apply font-semibold wrap-break-word;
+}
+
+.rail-item__meta {
+  @apply text-sm text-ink-muted;
+}
+
+.rail-item__pin {
+  @apply ml-auto size-4 shrink-0 text-ink-muted;
+}

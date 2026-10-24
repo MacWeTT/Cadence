@@ -14,6 +14,20 @@ export const queryKeys = {
   profile: ['profile'] as const,
   /** The running focus session and the last-used numbers per habit. */
   focus: ['focus'] as const,
+  /** Who is signed in on the desktop app (the web app reads it on the server). */
+  session: ['session'] as const,
+  /** The circles the person is in. */
+  circles: ['circles'] as const,
+  /** The friends who showed up today, across your circles (for Home). */
+  circlesToday: ['circles', 'today'] as const,
+  /** One circle as the person may see it. */
+  circle: (id: string) => {
+    return ['circles', id] as const;
+  },
+  /** What the person shares with one circle (their habits, levels and overrides). */
+  circleSharing: (id: string) => {
+    return ['circles', id, 'sharing'] as const;
+  },
   progressAll: ['progress'] as const,
   /** Progress for one habit filter (`null` is all habits) and one rate window. */
   progress: (habit: string | null, range: number) => {
