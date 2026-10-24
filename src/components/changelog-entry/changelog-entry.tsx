@@ -7,23 +7,27 @@ import './changelog-entry.css';
 
 interface ChangelogEntryCardProps {
   entry: ChangelogEntry;
+  /** A heading to use instead of the entry's own ("Latest update", not "Version 1.0.1"). */
+  heading?: string;
   /** Its place in the list: later cards come in a little after earlier ones. */
   index: number;
 }
 
 /** One section of the changelog: a release with its date and what it added, or what is coming soon. */
 export const ChangelogEntryCard = (props: ChangelogEntryCardProps) => {
-  const { entry, index } = props;
+  const { entry, index, heading: given } = props;
 
   const t = useTranslations('changelog');
 
   const { title, date, kind, note, items } = entry;
-  const heading = {
-    planned: t('comingSoon'),
-    known: t('knownIssues'),
-    release: t('version', { version: title }),
-    highlights: title,
-  }[kind];
+  const heading =
+    given ??
+    {
+      planned: t('comingSoon'),
+      known: t('knownIssues'),
+      release: t('version', { version: title }),
+      highlights: title,
+    }[kind];
   const id = `changelog-${title}`;
 
   return (

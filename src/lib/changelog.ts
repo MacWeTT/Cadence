@@ -138,3 +138,15 @@ export const groupLines = (entries: ChangelogEntry[]): ChangelogLine[] => {
     return { line, releases, from, to, date, headline, highlights };
   });
 };
+
+/**
+ * The newest release when it is a fix on top of a version (1.0.1 after 1.0.0), for the "Latest update" card on the front
+ * page; nothing when it is a version of its own (1.0.0), which its line card already shows.
+ */
+export const latestUpdate = (entries: ChangelogEntry[]): ChangelogEntry | null => {
+  const newest = entries.find(({ kind }) => {
+    return kind === 'release';
+  });
+
+  return newest && Number(newest.title.split('.')[2] ?? 0) > 0 ? newest : null;
+};

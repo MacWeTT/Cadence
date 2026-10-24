@@ -7,6 +7,7 @@ import { deriveAccent, parseHex } from '@/lib/accent-color';
 import { ACCENT_PRESETS, ACCENT_SWATCH, parseChoice } from '@/lib/appearance';
 import { useAppearance } from '@/lib/use-appearance';
 import './accent-picker.css';
+import { Tip } from '@/components/tip/tip';
 
 const FALLBACK_HEX = '#5a6b3d';
 
@@ -75,18 +76,20 @@ export const AccentPicker = () => {
       <div className="accent-picker__swatches">
         {ACCENT_PRESETS.map(key => {
           return (
-            <label key={key} className="accent-picker__option">
-              <input
-                type="radio"
-                name="accent"
-                value={key}
-                checked={accent === key}
-                onChange={onPresetChange}
-                className="accent-picker__input peer"
-              />
-              <span aria-hidden className="accent-picker__swatch" style={{ backgroundColor: ACCENT_SWATCH[key] }} />
-              <span className="sr-only">{t(`names.${key}`)}</span>
-            </label>
+            <Tip key={key} label={t(`names.${key}`)}>
+              <label className="accent-picker__option">
+                <input
+                  type="radio"
+                  name="accent"
+                  value={key}
+                  checked={accent === key}
+                  onChange={onPresetChange}
+                  className="accent-picker__input peer"
+                />
+                <span aria-hidden className="accent-picker__swatch" style={{ backgroundColor: ACCENT_SWATCH[key] }} />
+                <span className="sr-only">{t(`names.${key}`)}</span>
+              </label>
+            </Tip>
           );
         })}
       </div>

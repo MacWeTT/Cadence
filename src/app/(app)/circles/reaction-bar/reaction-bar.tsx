@@ -4,6 +4,7 @@ import { REACTIONS, type Reaction } from '@/domain/circles';
 import type { FeedReaction } from '@/lib/circle-feed';
 import { cn } from '@/lib/utils';
 import './reaction-bar.css';
+import { Tip } from '@/components/tip/tip';
 
 interface ReactionBarProps {
   reactions: FeedReaction[];
@@ -76,16 +77,17 @@ export const ReactionBar = (props: ReactionBarProps) => {
             };
 
             return (
-              <button
-                key={emoji}
-                type="button"
-                aria-label={t('reactWith', { emoji })}
-                aria-pressed={mine}
-                onClick={onPickEmoji}
-                className="reaction-bar__pick"
-              >
-                {emoji}
-              </button>
+              <Tip key={emoji} label={t('reactWith', { emoji })}>
+                <button
+                  type="button"
+                  aria-label={t('reactWith', { emoji })}
+                  aria-pressed={mine}
+                  onClick={onPickEmoji}
+                  className="reaction-bar__pick"
+                >
+                  {emoji}
+                </button>
+              </Tip>
             );
           })}
         </div>

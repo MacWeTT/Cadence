@@ -5,6 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { weekdayLabel } from '@/lib/format';
 import { FieldError } from '@/app/(app)/habits/field-error/field-error';
 import './schedule-field.css';
+import { Tip } from '@/components/tip/tip';
 
 export type ScheduleKind = 'daily' | 'weekdays' | 'weekly_count' | 'optional';
 
@@ -102,14 +103,15 @@ export const ScheduleField = (props: ScheduleFieldProps) => {
         >
           {ALL_DAYS.map(day => {
             return (
-              <ToggleGroupItem
-                key={day}
-                value={String(day)}
-                aria-label={weekdayLabel(day, 'long')}
-                className="schedule-field__option"
-              >
-                {weekdayLabel(day)}
-              </ToggleGroupItem>
+              <Tip key={day} label={weekdayLabel(day, 'long')}>
+                <ToggleGroupItem
+                  value={String(day)}
+                  aria-label={weekdayLabel(day, 'long')}
+                  className="schedule-field__option"
+                >
+                  {weekdayLabel(day)}
+                </ToggleGroupItem>
+              </Tip>
             );
           })}
         </ToggleGroup>
