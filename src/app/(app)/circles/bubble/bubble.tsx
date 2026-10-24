@@ -6,6 +6,7 @@ import { useReact } from '@/app/(app)/circles/use-circle-social';
 import { Avatar } from '@/components/avatar/avatar';
 import type { Reaction } from '@/domain/circles';
 import type { FeedBubble } from '@/lib/circle-feed';
+import { haptic } from '@/lib/haptics';
 import { avatarName, memberName, toAvatarView } from '@/lib/circle-people';
 import { cn } from '@/lib/utils';
 import './bubble.css';
@@ -42,6 +43,10 @@ export const Bubble = (props: BubbleProps) => {
   const enabled = allowCheers && !isYou;
 
   const onToggle = (emoji: Reaction, on: boolean) => {
+    if (on) {
+      haptic('tick');
+    }
+
     react.mutate({ circleId, toUser: userId, forDate: date, emoji, on, me: meId, myTag: meTag });
   };
 

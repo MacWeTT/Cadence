@@ -16,9 +16,10 @@
   @apply flex max-w-full items-center gap-1.5;
 }
 
-/* The react button sits beside the message, faint until it is wanted, like the reaction button of a chat app. */
+/* The react button sits beside the message, faint until it is wanted, like the reaction button of a chat app. The
+   invisible padding makes the tap area 44px, and it answers the press at once. */
 .bubble__add {
-  @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink-muted opacity-60 transition-opacity hover:bg-surface hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-clay;
+  @apply relative inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink-muted opacity-60 transition-[opacity,transform] before:absolute before:-inset-1.5 before:content-[''] hover:bg-surface hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-clay active:scale-90 active:opacity-100;
 }
 
 .bubble__add-icon {

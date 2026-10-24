@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { dataSource } from '@/data';
 import type { CalendarDate } from '@/domain/dates';
+import { haptic, hapticForTick } from '@/lib/haptics';
 import { queryKeys } from '@/lib/query/keys';
 import { applyToggle, type TodayRow, type TodayView } from '@/server/today-view';
 
@@ -80,6 +81,7 @@ export const useCachedToggle = (view: TodayView | undefined) => {
         queryClient.setQueryData(queryKey, data);
       });
 
+      haptic('error');
       toast.error(error instanceof SaveError ? error.message : t('saveFailed'));
     },
     onSettled: () => {
@@ -127,6 +129,12 @@ export const useCachedToggle = (view: TodayView | undefined) => {
     }
 
     focusId.current = id;
+
+    // Ticking something on is a small success, on the tap itself; taking a tick back is quiet.
+    if (!wasTicked) {
+      haptic(hapticForTick(view?.todo ?? [], id));
+    }
+
     mutation.mutate({ id, date, ticked: !wasTicked });
   };
 
