@@ -43,3 +43,14 @@ jobs:
           # Empty outside a release, which makes the action build without uploading anything.
           releaseId: ${{ github.event.release.id }}
           uploadUpdaterJson: ${{ github.event_name == 'release' }}
+      # The installer's own name has the version in it, so a fixed copy is attached too: the site links straight to
+      # releases/latest/download/Cadence-Setup.exe, which always serves the newest release's installer.
+      - name: Attach the installer under a fixed name
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          installer=$(ls src-tauri/target/release/bundle/nsis/*-setup.exe | head -n 1)
+          cp "$installer" Cadence-Setup.exe
+          gh release upload "${{ github.event.release.tag_name }}" Cadence-Setup.exe --clobber
