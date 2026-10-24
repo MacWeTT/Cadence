@@ -68,5 +68,17 @@
     "left": "{count, plural, one {{count} character left} other {{count} characters left}}",
     "reached": "Limit reached: {max} characters"
   },
-  "appName": "Cadence"
+  "appName": "Cadence",
+  "notFound": {
+    "title": "Not found",
+    "heading": "That page isn't here",
+    "text": "The link may be old, or the address mistyped.",
+    "home": "Back to Cadence"
+  },
+  "crash": {
+    "heading": "Something went wrong",
+    "text": "That page couldn't be shown. Try again, or go back to Cadence.",
+    "retry": "Try again",
+    "home": "Back to Cadence"
+  }
 }
