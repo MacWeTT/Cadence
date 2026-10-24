@@ -60,10 +60,10 @@ const eslintConfig = defineConfig([
           message: 'Give the props type a name (interface XProps) instead of an inline type.',
         },
         {
-          // 10: imports are absolute (@/..., @tests/..., @e2e/...); only a component's own stylesheet stays relative.
+          // 10: imports are absolute (@/..., @tests/..., @e2e/..., @scripts/...); only a component's own stylesheet stays relative.
           selector:
             ':matches(ImportDeclaration, ExportAllDeclaration, ExportNamedDeclaration, ImportExpression)[source.value=/^\\./]:not([source.value=/\\.css$/])',
-          message: 'Use an absolute import (@/..., @tests/..., @e2e/...), not a relative one.',
+          message: 'Use an absolute import (@/..., @tests/..., @e2e/..., @scripts/...), not a relative one.',
         },
         {
           // 9: a function passed as a prop has a name (onHabitClose), declared above the return.
