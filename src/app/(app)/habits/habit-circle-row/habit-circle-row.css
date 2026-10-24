@@ -1,0 +1,9 @@
+@reference '../../../globals.css';
+
+.habit-circle-row {
+  @apply flex items-center justify-between gap-3 py-1.5;
+}
+
+.habit-circle-row__name {
+  @apply min-w-0 wrap-break-word;
+}
