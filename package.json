@@ -17,6 +17,7 @@
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build",
     "verify:full": "npm run verify && npm run db:test && npx playwright test",
     "build:desktop": "node scripts/build-desktop.mjs",
+    "seed:demo": "node scripts/seed-demo-user.mjs",
     "tauri": "tauri"
   },
   "dependencies": {
