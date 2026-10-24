@@ -247,7 +247,16 @@ test('the avatar in the top bar wears the colour that was chosen, not the app co
     .poll(() => {
       return colour('.user-menu__trigger .avatar');
     })
-    .toBe(await colour('.avatar--xl'));
+    .toBe(await colour('.profile-header__avatar'));
+});
+
+test('a dialog closes with one Escape: its close button does not open a tooltip that takes it', async ({ page }) => {
+  await page.goto('/profile');
+  await row(page, 'Name').click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 
 test('the chosen character is named under the picture', async ({ page }) => {

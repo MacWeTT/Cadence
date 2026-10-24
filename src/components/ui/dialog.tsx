@@ -43,6 +43,14 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   );
 }
 
+/**
+ * A dialog puts focus on its close button when it opens. That must not open the button's tooltip: an open tooltip is the
+ * top layer and takes the first Escape, so the dialog would need two. The tooltip shows on hover only.
+ */
+const keepTooltipClosedOnFocus = (event: React.FocusEvent) => {
+  event.preventDefault();
+};
+
 function DialogContent({
   className,
   children,
@@ -65,7 +73,7 @@ function DialogContent({
         {children}
         {showCloseButton && (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger asChild onFocus={keepTooltipClosedOnFocus}>
               <DialogPrimitive.Close data-slot="dialog-close" asChild>
                 <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
                   <XIcon />
