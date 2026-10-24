@@ -7,6 +7,7 @@ import { GoogleIcon } from '@/components/provider-icons/provider-icons';
 import { NEXT_COOKIE, safeNext } from '@/lib/next-path';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import './google-sign-in-button.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface SignInState {
   busy: boolean;
@@ -20,6 +21,7 @@ export const GoogleSignInButton = () => {
   const [state, setState] = useState<SignInState>({ busy: false, error: null });
 
   const t = useTranslations('auth');
+  const tw = useTranslations('common.why');
   const params = useSearchParams();
 
   const signIn = async () => {
@@ -44,16 +46,18 @@ export const GoogleSignInButton = () => {
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={signIn}
-        disabled={busy}
-        aria-label={busy ? t('redirecting') : t('continueWithGoogle')}
-        className="google-sign-in"
-      >
-        <GoogleIcon className="google-sign-in__icon" />
-        {t('google')}
-      </button>
+      <WhyDisabled reason={busy ? tw('busy') : null}>
+        <button
+          type="button"
+          onClick={signIn}
+          disabled={busy}
+          aria-label={busy ? t('redirecting') : t('continueWithGoogle')}
+          className="google-sign-in"
+        >
+          <GoogleIcon className="google-sign-in__icon" />
+          {t('google')}
+        </button>
+      </WhyDisabled>
       {signInError && (
         <p role="alert" className="google-sign-in__error">
           {signInError}

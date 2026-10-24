@@ -1,10 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { registerInputSchema, signInInputSchema, signUpInputSchema } from '@/lib/auth-schema';
+import { passwordChangeSchema, registerInputSchema, signInInputSchema, signUpInputSchema } from '@/lib/auth-schema';
 import { msg, translateMsg, type MessageKey } from '@/lib/message';
 import { safeNext } from '@/lib/next-path';
 import type { Database } from '@/lib/supabase/database.types';
 import { t } from '@/data/local/outcome';
-import type { AuthResult } from '@/data/types';
+import type { AuthResult, ProfileActionResult } from '@/data/types';
 
 /** Supabase, signed in as the person (or not yet). Row-level security is what protects the data, as on the web. */
 export type Cloud = SupabaseClient<Database>;
@@ -199,6 +199,41 @@ export const createAuth = (cloud: Cloud) => {
     return { email: user.email, tag, registered: registered_at !== null };
   };
 
+  /** Sets (or changes) the account's password and marks the account as having one. It needs someone signed in. */
+  const setPassword = async (input: unknown): Promise<ProfileActionResult> => {
+    const { success, data, error } = passwordChangeSchema.safeParse(input);
+
+    if (!success) {
+      return { ok: false, error: words(error.issues[0].message).error ?? '' };
+    }
+
+    const user = await currentUser();
+
+    if (!user) {
+      return { ok: false, error: translateMsg(t, msg('errors.needsAccount')) };
+    }
+
+    const { auth } = cloud;
+
+    try {
+      const { error: passwordError } = await auth.updateUser({ password: data.password });
+
+      if (passwordError) {
+        throw new Refused(passwordError.code === 'same_password' ? 'passwordSame' : 'passwordRejected');
+      }
+
+      const { error: saveError } = await cloud.from('profiles').update({ password_set: true }).eq('user_id', user.id);
+
+      if (saveError) {
+        throw saveError;
+      }
+    } catch (e) {
+      return { ok: false, error: refuse(e).error ?? '' };
+    }
+
+    return { ok: true };
+  };
+
   const sessionOf = () => {
     const { auth } = cloud;
 
@@ -227,5 +262,5 @@ export const createAuth = (cloud: Cloud) => {
     await sessionOf().signOut();
   };
 
-  return { signIn, signUp, register, needsRegistration, registration, currentUser, signOut };
+  return { signIn, signUp, register, setPassword, needsRegistration, registration, currentUser, signOut };
 };

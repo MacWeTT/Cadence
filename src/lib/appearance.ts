@@ -255,7 +255,10 @@ export const restoreChoices = (root: RootLike, storage: StorageLike) => {
  */
 const { palette: paletteConfig, accent: accentConfig } = CONFIG;
 
+/** The session mark that says the splash has played (see AppSplash). The boot script reads it too, to cover the page until the splash is up. */
+export const SPLASH_KEY = 'cadence:splash';
+
 export const BOOT_SCRIPT = `(function(){var r=document.documentElement;var c=${JSON.stringify({
   palette: { ...paletteConfig, key: storageKey('palette') },
   accent: { ...accentConfig, key: storageKey('accent') },
-})};var v=${JSON.stringify(CUSTOM_VARS)};var h=/^#[0-9a-f]{6}$/;for(var k in c){try{var s=localStorage.getItem(c[k].key);if(!s||s===c[k].fallback||c[k].options.indexOf(s)<0)continue;if(s==='custom'){var d=JSON.parse(localStorage.getItem(${JSON.stringify(CUSTOM_KEY)}));if(!d||!h.test(d.hex)||!h.test(d.light)||!h.test(d.dark))continue;r.style.setProperty(v.hex,d.hex);r.style.setProperty(v.light,d.light);r.style.setProperty(v.dark,d.dark);}r.setAttribute(c[k].attr,s);}catch(e){}}})();`;
+})};var v=${JSON.stringify(CUSTOM_VARS)};var h=/^#[0-9a-f]{6}$/;for(var k in c){try{var s=localStorage.getItem(c[k].key);if(!s||s===c[k].fallback||c[k].options.indexOf(s)<0)continue;if(s==='custom'){var d=JSON.parse(localStorage.getItem(${JSON.stringify(CUSTOM_KEY)}));if(!d||!h.test(d.hex)||!h.test(d.light)||!h.test(d.dark))continue;r.style.setProperty(v.hex,d.hex);r.style.setProperty(v.light,d.light);r.style.setProperty(v.dark,d.dark);}r.setAttribute(c[k].attr,s);}catch(e){}}try{if(!sessionStorage.getItem(${JSON.stringify(SPLASH_KEY)})&&location.pathname!=='/login'){r.setAttribute('data-splash','1');setTimeout(function(){r.removeAttribute('data-splash')},4000);}}catch(e){}})();`;

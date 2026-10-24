@@ -7,6 +7,7 @@ import { avatarName, toAvatarView } from '@/lib/circle-people';
 import { habitColor } from '@/lib/palette';
 import type { CircleView } from '@/server/circles-view';
 import './conversation-header.css';
+import { Tip } from '@/components/tip/tip';
 
 const STACK = 4;
 
@@ -52,27 +53,29 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
         </div>
       </div>
       <div className="conversation-header__actions">
-        <button
-          type="button"
-          aria-label={t('conversation.peopleLabel', { count })}
-          onClick={onPeople}
-          className="conversation-header__people"
-        >
-          <span className="conversation-header__stack">
-            {stacked.map(({ userId, displayName, tag, avatar }) => {
-              return (
-                <Avatar
-                  key={userId}
-                  avatar={toAvatarView(avatar)}
-                  name={avatarName(displayName, tag)}
-                  size="sm"
-                  className="conversation-header__avatar"
-                />
-              );
-            })}
-          </span>
-          <span className="conversation-header__count">{t('conversation.people', { count })}</span>
-        </button>
+        <Tip label={t('conversation.peopleLabel', { count })}>
+          <button
+            type="button"
+            aria-label={t('conversation.peopleLabel', { count })}
+            onClick={onPeople}
+            className="conversation-header__people"
+          >
+            <span className="conversation-header__stack">
+              {stacked.map(({ userId, displayName, tag, avatar }) => {
+                return (
+                  <Avatar
+                    key={userId}
+                    avatar={toAvatarView(avatar)}
+                    name={avatarName(displayName, tag)}
+                    size="sm"
+                    className="conversation-header__avatar"
+                  />
+                );
+              })}
+            </span>
+            <span className="conversation-header__count">{t('conversation.people', { count })}</span>
+          </button>
+        </Tip>
         {canInvite && (
           <Button variant="outline" size="sm" onClick={onInvite}>
             {t('circle.invite')}
@@ -81,9 +84,11 @@ export const ConversationHeader = (props: ConversationHeaderProps) => {
         <Button size="sm" onClick={onShare}>
           {t('conversation.share')}
         </Button>
-        <Button variant="outline" size="icon-sm" aria-label={t('conversation.settings')} onClick={onSettings}>
-          <Settings aria-hidden="true" />
-        </Button>
+        <Tip label={t('conversation.settings')}>
+          <Button variant="outline" size="icon-sm" aria-label={t('conversation.settings')} onClick={onSettings}>
+            <Settings aria-hidden="true" />
+          </Button>
+        </Tip>
       </div>
     </header>
   );

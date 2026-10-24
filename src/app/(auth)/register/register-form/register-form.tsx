@@ -6,10 +6,12 @@ import { useState } from 'react';
 import { dataSource } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { registerInputSchema } from '@/lib/auth-schema';
 import { TAG_MAX } from '@/lib/tag';
 import './register-form.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface RegisterFormProps {
   email: string;
@@ -34,10 +36,15 @@ export const RegisterForm = (props: RegisterFormProps) => {
   const [form, setForm] = useState<FormState>({ tag, password: '', confirm: '', error: null, saving: false });
 
   const t = useTranslations('auth.register');
+  const tv = useTranslations('validation');
+  const tw = useTranslations('common.why');
   const router = useRouter();
 
   const { tag: draftTag, password, confirm, error, saving } = form;
-  const valid = registerInputSchema.safeParse({ tag: draftTag, password, confirm }).success;
+  const checked = registerInputSchema.safeParse({ tag: draftTag, password, confirm });
+  const valid = checked.success;
+  // why the button is off, in words: the first thing wrong with the form, or that it is already working
+  const reason = saving ? tw('busy') : checked.success ? null : tv(checked.error.issues[0].message as 'passwordShort');
 
   const onTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, tag: event.target.value, error: null });
@@ -93,9 +100,8 @@ export const RegisterForm = (props: RegisterFormProps) => {
       </div>
       <div className="register-form__field">
         <Label htmlFor="register-password">{t('password')}</Label>
-        <Input
+        <PasswordInput
           id="register-password"
-          type="password"
           value={password}
           autoComplete="new-password"
           onChange={onPasswordChange}
@@ -104,22 +110,18 @@ export const RegisterForm = (props: RegisterFormProps) => {
       </div>
       <div className="register-form__field">
         <Label htmlFor="register-confirm">{t('confirm')}</Label>
-        <Input
-          id="register-confirm"
-          type="password"
-          value={confirm}
-          autoComplete="new-password"
-          onChange={onConfirmChange}
-        />
+        <PasswordInput id="register-confirm" value={confirm} autoComplete="new-password" onChange={onConfirmChange} />
       </div>
       {error && (
         <p role="alert" className="register-form__error">
           {error}
         </p>
       )}
-      <Button type="submit" disabled={!valid || saving} className="register-form__save">
-        {saving ? t('saving') : t('save')}
-      </Button>
+      <WhyDisabled reason={reason}>
+        <Button type="submit" disabled={!valid || saving} className="register-form__save">
+          {saving ? t('saving') : t('save')}
+        </Button>
+      </WhyDisabled>
     </form>
   );
 };

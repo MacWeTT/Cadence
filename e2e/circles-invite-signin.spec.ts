@@ -43,7 +43,7 @@ test('an invite link opened while signed out brings the person back to it after 
 
     await guest.getByRole('tab', { name: 'Email', exact: true }).click();
     await guest.getByLabel('Email').fill(sam.email);
-    await guest.getByLabel('Password').fill(sam.password);
+    await guest.getByLabel('Password', { exact: true }).fill(sam.password);
     await guest.getByRole('button', { name: 'Sign in', exact: true }).click();
 
     // After signing in they are on the invite, not on Home.

@@ -220,3 +220,22 @@ test('deleting the account needs the typed email, then removes it and says so on
   expect(after.user).toBeNull();
   await context.close();
 });
+
+test('the disabled Save of the password box says why, as the password gets better', async ({ page }) => {
+  await page.goto('/profile/account');
+  await page.getByRole('button', { name: /^(Change password|Set a password)$/ }).click();
+
+  const dialog = page.getByRole('dialog');
+  const save = dialog.locator('.setting-modal__save');
+
+  await save.hover();
+  await expect(page.getByRole('tooltip')).toContainText('Use at least 8 characters');
+
+  await dialog.getByLabel('New password').fill('long-enough-1');
+  await dialog.getByLabel('Confirm password').fill('something-else');
+  await save.hover();
+  await expect(page.getByRole('tooltip')).toContainText('do not match');
+
+  await dialog.getByLabel('Confirm password').fill('long-enough-1');
+  await expect(dialog.getByRole('button', { name: 'Save' })).toBeEnabled();
+});

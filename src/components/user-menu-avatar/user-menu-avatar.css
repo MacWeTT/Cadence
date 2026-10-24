@@ -1,5 +1,10 @@
 @reference '../../app/globals.css';
 
 .user-menu-avatar {
-  @apply size-full bg-clay text-bg;
+  @apply size-full;
+}
+
+/* A picture or an initial sits on the clay ring colour; a chosen character or emoji keeps its own tint. */
+.user-menu-avatar:not(.avatar--tint) {
+  @apply bg-clay text-bg;
 }

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useSetPassword } from '@/app/(app)/profile/account/use-password';
 import { SettingModal } from '@/components/setting-modal/setting-modal';
-import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input/password-input';
 import { Label } from '@/components/ui/label';
 import { passwordChangeSchema } from '@/lib/auth-schema';
 import './password-modal.css';
@@ -22,10 +22,14 @@ export const PasswordModal = (props: PasswordModalProps) => {
   const [form, setForm] = useState({ password: '', confirm: '' });
 
   const t = useTranslations('account.signIn');
+  const tv = useTranslations('validation');
   const update = useSetPassword();
 
   const { password, confirm } = form;
-  const valid = passwordChangeSchema.safeParse(form).success;
+  const checked = passwordChangeSchema.safeParse(form);
+  const valid = checked.success;
+  // the first thing wrong, in words: it is what the disabled Save says when hovered or focused
+  const reason = checked.success ? undefined : tv(checked.error.issues[0].message as 'passwordShort');
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, password: event.target.value });
@@ -43,29 +47,18 @@ export const PasswordModal = (props: PasswordModalProps) => {
     <SettingModal
       title={hasPassword ? t('modalChange') : t('modalSet')}
       saveDisabled={!valid || update.isPending}
+      saveDisabledReason={reason}
       onSave={onSave}
       onClose={onClose}
     >
       <div className="password-modal__field">
         <Label htmlFor="password-new">{t('newPassword')}</Label>
-        <Input
-          id="password-new"
-          type="password"
-          value={password}
-          autoComplete="new-password"
-          onChange={onPasswordChange}
-        />
+        <PasswordInput id="password-new" value={password} autoComplete="new-password" onChange={onPasswordChange} />
         <p className="password-modal__hint">{t('hint')}</p>
       </div>
       <div className="password-modal__field">
         <Label htmlFor="password-confirm">{t('confirm')}</Label>
-        <Input
-          id="password-confirm"
-          type="password"
-          value={confirm}
-          autoComplete="new-password"
-          onChange={onConfirmChange}
-        />
+        <PasswordInput id="password-confirm" value={confirm} autoComplete="new-password" onChange={onConfirmChange} />
       </div>
     </SettingModal>
   );

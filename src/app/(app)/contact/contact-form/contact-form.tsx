@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import './contact-form.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface ContactFormProps {
   /** The signed-in user's name and email, offered as the answer address; they can change or remove them. */
@@ -47,6 +48,7 @@ export const ContactForm = (props: ContactFormProps) => {
   });
 
   const t = useTranslations('contact');
+  const tw = useTranslations('common.why');
   const [pending, startTransition] = useTransition();
 
   const { message, anonymous, website, errors, failure, sent, name: nameValue, email: emailValue } = state;
@@ -177,25 +179,29 @@ export const ContactForm = (props: ContactFormProps) => {
           >
             <div>
               <Label htmlFor="contact-name">{t('name')}</Label>
-              <Input
-                id="contact-name"
-                value={nameValue}
-                onChange={onNameChange}
-                disabled={anonymous}
-                aria-invalid={Boolean(nameError)}
-              />
+              <WhyDisabled reason={anonymous ? tw('anonymous') : null}>
+                <Input
+                  id="contact-name"
+                  value={nameValue}
+                  onChange={onNameChange}
+                  disabled={anonymous}
+                  aria-invalid={Boolean(nameError)}
+                />
+              </WhyDisabled>
               <AnimatedError message={nameError} />
             </div>
             <div>
               <Label htmlFor="contact-email">{t('email')}</Label>
-              <Input
-                id="contact-email"
-                type="email"
-                value={emailValue}
-                onChange={onEmailChange}
-                disabled={anonymous}
-                aria-invalid={Boolean(emailError)}
-              />
+              <WhyDisabled reason={anonymous ? tw('anonymous') : null}>
+                <Input
+                  id="contact-email"
+                  type="email"
+                  value={emailValue}
+                  onChange={onEmailChange}
+                  disabled={anonymous}
+                  aria-invalid={Boolean(emailError)}
+                />
+              </WhyDisabled>
               <p className="contact-form__hint">{t('emailHint')}</p>
               <AnimatedError message={emailError} />
             </div>
@@ -215,9 +221,11 @@ export const ContactForm = (props: ContactFormProps) => {
 
           <AnimatedError message={failure} />
 
-          <Button type="submit" disabled={pending} className="contact-form__send">
-            {pending ? t('sending') : t('send')}
-          </Button>
+          <WhyDisabled reason={pending ? tw('busy') : null}>
+            <Button type="submit" disabled={pending} className="contact-form__send">
+              {pending ? t('sending') : t('send')}
+            </Button>
+          </WhyDisabled>
         </motion.form>
       )}
     </AnimatePresence>

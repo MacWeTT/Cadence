@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import {
   setCirclesPausedAction,
@@ -33,12 +34,15 @@ interface ShareInput {
 
 /** How much of a habit this circle sees (and how it is named to them). */
 export const useSetShare = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<SharingView, ShareInput>(
     queryKeys.circleSharing(circleId),
     setShareAction,
     (view, { habitId, level, label }) => {
       return withShare(view, habitId, level, label);
     },
+    t('saved'),
   );
 };
 
@@ -52,6 +56,8 @@ interface OverrideInput {
 
 /** One person's level for a habit, in place of the circle's. `inherit` removes it. */
 export const useSetOverride = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<SharingView, OverrideInput>(
     queryKeys.circleSharing(circleId),
     setShareOverrideAction,
@@ -60,15 +66,19 @@ export const useSetOverride = (circleId: string) => {
 
       return withOverride(view, habitId, viewerId, level, label);
     },
+    t('saved'),
   );
 };
 
 /** The pause-sharing switch, which holds for every circle. */
 export const useSetPaused = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<SharingView, boolean>(
     queryKeys.circleSharing(circleId),
     setCirclesPausedAction,
     withPaused,
+    t('saved'),
   );
 };
 
@@ -80,11 +90,14 @@ interface MissesInput {
 
 /** Whether a partner is shown this habit's off days. */
 export const useSetShareMisses = (circleId: string) => {
+  const t = useTranslations('circles.toasts');
+
   return useOptimisticCircleAction<SharingView, MissesInput>(
     queryKeys.circleSharing(circleId),
     setShareMissesAction,
     (view, { habitId, on }) => {
       return withMisses(view, habitId, on);
     },
+    t('saved'),
   );
 };

@@ -1,0 +1,5 @@
+@reference '../../app/globals.css';
+
+.nav-soon {
+  @apply cursor-not-allowed opacity-50 hover:text-ink-muted;
+}

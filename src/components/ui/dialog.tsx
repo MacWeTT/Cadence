@@ -5,6 +5,7 @@ import { cn } from 'cn';
 import { useTranslations } from 'next-intl';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
 
@@ -42,6 +43,14 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   );
 }
 
+/**
+ * A dialog puts focus on its close button when it opens. That must not open the button's tooltip: an open tooltip is the
+ * top layer and takes the first Escape, so the dialog would need two. The tooltip shows on hover only.
+ */
+const keepTooltipClosedOnFocus = (event: React.FocusEvent) => {
+  event.preventDefault();
+};
+
 function DialogContent({
   className,
   children,
@@ -63,14 +72,21 @@ function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
-              <XIcon />
-              <span className="sr-only">
-                <CloseLabel />
-              </span>
-            </Button>
-          </DialogPrimitive.Close>
+          <Tooltip>
+            <TooltipTrigger asChild onFocus={keepTooltipClosedOnFocus}>
+              <DialogPrimitive.Close data-slot="dialog-close" asChild>
+                <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
+                  <XIcon />
+                  <span className="sr-only">
+                    <CloseLabel />
+                  </span>
+                </Button>
+              </DialogPrimitive.Close>
+            </TooltipTrigger>
+            <TooltipContent>
+              <CloseLabel />
+            </TooltipContent>
+          </Tooltip>
         )}
       </DialogPrimitive.Content>
     </DialogPortal>

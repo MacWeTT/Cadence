@@ -71,7 +71,9 @@
     "joined": "You joined the circle",
     "left": "You left the circle",
     "closed": "Circle closed",
-    "removed": "Removed from the circle"
+    "removed": "Removed from the circle",
+    "saved": "Saved",
+    "pairCreated": "Partner circle created"
   },
   "sharing": {
     "title": "What I share here",
@@ -153,7 +155,8 @@
     "addReaction": "Add a reaction",
     "pickReaction": "Pick a reaction",
     "reactWith": "React with {emoji}",
-    "reactionLabel": "{emoji} from {count, plural, one {# person} other {# people}}"
+    "reactionLabel": "{emoji} from {count, plural, one {# person} other {# people}}",
+    "reactionsOff": "This person has turned reactions off."
   },
   "look": {
     "title": "Circle settings",

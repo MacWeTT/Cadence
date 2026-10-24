@@ -17,6 +17,7 @@ import { useMsg } from '@/lib/use-msg';
 import { cn } from '@/lib/utils';
 import type { HabitListItem } from '@/server/habit-view';
 import './habit-row.css';
+import { Tip } from '@/components/tip/tip';
 
 export interface HabitRowActions {
   /** Called with the menu button, so focus can return to it when the dialog closes. */
@@ -90,16 +91,18 @@ export const HabitRow = (props: HabitRowProps) => {
       </div>
       {links.length > 0 && !archived && <OpenLinksButton links={links} name={name} />}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            ref={menuButton}
-            type="button"
-            aria-label={t('actionsFor', { name: name })}
-            className="habit-row__menu"
-          >
-            <Ellipsis className="habit-row__menu-icon" aria-hidden />
-          </button>
-        </DropdownMenuTrigger>
+        <Tip label={t('actionsFor', { name: name })}>
+          <DropdownMenuTrigger asChild>
+            <button
+              ref={menuButton}
+              type="button"
+              aria-label={t('actionsFor', { name: name })}
+              className="habit-row__menu"
+            >
+              <Ellipsis className="habit-row__menu-icon" aria-hidden />
+            </button>
+          </DropdownMenuTrigger>
+        </Tip>
         <DropdownMenuContent align="end">
           {archived ? (
             <>

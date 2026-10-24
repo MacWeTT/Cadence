@@ -16,3 +16,9 @@
 .app-splash__tagline--shown {
   @apply translate-y-0 opacity-100;
 }
+
+/* The first paint of a session's first page: the boot script sets data-splash, so the page is hidden until the splash is up. */
+html[data-splash]::after {
+  content: '';
+  @apply pointer-events-none fixed inset-0 z-40 bg-bg;
+}

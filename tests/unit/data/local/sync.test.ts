@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createChanges } from '@/data/local/changes';
+import { createReads } from '@/data/local/reads';
 import { migrate } from '@/data/local/migrations';
 import { readBackup } from '@/data/local/backup';
 import { decideSync, createSync, type AccountPort, type AccountSettings } from '@/data/local/sync';
@@ -16,6 +17,11 @@ const DEFAULTS: AccountSettings = {
   sound_volume: 0.6,
   accent: null,
   accent_custom: null,
+  password_set: true,
+  avatar_kind: 'character',
+  avatar_value: 'robot',
+  avatar_color: '#7c9a6d',
+  avatar_url: 'https://lh3.example/photo.jpg',
 };
 
 const summary = (habits: number): BackupSummary => {
@@ -235,6 +241,30 @@ describe('the first-sign-in sync', () => {
       { display_name: 'Account Name', tag: 'acct', timezone: 'Asia/Kolkata', week_starts_on: 7, sound_id: 'chime' },
     ]);
     expect(await marker(sql, 'linked_user_id')).toBe('u1');
+  });
+
+  it('brings the account avatar and the password flag onto the PC, so the profile and its warning match the account', async () => {
+    const source = await pcWithHabits(['Account habit']);
+    const sql = await pcWithHabits([]);
+    const { port } = account({}, await readBackup(source));
+
+    await createSync(sql, port).pull('u1');
+
+    expect(
+      await sql.select('select avatar_kind, avatar_value, avatar_color, avatar_url, password_set from profile'),
+    ).toEqual([
+      {
+        avatar_kind: 'character',
+        avatar_value: 'robot',
+        avatar_color: '#7c9a6d',
+        avatar_url: 'https://lh3.example/photo.jpg',
+        password_set: 1,
+      },
+    ]);
+    expect(await createReads(sql).profile()).toMatchObject({
+      passwordSet: true,
+      avatar: { kind: 'character', value: 'robot' },
+    });
   });
 
   it('keeps the account side: saves a safety copy of the PC first, then overwrites it', async () => {

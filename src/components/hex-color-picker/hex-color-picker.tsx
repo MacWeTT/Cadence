@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { parseHex } from '@/lib/accent-color';
 import { ACCENT_PRESETS, ACCENT_SWATCH } from '@/lib/appearance';
 import './hex-color-picker.css';
+import { Tip } from '@/components/tip/tip';
 
 interface HexColorPickerProps {
   /** The colour now, as #rrggbb. */
@@ -68,15 +69,16 @@ export const HexColorPicker = (props: HexColorPickerProps) => {
           };
 
           return (
-            <button
-              key={preset}
-              type="button"
-              aria-label={ta(`names.${preset}`)}
-              aria-pressed={value === swatch}
-              onClick={onPick}
-              className={clsx('hex-color-picker__swatch', value === swatch && 'hex-color-picker__swatch--active')}
-              style={{ backgroundColor: swatch }}
-            />
+            <Tip key={preset} label={ta(`names.${preset}`)}>
+              <button
+                type="button"
+                aria-label={ta(`names.${preset}`)}
+                aria-pressed={value === swatch}
+                onClick={onPick}
+                className={clsx('hex-color-picker__swatch', value === swatch && 'hex-color-picker__swatch--active')}
+                style={{ backgroundColor: swatch }}
+              />
+            </Tip>
           );
         })}
       </div>

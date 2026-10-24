@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import './link-row.css';
+import { Tip } from '@/components/tip/tip';
 
 interface LinkRowProps {
   index: number;
@@ -36,14 +37,16 @@ export const LinkRow = (props: LinkRowProps) => {
         aria-invalid={invalid}
         onChange={onValueChange}
       />
-      <button
-        type="button"
-        aria-label={t('remove', { number: index + 1 })}
-        onClick={onRemoveClick}
-        className="link-row__remove"
-      >
-        <X className="link-row__icon" aria-hidden />
-      </button>
+      <Tip label={t('remove', { number: index + 1 })}>
+        <button
+          type="button"
+          aria-label={t('remove', { number: index + 1 })}
+          onClick={onRemoveClick}
+          className="link-row__remove"
+        >
+          <X className="link-row__icon" aria-hidden />
+        </button>
+      </Tip>
     </li>
   );
 };

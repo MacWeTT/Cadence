@@ -18,15 +18,21 @@ describe('the navigation links', () => {
     expect(hrefs(TAB_LINKS)).toContain('/circles');
   });
 
-  it('leave Circles out of the desktop app, which has no server for it, and change nothing else', () => {
-    const withoutCircles = (links: readonly { href: string }[]) => {
-      return hrefs(links).filter(href => {
-        return href !== '/circles';
+  it('keep Circles in the desktop app but switched off, coming soon, and change nothing else', () => {
+    const soon = (links: readonly object[]) => {
+      return links.filter(link => {
+        return 'soon' in link;
       });
     };
 
-    expect(hrefs(DESKTOP_TOP_LINKS)).toEqual(withoutCircles(TOP_LINKS));
-    expect(hrefs(DESKTOP_TAB_LINKS)).toEqual(withoutCircles(TAB_LINKS));
+    // the same pages, in the same order, as on the web
+    expect(hrefs(DESKTOP_TOP_LINKS)).toEqual(hrefs(TOP_LINKS));
+    expect(hrefs(DESKTOP_TAB_LINKS)).toEqual(hrefs(TAB_LINKS));
+    // only Circles is switched off, and only in the app
+    expect(soon(TOP_LINKS)).toEqual([]);
+    expect(soon(TAB_LINKS)).toEqual([]);
+    expect(soon(DESKTOP_TOP_LINKS)).toEqual([{ href: '/circles', name: 'circles', soon: true }]);
+    expect(soon(DESKTOP_TAB_LINKS)).toHaveLength(1);
   });
 
   it('are swapped for the desktop ones, and the Home card for an empty one, by the desktop build', () => {

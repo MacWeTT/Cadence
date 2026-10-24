@@ -29,6 +29,7 @@ import { HabitCircles } from '@/app/(app)/habits/habit-circles/habit-circles';
 import { LinksField } from '@/app/(app)/habits/links-field/links-field';
 import { ScheduleField } from '@/app/(app)/habits/schedule-field/schedule-field';
 import './habit-dialog.css';
+import { WhyDisabled } from '@/components/why-disabled/why-disabled';
 
 interface HabitDialogProps {
   /** The habit being edited, or undefined to create a new one. */
@@ -48,6 +49,7 @@ export const HabitDialog = (props: HabitDialogProps) => {
 
   const queryClient = useQueryClient();
   const t = useTranslations('habits');
+  const tw = useTranslations('common.why');
   const ta = useTranslations('common.actions');
   const [pending, startTransition] = useTransition();
   const nameRef = useRef<HTMLInputElement>(null);
@@ -256,9 +258,11 @@ export const HabitDialog = (props: HabitDialogProps) => {
             <Button type="button" variant="outline" onClick={onClose}>
               {ta('cancel')}
             </Button>
-            <Button type="submit" disabled={pending}>
-              {habit ? ta('save') : t('dialog.saveHabit')}
-            </Button>
+            <WhyDisabled reason={pending ? tw('busy') : null}>
+              <Button type="submit" disabled={pending}>
+                {habit ? ta('save') : t('dialog.saveHabit')}
+              </Button>
+            </WhyDisabled>
           </DialogFooter>
         </form>
       </DialogContent>

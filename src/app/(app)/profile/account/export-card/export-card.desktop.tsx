@@ -9,11 +9,11 @@ import { local } from '@/data/local';
 import { BACKUP_LIMITS } from '@/lib/backup-types';
 import './export-card.css';
 
-const FORMATS = ['json', 'csv'] as const;
+const FORMATS = ['json', 'csv', 'pdf'] as const;
 
 /**
  * The desktop build's export card: the same card, but the files are made on the PC from its own file instead of by the
- * server. There is no PDF here (the report is built on the server).
+ * server, the PDF report included.
  */
 export const ExportCard = () => {
   const t = useTranslations('account.export');
@@ -25,11 +25,12 @@ export const ExportCard = () => {
     habits > BACKUP_LIMITS.habits || ticks > BACKUP_LIMITS.ticks || focusSessions > BACKUP_LIMITS.focusSessions;
 
   const onDownload = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    const format = event.currentTarget.dataset.format === 'csv' ? 'csv' : 'json';
+    const { format: wanted } = event.currentTarget.dataset;
+    const format = wanted === 'csv' || wanted === 'pdf' ? wanted : 'json';
 
     try {
-      const { fileName, type, text } = await local.exportFile(format);
-      const url = URL.createObjectURL(new Blob([text], { type }));
+      const { fileName, type, data } = await local.exportFile(format);
+      const url = URL.createObjectURL(new Blob([data as BlobPart], { type }));
       const link = document.createElement('a');
 
       link.href = url;

@@ -53,6 +53,8 @@ const nextConfig: NextConfig = {
           '@/components/service-worker-register/service-worker-register':
             './src/components/service-worker-register/service-worker-register.desktop.tsx',
           '@/components/footer/footer': './src/components/footer/footer.desktop.tsx',
+          '@/app/(app)/profile/profile-warnings/profile-warnings':
+            './src/app/(app)/profile/profile-warnings/profile-warnings.desktop.tsx',
           '@/lib/notify': './src/lib/notify.desktop.ts',
           '@/app/(app)/profile/desktop-settings/desktop-settings':
             './src/app/(app)/profile/desktop-settings/desktop-settings.desktop.tsx',

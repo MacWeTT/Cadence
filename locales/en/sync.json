@@ -14,5 +14,6 @@
   "downloadAccount": "Download my account's copy first",
   "pulled": "Your habits are on this PC now.",
   "uploaded": "Your habits are on your account now.",
-  "failed": "Couldn't sync. Check your connection and try again."
+  "failed": "Couldn't sync. Check your connection and try again.",
+  "declined": "Okay. Your habits stay on this PC."
 }

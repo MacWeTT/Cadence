@@ -144,6 +144,8 @@
     "upToDate": "Cadence is up to date.",
     "updateAvailable": "Version {version} is available.",
     "install": "Install and restart",
-    "updateFailed": "Couldn't update. Try again later."
+    "updateFailed": "Couldn't update. Try again later.",
+    "startOnLoginOn": "Cadence will start when you sign in to Windows.",
+    "startOnLoginOff": "Cadence will not start on its own."
   }
 }
