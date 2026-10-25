@@ -100,3 +100,14 @@ pub fn set_tray_habits(app: AppHandle, running: bool, habits: Vec<TrayHabit>) ->
 
   tray.set_menu(Some(menu)).map_err(|error| error.to_string())
 }
+
+/// Lets go of the tray icon and the window before an update installs, so the installer finds nothing of the app still
+/// running (it shows an error when the app is left in the tray).
+#[tauri::command]
+pub fn prepare_update(app: AppHandle) {
+  let _ = app.remove_tray_by_id(TRAY_ID);
+
+  for (_, window) in app.webview_windows() {
+    let _ = window.hide();
+  }
+}

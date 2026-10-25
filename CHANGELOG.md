@@ -29,6 +29,14 @@ Your profile, your sounds, your own tag, and a timer you can pause.
 - Pause and resume a focus session, and Stop answers at once.
 - Export your data as JSON, CSV or a PDF report, and restore a backup, or delete your account.
 
+## 1.0.13 (2026-10-25)
+
+Flags, and a faster emoji picker.
+
+- Flag emojis now show up in the emoji picker, and look like flags on Windows too.
+- The emoji picker opens much faster, and works in the Windows app without internet.
+- Updating the Windows app now closes it from the tray first, so the installer can replace it.
+
 ## 1.0.12 (2026-10-24)
 
 Fixes and polish.

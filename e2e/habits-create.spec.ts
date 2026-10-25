@@ -17,6 +17,19 @@ test('a new user sees the empty state', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'No habits yet' })).toBeVisible();
 });
 
+test('the emoji picker has flags, even on a system without flag emoji', async ({ page }) => {
+  const dialog = await openDialog(page);
+
+  await dialog.getByRole('button', { name: 'Choose emoji' }).click();
+  await page.getByPlaceholder('Search emoji').fill('russia');
+  await page
+    .getByRole('gridcell', { name: /russia/i })
+    .first()
+    .click();
+
+  await expect(dialog.getByRole('button', { name: 'Choose emoji' })).toContainText('🇷🇺');
+});
+
 test('creates a daily habit with an emoji found by search', async ({ page }) => {
   const dialog = await openDialog(page);
 

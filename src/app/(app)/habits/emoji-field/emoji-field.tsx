@@ -7,7 +7,7 @@ import {
   type EmojiPickerListRowProps,
 } from 'frimousse';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import './emoji-field.css';
 import { Tip } from '@/components/tip/tip';
@@ -42,6 +42,9 @@ const EmojiButton = (props: EmojiPickerListEmojiProps) => {
   );
 };
 
+/** The emoji names and groups, served from `public/emojibase` so the picker opens fast and works offline. */
+const EMOJI_DATA_URL = '/emojibase';
+
 interface EmojiFieldProps {
   value: string;
   onChange: (emoji: string) => void;
@@ -54,6 +57,11 @@ export const EmojiField = (props: EmojiFieldProps) => {
   const [open, setOpen] = useState(false);
 
   const t = useTranslations('habits.emoji');
+
+  useEffect(() => {
+    // The picker hides emojis the system cannot draw, so the flag font has to be loaded before it looks.
+    void document.fonts.load('1em "Twemoji Mozilla"', '🇷🇺');
+  }, []);
 
   const onEmojiSelect = ({ emoji }: { emoji: string }) => {
     onChange(emoji);
@@ -70,7 +78,7 @@ export const EmojiField = (props: EmojiFieldProps) => {
         </PopoverTrigger>
       </Tip>
       <PopoverContent align="start" className="emoji-field__popover">
-        <EmojiPicker.Root className="emoji-field__root" onEmojiSelect={onEmojiSelect}>
+        <EmojiPicker.Root className="emoji-field__root" emojibaseUrl={EMOJI_DATA_URL} onEmojiSelect={onEmojiSelect}>
           <EmojiPicker.Search
             placeholder={t('search')}
             aria-label={t('search')}
