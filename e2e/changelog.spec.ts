@@ -20,14 +20,14 @@ test("the footer's What's new link opens the changelog: a card for each version 
   await expect(newest).toContainText('A Windows app');
 
   // The newest release is a run of fixes: its card shows the three biggest, and a window has the complete list.
-  const update = page.getByRole('region', { name: 'Latest update: 1.0.12' });
+  const update = page.getByRole('region', { name: 'Latest update: 1.0.13' });
 
   await expect(update).toContainText('Fixes and polish');
   await expect(update.getByRole('listitem')).toHaveCount(3);
   await expect(update).not.toContainText('Show password');
   await update.getByRole('button', { name: /^See all \d+ changes$/ }).click();
 
-  const all = page.getByRole('dialog', { name: 'Version 1.0.12' });
+  const all = page.getByRole('dialog', { name: 'Version 1.0.13' });
 
   await expect(all).toContainText('Show password');
   await expect(all.getByRole('listitem').count()).resolves.toBeGreaterThan(3);

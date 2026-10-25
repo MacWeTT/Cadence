@@ -44,7 +44,7 @@ pub fn run() {
         }
       }
     })
-    .invoke_handler(tauri::generate_handler![db::sql_select, db::sql_batch, tray::set_tray_habits])
+    .invoke_handler(tauri::generate_handler![db::sql_select, db::sql_batch, tray::set_tray_habits, tray::prepare_update])
     .run(tauri::generate_context!())
     .expect("error while building tauri application");
 }
